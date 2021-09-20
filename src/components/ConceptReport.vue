@@ -1,0 +1,1199 @@
+<template>
+  <div>
+    <div v-if="componentFailed">
+      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+    </div>
+    <v-container v-if="!componentFailed">
+      <v-responsive min-width="900">
+        <explorer></explorer>
+        <v-layout class="ma-0 mb-6 text-uppercase text-h6">{{
+          conceptName
+        }}</v-layout>
+        <v-row v-if="dataLoaded" justify="start"
+          ><v-col cols="2" align="center">
+            <v-icon left color="info">mdi-identifier</v-icon>
+            <v-badge
+              tile
+              inline
+              dark
+              color="info"
+              :content="conceptId"
+            ></v-badge>
+            <p class="text-caption">Concept Identifier</p></v-col
+          ><v-col cols="2" align="center">
+            <v-icon left color="info">mdi-account-group</v-icon>
+            <v-badge
+              tile
+              inline
+              dark
+              color="info"
+              :content="numPersons"
+            ></v-badge>
+            <p class="text-caption">Number of People</p></v-col
+          ><v-col cols="2" align="center">
+            <v-icon small left color="info">mdi-percent</v-icon>
+            <v-badge
+              tile
+              inline
+              dark
+              color="info"
+              :content="formatPercent(percentPersons)"
+            ></v-badge>
+            <p class="text-caption">% of People</p></v-col
+          ><v-col cols="2" align="center">
+            <v-icon left color="info">mdi-table-row</v-icon>
+            <v-badge
+              tile
+              inline
+              dark
+              color="info"
+              :content="recordsPerPerson"
+            ></v-badge>
+            <p class="text-caption">Records per Person</p></v-col
+          ><v-col v-if="hasCountFailed" cols="2" align="center">
+            <v-icon left color="error" @click="navigateToDataQuality()"
+              >mdi-database-alert</v-icon
+            >
+            <v-badge
+              tile
+              inline
+              dark
+              color="error"
+              :content="countFailed"
+            ></v-badge>
+            <p class="text-caption">Data Quality Issues</p></v-col
+          ><v-col v-if="isNotStationary" cols="2" align="center">
+            <v-icon left color="error">mdi-clock-alert</v-icon>
+            <p class="text-caption">Non-Stationary Time Series</p></v-col
+          ></v-row
+        >
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasMeasurementValueDistribution"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Measurement Value Distributions</v-card-title>
+          <div
+            class="viz-container"
+            id="viz-measurementvaluedistribution"
+          ></div>
+          <v-card-text>
+            <v-layout>
+              <router-link :to="getNetworkConceptRoute()">
+                <v-icon small color="primary" left>mdi-check-network</v-icon
+                >Check measurement value distributions across the network
+              </router-link>
+            </v-layout>
+            <router-link to="/help">
+              <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
+              to interpret this plot.
+            </router-link>
+          </v-card-text>
+        </v-card>
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasAgeAtFirstDiagnosis"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Age at First Diagnosis</v-card-title>
+          <div class="viz-container" id="viz-ageatfirstdiagnosis"></div>
+          <v-card-text>
+            <router-link to="/help">
+              <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
+              to interpret this plot.
+            </router-link>
+          </v-card-text>
+        </v-card>
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasAgeAtFirstExposure"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Age at First Exposure</v-card-title>
+          <div class="viz-container" id="viz-ageatfirstexposure"></div>
+          <v-card-text>
+            <router-link to="/help">
+              <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
+              to interpret this plot.
+            </router-link>
+          </v-card-text>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasLengthOfEra"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Length of Era</v-card-title>
+          <div class="viz-container" id="viz-lengthofera"></div>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasConditionsByType"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Conditions by Type</v-card-title>
+          <div class="viz-container" id="viz-conditionsbytype"></div>
+          <v-card-text>
+            <a
+              href="https://ohdsi.github.io/CommonDataModel/cdm531.html#CONDITION_OCCURRENCE"
+              target="_blank"
+            >
+              <v-icon small color="info" left> mdi-help-circle</v-icon>
+              Learn about Condition types.
+            </a>
+          </v-card-text>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasDrugsByType"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Drugs by Type</v-card-title>
+          <div class="viz-container" id="viz-drugsbytype"></div>
+          <v-card-text>
+            <a
+              href="https://ohdsi.github.io/CommonDataModel/cdm531.html#DRUG_EXPOSURE"
+              target="_blank"
+            >
+              <v-icon small color="info" left> mdi-help-circle</v-icon>
+              Learn about Drug types.
+            </a>
+          </v-card-text>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasRecordsByUnit"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Records by Unit</v-card-title>
+          <div class="viz-container" id="viz-recordsbyunit"></div>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasMeasurementsByType"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Measurements by Type</v-card-title>
+          <div class="viz-container" id="viz-measurementsbytype"></div>
+          <v-card-text>
+            <a
+              href="https://ohdsi.github.io/CommonDataModel/cdm531.html#MEASUREMENT"
+              target="_blank"
+            >
+              <v-icon small color="info" left> mdi-help-circle</v-icon>
+              Learn about Measurement types.
+            </a>
+          </v-card-text>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasAgeAtFirstOccurrence"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Age at First Occurrence</v-card-title>
+          <div class="viz-container" id="viz-ageatfirstoccurrence"></div>
+          <info-panel
+            details="Learn how to interpret this plot"
+            routeLink="/help"
+          ></info-panel>
+        </v-card>
+
+        <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+          <v-card-title>Record Count Proportion by Month</v-card-title>
+          <div class="viz-container" id="viz-recordproportionbymonth"></div>
+          <info-panel
+            details="Proportion of people with at least one record per 1000 people."
+          ></info-panel>
+          <info-panel
+            v-if="isNotStationary"
+            icon="mdi-clock-alert"
+            details="This time series has been deemed non-stationary by temporal characterization."
+            :divider="false"
+          ></info-panel>
+          <info-panel
+            v-if="hasSeasonalityScore"
+            icon="mdi-clock-alert"
+            :details="seasonalityComment"
+            :divider="false"
+            link="http://www.github.com/ohdsi/castor"
+          ></info-panel>
+          <info-panel
+            icon="mdi-database-clock"
+            :divider="false"
+            :linkDetails="true"
+            :routeLink="getSourceConceptReportLink()"
+            details="Review this Time-Series across data source releases."
+          ></info-panel>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasDaysSupply"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Days Supply</v-card-title>
+          <div class="viz-container" id="viz-dayssupply"></div>
+          <info-panel
+            details="Learn how to interpret this plot"
+            routeLink="/help"
+          ></info-panel>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasQuantity"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Quantity</v-card-title>
+          <div class="viz-container" id="viz-quantity"></div>
+          <info-panel
+            details="Learn how to interpret this plot"
+            routeLink="/help"
+          ></info-panel>
+        </v-card>
+
+        <v-card
+          :loading="!dataLoaded"
+          v-if="hasVisitDurationByType"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Visit Duration by Type</v-card-title>
+          <div class="viz-container" id="viz-visitdurationbytype"></div>
+        </v-card>
+
+        <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+          <v-card-title>
+            Record Count Proportion by Age, Sex, and Year
+          </v-card-title>
+          <div
+            class="viz-container"
+            id="viz-recordproportionbyagesexyear"
+          ></div>
+          <info-panel
+            details="Proportion of people with at least one record per 1000 people."
+          ></info-panel>
+        </v-card>
+      </v-responsive>
+    </v-container>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+import embed from "vega-embed";
+import error from "./Error.vue";
+import explorer from "./Explorer.vue";
+import * as d3 from "d3-time-format";
+import * as d3Format from "d3-format";
+import InfoPanel from "./InfoPanel.vue";
+
+export default {
+  data() {
+    return {
+      componentFailed: false,
+      errorText: "",
+      errorDetails: "",
+      hasMeasurementValueDistribution: false,
+      hasAgeAtFirstDiagnosis: false,
+      hasAgeAtFirstOccurrence: false,
+      hasAgeAtFirstExposure: false,
+      hasRecordsByUnit: false,
+      hasConditionsByType: false,
+      hasMeasurementsByType: false,
+      hasDrugsByType: false,
+      hasVisitDurationByType: false,
+      hasDaysSupply: false,
+      hasQuantity: false,
+      hasLengthOfEra: false,
+      hasCountFailed: false,
+      isNotStationary: false,
+      hasSeasonalityScore: false,
+      seasonalityScore: 0,
+      seasonalityComment: "",
+      countFailed: 0,
+      conceptData: null,
+      conceptName: "",
+      conceptId: 0,
+      dataLoaded: false,
+      historyRecords: [],
+      cdmSourceName: "",
+      specConditionsByType: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        data: null,
+        width: "container",
+        height: 75,
+        mark: "bar",
+        transform: [
+          {
+            window: [
+              {
+                op: "sum",
+                field: "COUNT_VALUE",
+                as: "TOTAL_VALUE",
+              },
+            ],
+            frame: [null, null],
+          },
+          {
+            calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
+            as: "PERCENT",
+          },
+        ],
+        encoding: {
+          tooltip: [
+            { field: "CONCEPT_NAME", title: "Condition Type" },
+            { field: "COUNT_VALUE", title: "Number of Records" },
+            { field: "PERCENT", title: "% of Records", format: "0.2%" },
+          ],
+          x: {
+            field: "PERCENT",
+            aggregate: "sum",
+            title: "% of Records",
+            format: "0%",
+            axis: {
+              format: "0%",
+            },
+          },
+          color: {
+            field: "CONCEPT_NAME",
+            type: "nominal",
+            legend: {
+              orient: "top",
+              title: null,
+            },
+          },
+          order: {
+            aggregate: "sum",
+            field: "COUNT_VALUE",
+            sort: "descending",
+          },
+        },
+      },
+      specDrugsByType: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        data: null,
+        width: "container",
+        height: 75,
+        mark: "bar",
+        transform: [
+          {
+            window: [
+              {
+                op: "sum",
+                field: "COUNT_VALUE",
+                as: "TOTAL_VALUE",
+              },
+            ],
+            frame: [null, null],
+          },
+          {
+            calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
+            as: "PERCENT",
+          },
+        ],
+        encoding: {
+          tooltip: [
+            { field: "CONCEPT_NAME", title: "Drug Type" },
+            { field: "COUNT_VALUE", title: "Number of Records", format: "," },
+            { field: "PERCENT", title: "% of Records", format: "0.2%" },
+          ],
+          x: {
+            field: "PERCENT",
+            aggregate: "sum",
+            title: "% of Records",
+            format: "0%",
+            axis: {
+              format: "0%",
+            },
+          },
+          color: {
+            field: "CONCEPT_NAME",
+            type: "nominal",
+            legend: {
+              orient: "top",
+              title: null,
+            },
+          },
+          order: {
+            aggregate: "sum",
+            field: "COUNT_VALUE",
+            sort: "descending",
+          },
+        },
+      },
+      specRecordsByUnit: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        data: null,
+        width: "container",
+        height: 75,
+        mark: "bar",
+        transform: [
+          {
+            window: [
+              {
+                op: "sum",
+                field: "COUNT_VALUE",
+                as: "TOTAL_VALUE",
+              },
+            ],
+            frame: [null, null],
+          },
+          {
+            calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
+            as: "PERCENT",
+          },
+        ],
+        encoding: {
+          tooltip: [
+            { field: "CONCEPT_NAME", title: "Unit Type" },
+            { field: "COUNT_VALUE", title: "Number of Records", format: "," },
+            { field: "PERCENT", title: "% of Records", format: "0.2%" },
+          ],
+          x: {
+            field: "PERCENT",
+            aggregate: "sum",
+            title: "% of Records",
+            format: "0%",
+            axis: {
+              format: "0%",
+            },
+          },
+          color: {
+            field: "CONCEPT_NAME",
+            type: "nominal",
+            legend: {
+              orient: "top",
+              title: null,
+            },
+          },
+          order: {
+            aggregate: "sum",
+            field: "COUNT_VALUE",
+            sort: "descending",
+          },
+        },
+      },
+      specRecordProportionByAgeSexYear: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        width: 60,
+        height: 150,
+        data: {},
+        mark: "line",
+        encoding: {
+          x: {
+            field: "X_CALENDAR_YEAR",
+            type: "quantitative",
+            title: "",
+            axis: {
+              format: "d",
+            },
+          },
+          y: {
+            field: "Y_PREVALENCE_1000PP",
+            type: "quantitative",
+            title: "",
+          },
+          color: {
+            title: "Sex",
+            field: "SERIES_NAME",
+            type: "nominal",
+            legend: {
+              orient: "top",
+            },
+          },
+          facet: {
+            field: "TRELLIS_NAME",
+            type: "nominal",
+            title: null,
+            rows: 1,
+            spacing: 5,
+            header: {
+              title: "Age Deciles",
+              labelOrient: "top",
+              labelAnchor: "start",
+              labelFontSize: 10,
+              labelPadding: 5,
+            },
+          },
+        },
+      },
+      specMeasurementValueDistribution: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        height: 50,
+        width: "container",
+        data: {},
+        encoding: { y: { field: "CATEGORY", type: "nominal", title: null } },
+        layer: [
+          {
+            mark: { type: "rule" },
+            encoding: {
+              x: {
+                field: "MIN_VALUE",
+                type: "quantitative",
+                scale: { zero: false },
+                title: null,
+              },
+              x2: { field: "MAX_VALUE" },
+            },
+          },
+          {
+            mark: { type: "bar", size: 14, tooltip: {} },
+            encoding: {
+              x: { field: "P25_VALUE", type: "quantitative" },
+              x2: { field: "P75_VALUE" },
+              color: { field: "CATEGORY", type: "nominal", legend: null },
+            },
+          },
+          {
+            mark: { type: "tick", color: "white", size: 14 },
+            encoding: {
+              x: { field: "MEDIAN_VALUE", type: "quantitative" },
+            },
+          },
+        ],
+        row: {
+          field: "CATEGORY",
+          type: "nominal",
+          title: "Measurement",
+        },
+      },
+      specMeasurementsByType: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        data: null,
+        width: "container",
+        height: 75,
+        mark: "bar",
+        transform: [
+          {
+            window: [
+              {
+                op: "sum",
+                field: "COUNT_VALUE",
+                as: "TOTAL_VALUE",
+              },
+            ],
+            frame: [null, null],
+          },
+          {
+            calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
+            as: "PERCENT",
+          },
+        ],
+        encoding: {
+          tooltip: [
+            { field: "CONCEPT_NAME", title: "Measurement Type" },
+            { field: "COUNT_VALUE", title: "Number of Records" },
+            { field: "PERCENT", title: "% of Records", format: "0.2%" },
+          ],
+          x: {
+            field: "PERCENT",
+            aggregate: "sum",
+            title: "% of Records",
+            format: "0%",
+            axis: {
+              format: "0%",
+            },
+          },
+          color: {
+            field: "CONCEPT_NAME",
+            type: "nominal",
+            legend: {
+              orient: "top",
+              title: null,
+            },
+          },
+          order: {
+            aggregate: "sum",
+            field: "COUNT_VALUE",
+            sort: "descending",
+          },
+        },
+      },
+      specAgeAtFirstOccurrence: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        height: 100,
+        width: "container",
+        data: {},
+        encoding: { y: { field: "CATEGORY", type: "nominal", title: null } },
+        layer: [
+          {
+            mark: { type: "rule" },
+            encoding: {
+              x: {
+                field: "MIN_VALUE",
+                type: "quantitative",
+                scale: { zero: false },
+                title: null,
+              },
+              x2: { field: "MAX_VALUE" },
+            },
+          },
+          {
+            mark: { type: "bar", size: 14, tooltip: {} },
+            encoding: {
+              x: { field: "P25_VALUE", type: "quantitative" },
+              x2: { field: "P75_VALUE" },
+              color: { field: "CATEGORY", type: "nominal", legend: null },
+            },
+          },
+          {
+            mark: { type: "tick", color: "white", size: 14 },
+            encoding: {
+              x: { field: "MEDIAN_VALUE", type: "quantitative" },
+            },
+          },
+        ],
+      },
+      specVisitDurationByType: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        height: 100,
+        width: "container",
+        data: {},
+        encoding: { y: { field: "CATEGORY", type: "nominal", title: null } },
+        layer: [
+          {
+            mark: { type: "rule" },
+            encoding: {
+              x: {
+                field: "MIN_VALUE",
+                type: "quantitative",
+                scale: { zero: false },
+                title: null,
+              },
+              x2: { field: "MAX_VALUE" },
+            },
+          },
+          {
+            mark: { type: "bar", size: 14, tooltip: {} },
+            encoding: {
+              x: { field: "P25_VALUE", type: "quantitative" },
+              x2: { field: "P75_VALUE" },
+              color: { field: "CATEGORY", type: "nominal", legend: null },
+            },
+          },
+          {
+            mark: { type: "tick", color: "white", size: 14 },
+            encoding: {
+              x: { field: "MEDIAN_VALUE", type: "quantitative" },
+            },
+          },
+        ],
+      },
+      specDaysSupply: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        height: 100,
+        width: "container",
+        data: {},
+        layer: [
+          {
+            mark: { type: "rule" },
+            encoding: {
+              x: {
+                field: "MIN_VALUE",
+                type: "quantitative",
+                scale: { zero: false },
+                title: "Days Supply",
+              },
+              x2: { field: "MAX_VALUE" },
+            },
+          },
+          {
+            mark: { type: "bar", size: 28, tooltip: {} },
+            encoding: {
+              x: { field: "P25_VALUE", type: "quantitative" },
+              x2: { field: "P75_VALUE" },
+            },
+          },
+          {
+            mark: { type: "tick", color: "white", size: 28 },
+            encoding: {
+              x: { field: "MEDIAN_VALUE", type: "quantitative" },
+            },
+          },
+        ],
+      },
+      specQuantity: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        height: 100,
+        width: "container",
+        data: {},
+        layer: [
+          {
+            mark: { type: "rule" },
+            encoding: {
+              x: {
+                field: "MIN_VALUE",
+                type: "quantitative",
+                scale: { zero: false },
+                title: "Amount",
+              },
+              x2: { field: "MAX_VALUE" },
+            },
+          },
+          {
+            mark: { type: "bar", size: 28, tooltip: {} },
+            encoding: {
+              x: { field: "P25_VALUE", type: "quantitative" },
+              x2: { field: "P75_VALUE" },
+            },
+          },
+          {
+            mark: { type: "tick", color: "white", size: 28 },
+            encoding: {
+              x: { field: "MEDIAN_VALUE", type: "quantitative" },
+            },
+          },
+        ],
+      },
+      specLengthOfEra: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        height: 100,
+        width: "container",
+        data: {},
+        layer: [
+          {
+            mark: { type: "rule" },
+            encoding: {
+              x: {
+                field: "MIN_VALUE",
+                type: "quantitative",
+                scale: { zero: false },
+                title: "Number of Days",
+              },
+              x2: { field: "MAX_VALUE" },
+            },
+          },
+          {
+            mark: { type: "bar", size: 28, tooltip: {} },
+            encoding: {
+              x: { field: "P25_VALUE", type: "quantitative" },
+              x2: { field: "P75_VALUE" },
+            },
+          },
+          {
+            mark: { type: "tick", color: "white", size: 28 },
+            encoding: {
+              x: { field: "MEDIAN_VALUE", type: "quantitative" },
+            },
+          },
+        ],
+      },
+      specAgeAtFirstExposure: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        height: 100,
+        width: "container",
+        data: {},
+        encoding: { y: { field: "CATEGORY", type: "nominal", title: null } },
+        layer: [
+          {
+            mark: { type: "rule" },
+            encoding: {
+              x: {
+                field: "MIN_VALUE",
+                type: "quantitative",
+                scale: { zero: false },
+                title: null,
+              },
+              x2: { field: "MAX_VALUE" },
+              tooltip: {
+                field: "MAX_VALUE",
+              },
+            },
+          },
+          {
+            mark: { type: "bar", size: 14, tooltip: {} },
+            encoding: {
+              x: {
+                field: "P25_VALUE",
+                type: "quantitative",
+              },
+              x2: { field: "P75_VALUE" },
+              color: { field: "CATEGORY", type: "nominal", legend: null },
+            },
+          },
+          {
+            mark: { type: "tick", color: "white", size: 14 },
+            encoding: {
+              x: { field: "MEDIAN_VALUE", type: "quantitative" },
+            },
+          },
+        ],
+      },
+      specAgeAtFirstDiagnosis: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        height: 100,
+        width: "container",
+        data: {},
+        encoding: { y: { field: "CATEGORY", type: "nominal", title: null } },
+        layer: [
+          {
+            mark: { type: "rule" },
+            encoding: {
+              x: {
+                field: "MIN_VALUE",
+                type: "quantitative",
+                scale: { zero: false },
+                title: null,
+              },
+              x2: { field: "MAX_VALUE" },
+            },
+          },
+          {
+            mark: { type: "bar", size: 14, tooltip: {} },
+            encoding: {
+              x: { field: "P25_VALUE", type: "quantitative" },
+              x2: { field: "P75_VALUE" },
+              color: { field: "CATEGORY", type: "nominal", legend: null },
+            },
+          },
+          {
+            mark: { type: "tick", color: "white", size: 14 },
+            encoding: {
+              x: { field: "MEDIAN_VALUE", type: "quantitative" },
+            },
+          },
+        ],
+      },
+      specRecordProportionByMonth: {
+        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        data: null,
+        vconcat: [
+          {
+            height: 150,
+            width: "container",
+            description: "Domain Data Density",
+            mark: { type: "circle" },
+            encoding: {
+              x: {
+                field: "date",
+                type: "temporal",
+                timeUnit: "yearmonth",
+                scale: { domain: { selection: "brush" } },
+                axis: { title: "" },
+              },
+              y: {
+                field: "Y_PREVALENCE_1000PP",
+                type: "quantitative",
+                title: "Record Proportion per 1000",
+              },
+              tooltip: [
+                {
+                  field: "Y_PREVALENCE_1000PP",
+                  title: "RPP1000",
+                  type: "quantitative",
+                },
+                {
+                  field: "date",
+                  title: "Date",
+                  type: "temporal",
+                  timeUnit: "yearmonth",
+                },
+              ],
+            },
+          },
+          {
+            width: "container",
+            height: 25,
+            mark: "line",
+            selection: {
+              brush: { type: "interval", encodings: ["x"] },
+            },
+            encoding: {
+              x: {
+                field: "date",
+                type: "temporal",
+                title: "Date",
+                timeUnit: "yearmonth",
+              },
+              y: {
+                field: "Y_PREVALENCE_1000PP",
+                type: "quantitative",
+                title: "",
+              },
+            },
+          },
+        ],
+      },
+    };
+  },
+  components: {
+    error,
+    explorer,
+    InfoPanel,
+  },
+  created() {
+    this.load();
+  },
+  methods: {
+    getSourceConceptReportLink: function () {
+      return (
+        "/_datasource/" +
+        this.$route.params.cdm +
+        "/concept/" +
+        this.$route.params.domain +
+        "/" +
+        this.$route.params.concept +
+        "/overlay"
+      );
+    },
+    formatPercent: function (value) {
+      return d3Format.format("0.0%")(value);
+    },
+    formatComma: function (value) {
+      return d3Format.format(",")(value);
+    },
+    triggerResize: function () {
+      window.dispatchEvent(new Event("resize"));
+    },
+    getNetworkConceptRoute() {
+      return (
+        "/_network/concept/" +
+        this.$route.params.domain +
+        "/" +
+        this.$route.params.concept +
+        "/summary"
+      );
+    },
+    navigateToDataQuality() {
+      this.$router.push({
+        path:
+          "/_cdm/" +
+          this.$route.params.cdm +
+          "/" +
+          this.$route.params.release +
+          "/quality?tab=results&conceptFailFilter=" +
+          this.$route.params.concept,
+      });
+    },
+    load: function () {
+      var self = this;
+      var dataUrl =
+        "data/" +
+        this.$route.params.cdm +
+        "/" +
+        this.$route.params.release +
+        "/concepts/" +
+        this.$route.params.domain +
+        "/concept_" +
+        this.$route.params.concept +
+        ".json";
+      axios
+        .get(dataUrl)
+        .then((response) => {
+          self.componentFailed = false;
+          var dateParse = d3.timeParse("%Y%m");
+          self.conceptData = response.data;
+          self.conceptName = response.data.CONCEPT_NAME[0];
+          self.conceptId = response.data.CONCEPT_ID[0];
+          self.numPersons = self.formatComma(response.data.NUM_PERSONS[0]);
+          self.percentPersons = response.data.PERCENT_PERSONS[0];
+          self.recordsPerPerson = response.data.RECORDS_PER_PERSON[0];
+
+          if (self.conceptData.COUNT_FAILED) {
+            self.hasCountFailed = true;
+            self.countFailed = self.conceptData.COUNT_FAILED[0];
+          }
+
+          if (self.conceptData.IS_STATIONARY) {
+            self.isNotStationary = !self.conceptData.IS_STATIONARY[0];
+          }
+
+          if (self.conceptData.SEASONALITY_SCORE) {
+            self.hasSeasonalityScore = true;
+            self.seasonalityScore = self.conceptData.SEASONALITY_SCORE[0];
+            self.seasonalityComment =
+              "Seasonality score of " + self.seasonalityScore + ".";
+          }
+
+          if (self.conceptData.LENGTH_OF_ERA) {
+            self.specLengthOfEra.data = {
+              values: self.conceptData.LENGTH_OF_ERA,
+            };
+            self.hasLengthOfEra = true;
+            embed("#viz-lengthofera", self.specLengthOfEra).then(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
+          }
+
+          if (self.conceptData.DAYS_SUPPLY_DISTRIBUTION) {
+            self.specDaysSupply.data = {
+              values: self.conceptData.DAYS_SUPPLY_DISTRIBUTION,
+            };
+            self.hasDaysSupply = true;
+            embed("#viz-dayssupply", self.specDaysSupply);
+          }
+
+          if (self.conceptData.QUANTITY_DISTRIBUTION) {
+            self.specQuantity.data = {
+              values: self.conceptData.QUANTITY_DISTRIBUTION,
+            };
+            self.hasQuantity = true;
+            embed("#viz-quantity", self.specQuantity);
+          }
+
+          if (self.conceptData.AGE_AT_FIRST_OCCURRENCE) {
+            self.specAgeAtFirstOccurrence.data = {
+              values: self.conceptData.AGE_AT_FIRST_OCCURRENCE,
+            };
+            self.hasAgeAtFirstOccurrence = true;
+            embed(
+              "#viz-ageatfirstoccurrence",
+              self.specAgeAtFirstOccurrence
+            ).then(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
+          }
+
+          if (self.conceptData.VISIT_DURATION_BY_TYPE) {
+            self.specVisitDurationByType.data = {
+              values: self.conceptData.VISIT_DURATION_BY_TYPE,
+            };
+            self.hasVisitDurationByType = true;
+            embed(
+              "#viz-visitdurationbytype",
+              self.specVisitDurationByType
+            ).then(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
+          }
+
+          if (self.conceptData.CONDITIONS_BY_TYPE) {
+            self.specConditionsByType.data = {
+              values: self.conceptData.CONDITIONS_BY_TYPE,
+            };
+            self.hasConditionsByType = true;
+            embed("#viz-conditionsbytype", self.specConditionsByType).then(
+              () => {
+                window.dispatchEvent(new Event("resize"));
+              }
+            );
+          }
+
+          if (self.conceptData.DRUGS_BY_TYPE) {
+            self.specDrugsByType.data = {
+              values: self.conceptData.DRUGS_BY_TYPE,
+            };
+            self.hasDrugsByType = true;
+            embed("#viz-drugsbytype", self.specDrugsByType);
+          }
+
+          if (self.conceptData.RECORDS_BY_UNIT) {
+            self.specRecordsByUnit.data = {
+              values: self.conceptData.RECORDS_BY_UNIT,
+            };
+            self.hasRecordsByUnit = true;
+            embed("#viz-recordsbyunit", self.specRecordsByUnit);
+          }
+
+          if (self.conceptData.MEASUREMENTS_BY_TYPE) {
+            self.specMeasurementsByType.data = {
+              values: self.conceptData.MEASUREMENTS_BY_TYPE,
+            };
+            self.hasMeasurementsByType = true;
+            embed("#viz-measurementsbytype", self.specMeasurementsByType);
+          }
+
+          if (self.conceptData.AGE_AT_FIRST_EXPOSURE) {
+            self.specAgeAtFirstExposure.data = {
+              values: self.conceptData.AGE_AT_FIRST_EXPOSURE,
+            };
+            self.hasAgeAtFirstExposure = true;
+            embed("#viz-ageatfirstexposure", self.specAgeAtFirstExposure).then(
+              () => {
+                window.dispatchEvent(new Event("resize"));
+              }
+            );
+          }
+
+          if (self.conceptData.AGE_AT_FIRST_DIAGNOSIS) {
+            self.specAgeAtFirstDiagnosis.data = {
+              values: self.conceptData.AGE_AT_FIRST_DIAGNOSIS,
+            };
+            self.hasAgeAtFirstDiagnosis = true;
+            embed(
+              "#viz-ageatfirstdiagnosis",
+              self.specAgeAtFirstDiagnosis
+            ).then(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
+          }
+
+          self.specRecordProportionByAgeSexYear.data = {
+            values: self.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,
+          };
+          self.specRecordProportionByMonth.data = {
+            values: self.conceptData.PREVALENCE_BY_MONTH,
+          };
+
+          if (
+            self.conceptData.MEASUREMENT_VALUE_DISTRIBUTION &&
+            self.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.length > 0
+          ) {
+            self.specMeasurementValueDistribution.data = {
+              values: self.conceptData.MEASUREMENT_VALUE_DISTRIBUTION,
+            };
+            self.hasMeasurementValueDistribution = true;
+            embed(
+              "#viz-measurementvaluedistribution",
+              self.specMeasurementValueDistribution
+            ).then(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
+          }
+
+          self.conceptData.PREVALENCE_BY_MONTH.forEach((v, i) => {
+            self.conceptData.PREVALENCE_BY_MONTH[i].date = dateParse(
+              v.X_CALENDAR_MONTH
+            );
+          });
+
+          embed(
+            "#viz-recordproportionbymonth",
+            self.specRecordProportionByMonth
+          ).then(() => {
+            window.dispatchEvent(new Event("resize"));
+          });
+
+          embed(
+            "#viz-recordproportionbyagesexyear",
+            self.specRecordProportionByAgeSexYear
+          ).then(() => {
+            window.dispatchEvent(new Event("resize"));
+          });
+
+          self.dataLoaded = true;
+        })
+        .catch((err) => {
+          self.componentFailed = true;
+          self.errorText = "Failed to obtain concept summary data file.";
+          self.errorDetails = err + " (" + dataUrl + ") ";
+        });
+    },
+  },
+  computed: {},
+};
+</script>
+
+<style scoped>
+.viz-container {
+  width: 90%;
+}
+</style>

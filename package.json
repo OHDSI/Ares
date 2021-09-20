@@ -1,0 +1,81 @@
+{
+  "name": "ares",
+  "version": "0.1.0",
+  "description": "Apex Research Exploration System (ARES)",
+  "author": "Frank DeFalco",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps",
+    "start-electron": "electron ./src/electron/index.js",
+    "dist": "electron-builder",
+    "electron:generate-icons": "electron-icon-builder --input=./src/assets/icon.png --output=build --flatten"
+  },
+  "main": "background.js",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bootstrap": "^4.6.0",
+    "core-js": "^3.15.2",
+    "d3-dsv": "^2.0.0",
+    "d3-format": "^2.0.0",
+    "d3-time-format": "^3.0.0",
+    "electron-icon-builder": "^1.0.2",
+    "is-electron": "^2.2.0",
+    "jquery": "^3.6.0",
+    "lodash": "^4.17.21",
+    "markdown-it-vue": "^1.1.6",
+    "typescript": "^4.3.5",
+    "vega": "^5.20.2",
+    "vega-embed": "^6.18.2",
+    "vega-lite": "^4.17.0",
+    "vue": "^2.6.14",
+    "vue-codemirror": "^4.0.6",
+    "vue-google-charts": "^0.3.3",
+    "vue-moment": "^4.1.0",
+    "vue-router": "^3.5.2",
+    "vuetify": "^2.5.6",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@mdi/font": "^5.9.55",
+    "@vue/cli-plugin-babel": "^4.5.13",
+    "@vue/cli-plugin-eslint": "^4.5.13",
+    "@vue/cli-plugin-router": "^4.5.13",
+    "@vue/cli-service": "^4.5.13",
+    "babel-eslint": "^10.1.0",
+    "deepmerge": "^4.2.2",
+    "electron": "^10.4.7",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "fibers": "^5.0.0",
+    "sass": "^1.35.2",
+    "sass-loader": "^10.2.0",
+    "vue-cli-plugin-electron-builder": "^2.1.1",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
