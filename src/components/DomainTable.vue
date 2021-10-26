@@ -91,6 +91,8 @@
           item-key="CONCEPT_ID"
           :items-per-page="10"
           :search="search"
+          :sort-by="['PERCENT_PERSONS']"
+          :sort-desc="[true, false]"
         >
           <template v-slot:item.CONCEPT_ID="{ item }">
             <v-layout flex-end
