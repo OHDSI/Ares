@@ -452,6 +452,9 @@ export default {
           if (domainIssueCount) {
             self.issueCount = domainIssueCount.count_failed;
           }
+          else {
+            self.issueCount = 0;
+          }
         })
         .catch((err) => {
           self.componentFailed = true;
