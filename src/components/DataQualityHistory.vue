@@ -63,19 +63,19 @@ export default {
         },
         {
           text: "# Passed",
-          align: "start",
+          align: "end",
           sortable: true,
           value: "count_passed",
         },
         {
           text: "# Failed",
-          align: "start",
+          align: "end",
           sortable: true,
           value: "count_failed",
         },
         {
           text: "# Total",
-          align: "start",
+          align: "end",
           sortable: true,
           value: "count_total",
         },
