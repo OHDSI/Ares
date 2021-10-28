@@ -446,11 +446,8 @@ export default {
         .then((response) => {
           self.issueDataLoaded = true;
           self.domainIssues = d3Import.csvParse(response.data);
-          var domainIssueCount = self.domainIssues.find((di) => {
-            return di.cdm_table_name == self.$route.params.domain;
-          });
-          const domainIssue = self.domainIssues.find(di => di.cdm_table_name === self.$route.params.domain)
-          self.issueCount = domainIssue?.count_failed || 0
+          const domainIssue = self.domainIssues.find(di => di.cdm_table_name === self.$route.params.domain);
+          self.issueCount = domainIssue?.count_failed || 0;
         })
         .catch((err) => {
           self.componentFailed = true;
