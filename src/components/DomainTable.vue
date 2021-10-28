@@ -449,12 +449,8 @@ export default {
           var domainIssueCount = self.domainIssues.find((di) => {
             return di.cdm_table_name == self.$route.params.domain;
           });
-          if (domainIssueCount) {
-            self.issueCount = domainIssueCount.count_failed;
-          }
-          else {
-            self.issueCount = 0;
-          }
+          const domainIssue = self.domainIssues.find(di => di.cdm_table_name === self.$route.params.domain)
+          self.issueCount = domainIssue?.count_failed || 0
         })
         .catch((err) => {
           self.componentFailed = true;
