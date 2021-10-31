@@ -523,8 +523,9 @@ export default {
             field: "TRELLIS_NAME",
             type: "nominal",
             title: null,
+            sort: {"field": "id"},
             rows: 1,
-            spacing: 5,
+            spacing: 20,
             header: {
               title: "Age Deciles",
               labelOrient: "top",
@@ -1137,7 +1138,20 @@ export default {
           }
 
           self.specRecordProportionByAgeSexYear.data = {
-            values: self.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,
+            values: self.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR.map((item) => ({
+              ...item,
+              TRELLIS_NAME: item.TRELLIS_NAME.split(`-`).map((num) => parseInt(num)),
+            }))
+                .sort(
+                    (a, b) =>
+                        a.TRELLIS_NAME[0] - b.TRELLIS_NAME[0] ||
+                        a.TRELLIS_NAME[1] - b.TRELLIS_NAME[1],
+                )
+                .map((item, index) => ({
+                  ...item,
+                  TRELLIS_NAME: item.TRELLIS_NAME.join(`-`),
+                  id: index,
+                })),
           };
           self.specRecordProportionByMonth.data = {
             values: self.conceptData.PREVALENCE_BY_MONTH,

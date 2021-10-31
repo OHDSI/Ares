@@ -173,6 +173,7 @@ export default {
             field: "TRELLIS_NAME",
             type: "nominal",
             title: null,
+            sort: {"field": "id"},
             rows: 1,
             spacing: 5,
             header: {
@@ -280,7 +281,20 @@ export default {
           embed("#viz-deathbytype", vm.specDeathByType);
 
           vm.specRecordProportionByAgeSexYear.data = {
-            values: vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
+            values: vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR.map((item) => ({
+              ...item,
+              TRELLIS_NAME: item.TRELLIS_NAME.split(`-`).map((num) => parseInt(num)),
+            }))
+                .sort(
+                    (a, b) =>
+                        a.TRELLIS_NAME[0] - b.TRELLIS_NAME[0] ||
+                        a.TRELLIS_NAME[1] - b.TRELLIS_NAME[1],
+                )
+                .map((item, index) => ({
+                  ...item,
+                  TRELLIS_NAME: item.TRELLIS_NAME.join(`-`),
+                  id: index,
+                })),
           };
           embed(
             "#viz-recordproportionbyagesexyear",
