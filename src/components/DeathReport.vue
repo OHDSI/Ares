@@ -45,6 +45,7 @@ import embed from "vega-embed";
 import error from "./Error.vue";
 import explorer from "./Explorer.vue";
 import * as d3 from "d3-time-format";
+import DataService from "../services/DataService";
 
 export default {
   data() {
@@ -281,21 +282,9 @@ export default {
           embed("#viz-deathbytype", vm.specDeathByType);
 
           vm.specRecordProportionByAgeSexYear.data = {
-            values: vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR.map((item) => ({
-              ...item,
-              TRELLIS_NAME: item.TRELLIS_NAME.split(`-`).map((num) => parseInt(num)),
-            }))
-                .sort(
-                    (a, b) =>
-                        a.TRELLIS_NAME[0] - b.TRELLIS_NAME[0] ||
-                        a.TRELLIS_NAME[1] - b.TRELLIS_NAME[1],
-                )
-                .map((item, index) => ({
-                  ...item,
-                  TRELLIS_NAME: item.TRELLIS_NAME.join(`-`),
-                  id: index,
-                })),
+            values: DataService.sortByRange(vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR)
           };
+
           embed(
             "#viz-recordproportionbyagesexyear",
             vm.specRecordProportionByAgeSexYear
