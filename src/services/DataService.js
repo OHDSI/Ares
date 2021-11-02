@@ -340,23 +340,38 @@ class DataService {
         return derivedResults;
     }
 
-    sortByRange(data) {
+    sortByRange(array, sortOrder, rangeKey, outputOrderKey) {
         return (
-            data.map((item) => ({
+            array.map((item) => ({
                 ...item,
-                TRELLIS_NAME: item.TRELLIS_NAME.split(`-`).map((num) => parseInt(num)),
+                [rangeKey]: item[rangeKey].split(`-`).map((num) => parseInt(num)),
             }))
                 .sort(
-                    (a, b) =>
-                        a.TRELLIS_NAME[0] - b.TRELLIS_NAME[0] ||
-                        a.TRELLIS_NAME[1] - b.TRELLIS_NAME[1],
+                    (a, b) => {
+                        switch(sortOrder) {
+                            case "ascending":
+                                return (
+                                    a[rangeKey][0] - b[rangeKey][0] ||
+                                    a[rangeKey][1] - b[rangeKey][1]
+                                );
+
+                            case "descending":
+                                return (
+                                    b[rangeKey][0] - a[rangeKey][0] ||
+                                    b[rangeKey][1] - a[rangeKey][1]
+                                );
+
+                            default:
+                                throw new Error("Unresolvable sortOrder value specified");
+                        }
+                    }
                 )
                 .map((item, index) => ({
                     ...item,
-                    TRELLIS_NAME: item.TRELLIS_NAME.join(`-`),
-                    id: index,
+                    [rangeKey]: item[rangeKey].join(`-`),
+                    [outputOrderKey]: index,
                 }))
-        )
+        );
     }
 }
 

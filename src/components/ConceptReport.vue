@@ -304,7 +304,7 @@ import explorer from "./Explorer.vue";
 import * as d3 from "d3-time-format";
 import * as d3Format from "d3-format";
 import InfoPanel from "./InfoPanel.vue";
-import DataService from "../services/DataService";
+import dataService from "../services/DataService";
 
 export default {
   data() {
@@ -1139,7 +1139,7 @@ export default {
           }
 
           self.specRecordProportionByAgeSexYear.data = {
-            values: DataService.sortByRange(self.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR)
+            values: dataService.sortByRange(self.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "id")
           };
           self.specRecordProportionByMonth.data = {
             values: self.conceptData.PREVALENCE_BY_MONTH,

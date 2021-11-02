@@ -45,7 +45,7 @@ import embed from "vega-embed";
 import error from "./Error.vue";
 import explorer from "./Explorer.vue";
 import * as d3 from "d3-time-format";
-import DataService from "../services/DataService";
+import dataService from "../services/DataService";
 
 export default {
   data() {
@@ -282,7 +282,7 @@ export default {
           embed("#viz-deathbytype", vm.specDeathByType);
 
           vm.specRecordProportionByAgeSexYear.data = {
-            values: DataService.sortByRange(vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR)
+            values: dataService.sortByRange(vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR)
           };
 
           embed(
