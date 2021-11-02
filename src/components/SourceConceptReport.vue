@@ -47,7 +47,7 @@
 <script>
 import axios from "axios";
 import embed from "vega-embed";
-import _ from "lodash";
+import {flatten, sumBy} from "lodash";
 import error from "./Error.vue";
 import explorer from "./Explorer.vue";
 import * as d3Format from "d3-format";
@@ -156,62 +156,58 @@ export default {
     triggerResize: function () {
       window.dispatchEvent(new Event("resize"));
     },
-    load: function () {
-      var self = this;
-      var requests = [];
-      var dateParse = d3.timeParse("%Y%m");
+
+    loadRelease(selectedSource, release) {
+      return new Promise((resolve, reject) => {
+        const url = `data/${selectedSource.cdm_source_key}/${release.release_id}/concepts/${this.$route.params.domain}/concept_${this.$route.params.concept}.json`
+
+        axios.get(url).then(response => resolve({response, release}), error => reject(error))
+      })
+    },
+    load() {
       // first get network data source listing
       axios.get("data/index.json").then((response) => {
-        self.sources = response.data.sources;
-        var selectedSource = self.sources.find(
-          (s) => s.cdm_source_key == this.$route.params.cdm
-        );
-        selectedSource.releases.forEach((release) => {
-          var dataUrl =
-            "data/" +
-            selectedSource.cdm_source_key +
-            "/" +
-            release.release_id +
-            "/concepts/" +
-            this.$route.params.domain +
-            "/concept_" +
-            this.$route.params.concept +
-            ".json";
-          requests.push(axios.get(dataUrl));
-        });
-        axios.all(requests).then(
-          axios.spread((...responses) => {
-            self.componentFailed = false;
-            self.conceptName = responses[0].data.CONCEPT_NAME[0];
-            self.conceptId = responses[0].data.CONCEPT_ID[0];
-            self.numPersons = _.sumBy(responses, function (r) {
-              return r.data.NUM_PERSONS[0];
-            });
-            var allData = [];
+        this.sources = response.data.sources;
 
-            responses.forEach((r, ri) => {
-              r.data.PREVALENCE_BY_MONTH.forEach((v, i) => {
-                r.data.PREVALENCE_BY_MONTH[i].date = dateParse(
-                  v.X_CALENDAR_MONTH
-                );
-                r.data.PREVALENCE_BY_MONTH[i].release =
-                  selectedSource.releases[ri].release_name;
-              });
+        const dateParse = d3.timeParse("%Y%m");
+        const selectedSource = this.sources.find(s => s.cdm_source_key === this.$route.params.cdm);
 
-              allData = allData.concat(r.data.PREVALENCE_BY_MONTH);
-            });
+        const requests = selectedSource.releases.map(release => this.loadRelease(selectedSource, release))
 
-            self.specRecordProportionByMonth.data = {
-              values: allData,
-            };
+        Promise.allSettled(requests).then(responses => {
+          const parsedResponses = responses
+              .filter(response => response.status === 'fulfilled')
+              .map(response => ({
+                data: response.value.response.data,
+                release: response.value.release
+              }))
 
-            embed(
+          if (!parsedResponses.length) return
+
+          this.componentFailed = false
+          this.conceptName = parsedResponses[0].data.CONCEPT_NAME[0]
+          this.conceptId = parsedResponses[0].data.CONCEPT_ID[0]
+          this.numPersons = sumBy(parsedResponses, item => item.data.NUM_PERSONS[0])
+
+          const prevalence = parsedResponses.map(response => response.data.PREVALENCE_BY_MONTH.map(prevalence => {
+                return {
+                  ...prevalence,
+                  date: dateParse(prevalence.X_CALENDAR_MONTH),
+                  release: response.release.release_name
+                }
+              }
+          ))
+
+          this.specRecordProportionByMonth.data = {
+            values: flatten(prevalence)
+          }
+
+          embed(
               "#viz-recordproportionbymonth",
-              self.specRecordProportionByMonth
-            );
-            self.dataLoaded = true;
-          })
-        );
+              this.specRecordProportionByMonth
+          );
+          this.dataLoaded = true;
+        })
       });
     },
   },
