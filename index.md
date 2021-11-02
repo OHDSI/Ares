@@ -1,37 +1,15 @@
-## Welcome to GitHub Pages
+## ARES
+### A Research Exploration System
 
-You can use the [editor on GitHub](https://github.com/OHDSI/Ares/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+A Research Exploration System that facilitates exploration of patient level, observational data research accompanied by source data characterization and quality assessment ensuring that results are presented with proper context.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Background
+As the OHDSI community has grown, we have seen the benefits of the common data model and how the standardization of data enables the generation of reliable and reproducible evidence across a network of data sources.  We believed that providing better visibility to the network of data sources available to a community would be beneficial and the pursuit of those objectives is the rationale for the development of ARES.
 
-### Markdown
+Achilles and the Data Quality Dashboard provide data characterization and data quality assessment respectively.  These tools had several limitations we saw the opportunity to improve upon.  Specifically, while they provide adequate characterization of individual data sources, they lack any kind of overall network assessment across data sources.  Additionally, these tools did not provide access to historical data once new releases of data sources were published, or any kind of integration between the characterization and data quality results. To address these limitations, we are developing in ARES and the AresIndexer projects a set of analyses that could better integrate the characterization and data quality work as well as provide ongoing access to data source changes over time. 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/OHDSI/Ares/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
