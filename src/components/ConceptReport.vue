@@ -524,7 +524,7 @@ export default {
             field: "TRELLIS_NAME",
             type: "nominal",
             title: null,
-            sort: {"field": "id"},
+            sort: {"field": "trellisOrder"},
             rows: 1,
             spacing: 20,
             header: {
@@ -1139,7 +1139,7 @@ export default {
           }
 
           self.specRecordProportionByAgeSexYear.data = {
-            values: dataService.sortByRange(self.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "id")
+            values: dataService.sortByRange(self.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "trellisOrder")
           };
           self.specRecordProportionByMonth.data = {
             values: self.conceptData.PREVALENCE_BY_MONTH,

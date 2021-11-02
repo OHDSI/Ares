@@ -174,7 +174,7 @@ export default {
             field: "TRELLIS_NAME",
             type: "nominal",
             title: null,
-            sort: {"field": "id"},
+            sort: {"field": "trellisOrder"},
             rows: 1,
             spacing: 5,
             header: {
@@ -282,7 +282,7 @@ export default {
           embed("#viz-deathbytype", vm.specDeathByType);
 
           vm.specRecordProportionByAgeSexYear.data = {
-            values: dataService.sortByRange(vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR)
+            values: dataService.sortByRange(vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "trellisOrder")
           };
 
           embed(
