@@ -539,7 +539,7 @@ export default {
       },
       specMeasurementValueDistribution: {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
-        height: 50,
+        height: {"step": "20"},
         width: "container",
         data: {},
         encoding: { y: { field: "CATEGORY", type: "nominal", title: null } },
