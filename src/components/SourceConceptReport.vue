@@ -161,7 +161,9 @@ export default {
       return new Promise((resolve, reject) => {
         const url = `data/${selectedSource.cdm_source_key}/${release.release_id}/concepts/${this.$route.params.domain}/concept_${this.$route.params.concept}.json`
 
-        axios.get(url).then(response => resolve({response, release}), error => reject(error))
+        axios.get(url)
+            .then(response => resolve({response, release}))
+            .catch(error => reject(error));
       })
     },
     load() {
