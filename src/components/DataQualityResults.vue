@@ -394,7 +394,7 @@
 
 <script>
 import axios from "axios";
-import deriveResults from "./dqResultsParser";
+import dataService from "../services/DataService";
 import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
@@ -558,7 +558,6 @@ export default {
     },
   },
   methods: {
-    deriveResults: deriveResults,
     formatThousands: function (value) {
       return d3.format(",")(value);
     },
@@ -598,7 +597,7 @@ export default {
         .get(dataUrl)
         .then((response) => {
           this.dqResults = response.data;
-          this.derivedResults = deriveResults(response.data);
+          this.derivedResults = dataService.deriveResults(response.data);
           this.dataLoaded = true;
           self.componentFailed = false;
 

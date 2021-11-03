@@ -45,6 +45,7 @@ import embed from "vega-embed";
 import error from "./Error.vue";
 import explorer from "./Explorer.vue";
 import * as d3 from "d3-time-format";
+import dataService from "../services/DataService";
 
 export default {
   data() {
@@ -173,6 +174,7 @@ export default {
             field: "TRELLIS_NAME",
             type: "nominal",
             title: null,
+            sort: {"field": "trellisOrder"},
             rows: 1,
             spacing: 5,
             header: {
@@ -280,8 +282,9 @@ export default {
           embed("#viz-deathbytype", vm.specDeathByType);
 
           vm.specRecordProportionByAgeSexYear.data = {
-            values: vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
+            values: dataService.sortByRange(vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "trellisOrder")
           };
+
           embed(
             "#viz-recordproportionbyagesexyear",
             vm.specRecordProportionByAgeSexYear
