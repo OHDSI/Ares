@@ -12,10 +12,22 @@
       >
         <template v-slot:item="records">
           <tr>
-            <td>{{ records.item.cdm_release_date }}</td>
+            <td>
+              <router-link
+                :to="getDataQualityOverviewRoute(records.item)"
+                :title="records.item.cdm_release_date"
+                >{{ records.item.cdm_release_date }}
+              </router-link>
+            </td>
             <td>{{ records.item.dqd_execution_date }}</td>
             <td class="text-right">{{ records.item.count_passed }}</td>
-            <td class="text-right">{{ records.item.count_failed }}</td>
+            <td class="text-right">
+              <router-link
+                :to="getDataQualityResultsFailedRoute(records.item)"
+                :title="records.item.count_failed"
+                >{{ records.item.count_failed }}
+              </router-link>
+            </td>
             <td class="text-right">{{ records.item.count_total }}</td>
           </tr>
         </template>
@@ -87,13 +99,23 @@ export default {
         height: 150,
         description: "Data Quality Results by Date",
         mark: { type: "line", interpolate: "linear", point: true },
+        selection: {
+          domain: { type: "multi", fields: ["cdm_table_name"], bind: "legend" },
+        },
         encoding: {
+          opacity: {
+            condition: { selection: "domain", value: 1 },
+            value: 0.2,
+          },
           x: {
-            field: "dqd_execution_date",
+            field: "cdm_release_date",
             type: "temporal",
             timeUnit: "yearmonthdate",
             axis: {
               title: "CDM Release Date",
+            },
+            scale: {
+              type: "utc",
             },
           },
           y: {
@@ -106,7 +128,26 @@ export default {
           },
           color: {
             field: "cdm_table_name",
+            title: "Check Domain",
           },
+          tooltip: [
+            {
+              field: "cdm_release_date",
+              title: "CDM Release Date",
+              type: "temporal",
+              format: "%Y-%m-%d",
+              scale: {
+                type: "utc",
+              },
+            },
+            { field: "cdm_table_name", title: "Check Domain" },
+            {
+              field: "count_value",
+              aggregate: "sum",
+              type: "quantitative",
+              title: "Checks Failed",
+            },
+          ],
         },
       },
       specDataQualityResultsByCategory: {
@@ -114,15 +155,24 @@ export default {
         data: null,
         width: "container",
         height: 150,
-        description: "Data Quality Results by Date",
         mark: { type: "line", interpolate: "linear", point: true },
+        selection: {
+          category: { type: "multi", fields: ["category"], bind: "legend" },
+        },
         encoding: {
+          opacity: {
+            condition: { selection: "category", value: 1 },
+            value: 0.2,
+          },
           x: {
-            field: "dqd_execution_date",
+            field: "cdm_release_date",
             type: "temporal",
             timeUnit: "yearmonthdate",
             axis: {
               title: "CDM Release Date",
+            },
+            scale: {
+              type: "utc",
             },
           },
           y: {
@@ -135,7 +185,26 @@ export default {
           },
           color: {
             field: "category",
+            title: "Check Category",
           },
+          tooltip: [
+            {
+              field: "cdm_release_date",
+              title: "CDM Release Date",
+              type: "temporal",
+              format: "%Y-%m-%d",
+              scale: {
+                type: "utc",
+              },
+            },
+            { field: "category", title: "Check Category" },
+            {
+              field: "count_value",
+              aggregate: "sum",
+              type: "quantitative",
+              title: "Checks Failed",
+            },
+          ],
         },
       },
       specDataQualityResults: {
@@ -143,15 +212,29 @@ export default {
         data: null,
         width: "container",
         height: 100,
-        description: "Data Quality Results by Date",
         mark: { type: "line", interpolate: "linear", point: true },
         encoding: {
+          tooltip: [
+            {
+              field: "cdm_release_date",
+              title: "CDM Release Date",
+              type: "temporal",
+              format: "%Y-%m-%d",
+              scale: {
+                type: "utc",
+              },
+            },
+            { field: "count_failed", title: "Checks Failed" },
+          ],
           x: {
             field: "cdm_release_date",
             type: "temporal",
             timeUnit: "yearmonthdate",
             axis: {
               title: "CDM Release Date",
+            },
+            scale: {
+              type: "utc",
             },
           },
           y: {
@@ -217,6 +300,24 @@ export default {
     },
     displayDetails: function (resultFileName) {
       this.$router.push({ path: "/dq-results/" + resultFileName });
+    },
+    getDataQualityOverviewRoute(item) {
+      return (
+        "/_cdm/" +
+        this.$route.params.cdm +
+        "/" +
+        item.cdm_release_date.replaceAll("-", "") +
+        "/quality?tab=overview"
+      );
+    },
+    getDataQualityResultsFailedRoute(item) {
+      return (
+        "/_cdm/" +
+        this.$route.params.cdm +
+        "/" +
+        item.cdm_release_date.replaceAll("-", "") +
+        "/quality?tab=results&failFilter=enabled"
+      );
     },
   },
 };

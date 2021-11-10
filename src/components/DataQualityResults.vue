@@ -643,6 +643,19 @@ export default {
               CHECK_LEVEL: [],
             });
           }
+          if (self.$route.query.failFilter) {
+            self.helpfulFilterUpdate({
+              FAILED: ["FAIL"],
+              CDM_TABLE_NAME: [],
+              CDM_FIELD_NAME: [],
+              CHECK_NAME: [],
+              NOTES_EXIST: [],
+              CATEGORY: [],
+              SUBCATEGORY: [],
+              CONTEXT: [],
+              CHECK_LEVEL: [],
+            });
+          }
         })
         .catch((err) => {
           self.componentFailed = true;
