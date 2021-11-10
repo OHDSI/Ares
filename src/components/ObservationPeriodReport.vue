@@ -126,7 +126,7 @@ export default {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
         height: 150,
         width: "container",
-        mark: { type: "area", tooltip: {} },
+        mark: { type: "area", point: true, tooltip: {} },
         data: {},
         encoding: {
           x: {
@@ -248,8 +248,8 @@ export default {
             width: "container",
             mark: {
               type: "line",
-              strokeWidth: 5,
-              tension: 0.5,
+              point: true,
+              strokeWidth: 1,
             },
             encoding: {
               x: {
@@ -257,6 +257,7 @@ export default {
                 type: "temporal",
                 scale: { domain: { selection: "brush" } },
                 axis: { title: "" },
+                timeUnit: "yearmonth",
               },
               y: {
                 field: "PERCENT_VALUE",
