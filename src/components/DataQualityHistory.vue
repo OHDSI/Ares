@@ -1,6 +1,5 @@
 <template>
   <div>
-    <explorer></explorer>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Historical Data Quality</v-card-title>
       <div class="viz-container" id="viz-dataqualityresults"></div>
@@ -50,12 +49,8 @@
 import axios from "axios";
 import _ from "lodash";
 import embed from "vega-embed";
-import explorer from "./Explorer.vue";
 
 export default {
-  components: {
-    explorer,
-  },
   data() {
     return {
       dataLoaded: false,
@@ -307,7 +302,7 @@ export default {
         this.$route.params.cdm +
         "/" +
         item.cdm_release_date.replaceAll("-", "") +
-        "/quality?tab=overview"
+        "/data_quality?tab=overview"
       );
     },
     getDataQualityResultsFailedRoute(item) {
@@ -316,7 +311,7 @@ export default {
         this.$route.params.cdm +
         "/" +
         item.cdm_release_date.replaceAll("-", "") +
-        "/quality?tab=results&failFilter=enabled"
+        "/data_quality?tab=results&failFilter=enabled"
       );
     },
   },

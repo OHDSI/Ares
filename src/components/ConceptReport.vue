@@ -5,7 +5,6 @@
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
-        <explorer></explorer>
         <v-layout class="ma-0 mb-6 text-uppercase text-h6">{{
           conceptName
         }}</v-layout>
@@ -300,7 +299,6 @@
 import axios from "axios";
 import embed from "vega-embed";
 import error from "./Error.vue";
-import explorer from "./Explorer.vue";
 import * as d3 from "d3-time-format";
 import * as d3Format from "d3-format";
 import InfoPanel from "./InfoPanel.vue";
@@ -938,18 +936,20 @@ export default {
   },
   components: {
     error,
-    explorer,
     InfoPanel,
   },
   created() {
     this.load();
+  },
+  updated() {
+    this.load()
   },
   methods: {
     getSourceConceptReportLink: function () {
       return (
         "/_datasource/" +
         this.$route.params.cdm +
-        "/concept/" +
+            "/" +
         this.$route.params.domain +
         "/" +
         this.$route.params.concept +

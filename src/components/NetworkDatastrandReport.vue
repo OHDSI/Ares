@@ -1,7 +1,5 @@
 <template>
   <v-responsive min-width="900">
-    <explorer></explorer>
-
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Data Strands</v-card-title>
       <div class="viz-container" id="viz-datastrand"></div>
@@ -19,7 +17,6 @@
 <script>
 import embed from "vega-embed";
 import axios from "axios";
-import explorer from "./Explorer.vue";
 import infopanel from "./InfoPanel.vue";
 import * as d3 from "d3-dsv";
 
@@ -181,7 +178,6 @@ export default {
     };
   },
   components: {
-    explorer,
     infopanel,
   },
   created() {

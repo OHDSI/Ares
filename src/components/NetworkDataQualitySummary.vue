@@ -3,7 +3,6 @@
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
     </div>
-    <explorer></explorer>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Network Data Quality Issues by Category</v-card-title>
       <div class="viz-container" id="viz-category"></div>
@@ -18,10 +17,8 @@
 <script>
 import axios from "axios";
 import * as d3 from "d3-dsv";
-import explorer from "./Explorer.vue";
 import error from "./Error.vue";
 import embed from "vega-embed";
-import _ from "lodash";
 
 export default {
   data() {
@@ -105,18 +102,6 @@ export default {
         vm.failureSummary = d3.csvParse(response.data);
         vm.componentFailed = false;
         vm.dataLoaded = true;
-
-        var mapped = _.map(vm.failureSummary, (r) => {
-          return { RELEASE_NAME: r.RELEASE_NAME, RELEASE_ID: r.RELEASE_ID };
-        });
-        console.log(
-          _.uniqWith(
-            mapped,
-            (a, b) =>
-              a.RELEASE_NAME == b.RELEASE_NAME && a.RELEASE_ID == b.RELEASE_ID
-          ).sort
-        );
-
         vm.specIssueStratificationByCategory.data = {
           values: vm.failureSummary,
         };
@@ -149,7 +134,6 @@ export default {
       });
   },
   components: {
-    explorer,
     error,
   },
   methods: {

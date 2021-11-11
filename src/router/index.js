@@ -23,6 +23,7 @@ import metadataReport from "../components/MetadataReport.vue";
 import home from "../components/Home.vue";
 import article from "../components/Article.vue";
 import unmappedSourceCodes from "../components/UnmappedSourceCodes.vue";
+import ExplorerWrapper from "../components/ExplorerWrapper";
 
 Vue.use(VueRouter);
 
@@ -35,72 +36,132 @@ const routes = [
   },
   { path: "/home", components: { main: home } },
   { path: "/help", components: { main: help } },
-  { path: "/_network/overview", components: { main: networkOverview } },
+
   {
-    path: "/_network/concept/:domain/:concept/summary",
-    components: { main: networkConceptReport },
+    path: "/_network",
+    name: "network",
+    components: {main: ExplorerWrapper},
+    children: [
+      {
+        path: "network_data_quality",
+        name: "network_data_quality",
+        components: {ExplorerWrapper: networkDataQualitySummary}
+      },
+      {
+        path: "data_strand_report",
+        name: "data_strand_report",
+        components: {ExplorerWrapper: networkDatastrandReport}
+      },
+      {
+        path: "population",
+        name: "population",
+        components: {ExplorerWrapper: networkPopulationReport}
+      },
+      {
+        path: "overview",
+        name: "overview",
+        components: {ExplorerWrapper: networkOverview}
+      },
+      {
+        path: "concept/:domain/:concept/summary",
+        name: "concept",
+        components: {ExplorerWrapper: networkConceptReport}
+      },
+      {
+        path: "*",
+        name: "overview",
+        redirect: "overview"
+      }
+    ]
+  },
+
+  {
+    path: "/_cdm/:cdm/:release",
+    components: {main: ExplorerWrapper},
+    children: [
+      {
+        path: "observation_period",
+        name: "observation_period",
+        components: {ExplorerWrapper: observationPeriodReport}
+      },
+      {
+        path: "metadata",
+        name: "metadata",
+        components: {ExplorerWrapper: metadataReport}
+      },
+      {
+        path: "death",
+        name: "death",
+        components: {ExplorerWrapper: deathReport}
+      },
+      {
+        path: "data_quality",
+        name: "data_quality",
+        components: {ExplorerWrapper: dataQualityResults}
+      },
+      {
+        path: "data_density",
+        name: "data_density",
+        components: {ExplorerWrapper: domainDensity}
+      },
+      {
+        path: "unmapped_source_codes",
+        name: "unmapped_source_codes",
+        components: {ExplorerWrapper: unmappedSourceCodes}
+      },
+      {
+        path: "performance",
+        name: "performance",
+        components: {ExplorerWrapper: performanceReport}
+      },
+      {
+        path: "person",
+        name: "person",
+        components: {ExplorerWrapper: personReport}
+      },
+      {
+        path: ":domain",
+        components: {ExplorerWrapper: domainTable},
+        name: "domain_table",
+      },
+      {
+        path: ":domain/:concept/",
+        components: { ExplorerWrapper: conceptReport },
+      },
+      {
+        path: "/",
+        name: "person",
+        redirect: "person"
+      },
+    ]
   },
   {
-    path: "/_network/dataquality",
-    components: { main: networkDataQualitySummary },
+    path: "/_datasource/:cdm",
+    components: {main: ExplorerWrapper},
+    children: [
+      {
+        path: "data_quality_history",
+        name: "data_quality_history",
+        components: {ExplorerWrapper: dataQualityHistory}
+      },
+      {
+        path: "domain_continuity",
+        name: "domain_continuity",
+        components: {ExplorerWrapper: domainContinuity}
+      },
+      {
+        path: ":domain/:concept/overlay",
+        name: "Source Concept Overlay",
+        components: {ExplorerWrapper: sourceConceptReport}
+      },
+      {
+        path: "*",
+        name: "Quality history",
+        redirect: "data_quality_history"
+      },
+    ]
   },
-  {
-    path: "/_network/datastrand",
-    components: { main: networkDatastrandReport },
-  },
-  {
-    path: "/_network/population",
-    components: { main: networkPopulationReport   },
-  },
-  {
-    path: "/_cdm/:cdm/:release/domain/:domain/summary",
-    components: { main: domainTable },
-  },
-  {
-    path: "/_cdm/:cdm/:release/observationperiod",
-    components: { main: observationPeriodReport },
-  },
-  {
-    path: "/_cdm/:cdm/:release/metadata",
-    components: { main: metadataReport },
-  },
-  {
-    path: "/_cdm/:cdm/:release/death",
-    components: { main: deathReport },
-  },
-  {
-    path: "/_cdm/:cdm/:release/quality/",
-    components: { main: dataQualityResults },
-  },
-  { path: "/_cdm/:cdm/:release/density/", components: { main: domainDensity } },
-  {
-    path: "/_cdm/:cdm/:release/unmapped/",
-    components: { main: unmappedSourceCodes },
-  },
-  {
-    path: "/_cdm/:cdm/:release/performance/",
-    components: { main: performanceReport },
-  },
-  {
-    path: "/_cdm/:cdm/:release/person/",
-    components: { main: personReport },
-  },
-  {
-    path: "/_datasource/:cdm/quality-history",
-    components: { main: dataQualityHistory },
-  },
-  {
-    path: "/_datasource/:cdm/concept/:domain/:concept/overlay",
-    components: {main: sourceConceptReport}
-  },
-  {
-    path: "/_datasource/:cdm/domain-continuity",
-    components: { main: domainContinuity },
-  },
-  {
-    path: "/_cdm/:cdm/:release/concept/:domain/:concept/summary",
-    components: { main: conceptReport },
-  },
+
   {
     path: "/publication/article",
     components: { main: article },

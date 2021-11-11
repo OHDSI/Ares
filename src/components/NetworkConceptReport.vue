@@ -5,7 +5,6 @@
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
-        <explorer></explorer>
         <v-layout class="ma-0 mb-6 text-uppercase text-h6"
           >{{ conceptName }} NETWORK REPORT</v-layout
         >
@@ -68,7 +67,6 @@ import axios from "axios";
 import embed from "vega-embed";
 import _ from "lodash";
 import error from "./Error.vue";
-import explorer from "./Explorer.vue";
 import * as d3Format from "d3-format";
 
 export default {
@@ -144,7 +142,6 @@ export default {
   },
   components: {
     error,
-    explorer,
   },
   created() {
     this.load();
