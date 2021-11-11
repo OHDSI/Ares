@@ -11,6 +11,34 @@
           <v-card-title>Cumulative Observation</v-card-title>
           <div class="viz-container" id="viz-cumulativeobservation"></div>
         </v-card>
+        <v-card
+          :loading="!dataLoaded"
+          v-if="dataLoaded"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-card-title>Observation Periods per Person</v-card-title>
+          <v-simple-table>
+            <template v-slot:default
+              ><thead>
+                <tr>
+                  <th class="text-right">Number of Observation Periods</th>
+                  <th class="text-right">Number of People</th>
+                  <th class="text-right">% of People</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in personPeriods" :key="item.CONCEPT_ID">
+                  <td class="text-right">{{ item.CONCEPT_NAME }}</td>
+                  <td class="text-right">{{ item.COUNT_VALUE }}</td>
+                  <td class="text-right">
+                    {{ getPersonPeriodsPercent(item.COUNT_VALUE) }}
+                  </td>
+                </tr>
+              </tbody></template
+            ></v-simple-table
+          >
+        </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Observation over Time</v-card-title>
           <div class="viz-container" id="viz-observationbymonth"></div>
@@ -50,6 +78,7 @@ export default {
       errorText: "",
       errorDetails: "",
       dataLoaded: false,
+      personPeriods: null,
       observationPeriodData: null,
       specAgeAtFirstObservation: {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
@@ -317,6 +346,11 @@ export default {
     this.load();
   },
   methods: {
+    getPersonPeriodsPercent: function (value) {
+      let denominator = 0;
+      this.personPeriods.forEach((item) => (denominator += item.COUNT_VALUE));
+      return (value / denominator).toFixed(3) * 100 + " %";
+    },
     triggerResize: function () {
       window.dispatchEvent(new Event("resize"));
     },
@@ -333,6 +367,7 @@ export default {
         .get(dataUrl)
         .then((response) => {
           self.observationPeriodData = response.data;
+          self.personPeriods = response.data.PERSON_PERIODS_DATA;
           self.specAgeAtFirstObservation.data = {
             values: self.observationPeriodData.AGE_AT_FIRST_OBSERVATION,
           };
