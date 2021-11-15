@@ -39,8 +39,9 @@ const routes = [
 
   {
     path: "/_network",
-    name: "network",
+    name: "_network",
     components: {main: ExplorerWrapper},
+    redirect: {name: "overview"},
     children: [
       {
         path: "network_data_quality",
@@ -67,17 +68,14 @@ const routes = [
         name: "concept",
         components: {ExplorerWrapper: networkConceptReport}
       },
-      {
-        path: "*",
-        name: "overview",
-        redirect: "overview"
-      }
     ]
   },
 
   {
     path: "/_cdm/:cdm/:release",
+    name: "_cdm",
     components: {main: ExplorerWrapper},
+    redirect: {name: "person"},
     children: [
       {
         path: "observation_period",
@@ -128,16 +126,13 @@ const routes = [
         path: ":domain/:concept/",
         components: { ExplorerWrapper: conceptReport },
       },
-      {
-        path: "/",
-        name: "person",
-        redirect: "person"
-      },
     ]
   },
   {
     path: "/_datasource/:cdm",
+    name: "_datasource",
     components: {main: ExplorerWrapper},
+    redirect: {name: "data_quality_history"},
     children: [
       {
         path: "data_quality_history",
@@ -151,13 +146,8 @@ const routes = [
       },
       {
         path: ":domain/:concept/overlay",
-        name: "Source Concept Overlay",
+        name: "source_concept_overlay",
         components: {ExplorerWrapper: sourceConceptReport}
-      },
-      {
-        path: "*",
-        name: "Quality history",
-        redirect: "data_quality_history"
       },
     ]
   },

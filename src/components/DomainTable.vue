@@ -305,7 +305,7 @@ export default {
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +
-        "/quality";
+        "/data_quality";
 
       this.$router.push({
         path: qualitypath,

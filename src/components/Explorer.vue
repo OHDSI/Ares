@@ -99,7 +99,6 @@ import axios from "axios";
 export default {
   data() {
     return {
-      selectedSource: null,
       networkIndex: [],
       folders: [
         {
@@ -300,80 +299,55 @@ export default {
   },
 
   computed: {
+
     getFolder: function () {
-      let selectedFolderIndex;
-      for (let i = 0; i < this.folders.length; i++) {
-        if (this.$route.path.includes(this.folders[i].key)) {
-          return(this.folders[i])
-        }
-      }
-      return (
-          this.folders[selectedFolderIndex]
-      )
+      return this.folders.find(folder =>
+          this.$route.matched.some(route =>
+              route.name === folder.key));
     },
     getFilteredReports: function () {
-      return (
-          this.reports.filter(
-              (report) => report.folder === this.getFolder.name
-          )
-      )
+      return this.reports.filter((report) =>
+          report.folder === this.getFolder.name);
     },
     getSource: function () {
-      let selectedSourceIndex;
-      for (let i = 0; i < this.sources.length; i++) {
-        if (this.$route.path.includes(this.sources[i].cdm_source_key)) {
-          selectedSourceIndex = i;
-        }
-      }
-      return (
-          this.sources[selectedSourceIndex]
-      )
+      return this.sources.find(source =>
+          this.$route.params.cdm === source.cdm_source_key);
     },
-    getReleases: function() {
-      return(this.getSource.releases)
+    getReleases: function () {
+      return this.getSource.releases;
     },
     getSelectedRelease: function () {
-      let selectedReleaseIndex;
-      for (let i = 0; i < this.getReleases.length; i++) {
-        if (this.$route.path.includes(this.getReleases[i].release_id)) {
-          selectedReleaseIndex = i;
-        }
-      }
-      return (this.getReleases[selectedReleaseIndex])
+      return this.getReleases.find(release =>
+          this.$route.params.release === release.release_id)
     },
     getSelectedReport: function () {
-      let selectedReportIndex;
-      for(let i = 0; i < this.getFilteredReports.length; i++) {
-        if(this.$route.path.includes(this.getFilteredReports[i].domain ?
-            this.getFilteredReports[i].domain :
-            this.getFilteredReports[i].routeName))
-            selectedReportIndex = i
-      }
-      return (this.getFilteredReports[selectedReportIndex])
+      return this.getFilteredReports.find(report =>
+          report.domain ?
+              this.$route.params.domain === report.domain :
+              this.$route.matched.some(route => route.name === report.routeName)
+      )
     },
-    showConceptSelector: function() {
+    showConceptSelector: function () {
       return this.$route.params.concept;
     },
     showSourceSelector: function () {
       return (this.getFolder.key === "_datasource" ||
           this.getFolder.key === "_cdm");
-
     },
     showReleaseSelector: function () {
       return this.getFolder.key === "_cdm";
-
     },
   },
 
   methods: {
     changeSource(data) {
       this.$router.push({
-        params: {
-          ...this.$route.params,
-          cdm: data.cdm_source_key,
-          release: data.releases[0].release_id
-        }
-      }
+            params: {
+              ...this.$route.params,
+              cdm: data.cdm_source_key,
+              release: data.releases[0].release_id
+            }
+          }
       )
     },
     changeRelease(data) {
@@ -386,18 +360,22 @@ export default {
     },
     changeFolder(data) {
       this.$router.push({
-        path: `/${data.key}/${this.sources[0].cdm_source_key}/${this.sources[0].releases[0].release_id}`
+        name: data.key,
+        params: {
+          cdm: this.sources[0].cdm_source_key,
+          release: this.sources[0].releases[0].release_id
+        }
       })
     },
     changeReport(data) {
-        this.$router.push({
-          name: data.routeName,
-          params: {
-            ...this.$route.params,
-            domain: data.domain,
-            concept: ''
-          }
-        });
+      this.$router.push({
+        name: data.routeName,
+        params: {
+          ...this.$route.params,
+          domain: data.domain,
+          concept: ''
+        }
+      });
     },
   },
   name: "explorer",
