@@ -177,11 +177,11 @@ export default {
     navigateToDataQuality() {
       this.$router.push({
         path:
-          "/_cdm/" +
+          "/cdm/" +
           this.$route.params.cdm +
           "/" +
           this.$route.params.release +
-          "/quality?tab=results&conceptFailFilter=" +
+          "/data_quality?tab=results&conceptFailFilter=" +
           this.$route.params.concept,
       });
     },

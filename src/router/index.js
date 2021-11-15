@@ -38,19 +38,19 @@ const routes = [
   { path: "/help", components: { main: help } },
 
   {
-    path: "/_network",
-    name: "_network",
+    path: "/network",
+    name: "network",
     components: {main: ExplorerWrapper},
     redirect: {name: "overview"},
     children: [
       {
         path: "network_data_quality",
-        name: "network_data_quality",
+        name: "networkDataQuality",
         components: {ExplorerWrapper: networkDataQualitySummary}
       },
       {
         path: "data_strand_report",
-        name: "data_strand_report",
+        name: "dataStrandReport",
         components: {ExplorerWrapper: networkDatastrandReport}
       },
       {
@@ -72,14 +72,14 @@ const routes = [
   },
 
   {
-    path: "/_cdm/:cdm/:release",
-    name: "_cdm",
+    path: "/cdm/:cdm/:release",
+    name: "cdm",
     components: {main: ExplorerWrapper},
     redirect: {name: "person"},
     children: [
       {
         path: "observation_period",
-        name: "observation_period",
+        name: "observationPeriod",
         components: {ExplorerWrapper: observationPeriodReport}
       },
       {
@@ -94,17 +94,17 @@ const routes = [
       },
       {
         path: "data_quality",
-        name: "data_quality",
+        name: "dataQuality",
         components: {ExplorerWrapper: dataQualityResults}
       },
       {
         path: "data_density",
-        name: "data_density",
+        name: "dataDensity",
         components: {ExplorerWrapper: domainDensity}
       },
       {
         path: "unmapped_source_codes",
-        name: "unmapped_source_codes",
+        name: "unmappedSourceCodes",
         components: {ExplorerWrapper: unmappedSourceCodes}
       },
       {
@@ -120,7 +120,7 @@ const routes = [
       {
         path: ":domain",
         components: {ExplorerWrapper: domainTable},
-        name: "domain_table",
+        name: "domainTable",
       },
       {
         path: ":domain/:concept/",
@@ -129,24 +129,24 @@ const routes = [
     ]
   },
   {
-    path: "/_datasource/:cdm",
-    name: "_datasource",
+    path: "/datasource/:cdm",
+    name: "datasource",
     components: {main: ExplorerWrapper},
-    redirect: {name: "data_quality_history"},
+    redirect: {name: "dataQualityHistory"},
     children: [
       {
         path: "data_quality_history",
-        name: "data_quality_history",
+        name: "dataQualityHistory",
         components: {ExplorerWrapper: dataQualityHistory}
       },
       {
         path: "domain_continuity",
-        name: "domain_continuity",
+        name: "domainContinuity",
         components: {ExplorerWrapper: domainContinuity}
       },
       {
         path: ":domain/:concept/overlay",
-        name: "source_concept_overlay",
+        name: "sourceConceptOverlay",
         components: {ExplorerWrapper: sourceConceptReport}
       },
     ]

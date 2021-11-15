@@ -112,11 +112,11 @@ export default {
           (vega) => {
             vega.view.addSignalListener("select", (name, value) => {
               var routeUrl =
-                "/_cdm/" +
+                "/cdm/" +
                 value.CDM_SOURCE_ +
                 "/" +
                 value.cdm_release_key +
-                "/quality?tab=results&categoryFailFilter=" +
+                "/data_quality?tab=results&categoryFailFilter=" +
                 value.c;
               console.log(routeUrl);
               console.log(value);

@@ -567,7 +567,7 @@ export default {
     //     path: "/_cdm/:cdm/:release/concept/:domain/:concept/summary",
     getConceptDrilldown: function (item) {
       return (
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +

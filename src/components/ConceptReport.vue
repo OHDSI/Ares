@@ -947,7 +947,7 @@ export default {
   methods: {
     getSourceConceptReportLink: function () {
       return (
-        "/_datasource/" +
+        "/datasource/" +
         this.$route.params.cdm +
             "/" +
         this.$route.params.domain +
@@ -967,7 +967,7 @@ export default {
     },
     getNetworkConceptRoute() {
       return (
-        "/_network/concept/" +
+        "/network/concept/" +
         this.$route.params.domain +
         "/" +
         this.$route.params.concept +
@@ -977,11 +977,11 @@ export default {
     navigateToDataQuality() {
       this.$router.push({
         path:
-          "/_cdm/" +
+          "/cdm/" +
           this.$route.params.cdm +
           "/" +
           this.$route.params.release +
-          "/quality?tab=results&conceptFailFilter=" +
+          "/data_quality?tab=results&conceptFailFilter=" +
           this.$route.params.concept,
       });
     },

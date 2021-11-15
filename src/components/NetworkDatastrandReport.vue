@@ -230,7 +230,7 @@ export default {
                 result.view.addSignalListener("selectDomain", (name, value) => {
                   var domainKey = value.domain.toLowerCase().replace(" ", "_");
                   var routeUrl =
-                    "/_cdm/" +
+                    "/cdm/" +
                     value.cdm_source_key +
                     "/" +
                     value.cdm_release_key +

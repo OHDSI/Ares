@@ -131,7 +131,7 @@ export default {
     displayPersonReport: function (source) {
       this.$router.push({
         path:
-          "/_cdm/" +
+          "/cdm/" +
           source.cdm_source_key +
           "/" +
           source.releases[0].release_id +
@@ -140,13 +140,13 @@ export default {
     },
     navigateToDataSourceHistory(datasource) {
       this.$router.push({
-        path: "/_datasource/" + datasource.cdm_source_key + "/quality-history",
+        path: "/datasource/" + datasource.cdm_source_key + "/data_quality_history",
       });
     },
     displayDetails: function (source) {
       this.$router.push({
         path:
-          "/_cdm/" +
+          "/cdm/" +
           source.cdm_source_key +
           "/" +
           source.releases[0].release_id +

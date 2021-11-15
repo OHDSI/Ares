@@ -15,7 +15,7 @@
           class="mt-4"
           label="Report Category"
           @input="changeFolder"
-          :value="getFolder"
+          :value="getSelectedFolder"
           return-object
           prepend-icon="mdi-folder"
           auto-select-first
@@ -34,7 +34,7 @@
           class="mt-4"
           label="Data Source"
           @input="changeSource"
-          :value="getSource"
+          :value="getSelectedSource"
           return-object
           prepend-icon="mdi-database"
           auto-select-first
@@ -104,17 +104,17 @@ export default {
         {
           icon: "mdi-network",
           name: "Data Network",
-          key: "_network",
+          key: "network",
         },
         {
           icon: "mdi-database",
           name: "Data Source",
-          key: "_datasource",
+          key: "datasource",
         },
         {
           icon: "mdi-database-clock",
           name: "Data Source Release",
-          key: "_cdm",
+          key: "cdm",
         },
         /*
         {
@@ -126,13 +126,12 @@ export default {
         */
       ],
       sources: [],
-      filteredReports: [],
       reports: [
         {
           folder: "Data Source Release",
           icon: "mdi-sigma-lower",
           name: "Data Quality",
-          routeName: "data_quality"
+          routeName: "dataQuality"
         },
         {
           folder: "Data Source Release",
@@ -144,92 +143,92 @@ export default {
           folder: "Data Source Release",
           icon: "mdi-chart-line",
           name: "Data Density",
-          routeName: "data_density"
+          routeName: "dataDensity"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-chart-line",
           name: "Observation Period",
-          routeName: "observation_period"
+          routeName: "observationPeriod"
         },
         {
           folder: "Data Source",
           name: "Data Quality History",
-          routeName: "data_quality_history"
+          routeName: "dataQualityHistory"
         },
         {
           folder: "Data Source",
           name: "Domain Continuity",
-          routeName: "domain_continuity"
+          routeName: "domainContinuity"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Conditions",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "condition_occurrence"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Condition Eras",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "condition_era"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Drugs",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "drug_exposure"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Drug Eras",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "drug_era"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Visit Occurrence",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "visit_occurrence"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Visit Detail",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "visit_detail"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Measurements",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "measurement"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Observations",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "observation"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Procedures",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "procedure_occurrence"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Device Exposures",
-          routeName: "domain_table",
+          routeName: "domainTable",
           domain: "device_exposure"
         },
         {
@@ -242,7 +241,7 @@ export default {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Unmapped Source Codes",
-          routeName: "unmapped_source_codes"
+          routeName: "unmappedSourceCodes"
         },
         {
           folder: "Data Source Release",
@@ -266,7 +265,7 @@ export default {
           folder: "Data Network",
           icon: "mdi-sigma-lower",
           name: "Quality Assessment",
-          routeName: "network_data_quality"
+          routeName: "networkDataQuality"
         },
         {
           folder: "Data Network",
@@ -278,7 +277,7 @@ export default {
           folder: "Data Network",
           icon: "mdi-dna",
           name: "Data Strand Report",
-          routeName: "data_strand_report"
+          routeName: "dataStrandReport"
         },
       ],
     };
@@ -300,21 +299,21 @@ export default {
 
   computed: {
 
-    getFolder: function () {
+    getSelectedFolder: function () {
       return this.folders.find(folder =>
           this.$route.matched.some(route =>
               route.name === folder.key));
     },
     getFilteredReports: function () {
       return this.reports.filter((report) =>
-          report.folder === this.getFolder.name);
+          report.folder === this.getSelectedFolder.name);
     },
-    getSource: function () {
+    getSelectedSource: function () {
       return this.sources.find(source =>
           this.$route.params.cdm === source.cdm_source_key);
     },
     getReleases: function () {
-      return this.getSource.releases;
+      return this.getSelectedSource.releases;
     },
     getSelectedRelease: function () {
       return this.getReleases.find(release =>
@@ -331,11 +330,11 @@ export default {
       return this.$route.params.concept;
     },
     showSourceSelector: function () {
-      return (this.getFolder.key === "_datasource" ||
-          this.getFolder.key === "_cdm");
+      return (this.getSelectedFolder.key === "datasource" ||
+          this.getSelectedFolder.key === "cdm");
     },
     showReleaseSelector: function () {
-      return this.getFolder.key === "_cdm";
+      return this.getSelectedFolder.key === "cdm";
     },
   },
 

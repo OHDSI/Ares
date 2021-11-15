@@ -19,7 +19,7 @@
     </div>
     <v-card-actions>
       <v-layout justify-center>
-        <v-btn class="ma-2" dark color="primary" to="/_network/overview">
+        <v-btn class="ma-2" dark color="primary" to="/network/overview">
           <v-icon left>mdi-database</v-icon>Explore Data Sources
         </v-btn>
         <!--

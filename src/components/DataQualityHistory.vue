@@ -298,7 +298,7 @@ export default {
     },
     getDataQualityOverviewRoute(item) {
       return (
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         item.cdm_release_date.replaceAll("-", "") +
@@ -307,7 +307,7 @@ export default {
     },
     getDataQualityResultsFailedRoute(item) {
       return (
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         item.cdm_release_date.replaceAll("-", "") +

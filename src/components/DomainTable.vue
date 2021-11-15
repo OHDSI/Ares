@@ -301,7 +301,7 @@ export default {
     },
     navigateToDataQuality: function () {
       var qualitypath =
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +
@@ -323,7 +323,7 @@ export default {
     },
     getReportRoute(item) {
       return (
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +
