@@ -1,6 +1,5 @@
 <template>
   <div>
-    <explorer></explorer>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Domain Density</v-card-title>
       <div style="width: 80%" id="viz-overview"></div>
@@ -17,7 +16,6 @@
 import embed from "vega-embed";
 import axios from "axios";
 import * as d3Import from "d3-dsv";
-import explorer from "./Explorer.vue";
 
 export default {
   data() {
@@ -126,9 +124,6 @@ export default {
         ],
       },
     };
-  },
-  components: {
-    explorer,
   },
   watch: {
     $route() {

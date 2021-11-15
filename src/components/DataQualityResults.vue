@@ -1,6 +1,5 @@
 <template>
   <v-responsive>
-    <explorer></explorer>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
     </div>
@@ -399,7 +398,6 @@ import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
 import "codemirror/theme/neat.css";
-import explorer from "./Explorer.vue";
 import infopanel from "./InfoPanel.vue";
 import error from "./Error.vue";
 import * as d3 from "d3-format";
@@ -549,7 +547,6 @@ export default {
   components: {
     error,
     codemirror,
-    explorer,
     infopanel,
   },
   watch: {
@@ -570,7 +567,7 @@ export default {
     //     path: "/_cdm/:cdm/:release/concept/:domain/:concept/summary",
     getConceptDrilldown: function (item) {
       return (
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +

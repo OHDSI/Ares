@@ -14,7 +14,8 @@
         <v-autocomplete
           class="mt-4"
           label="Report Category"
-          v-model="selectedFolder"
+          @input="changeFolder"
+          :value="getSelectedFolder"
           return-object
           prepend-icon="mdi-folder"
           auto-select-first
@@ -22,7 +23,6 @@
           :items="folders"
           item-text="name"
           item-value="name"
-          v-on:change="changeFolder"
         >
           <template v-slot:item="{ item }">
             <v-icon left small>{{ item.icon }}</v-icon> {{ item.name }}
@@ -33,7 +33,8 @@
         <v-autocomplete
           class="mt-4"
           label="Data Source"
-          v-model="selectedSource"
+          @input="changeSource"
+          :value="getSelectedSource"
           return-object
           prepend-icon="mdi-database"
           auto-select-first
@@ -41,43 +42,53 @@
           :items="sources"
           item-text="cdm_source_abbreviation"
           item-value="cdm_source_key"
-          v-on:change="changeSource"
         ></v-autocomplete>
       </v-col>
       <v-col cols="auto" v-if="showReleaseSelector">
         <v-autocomplete
           class="mt-4"
           label="Data Source Release"
-          v-model="selectedRelease"
+          @input="changeRelease"
+          :value="getSelectedRelease"
           return-object
           prepend-icon="mdi-database-clock"
           auto-select-first
           dense
-          :items="releases"
+          :items="getReleases"
           item-text="release_name"
           item-value="release_id"
-          v-on:change="changeReport"
         ></v-autocomplete>
       </v-col>
       <v-col cols="auto">
         <v-autocomplete
           class="mt-4"
           label="Report"
-          v-model="selectedReport"
+          @input="changeReport"
+          :value="getSelectedReport"
           return-object
           prepend-icon="mdi-file-chart"
           auto-select-first
           dense
-          :items="filteredReports"
+          :items="getFilteredReports"
           item-text="name"
           item-value="route"
-          v-on:change="changeReport"
         >
           <template v-slot:item="{ item }">
             <v-icon left small>{{ item.icon }}</v-icon> {{ item.name }}
           </template>
         </v-autocomplete>
       </v-col>
+        <v-col cols="auto" v-if="showConceptSelector">
+          <v-text-field
+              disabled
+              class="mt-4"
+              label="Concept ID"
+              return-object
+              prepend-icon="mdi-chart-timeline-variant-shimmer"
+              dense
+              :value="showConceptSelector"
+          ></v-text-field>
+        </v-col>
     </v-row>
   </div>
 </template>
@@ -88,26 +99,22 @@ import axios from "axios";
 export default {
   data() {
     return {
-      selectedSource: null,
-      selectedReport: null,
-      selectedRelease: null,
-      selectedFolder: null,
       networkIndex: [],
       folders: [
         {
           icon: "mdi-network",
           name: "Data Network",
-          key: "_network",
+          key: "network",
         },
         {
           icon: "mdi-database",
           name: "Data Source",
-          key: "_datasource",
+          key: "datasource",
         },
         {
           icon: "mdi-database-clock",
           name: "Data Source Release",
-          key: "_cdm",
+          key: "cdm",
         },
         /*
         {
@@ -119,275 +126,255 @@ export default {
         */
       ],
       sources: [],
-      releases: [],
-      filteredReports: [],
       reports: [
         {
           folder: "Data Source Release",
           icon: "mdi-sigma-lower",
           name: "Data Quality",
-          route: "/_cdm/:selectedSource/:selectedRelease/quality",
+          routeName: "dataQuality"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-chart-line",
           name: "Person",
-          route: "/_cdm/:selectedSource/:selectedRelease/person",
+          routeName: "person"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-chart-line",
           name: "Data Density",
-          route: "/_cdm/:selectedSource/:selectedRelease/density",
+          routeName: "dataDensity"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-chart-line",
           name: "Observation Period",
-          route: "/_cdm/:selectedSource/:selectedRelease/observationperiod",
+          routeName: "observationPeriod"
         },
         {
           folder: "Data Source",
           name: "Data Quality History",
-          route: "/_datasource/:selectedSource/quality-history",
+          routeName: "dataQualityHistory"
         },
         {
           folder: "Data Source",
           name: "Domain Continuity",
-          route: "/_datasource/:selectedSource/domain-continuity",
+          routeName: "domainContinuity"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Conditions",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/condition_occurrence/summary",
+          routeName: "domainTable",
+          domain: "condition_occurrence"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Condition Eras",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/condition_era/summary",
+          routeName: "domainTable",
+          domain: "condition_era"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Drugs",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/drug_exposure/summary",
+          routeName: "domainTable",
+          domain: "drug_exposure"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Drug Eras",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/drug_era/summary",
+          routeName: "domainTable",
+          domain: "drug_era"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Visit Occurrence",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/visit_occurrence/summary",
+          routeName: "domainTable",
+          domain: "visit_occurrence"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Visit Detail",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/visit_detail/summary",
+          routeName: "domainTable",
+          domain: "visit_detail"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Measurements",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/measurement/summary",
+          routeName: "domainTable",
+          domain: "measurement"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Observations",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/observation/summary",
+          routeName: "domainTable",
+          domain: "observation"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Procedures",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/procedure_occurrence/summary",
+          routeName: "domainTable",
+          domain: "procedure_occurrence"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Device Exposures",
-          route:
-            "/_cdm/:selectedSource/:selectedRelease/domain/device_exposure/summary",
+          routeName: "domainTable",
+          domain: "device_exposure"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Death",
-          route: "/_cdm/:selectedSource/:selectedRelease/death",
+          routeName: "death"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Unmapped Source Codes",
-          route: "/_cdm/:selectedSource/:selectedRelease/unmapped",
+          routeName: "unmappedSourceCodes"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-speedometer",
           name: "Performance",
-          route: "/_cdm/:selectedSource/:selectedRelease/performance",
+          routeName: "performance"
         },
         {
           folder: "Data Source Release",
           icon: "mdi-alpha-m-circle-outline",
           name: "Metadata",
-          route: "/_cdm/:selectedSource/:selectedRelease/metadata",
+          routeName: "metadata"
         },
         {
           folder: "Data Network",
           icon: "mdi-table",
           name: "Overview",
-          route: "/_network/overview",
+          routeName: "overview"
         },
         {
           folder: "Data Network",
           icon: "mdi-sigma-lower",
           name: "Quality Assessment",
-          route: "/_network/dataquality",
+          routeName: "networkDataQuality"
         },
         {
           folder: "Data Network",
           icon: "mdi-chart-line",
           name: "Population Overview",
-          route: "/_network/population",
+          routeName: "population"
         },
         {
           folder: "Data Network",
           icon: "mdi-dna",
           name: "Data Strand Report",
-          route: "/_network/datastrand",
+          routeName: "dataStrandReport"
         },
       ],
     };
   },
-  watch: {
-    $route() {},
-  },
+
   created() {
-    var self = this;
     axios
       .get("data/index.json")
       .then((response) => {
-        self.networkIndex = response.data.dataQualityRecords;
-        self.sources = response.data.sources;
-        self.updateSelectors();
+        this.networkIndex = response.data.dataQualityRecords;
+        this.sources = response.data.sources;
+        this.folder = response.data.folder
       })
       .catch((err) => {
         console.log("explorer failed to load network index");
         console.log(err);
       });
   },
+
   computed: {
+
+    getSelectedFolder: function () {
+      return this.folders.find(folder =>
+          this.$route.matched.some(route =>
+              route.name === folder.key));
+    },
+    getFilteredReports: function () {
+      return this.reports.filter((report) =>
+          report.folder === this.getSelectedFolder.name);
+    },
+    getSelectedSource: function () {
+      return this.sources.find(source =>
+          this.$route.params.cdm === source.cdm_source_key);
+    },
+    getReleases: function () {
+      return this.getSelectedSource.releases;
+    },
+    getSelectedRelease: function () {
+      return this.getReleases.find(release =>
+          this.$route.params.release === release.release_id)
+    },
+    getSelectedReport: function () {
+      return this.getFilteredReports.find(report =>
+          report.domain ?
+              this.$route.params.domain === report.domain :
+              this.$route.matched.some(route => route.name === report.routeName)
+      )
+    },
+    showConceptSelector: function () {
+      return this.$route.params.concept;
+    },
     showSourceSelector: function () {
-      if (
-        this.selectedFolder &&
-        (this.selectedFolder.key == "_datasource" ||
-          this.selectedFolder.key == "_cdm")
-      ) {
-        return true;
-      }
-      return false;
+      return (this.getSelectedFolder.key === "datasource" ||
+          this.getSelectedFolder.key === "cdm");
     },
     showReleaseSelector: function () {
-      if (this.selectedFolder && this.selectedFolder.key == "_cdm") {
-        return true;
-      }
-      return false;
+      return this.getSelectedFolder.key === "cdm";
     },
   },
+
   methods: {
-    updateSelectors() {
-      var self = this;
-      var selectedSourceIndex = 0;
-      var selectedReleaseIndex = 0;
-      var selectedFolderIndex = 0;
-
-      for (i = 0; i < self.folders.length; i++) {
-        if (self.$route.path.includes(self.folders[i].key)) {
-          selectedFolderIndex = i;
-        }
-      }
-      self.selectedFolder = self.folders[selectedFolderIndex];
-
-      this.filteredReports = this.reports.filter(
-        (report) => report.folder == this.selectedFolder.name
-      );
-
-      for (i = 0; i < self.sources.length; i++) {
-        if (self.$route.path.includes(self.sources[i].cdm_source_key)) {
-          selectedSourceIndex = i;
-        }
-      }
-
-      self.selectedSource = self.sources[selectedSourceIndex];
-      self.releases = self.selectedSource.releases;
-
-      for (i = 0; i < self.releases.length; i++) {
-        if (self.$route.path.includes(self.releases[i].release_id)) {
-          selectedReleaseIndex = i;
-        }
-      }
-
-      self.selectedRelease = self.releases[selectedReleaseIndex];
-
-      var placeholder = /:[\w]+/g;
-      var selectedReportIndex = null;
-      var path = self.$route.path;
-      for (var i = 0; i < self.filteredReports.length; i++) {
-        var routeCheck = self.filteredReports[i].route
-          .replace(placeholder, "[\\w]+")
-          .replaceAll("/", "\\/");
-        var routeRegExp = new RegExp(routeCheck);
-        if ((path.match(routeRegExp) || []).length > 0) {
-          selectedReportIndex = i;
-          break;
-        }
-      }
-      self.selectedReport = self.filteredReports[selectedReportIndex];
+    changeSource(data) {
+      this.$router.push({
+            params: {
+              ...this.$route.params,
+              cdm: data.cdm_source_key,
+              release: data.releases[0].release_id
+            }
+          }
+      )
     },
-    changeSource() {
-      this.releases = this.selectedSource.releases;
-      this.selectedRelease = this.releases[0];
-      this.changeReport();
+    changeRelease(data) {
+      this.$router.push({
+        params: {
+          ...this.$route.params,
+          release: data.release_id
+        }
+      })
     },
-    changeFolder() {
-      this.filteredReports = this.reports.filter(
-        (report) => report.folder == this.selectedFolder.name
-      );
+    changeFolder(data) {
+      this.$router.push({
+        name: data.key,
+        params: {
+          cdm: this.sources[0].cdm_source_key,
+          release: this.sources[0].releases[0].release_id
+        }
+      })
     },
-    changeReport() {
-      if (this.selectedSource != null && this.selectedReport != null) {
-        var route = this.selectedReport.route;
-        route = route.replace(
-          ":selectedSource",
-          this.selectedSource.cdm_source_key
-        );
-        route = route.replace(
-          ":selectedRelease",
-          this.selectedRelease.release_id
-        );
-
-        this.$router.push({
-          path: route,
-        });
-      }
+    changeReport(data) {
+      this.$router.push({
+        name: data.routeName,
+        params: {
+          ...this.$route.params,
+          domain: data.domain,
+          concept: ''
+        }
+      });
     },
   },
   name: "explorer",

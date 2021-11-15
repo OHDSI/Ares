@@ -1,6 +1,5 @@
 <template>
   <div id="help">
-    <explorer></explorer>
     <markdown
       v-if="contentLoaded"
       :content="markdownContent"
@@ -10,7 +9,6 @@
 </template>
 <script>
 import markdown from "markdown-it-vue";
-import explorer from "./Explorer.vue";
 import axios from "axios";
 
 export default {
@@ -33,7 +31,6 @@ export default {
   props: {},
   components: {
     markdown,
-    explorer,
   },
 };
 </script>

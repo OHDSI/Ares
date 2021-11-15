@@ -1,6 +1,5 @@
 <template>
   <div>
-    <explorer v-if="dataLoaded || componentFailed"></explorer>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
     </div>
@@ -75,7 +74,6 @@
 <script>
 import axios from "axios";
 import * as d3 from "d3-dsv";
-import explorer from "./Explorer.vue";
 import error from "./Error.vue";
 
 export default {
@@ -177,7 +175,6 @@ export default {
     );
   },
   components: {
-    explorer,
     error,
   },
   computed: {
