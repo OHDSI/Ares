@@ -176,7 +176,7 @@
               <v-row>
                 <v-col cols="3">
                   <v-text-field
-                    v-model="search"
+                    @input="delayedSearch"
                     prepend-icon="mdi-magnify"
                     label="Search in Table"
                     single-line
@@ -401,6 +401,7 @@ import "codemirror/theme/neat.css";
 import infopanel from "./InfoPanel.vue";
 import error from "./Error.vue";
 import * as d3 from "d3-format";
+import { debounce } from "lodash";
 
 export default {
   data: function () {
@@ -555,6 +556,9 @@ export default {
     },
   },
   methods: {
+    delayedSearch: debounce(function (data) {
+      this.search = data
+    }, 300),
     formatThousands: function (value) {
       return d3.format(",")(value);
     },

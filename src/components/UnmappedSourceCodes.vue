@@ -8,7 +8,7 @@
       <v-row>
         <v-col cols="3">
           <v-text-field
-            v-model="search"
+            @input="delayedSearch"
             prepend-icon="mdi-magnify"
             label="Search in Table"
             single-line
@@ -75,6 +75,7 @@
 import axios from "axios";
 import * as d3 from "d3-dsv";
 import error from "./Error.vue";
+import { debounce } from "lodash";
 
 export default {
   data: function () {
@@ -122,6 +123,9 @@ export default {
     },
   },
   methods: {
+    delayedSearch: debounce(function (data) {
+      this.search = data
+    }, 300),
     getMenuOffset: function () {
       return true;
     },
