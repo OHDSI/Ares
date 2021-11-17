@@ -33,6 +33,7 @@ export default {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
         data: null,
         width: "container",
+        autosize: "fit",
         height: 200,
         mark: "bar",
         params: [
@@ -57,8 +58,9 @@ export default {
             type: "nominal",
             title: "Data Source",
             legend: {
-              orient: "bottom",
+              orient: "right",
               title: null,
+              columns: 2,
             },
           },
           detail: [
@@ -71,6 +73,7 @@ export default {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
         data: null,
         width: "container",
+        autosize: "fit",
         height: 300,
         mark: "bar",
         encoding: {
@@ -89,8 +92,9 @@ export default {
             type: "nominal",
             title: "Data Source",
             legend: {
-              orient: "bottom",
+              orient: "right",
               title: null,
+              columns: 2
             },
           },
         },
@@ -98,15 +102,14 @@ export default {
     };
   },
   created() {
-    var vm = this;
     axios
       .get("data/network-data-quality-summary.csv")
       .then((response) => {
-        vm.failureSummary = d3.csvParse(response.data);
-        vm.componentFailed = false;
-        vm.dataLoaded = true;
+        this.failureSummary = d3.csvParse(response.data);
+        this.componentFailed = false;
+        this.dataLoaded = true;
 
-        var mapped = _.map(vm.failureSummary, (r) => {
+        let mapped = _.map(this.failureSummary, (r) => {
           return { RELEASE_NAME: r.RELEASE_NAME, RELEASE_ID: r.RELEASE_ID };
         });
         console.log(
@@ -117,13 +120,13 @@ export default {
           ).sort
         );
 
-        vm.specIssueStratificationByCategory.data = {
-          values: vm.failureSummary,
+        this.specIssueStratificationByCategory.data = {
+          values: this.failureSummary,
         };
-        vm.specIssueStratificationByTable.data = {
-          values: vm.failureSummary,
+        this.specIssueStratificationByTable.data = {
+          values: this.failureSummary,
         };
-        embed("#viz-category", vm.specIssueStratificationByCategory).then(
+        embed("#viz-category", this.specIssueStratificationByCategory).then(
           (vega) => {
             vega.view.addSignalListener("select", (name, value) => {
               var routeUrl =
@@ -138,12 +141,12 @@ export default {
             });
           }
         );
-        embed("#viz-table", vm.specIssueStratificationByTable).then(() => {
+        embed("#viz-table", this.specIssueStratificationByTable).then(() => {
           window.dispatchEvent(new Event("resize"));
         });
       })
       .catch((err) => {
-        vm.componentFailed = true;
+        this.componentFailed = true;
         console.log("explorer failed to load network data quality summary");
         console.log(err);
       });
