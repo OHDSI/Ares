@@ -21,11 +21,9 @@
         <v-btn to="/help">
           <v-icon dark>mdi-help-circle-outline</v-icon>
         </v-btn>
-
-        <v-btn to="/_network/overview"
+        <v-btn to="/network/overview"
           ><v-icon dark>mdi-database</v-icon></v-btn
         >
-
         <v-btn to="/"
           ><v-img
             :src="require('./assets/icon.png')"

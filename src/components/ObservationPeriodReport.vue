@@ -3,7 +3,6 @@
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
     </div>
-    <explorer></explorer>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
         <div class="text-uppercase text-h6">Observation Period Report</div>
@@ -68,8 +67,8 @@
 import axios from "axios";
 import embed from "vega-embed";
 import error from "./Error.vue";
-import explorer from "./Explorer.vue";
 import * as d3 from "d3-time-format";
+import dataService from "../services/DataService";
 
 export default {
   data() {
@@ -185,11 +184,13 @@ export default {
       },
       specObservationByAge: {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
-        height: 150,
+        height: {"step": "20"},
         width: "container",
         data: null,
         encoding: {
-          y: { field: "CATEGORY", type: "nominal", title: null },
+          y: {
+            field: "CATEGORY", type: "nominal", title: null, sort: {"field": "categoryOrder"},
+          },
         },
         layer: [
           {
@@ -335,7 +336,6 @@ export default {
   },
   components: {
     error,
-    explorer,
   },
   watch: {
     $route() {
@@ -355,9 +355,8 @@ export default {
       window.dispatchEvent(new Event("resize"));
     },
     load: function () {
-      var self = this;
-      var dateParse = d3.timeParse("%Y%m");
-      var dataUrl =
+      let dateParse = d3.timeParse("%Y%m");
+      let dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -366,42 +365,42 @@ export default {
       axios
         .get(dataUrl)
         .then((response) => {
-          self.observationPeriodData = response.data;
-          self.personPeriods = response.data.PERSON_PERIODS_DATA;
-          self.specAgeAtFirstObservation.data = {
-            values: self.observationPeriodData.AGE_AT_FIRST_OBSERVATION,
+          this.observationPeriodData = response.data;
+          this.personPeriods = response.data.PERSON_PERIODS_DATA;
+          this.specAgeAtFirstObservation.data = {
+            values: this.observationPeriodData.AGE_AT_FIRST_OBSERVATION,
           };
-          self.specAgeBySex.data = {
-            values: self.observationPeriodData.AGE_BY_GENDER,
+          this.specAgeBySex.data = {
+            values: this.observationPeriodData.AGE_BY_GENDER,
           };
-          self.specCumulativeObservation.data = {
-            values: self.observationPeriodData.CUMULATIVE_DURATION,
+          this.specCumulativeObservation.data = {
+            values: this.observationPeriodData.CUMULATIVE_DURATION,
           };
-          self.specObservationByAge.data = {
-            values: self.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
+          this.specObservationByAge.data = {
+            values: dataService.sortByRange(this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE, "ascending", "CATEGORY", "categoryOrder"),
           };
-          self.specObservationBySex.data = {
+          this.specObservationBySex.data = {
             values:
-              self.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_GENDER,
+              this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_GENDER,
           };
-          self.specObservationByMonth.data = {
-            values: self.observationPeriodData.OBSERVED_BY_MONTH,
+          this.specObservationByMonth.data = {
+            values: this.observationPeriodData.OBSERVED_BY_MONTH,
           };
-          self.specObservationByMonth.data.values.forEach((v) => {
+          this.specObservationByMonth.data.values.forEach((v) => {
             v.DATE = dateParse(v.MONTH_YEAR);
           });
-          embed("#viz-ageatfirstobservation", self.specAgeAtFirstObservation);
-          embed("#viz-agebysex", self.specAgeBySex);
-          embed("#viz-cumulativeobservation", self.specCumulativeObservation);
-          embed("#viz-observationbyage", self.specObservationByAge);
-          embed("#viz-observationbysex", self.specObservationBySex);
-          embed("#viz-observationbymonth", self.specObservationByMonth);
-          self.dataLoaded = true;
+          embed("#viz-ageatfirstobservation", this.specAgeAtFirstObservation);
+          embed("#viz-agebysex", this.specAgeBySex);
+          embed("#viz-cumulativeobservation", this.specCumulativeObservation);
+          embed("#viz-observationbyage", this.specObservationByAge);
+          embed("#viz-observationbysex", this.specObservationBySex);
+          embed("#viz-observationbymonth", this.specObservationByMonth);
+          this.dataLoaded = true;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to obtain observation period data file.";
-          self.errorDetails = err + " (" + dataUrl + ") ";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain observation period data file.";
+          this.errorDetails = err + " (" + dataUrl + ") ";
         });
     },
   },

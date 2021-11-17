@@ -5,7 +5,6 @@
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
-        <explorer></explorer>
         <v-layout class="ma-0 mb-1 text-uppercase text-h6"
           >Data Source Release Comparison
         </v-layout>
@@ -49,7 +48,6 @@ import axios from "axios";
 import embed from "vega-embed";
 import {flatten, sumBy} from "lodash";
 import error from "./Error.vue";
-import explorer from "./Explorer.vue";
 import * as d3Format from "d3-format";
 import * as d3 from "d3-time-format";
 
@@ -144,7 +142,6 @@ export default {
   },
   components: {
     error,
-    explorer,
   },
   created() {
     this.load();

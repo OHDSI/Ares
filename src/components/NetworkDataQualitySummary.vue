@@ -3,7 +3,6 @@
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
     </div>
-    <explorer></explorer>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Network Data Quality Issues by Category</v-card-title>
       <div class="viz-container" id="viz-category"></div>
@@ -18,10 +17,8 @@
 <script>
 import axios from "axios";
 import * as d3 from "d3-dsv";
-import explorer from "./Explorer.vue";
 import error from "./Error.vue";
 import embed from "vega-embed";
-import _ from "lodash";
 
 export default {
   data() {
@@ -108,18 +105,6 @@ export default {
         this.failureSummary = d3.csvParse(response.data);
         this.componentFailed = false;
         this.dataLoaded = true;
-
-        let mapped = _.map(this.failureSummary, (r) => {
-          return { RELEASE_NAME: r.RELEASE_NAME, RELEASE_ID: r.RELEASE_ID };
-        });
-        console.log(
-          _.uniqWith(
-            mapped,
-            (a, b) =>
-              a.RELEASE_NAME == b.RELEASE_NAME && a.RELEASE_ID == b.RELEASE_ID
-          ).sort
-        );
-
         this.specIssueStratificationByCategory.data = {
           values: this.failureSummary,
         };
@@ -130,11 +115,11 @@ export default {
           (vega) => {
             vega.view.addSignalListener("select", (name, value) => {
               var routeUrl =
-                "/_cdm/" +
+                "/cdm/" +
                 value.CDM_SOURCE_ +
                 "/" +
                 value.cdm_release_key +
-                "/quality?tab=results&categoryFailFilter=" +
+                "/data_quality?tab=results&categoryFailFilter=" +
                 value.c;
               console.log(routeUrl);
               console.log(value);
@@ -152,7 +137,6 @@ export default {
       });
   },
   components: {
-    explorer,
     error,
   },
   methods: {

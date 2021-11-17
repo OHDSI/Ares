@@ -1,6 +1,5 @@
 <template>
   <v-responsive>
-    <explorer></explorer>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
     </div>
@@ -177,7 +176,7 @@
               <v-row>
                 <v-col cols="3">
                   <v-text-field
-                    v-model="search"
+                    @input="delayedSearch"
                     prepend-icon="mdi-magnify"
                     label="Search in Table"
                     single-line
@@ -399,10 +398,10 @@ import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
 import "codemirror/theme/neat.css";
-import explorer from "./Explorer.vue";
 import infopanel from "./InfoPanel.vue";
 import error from "./Error.vue";
 import * as d3 from "d3-format";
+import { debounce } from "lodash";
 
 export default {
   data: function () {
@@ -549,7 +548,6 @@ export default {
   components: {
     error,
     codemirror,
-    explorer,
     infopanel,
   },
   watch: {
@@ -558,6 +556,9 @@ export default {
     },
   },
   methods: {
+    delayedSearch: debounce(function (data) {
+      this.search = data
+    }, 300),
     formatThousands: function (value) {
       return d3.format(",")(value);
     },
@@ -570,7 +571,7 @@ export default {
     //     path: "/_cdm/:cdm/:release/concept/:domain/:concept/summary",
     getConceptDrilldown: function (item) {
       return (
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +

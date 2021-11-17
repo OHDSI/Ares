@@ -3,7 +3,6 @@
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
     </div>
-    <explorer></explorer>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
         <div class="text-uppercase text-h6">Person Report</div>
@@ -78,7 +77,6 @@
 import axios from "axios";
 import embed from "vega-embed";
 import error from "./Error.vue";
-import explorer from "./Explorer.vue";
 import * as d3 from "d3-time-format";
 import * as d3Format from "d3-format";
 
@@ -244,7 +242,6 @@ export default {
   },
   components: {
     error,
-    explorer,
   },
   created() {
     this.load();

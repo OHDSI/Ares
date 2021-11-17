@@ -1,6 +1,5 @@
 <template>
   <div id="network-data-quality-overview" class="pa-4">
-    <explorer></explorer>
     <error
       v-if="!indexAvailable"
       :text="errorText"
@@ -96,7 +95,6 @@
 <script>
 import axios from "axios";
 import error from "./Error.vue";
-import explorer from "./Explorer.vue";
 import infopanel from "./InfoPanel.vue";
 import * as d3 from "d3-format";
 
@@ -124,7 +122,6 @@ export default {
   },
   components: {
     error,
-    explorer,
     infopanel,
   },
   methods: {
@@ -134,7 +131,7 @@ export default {
     displayPersonReport: function (source) {
       this.$router.push({
         path:
-          "/_cdm/" +
+          "/cdm/" +
           source.cdm_source_key +
           "/" +
           source.releases[0].release_id +
@@ -143,17 +140,17 @@ export default {
     },
     navigateToDataSourceHistory(datasource) {
       this.$router.push({
-        path: "/_datasource/" + datasource.cdm_source_key + "/quality-history",
+        path: "/datasource/" + datasource.cdm_source_key + "/data_quality_history",
       });
     },
     displayDetails: function (source) {
       this.$router.push({
         path:
-          "/_cdm/" +
+          "/cdm/" +
           source.cdm_source_key +
           "/" +
           source.releases[0].release_id +
-          "/quality",
+          "/data_quality",
       });
     },
   },

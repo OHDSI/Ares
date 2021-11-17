@@ -1,6 +1,5 @@
 <template>
   <div>
-    <explorer v-if="dataLoaded || componentFailed"></explorer>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
     </div>
@@ -46,7 +45,7 @@
           <v-row>
             <v-col>
               <v-text-field
-                v-model="search"
+                @input="delayedSearch"
                 prepend-icon="mdi-magnify"
                 label="Search in Table"
                 single-line
@@ -189,10 +188,10 @@
 import axios from "axios";
 import * as d3Import from "d3-dsv";
 import * as d3Format from "d3-format";
-import explorer from "./Explorer.vue";
 import error from "./Error.vue";
 import embed from "vega-embed";
 import InfoPanel from "./InfoPanel.vue";
+import { debounce } from "lodash"
 
 export default {
   data: function () {
@@ -285,6 +284,9 @@ export default {
     },
   },
   methods: {
+    delayedSearch: debounce(function (data) {
+      this.search = data
+    }, 300),
     getWeight: function (decile) {
       if (decile == 1) {
         return "font-weight-black";
@@ -303,11 +305,11 @@ export default {
     },
     navigateToDataQuality: function () {
       var qualitypath =
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +
-        "/quality";
+        "/data_quality";
 
       this.$router.push({
         path: qualitypath,
@@ -325,15 +327,14 @@ export default {
     },
     getReportRoute(item) {
       return (
-        "/_cdm/" +
+        "/cdm/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +
-        "/concept/" +
+          "/" +
         this.$route.params.domain +
         "/" +
-        item.CONCEPT_ID +
-        "/summary"
+        item.CONCEPT_ID
       );
     },
     load() {
@@ -487,7 +488,6 @@ export default {
     this.load();
   },
   components: {
-    explorer,
     error,
     InfoPanel,
   },
