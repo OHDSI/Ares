@@ -442,6 +442,7 @@ export default {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
         data: null,
         width: "container",
+        autosize: "fit",
         height: 75,
         mark: "bar",
         transform: [
@@ -479,8 +480,9 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
               title: null,
+              columns: 2
             },
           },
           order: {
