@@ -154,17 +154,19 @@ export default {
       window.dispatchEvent(new Event("resize"));
     },
     toggleMeasurementValueChart() {
-      if (this.toggleMode == "MIN/MAX") {
-        this.specMeasurementValueDistribution.layer[0].encoding.x.field =
-          "P10_VALUE";
-        this.specMeasurementValueDistribution.layer[0].encoding.x2.field =
-          "P90_VALUE";
+      let encoding = this.specMeasurementValueDistribution.layer[0].encoding;
+
+      if (this.toggleMode === "MIN/MAX") {
+        encoding.x.field =
+            "P10_VALUE";
+        encoding.x2.field =
+            "P90_VALUE";
         this.toggleMode = "P10/P90";
       } else {
-        this.specMeasurementValueDistribution.layer[0].encoding.x.field =
-          "MIN_VALUE";
-        this.specMeasurementValueDistribution.layer[0].encoding.x2.field =
-          "MAX_VALUE";
+        encoding.x.field =
+            "MIN_VALUE";
+        encoding.x2.field =
+            "MAX_VALUE";
         this.toggleMode = "MIN/MAX";
       }
       embed(
@@ -186,14 +188,12 @@ export default {
       });
     },
     load: function () {
-      var self = this;
-      var sourceRequests = [];
-
+      let sourceRequests = [];
       // first get network data source listing
       axios.get("data/index.json").then((response) => {
-        self.sources = response.data.sources;
-        self.sources.forEach((source) => {
-          var dataUrl =
+        this.sources = response.data.sources;
+        this.sources.forEach((source) => {
+          let dataUrl =
             "data/" +
             source.cdm_source_key +
             "/" +
@@ -208,10 +208,10 @@ export default {
           // get concept summary data for each network data source
           axios.all(sourceRequests).then(
             axios.spread((...responses) => {
-              self.componentFailed = false;
-              self.conceptName = responses[0].data.CONCEPT_NAME[0];
-              self.conceptId = responses[0].data.CONCEPT_ID[0];
-              self.numPersons = _.sumBy(
+              this.componentFailed = false;
+              this.conceptName = responses[0].data.CONCEPT_NAME[0];
+              this.conceptId = responses[0].data.CONCEPT_ID[0];
+              this.numPersons = _.sumBy(
                 responses,
                 (r) => r.data.NUM_PERSONS[0]
               );
@@ -220,29 +220,29 @@ export default {
                 responses[0].data.MEASUREMENT_VALUE_DISTRIBUTION &&
                 responses[0].data.MEASUREMENT_VALUE_DISTRIBUTION.length > 0
               ) {
-                var allData = [];
+                let allData = [];
                 responses.forEach((r, i) => {
                   r.data.MEASUREMENT_VALUE_DISTRIBUTION.forEach((d) => {
                     d.SOURCE_UNIT_KEY =
-                      self.sources[i].cdm_source_key + " - " + d.CATEGORY;
+                      this.sources[i].cdm_source_key + " - " + d.CATEGORY;
                   });
                   allData = allData.concat(
                     r.data.MEASUREMENT_VALUE_DISTRIBUTION
                   );
                 });
-                self.specMeasurementValueDistribution.data = {
+                this.specMeasurementValueDistribution.data = {
                   values: allData,
                 };
-                self.hasMeasurementValueDistribution = true;
+                this.hasMeasurementValueDistribution = true;
                 embed(
                   "#viz-measurementvaluedistribution",
-                  self.specMeasurementValueDistribution
+                  this.specMeasurementValueDistribution
                 ).then(() => {
                   window.dispatchEvent(new Event("resize"));
                 });
               }
 
-              self.dataLoaded = true;
+              this.dataLoaded = true;
             })
           );
         });
