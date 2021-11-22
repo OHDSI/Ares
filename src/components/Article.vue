@@ -25,11 +25,11 @@
 
       <div class="pa-4">
         <GChart
-          :settings="{ packages: ['sankey'] }"
-          :data="chartData"
-          :options="chartOptions"
-          type="Sankey"
-          @ready="onChartReady"
+            :settings="{ packages: ['sankey'] }"
+            :data="chartData"
+            :options="chartOptions"
+            type="Sankey"
+            @ready="onChartReady"
         ></GChart>
       </div>
     </v-card>
@@ -37,9 +37,9 @@
 </template>
 
 <script>
+import { GChart } from "vue-google-charts";
 import axios from "axios";
 import * as d3Import from "d3-dsv";
-
 export default {
   data: function () {
     return {
@@ -81,6 +81,7 @@ export default {
       vm.chartData = data;
     });
   },
+  components: { GChart },
 };
 </script>
 

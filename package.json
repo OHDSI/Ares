@@ -19,10 +19,10 @@
   "main": "background.js",
   "dependencies": {
     "axios": "^0.24.0",
+    "core-js": "^3.6.5",
     "d3-dsv": "^3.0.1",
     "d3-format": "^3.0.1",
     "d3-time-format": "^4.0.0",
-    "core-js": "^3.6.5",
     "electron-icon-builder": "^2.0.1",
     "is-electron": "^2.2.1",
     "lodash": "^4.17.21",
@@ -31,6 +31,7 @@
     "vega-lite": "^5.1.1",
     "vue": "^2.6.14",
     "vue-codemirror": "^4.0.6",
+    "vue-google-charts": "^0.3.3",
     "vue-router": "^3.5.3",
     "vuetify": "^2.6.0",
     "vuex": "^3.6.2"
