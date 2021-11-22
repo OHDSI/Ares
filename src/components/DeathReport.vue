@@ -94,7 +94,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -165,7 +166,7 @@ export default {
             field: "SERIES_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
             },
           },
           facet: {

@@ -163,7 +163,7 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
               title: null,
             },
           },
@@ -189,8 +189,8 @@ export default {
           color: {
             field: "CONCEPT_NAME",
             legend: {
-              orient: "bottom",
-              columns: 5,
+              orient: "right",
+              columns: 2,
               title: "Ethnicity",
             },
           },
