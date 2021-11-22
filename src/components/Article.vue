@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import { GChart } from "vue-google-charts";
 import axios from "axios";
 import * as d3Import from "d3-dsv";
 
@@ -82,7 +81,6 @@ export default {
       vm.chartData = data;
     });
   },
-  components: { GChart },
 };
 </script>
 
