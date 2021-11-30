@@ -80,7 +80,7 @@
       </v-col>
         <v-col cols="auto" v-if="showConceptSelector">
           <v-text-field
-              disabled
+              readonly
               class="mt-4"
               label="Concept ID"
               return-object

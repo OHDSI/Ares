@@ -5,9 +5,10 @@
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
-        <v-layout class="ma-0 mb-6 text-uppercase text-h6"
-          >{{ conceptName }} NETWORK REPORT</v-layout
-        >
+        <v-layout class="ma-0 mb-5 d-flex justify-space-between">
+          <h2 class="text-uppercase">{{conceptName}} NETWORK REPORT</h2>
+          <ReturnButton />
+        </v-layout>
         <v-row v-if="dataLoaded" justify="start"
           ><v-col cols="2" align="center">
             <v-icon left color="info">mdi-identifier</v-icon>
@@ -68,6 +69,7 @@ import embed from "vega-embed";
 import _ from "lodash";
 import error from "./Error.vue";
 import * as d3Format from "d3-format";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data() {
@@ -141,6 +143,7 @@ export default {
     };
   },
   components: {
+    ReturnButton,
     error,
   },
   created() {

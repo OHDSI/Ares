@@ -5,9 +5,12 @@
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
-        <v-layout class="ma-0 mb-6 text-uppercase text-h6">{{
-          conceptName
-        }}</v-layout>
+        <v-layout class="ma-0 mb-6 d-flex justify-md-space-between">
+          <h2 class="text-uppercase">
+            {{conceptName}}
+          </h2>
+          <ReturnButton />
+        </v-layout>
         <v-row v-if="dataLoaded" justify="start"
           ><v-col cols="2" align="center">
             <v-icon left color="info">mdi-identifier</v-icon>
@@ -309,6 +312,7 @@ import * as d3 from "d3-time-format";
 import * as d3Format from "d3-format";
 import InfoPanel from "./InfoPanel.vue";
 import dataService from "../services/DataService";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data() {
@@ -944,6 +948,7 @@ export default {
     };
   },
   components: {
+    ReturnButton,
     error,
     InfoPanel,
   },
