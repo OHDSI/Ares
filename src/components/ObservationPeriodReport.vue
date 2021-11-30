@@ -80,7 +80,7 @@ export default {
       personPeriods: null,
       observationPeriodData: null,
       specAgeAtFirstObservation: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 150,
         width: "container",
         mark: { type: "bar", tooltip: {}, width: 10 },
@@ -112,7 +112,7 @@ export default {
         },
       },
       specAgeBySex: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 75,
         width: "container",
         data: null,
@@ -151,7 +151,7 @@ export default {
         },
       },
       specCumulativeObservation: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 150,
         width: "container",
         mark: { type: "area", point: true, tooltip: {} },
@@ -183,7 +183,7 @@ export default {
         },
       },
       specObservationByAge: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: {"step": "20"},
         width: "container",
         data: null,
@@ -228,7 +228,7 @@ export default {
         },
       },
       specObservationBySex: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 75,
         width: "container",
         data: null,
@@ -270,7 +270,7 @@ export default {
         },
       },
       specObservationByMonth: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         vconcat: [
           {

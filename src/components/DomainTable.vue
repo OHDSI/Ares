@@ -249,7 +249,7 @@ export default {
         },
       },
       specVisitStratification: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 300,
