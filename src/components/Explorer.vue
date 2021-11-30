@@ -78,17 +78,17 @@
           </template>
         </v-autocomplete>
       </v-col>
-        <v-col cols="auto" v-if="showConceptSelector">
-          <v-text-field
-              disabled
-              class="mt-4"
-              label="Concept ID"
-              return-object
-              prepend-icon="mdi-chart-timeline-variant-shimmer"
-              dense
-              :value="showConceptSelector"
-          ></v-text-field>
-        </v-col>
+      <v-col cols="auto" v-if="showConceptSelector">
+        <v-text-field
+          disabled
+          class="mt-4"
+          label="Concept ID"
+          return-object
+          prepend-icon="mdi-chart-timeline-variant-shimmer"
+          dense
+          :value="showConceptSelector"
+        ></v-text-field>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -131,153 +131,153 @@ export default {
           folder: "Data Source Release",
           icon: "mdi-sigma-lower",
           name: "Data Quality",
-          routeName: "dataQuality"
+          routeName: "dataQuality",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-chart-line",
           name: "Person",
-          routeName: "person"
+          routeName: "person",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-chart-line",
           name: "Data Density",
-          routeName: "dataDensity"
+          routeName: "dataDensity",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-chart-line",
           name: "Observation Period",
-          routeName: "observationPeriod"
+          routeName: "observationPeriod",
         },
         {
           folder: "Data Source",
           name: "Data Quality History",
-          routeName: "dataQualityHistory"
+          routeName: "dataQualityHistory",
         },
         {
           folder: "Data Source",
           name: "Domain Continuity",
-          routeName: "domainContinuity"
+          routeName: "domainContinuity",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Conditions",
           routeName: "domainTable",
-          domain: "condition_occurrence"
+          domain: "condition_occurrence",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Condition Eras",
           routeName: "domainTable",
-          domain: "condition_era"
+          domain: "condition_era",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Drugs",
           routeName: "domainTable",
-          domain: "drug_exposure"
+          domain: "drug_exposure",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Drug Eras",
           routeName: "domainTable",
-          domain: "drug_era"
+          domain: "drug_era",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Visit Occurrence",
           routeName: "domainTable",
-          domain: "visit_occurrence"
+          domain: "visit_occurrence",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Visit Detail",
           routeName: "domainTable",
-          domain: "visit_detail"
+          domain: "visit_detail",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Measurements",
           routeName: "domainTable",
-          domain: "measurement"
+          domain: "measurement",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Observations",
           routeName: "domainTable",
-          domain: "observation"
+          domain: "observation",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Procedures",
           routeName: "domainTable",
-          domain: "procedure_occurrence"
+          domain: "procedure_occurrence",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Device Exposures",
           routeName: "domainTable",
-          domain: "device_exposure"
+          domain: "device_exposure",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Death",
-          routeName: "death"
+          routeName: "death",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-table",
           name: "Unmapped Source Codes",
-          routeName: "unmappedSourceCodes"
+          routeName: "unmappedSourceCodes",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-speedometer",
           name: "Performance",
-          routeName: "performance"
+          routeName: "performance",
         },
         {
           folder: "Data Source Release",
           icon: "mdi-alpha-m-circle-outline",
           name: "Metadata",
-          routeName: "metadata"
+          routeName: "metadata",
         },
         {
           folder: "Data Network",
           icon: "mdi-table",
           name: "Overview",
-          routeName: "overview"
+          routeName: "overview",
         },
         {
           folder: "Data Network",
           icon: "mdi-sigma-lower",
           name: "Quality Assessment",
-          routeName: "networkDataQuality"
+          routeName: "networkDataQuality",
         },
         {
           folder: "Data Network",
           icon: "mdi-chart-line",
           name: "Population Overview",
-          routeName: "population"
+          routeName: "population",
         },
         {
           folder: "Data Network",
           icon: "mdi-dna",
           name: "Data Strand Report",
-          routeName: "dataStrandReport"
+          routeName: "dataStrandReport",
         },
       ],
     };
@@ -289,7 +289,7 @@ export default {
       .then((response) => {
         this.networkIndex = response.data.dataQualityRecords;
         this.sources = response.data.sources;
-        this.folder = response.data.folder
+        this.folder = response.data.folder;
       })
       .catch((err) => {
         console.log("explorer failed to load network index");
@@ -298,40 +298,44 @@ export default {
   },
 
   computed: {
-
     getSelectedFolder: function () {
-      return this.folders.find(folder =>
-          this.$route.matched.some(route =>
-              route.name === folder.key));
+      return this.folders.find((folder) =>
+        this.$route.matched.some((route) => route.name === folder.key)
+      );
     },
     getFilteredReports: function () {
-      return this.reports.filter((report) =>
-          report.folder === this.getSelectedFolder.name);
+      return this.reports.filter(
+        (report) => report.folder === this.getSelectedFolder.name
+      );
     },
     getSelectedSource: function () {
-      return this.sources.find(source =>
-          this.$route.params.cdm === source.cdm_source_key);
+      return this.sources.find(
+        (source) => this.$route.params.cdm === source.cdm_source_key
+      );
     },
     getReleases: function () {
       return this.getSelectedSource.releases;
     },
     getSelectedRelease: function () {
-      return this.getReleases.find(release =>
-          this.$route.params.release === release.release_id)
+      return this.getReleases.find(
+        (release) => this.$route.params.release === release.release_id
+      );
     },
     getSelectedReport: function () {
-      return this.getFilteredReports.find(report =>
-          report.domain ?
-              this.$route.params.domain === report.domain :
-              this.$route.matched.some(route => route.name === report.routeName)
-      )
+      return this.getFilteredReports.find((report) =>
+        report.domain
+          ? this.$route.params.domain === report.domain
+          : this.$route.matched.some((route) => route.name === report.routeName)
+      );
     },
     showConceptSelector: function () {
       return this.$route.params.concept;
     },
     showSourceSelector: function () {
-      return (this.getSelectedFolder.key === "datasource" ||
-          this.getSelectedFolder.key === "cdm");
+      return (
+        this.getSelectedFolder.key === "datasource" ||
+        this.getSelectedFolder.key === "cdm"
+      );
     },
     showReleaseSelector: function () {
       return this.getSelectedFolder.key === "cdm";
@@ -341,30 +345,29 @@ export default {
   methods: {
     changeSource(data) {
       this.$router.push({
-            params: {
-              ...this.$route.params,
-              cdm: data.cdm_source_key,
-              release: data.releases[0].release_id
-            }
-          }
-      )
+        params: {
+          ...this.$route.params,
+          cdm: data.cdm_source_key,
+          release: data.releases[0].release_id,
+        },
+      });
     },
     changeRelease(data) {
       this.$router.push({
         params: {
           ...this.$route.params,
-          release: data.release_id
-        }
-      })
+          release: data.release_id,
+        },
+      });
     },
     changeFolder(data) {
       this.$router.push({
         name: data.key,
         params: {
           cdm: this.sources[0].cdm_source_key,
-          release: this.sources[0].releases[0].release_id
-        }
-      })
+          release: this.sources[0].releases[0].release_id,
+        },
+      });
     },
     changeReport(data) {
       this.$router.push({
@@ -372,8 +375,8 @@ export default {
         params: {
           ...this.$route.params,
           domain: data.domain,
-          concept: ''
-        }
+          concept: "",
+        },
       });
     },
   },
