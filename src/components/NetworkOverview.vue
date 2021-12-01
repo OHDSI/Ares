@@ -11,7 +11,10 @@
           <v-card elevation="10" class="mx-auto pb-6" outlined>
             <v-card-title>{{ result.cdm_source_abbreviation }}</v-card-title>
             <v-card-subtitle>{{ result.cdm_source_name }}</v-card-subtitle>
-            <v-card-date class="v-card_date">Observation period:  {{ result.releases[0].obs_period_start }} to {{ result.releases[0].obs_period_end }}</v-card-date>
+            <v-card-subtitle
+              >Observation period: {{ result.releases[0].obs_period_start }} to
+              {{ result.releases[0].obs_period_end }}</v-card-subtitle
+            >
             <v-row justify="space-around">
               <v-col cols="auto" class="ma-2 pa-1" align="center">
                 <v-btn
@@ -140,7 +143,8 @@ export default {
     },
     navigateToDataSourceHistory(datasource) {
       this.$router.push({
-        path: "/datasource/" + datasource.cdm_source_key + "/data_quality_history",
+        path:
+          "/datasource/" + datasource.cdm_source_key + "/data_quality_history",
       });
     },
     displayDetails: function (source) {
@@ -161,16 +165,11 @@ export default {
 .v-card__title {
   word-break: normal;
 }
-.v-card_date {
-  word-break: normal;
-  padding:0px 0px 16px 16px;
-  margin-top: 0%;
-  color: rgba(0,0,0,.6);
-}
 .v-card__subtitle {
-  padding-bottom:0px;
+  padding-bottom: 0px;
+  padding-top: 4px;
 }
 .row {
-  margin-top:-5px;
+  margin-top: -5px;
 }
 </style>

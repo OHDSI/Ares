@@ -74,9 +74,9 @@
         >
           <v-card-title>Measurement Value Distributions</v-card-title>
           <v-layout class="pa-4" justify-end>
-            <v-btn color="primary" @click="toggleMeasurementValueChart()"
-            ><v-icon dark left>mdi-toggle-switch</v-icon
-            >{{ toggleMode }}</v-btn
+            <v-btn small color="primary" @click="toggleMeasurementValueChart()"
+              ><v-icon dark left>mdi-toggle-switch</v-icon
+              >{{ toggleMode }}</v-btn
             >
           </v-layout>
           <div
@@ -382,7 +382,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -434,7 +435,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -489,7 +491,7 @@ export default {
             legend: {
               orient: "right",
               title: null,
-              columns: 2
+              columns: 2,
             },
           },
           order: {
@@ -524,14 +526,14 @@ export default {
             field: "SERIES_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
             },
           },
           facet: {
             field: "TRELLIS_NAME",
             type: "nominal",
             title: null,
-            sort: {"field": "trellisOrder"},
+            sort: { field: "trellisOrder" },
             rows: 1,
             spacing: 20,
             header: {
@@ -546,7 +548,7 @@ export default {
       },
       specMeasurementValueDistribution: {
         $schema: "https://vega.github.io/schema/vega-lite/v4.json",
-        height: {"step": "20"},
+        height: { step: "20" },
         width: "container",
         data: {},
         encoding: { y: { field: "CATEGORY", type: "nominal", title: null } },
@@ -625,7 +627,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -951,14 +954,14 @@ export default {
     this.load();
   },
   updated() {
-    this.load()
+    this.load();
   },
   methods: {
     getSourceConceptReportLink: function () {
       return (
         "/datasource/" +
         this.$route.params.cdm +
-            "/" +
+        "/" +
         this.$route.params.domain +
         "/" +
         this.$route.params.concept +
@@ -969,21 +972,17 @@ export default {
       let encoding = this.specMeasurementValueDistribution.layer[0].encoding;
 
       if (this.toggleMode === "MIN/MAX") {
-        encoding.x.field =
-            "P10_VALUE";
-        encoding.x2.field =
-            "P90_VALUE";
+        encoding.x.field = "P10_VALUE";
+        encoding.x2.field = "P90_VALUE";
         this.toggleMode = "P10/P90";
       } else {
-        encoding.x.field =
-            "MIN_VALUE";
-        encoding.x2.field =
-            "MAX_VALUE";
+        encoding.x.field = "MIN_VALUE";
+        encoding.x2.field = "MAX_VALUE";
         this.toggleMode = "MIN/MAX";
       }
       embed(
-          "#viz-measurementvaluedistribution",
-          this.specMeasurementValueDistribution
+        "#viz-measurementvaluedistribution",
+        this.specMeasurementValueDistribution
       ).then(() => {
         window.dispatchEvent(new Event("resize"));
       });
@@ -1170,7 +1169,12 @@ export default {
           }
 
           this.specRecordProportionByAgeSexYear.data = {
-            values: dataService.sortByRange(this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "trellisOrder")
+            values: dataService.sortByRange(
+              this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,
+              "ascending",
+              "TRELLIS_NAME",
+              "trellisOrder"
+            ),
           };
           this.specRecordProportionByMonth.data = {
             values: this.conceptData.PREVALENCE_BY_MONTH,
