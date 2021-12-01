@@ -58,7 +58,7 @@ export default {
           color: {
             field: "DATA_SOURCE_KEY",
             title: "Data Source",
-            legend: { orient: "bottom", direction: "horizontal", columns: 3 },
+            legend: { orient: "right", columns: 2 },
           },
           tooltip: [
             {
@@ -98,7 +98,7 @@ export default {
           color: {
             field: "DATA_SOURCE_KEY",
             title: "Data Source",
-            legend: { orient: "bottom", direction: "horizontal", columns: 3 },
+            legend: { orient: "right", columns: 2 },
           },
           tooltip: [
             {

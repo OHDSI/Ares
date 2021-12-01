@@ -165,12 +165,11 @@ export default {
         axes: [{ scale: "y", orient: "left", zindex: 0 }],
         legends: [
           {
-            columns: 3,
-            columnPadding: 20,
+            columns: 2,
+            columnPadding: 15,
             rowPadding: 10,
-            orient: "bottom",
+            orient: "right",
             fill: "color",
-            direction: "horizontal",
             symbolType: "circle",
           },
         ],
