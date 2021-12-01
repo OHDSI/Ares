@@ -1,5 +1,5 @@
 <template>
-  <div id="explorer" class="pa-2">
+  <div v-if="dataLoaded" id="explorer" class="pa-2">
     <v-row>
       <v-col cols="1">
         <v-btn to="/home" icon large class="mb-8">
@@ -100,6 +100,7 @@ export default {
   data() {
     return {
       networkIndex: [],
+      dataLoaded: false,
       folders: [
         {
           icon: "mdi-network",
@@ -289,7 +290,8 @@ export default {
       .then((response) => {
         this.networkIndex = response.data.dataQualityRecords;
         this.sources = response.data.sources;
-        this.folder = response.data.folder;
+        this.folder = response.data.folder
+        this.dataLoaded = true
       })
       .catch((err) => {
         console.log("explorer failed to load network index");
