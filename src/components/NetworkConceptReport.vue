@@ -93,7 +93,7 @@ export default {
       historyRecords: [],
       cdmSourceName: "",
       specMeasurementValueDistribution: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 400,
         width: "container",
         data: {},

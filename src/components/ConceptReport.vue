@@ -342,7 +342,7 @@ export default {
       historyRecords: [],
       cdmSourceName: "",
       specConditionsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -395,7 +395,7 @@ export default {
         },
       },
       specDrugsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -448,7 +448,7 @@ export default {
         },
       },
       specRecordsByUnit: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         autosize: "fit",
@@ -502,7 +502,7 @@ export default {
         },
       },
       specRecordProportionByAgeSexYear: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         width: 60,
         height: 150,
         data: {},
@@ -547,8 +547,8 @@ export default {
         },
       },
       specMeasurementValueDistribution: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
-        height: { step: "20" },
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        height: {"step": "20"},
         width: "container",
         data: {},
         encoding: { y: { field: "CATEGORY", type: "nominal", title: null } },
@@ -587,7 +587,7 @@ export default {
         },
       },
       specMeasurementsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -640,7 +640,7 @@ export default {
         },
       },
       specAgeAtFirstOccurrence: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -675,7 +675,7 @@ export default {
         ],
       },
       specVisitDurationByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -710,7 +710,7 @@ export default {
         ],
       },
       specDaysSupply: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -743,7 +743,7 @@ export default {
         ],
       },
       specQuantity: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -776,7 +776,7 @@ export default {
         ],
       },
       specLengthOfEra: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -809,7 +809,7 @@ export default {
         ],
       },
       specAgeAtFirstExposure: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -850,7 +850,7 @@ export default {
         ],
       },
       specAgeAtFirstDiagnosis: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -885,7 +885,7 @@ export default {
         ],
       },
       specRecordProportionByMonth: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         vconcat: [
           {

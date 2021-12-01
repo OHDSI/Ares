@@ -54,7 +54,7 @@ export default {
       deathData: null,
       dataLoaded: false,
       specDeathByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -107,7 +107,7 @@ export default {
         },
       },
       specAgeAtDeath: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -142,7 +142,7 @@ export default {
         ],
       },
       specRecordProportionByAgeSexYear: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         width: 60,
         height: 150,
         data: {},
@@ -187,7 +187,7 @@ export default {
         },
       },
       specRecordProportionByMonth: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         vconcat: [
           {

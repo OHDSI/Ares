@@ -101,7 +101,7 @@ export default {
       genderFemalePct: "",
       genderFemaleCount: "",
       specBirthYear: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 100,
@@ -123,7 +123,7 @@ export default {
         },
       },
       specRace: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -175,7 +175,7 @@ export default {
         },
       },
       specEthnicity: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 100,
@@ -197,7 +197,7 @@ export default {
         },
       },
       specAgeSex: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,

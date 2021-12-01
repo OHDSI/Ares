@@ -24,7 +24,7 @@ export default {
       historyRecords: [],
       cdmSourceName: "",
       defRecordsPerPerson: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         vconcat: [
           {
@@ -74,7 +74,7 @@ export default {
         ],
       },
       defOverview: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         vconcat: [
           {

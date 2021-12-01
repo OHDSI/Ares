@@ -27,7 +27,7 @@ export default {
       dataLoaded: false,
       failureSummary: [],
       specIssueStratificationByCategory: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         autosize: "fit",
@@ -67,7 +67,7 @@ export default {
         },
       },
       specIssueStratificationByTable: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         autosize: "fit",
