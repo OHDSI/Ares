@@ -2,6 +2,7 @@
   <div>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">

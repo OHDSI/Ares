@@ -2,6 +2,7 @@
   <div>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
@@ -27,6 +28,7 @@ import embed from "vega-embed";
 /*import _ from "lodash";*/
 import error from "./Error.vue";
 import * as d3Format from "d3-format";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data() {
@@ -121,6 +123,7 @@ export default {
     };
   },
   components: {
+    ReturnButton,
     error,
   },
   created() {

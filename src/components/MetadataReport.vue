@@ -2,6 +2,7 @@
   <div>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-card :loading="!cdmsourceDataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>CDM Source Details</v-card-title>
@@ -41,6 +42,7 @@
 import axios from "axios";
 import * as d3 from "d3-dsv";
 import error from "./Error.vue";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data: function () {
@@ -116,6 +118,7 @@ export default {
   },
   components: {
     error,
+    ReturnButton
   },
   computed: {},
   props: {

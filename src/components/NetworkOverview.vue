@@ -5,6 +5,7 @@
       :text="errorText"
       :details="errorDetails"
     ></error>
+    <ReturnButton block />
     <v-row>
       <template v-for="(result, index) in sources">
         <div class="col-12" :key="index">
@@ -97,6 +98,7 @@ import axios from "axios";
 import error from "./Error.vue";
 import infopanel from "./InfoPanel.vue";
 import * as d3 from "d3-format";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   name: "NetworkOverview",
@@ -121,6 +123,7 @@ export default {
       });
   },
   components: {
+    ReturnButton,
     error,
     infopanel,
   },

@@ -2,6 +2,7 @@
   <div>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-container class="pa-1">
       <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
@@ -192,6 +193,7 @@ import error from "./Error.vue";
 import embed from "vega-embed";
 import InfoPanel from "./InfoPanel.vue";
 import { debounce } from "lodash"
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data: function () {
@@ -490,6 +492,7 @@ export default {
   components: {
     error,
     InfoPanel,
+    ReturnButton
   },
   computed: {
     showHeaders() {
