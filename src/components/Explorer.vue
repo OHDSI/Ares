@@ -78,17 +78,17 @@
           </template>
         </v-autocomplete>
       </v-col>
-      <v-col cols="auto" v-if="showConceptSelector">
-        <v-text-field
-          disabled
-          class="mt-4"
-          label="Concept ID"
-          return-object
-          prepend-icon="mdi-chart-timeline-variant-shimmer"
-          dense
-          :value="showConceptSelector"
-        ></v-text-field>
-      </v-col>
+        <v-col cols="auto" v-if="showConceptSelector">
+          <v-text-field
+              readonly
+              class="mt-4"
+              label="Concept ID"
+              return-object
+              prepend-icon="mdi-chart-timeline-variant-shimmer"
+              dense
+              :value="showConceptSelector"
+          ></v-text-field>
+        </v-col>
     </v-row>
   </div>
 </template>

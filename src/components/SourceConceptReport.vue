@@ -2,14 +2,16 @@
   <div>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-1 text-uppercase text-h6"
           >Data Source Release Comparison
         </v-layout>
-        <v-layout class="ma-0 mb-5 text-uppercase text-h6"
-          >{{ conceptName }}
+        <v-layout class="ma-0 mb-5 d-flex justify-space-between">
+          <h2 class="text-uppercase">{{conceptName}}</h2>
+          <ReturnButton />
         </v-layout>
         <v-row v-if="dataLoaded" justify="start"
           ><v-col cols="2" align="center">
@@ -50,6 +52,7 @@ import {flatten, sumBy} from "lodash";
 import error from "./Error.vue";
 import * as d3Format from "d3-format";
 import * as d3 from "d3-time-format";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data() {
@@ -141,6 +144,7 @@ export default {
     };
   },
   components: {
+    ReturnButton,
     error,
   },
   created() {

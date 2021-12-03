@@ -2,6 +2,7 @@
   <v-responsive>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <div v-if="!componentFailed">
       <v-card :loading="!dataLoaded" elevation="10" class="ma-4">
@@ -402,6 +403,7 @@ import infopanel from "./InfoPanel.vue";
 import error from "./Error.vue";
 import * as d3 from "d3-format";
 import { debounce } from "lodash";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data: function () {
@@ -546,6 +548,7 @@ export default {
     };
   },
   components: {
+    ReturnButton,
     error,
     codemirror,
     infopanel,
