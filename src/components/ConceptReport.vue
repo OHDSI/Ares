@@ -78,9 +78,9 @@
         >
           <v-card-title>Measurement Value Distributions</v-card-title>
           <v-layout class="pa-4" justify-end>
-            <v-btn color="primary" @click="toggleMeasurementValueChart()"
-            ><v-icon dark left>mdi-toggle-switch</v-icon
-            >{{ toggleMode }}</v-btn
+            <v-btn small color="primary" @click="toggleMeasurementValueChart()"
+              ><v-icon dark left>mdi-toggle-switch</v-icon
+              >{{ toggleMode }}</v-btn
             >
           </v-layout>
           <div
@@ -347,7 +347,7 @@ export default {
       historyRecords: [],
       cdmSourceName: "",
       specConditionsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -387,7 +387,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -399,7 +400,7 @@ export default {
         },
       },
       specDrugsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -439,7 +440,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -451,7 +453,7 @@ export default {
         },
       },
       specRecordsByUnit: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         autosize: "fit",
@@ -494,7 +496,7 @@ export default {
             legend: {
               orient: "right",
               title: null,
-              columns: 2
+              columns: 2,
             },
           },
           order: {
@@ -505,7 +507,7 @@ export default {
         },
       },
       specRecordProportionByAgeSexYear: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         width: 60,
         height: 150,
         data: {},
@@ -529,14 +531,14 @@ export default {
             field: "SERIES_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
             },
           },
           facet: {
             field: "TRELLIS_NAME",
             type: "nominal",
             title: null,
-            sort: {"field": "trellisOrder"},
+            sort: { field: "trellisOrder" },
             rows: 1,
             spacing: 20,
             header: {
@@ -550,7 +552,7 @@ export default {
         },
       },
       specMeasurementValueDistribution: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: {"step": "20"},
         width: "container",
         data: {},
@@ -590,7 +592,7 @@ export default {
         },
       },
       specMeasurementsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -630,7 +632,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -642,7 +645,7 @@ export default {
         },
       },
       specAgeAtFirstOccurrence: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -677,7 +680,7 @@ export default {
         ],
       },
       specVisitDurationByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -712,7 +715,7 @@ export default {
         ],
       },
       specDaysSupply: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -745,7 +748,7 @@ export default {
         ],
       },
       specQuantity: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -778,7 +781,7 @@ export default {
         ],
       },
       specLengthOfEra: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -811,7 +814,7 @@ export default {
         ],
       },
       specAgeAtFirstExposure: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -852,7 +855,7 @@ export default {
         ],
       },
       specAgeAtFirstDiagnosis: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -887,7 +890,7 @@ export default {
         ],
       },
       specRecordProportionByMonth: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         vconcat: [
           {
@@ -957,14 +960,14 @@ export default {
     this.load();
   },
   updated() {
-    this.load()
+    this.load();
   },
   methods: {
     getSourceConceptReportLink: function () {
       return (
         "/datasource/" +
         this.$route.params.cdm +
-            "/" +
+        "/" +
         this.$route.params.domain +
         "/" +
         this.$route.params.concept +
@@ -975,21 +978,17 @@ export default {
       let encoding = this.specMeasurementValueDistribution.layer[0].encoding;
 
       if (this.toggleMode === "MIN/MAX") {
-        encoding.x.field =
-            "P10_VALUE";
-        encoding.x2.field =
-            "P90_VALUE";
+        encoding.x.field = "P10_VALUE";
+        encoding.x2.field = "P90_VALUE";
         this.toggleMode = "P10/P90";
       } else {
-        encoding.x.field =
-            "MIN_VALUE";
-        encoding.x2.field =
-            "MAX_VALUE";
+        encoding.x.field = "MIN_VALUE";
+        encoding.x2.field = "MAX_VALUE";
         this.toggleMode = "MIN/MAX";
       }
       embed(
-          "#viz-measurementvaluedistribution",
-          this.specMeasurementValueDistribution
+        "#viz-measurementvaluedistribution",
+        this.specMeasurementValueDistribution
       ).then(() => {
         window.dispatchEvent(new Event("resize"));
       });
@@ -1176,7 +1175,12 @@ export default {
           }
 
           this.specRecordProportionByAgeSexYear.data = {
-            values: dataService.sortByRange(this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "trellisOrder")
+            values: dataService.sortByRange(
+              this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,
+              "ascending",
+              "TRELLIS_NAME",
+              "trellisOrder"
+            ),
           };
           this.specRecordProportionByMonth.data = {
             values: this.conceptData.PREVALENCE_BY_MONTH,

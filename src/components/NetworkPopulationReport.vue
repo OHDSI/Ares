@@ -44,7 +44,7 @@ export default {
       historyRecords: [],
       cdmSourceName: "",
       specAgeAtFirstObservation: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 200,
         data: {},
         width: "container",
@@ -60,7 +60,7 @@ export default {
           color: {
             field: "DATA_SOURCE_KEY",
             title: "Data Source",
-            legend: { orient: "bottom", direction: "horizontal", columns: 3 },
+            legend: { orient: "right", columns: 2 },
           },
           tooltip: [
             {
@@ -80,7 +80,7 @@ export default {
         },
       },
       specCumulativeObservation: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 150,
         width: "container",
         mark: { type: "line", tooltip: {}, interpolate: "linear" },
@@ -100,7 +100,7 @@ export default {
           color: {
             field: "DATA_SOURCE_KEY",
             title: "Data Source",
-            legend: { orient: "bottom", direction: "horizontal", columns: 3 },
+            legend: { orient: "right", columns: 2 },
           },
           tooltip: [
             {

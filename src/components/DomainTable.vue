@@ -143,6 +143,14 @@
               >{{ item.RECORDS_PER_PERSON }}</v-layout
             >
           </template>
+          <template v-slot:item.PERCENT_MISSING_VALUES="{ item }">
+            <v-layout justify-end
+              >{{
+                ((1 - item.PERCENT_MISSING_VALUES) * 100).toFixed(2)
+              }}
+              %</v-layout
+            >
+          </template>
           <template v-slot:item.AVERAGE_DURATION="{ item }">
             <v-layout justify-end>{{ item.AVERAGE_DURATION }}</v-layout>
           </template>
@@ -206,6 +214,7 @@ export default {
       issueDataLoaded: false,
       issueCount: 0,
       isEra: false,
+      isMeasurement: false,
       isVisit: false,
       domainTable: [],
       domainIssues: [],
@@ -249,9 +258,15 @@ export default {
           value: "AVERAGE_DURATION",
           align: "end",
         },
+        PERCENT_WITH_VALUE: {
+          text: "% with Values",
+          sortable: true,
+          value: "PERCENT_MISSING_VALUES",
+          align: "end",
+        },
       },
       specVisitStratification: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 300,
@@ -287,7 +302,7 @@ export default {
   },
   methods: {
     delayedSearch: debounce(function (data) {
-      this.search = data
+      this.search = data;
     }, 300),
     getWeight: function (decile) {
       if (decile == 1) {
@@ -333,7 +348,7 @@ export default {
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +
-          "/" +
+        "/" +
         this.$route.params.domain +
         "/" +
         item.CONCEPT_ID
@@ -365,6 +380,19 @@ export default {
       } else {
         self.isVisit = false;
         delete self.headersMap.AVERAGE_DURATION;
+      }
+
+      if (domain == "MEASUREMENT") {
+        self.isMeasurement = true;
+        self.headersMap.PERCENT_WITH_VALUE = {
+          text: "% with Values",
+          sortable: true,
+          value: "PERCENT_MISSING_VALUES",
+          align: "end",
+        };
+      } else {
+        self.isMeasurement = false;
+        delete self.headersMap.PERCENT_WITH_VALUE;
       }
 
       if (domain == "DRUG_ERA" || domain == "CONDITION_ERA") {
@@ -419,6 +447,16 @@ export default {
                 "MEDIAN_VALUE",
               ].includes(h.value)
             );
+          } else if (self.isMeasurement) {
+            self.selectedHeaders = self.headers.filter((h) =>
+              [
+                "CONCEPT_ID",
+                "CONCEPT_NAME",
+                "PERCENT_PERSONS",
+                "RECORDS_PER_PERSON",
+                "PERCENT_MISSING_VALUES",
+              ].includes(h.value)
+            );
           } else {
             self.selectedHeaders = self.headers.filter((h) =>
               [
@@ -451,7 +489,9 @@ export default {
         .then((response) => {
           self.issueDataLoaded = true;
           self.domainIssues = d3Import.csvParse(response.data);
-          const domainIssue = self.domainIssues.find(di => di.cdm_table_name === self.$route.params.domain);
+          const domainIssue = self.domainIssues.find(
+            (di) => di.cdm_table_name === self.$route.params.domain
+          );
           self.issueCount = domainIssue?.count_failed || 0;
         })
         .catch((err) => {
