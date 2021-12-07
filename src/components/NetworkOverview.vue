@@ -71,11 +71,13 @@
                   <td>
                     <router-link
                       :to="getDataSourceRoute(item)"
-                      :title="item.cdm_source_abbreviation"
-                      >{{ item.cdm_source_name }}
+                      :title="item.cdm_source_name"
+                      >{{ item.cdm_source_abbreviation }}
                     </router-link>
                   </td>
-                  <td class="text-end">{{ item.releases[0].count_person }}</td>
+                  <td class="text-end">
+                    {{ formatComma(item.releases[0].count_person) }}
+                  </td>
                   <td class="text-end">{{ item.releases[0].release_name }}</td>
                   <td class="text-end">
                     {{ item.releases[0].count_data_quality_issues }}
@@ -177,10 +179,13 @@ export default {
   },
   methods: {
     getDataSourceRoute(item) {
-      return "/datasource/" + item.cdm_source_abbreviation;
+      return "/datasource/" + item.cdm_source_key;
     },
     personCountFormatter: function (count) {
       return d3.format(".3s")(count);
+    },
+    formatComma: function (value) {
+      return d3.format(",")(value);
     },
     displayPersonReport: function (source) {
       this.$router.push({
