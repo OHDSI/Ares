@@ -6,99 +6,97 @@
       :details="errorDetails"
     ></error>
     <v-row>
-      <template v-for="(result, index) in sources">
-        <div class="col-12" :key="index">
-          <v-card elevation="10" class="mx-auto pb-6" outlined>
-            <v-card-title>{{ result.cdm_source_abbreviation }}</v-card-title>
-            <v-card-subtitle>{{ result.cdm_source_name }}</v-card-subtitle>
-            <v-card-subtitle
-              >Observation period: {{ result.releases[0].obs_period_start }} to
-              {{ result.releases[0].obs_period_end }}</v-card-subtitle
-            >
-            <v-row justify="space-around">
-              <v-col cols="auto" class="ma-2 pa-1" align="center">
-                <v-btn
-                  @click="displayPersonReport(result)"
-                  fab
-                  dark
-                  color="success"
-                  class="ma-2"
-                  small
-                  ><v-icon>mdi-account-group</v-icon>
-                </v-btn>
-                <p class="text-subtitle ma-0">
-                  {{ personCountFormatter(result.releases[0].count_person) }}
-                </p>
-                <p class="text-caption ma-0">Total People</p>
-              </v-col>
-              <v-col cols="auto" class="ma-2 pa-1" align="center">
-                <v-btn
-                  @click="displayDetails(result)"
-                  fab
-                  dark
-                  color="error"
-                  class="ma-2"
-                  small
-                  ><v-icon>mdi-database-alert</v-icon>
-                </v-btn>
-                <p class="text-subtitle ma-0">
-                  {{ result.releases[0].count_data_quality_issues }}
-                </p>
-                <p class="text-caption ma-0">Data Quality Issues</p>
-              </v-col>
-              <v-col cols="auto" class="ma-2 pa-1" align="center">
-                <v-btn
-                  @click="displayDetails(result)"
-                  small
-                  fab
-                  dark
-                  class="ma-2"
-                  ><v-icon>mdi-tag-outline</v-icon>
-                </v-btn>
-                <p class="text-subtitle ma-0">
-                  {{ result.releases[0].release_name }}
-                </p>
-                <p class="text-caption ma-0">Latest Release</p>
-              </v-col>
-              <v-col cols="auto" class="ma-2 pa-1" align="center">
-                <v-btn
-                  @click="navigateToDataSourceHistory(result)"
-                  fab
-                  dark
-                  color="info"
-                  class="ma-2"
-                  small
-                  ><v-icon>mdi-history</v-icon>
-                </v-btn>
-                <p class="text-subtitle ma-0">
-                  {{ result.count_releases }}
-                </p>
-                <p class="text-caption ma-0">Data Releases</p>
-              </v-col>
-              <v-col cols="auto" class="ma-2 pa-1" align="center">
-                <v-btn fab dark color="warning" class="ma-2" small
-                  ><v-icon>mdi-translate</v-icon>
-                </v-btn>
-                <p class="text-subtitle ma-0">
-                  {{ result.releases[0].vocabulary_version }}
-                </p>
-                <p class="text-caption ma-0">Vocabulary Version</p>
-              </v-col>
-            </v-row>
-          </v-card>
-        </div>
-      </template>
+      <v-col>
+        <v-card elevation="10" class="mx-auto pb-6" outlined>
+          <v-card-title>Data Network Overview</v-card-title>
+          <v-card-text>
+            <v-container fluid>
+              <v-row justify="space-around"
+                ><v-col class="mx-4" cols="auto">
+                  <h3 class="mb-4 text--center">Data Sources</h3>
+                  <h1 class="text-center">
+                    {{ countDataSources
+                    }}<v-icon large color="info" class="mx-2"
+                      >mdi-database</v-icon
+                    >
+                  </h1>
+                </v-col>
+                <v-col class="mx-4" cols="auto">
+                  <h3 class="mb-4 text-center">People</h3>
+                  <h1 class="text-center">
+                    {{ personCountFormatter(countPeople)
+                    }}<v-icon large color="info" class="mx-2"
+                      >mdi-account</v-icon
+                    >
+                  </h1>
+                </v-col>
+                <v-col class="mx-4" cols="auto">
+                  <h3 class="mb-4 text-center">Data Quality Issues</h3>
+                  <h1 class="text-center">
+                    {{ countDataQualityIssues
+                    }}<v-icon large color="info" class="mx-2"
+                      >mdi-database-alert</v-icon
+                    >
+                  </h1>
+                </v-col>
+                <v-col class="mx-4" cols="auto">
+                  <h3 class="mb-4 text-center">Data Source Releases</h3>
+                  <h1 class="text-center">
+                    {{ countDataSourceReleases
+                    }}<v-icon large color="info" class="mx-2"
+                      >mdi-history</v-icon
+                    >
+                  </h1>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
-    <infopanel
-      details="The overview lists all data sources currently available in the network.  Clicking the buttons allows exploration of different aspects of each data source."
-    ></infopanel>
+    <v-row>
+      <v-col>
+        <v-card elevation="10" class="mx-auto pb-6" outlined>
+          <v-card-title>Data Source Listing</v-card-title>
+          <v-card-text>
+            <v-data-table
+              dense
+              :items="dataSourceRecords"
+              :headers="dataSourceColumns"
+              :items-per-page="-1"
+              hide-default-footer
+            >
+              <template v-slot:item="{ item }">
+                <tr>
+                  <td>
+                    <router-link
+                      :to="getDataSourceRoute(item)"
+                      :title="item.cdm_source_abbreviation"
+                      >{{ item.cdm_source_name }}
+                    </router-link>
+                  </td>
+                  <td class="text-end">{{ item.releases[0].count_person }}</td>
+                  <td class="text-end">{{ item.releases[0].release_name }}</td>
+                  <td class="text-end">
+                    {{ item.releases[0].count_data_quality_issues }}
+                  </td>
+                  <td class="text-end">{{ item.count_releases }}</td>
+                  <td class="text-end">
+                    {{ item.releases[0].vocabulary_version }}
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import error from "./Error.vue";
-import infopanel from "./InfoPanel.vue";
 import * as d3 from "d3-format";
 
 export default {
@@ -106,9 +104,52 @@ export default {
   data() {
     return {
       indexAvailable: true,
+      countDataSources: 0,
+      countPeople: 0,
+      countDataQualityIssues: 0,
+      countDataSourceReleases: 0,
       errorText: "",
       errorDetails: "",
       sources: [],
+      dataSourceRecords: [],
+      dataSourceColumns: [
+        {
+          text: "Data Source",
+          align: "start",
+          sortable: true,
+          value: "cdm_source_name",
+        },
+        {
+          text: "Person Count",
+          align: "end",
+          sortable: true,
+          value: "releases[0].count_person",
+        },
+        {
+          text: "Latest Release",
+          align: "end",
+          sortable: true,
+          value: "releases[0].release_name",
+        },
+        {
+          text: "Data Quality Issues",
+          align: "end",
+          sortable: true,
+          value: "releases[0].count_data_quality_issues",
+        },
+        {
+          text: "Data Source Releases",
+          align: "end",
+          sortable: true,
+          value: "count_releases",
+        },
+        {
+          text: "Vocabulary Version",
+          align: "end",
+          sortable: true,
+          value: "releases[0].vocabulary_version",
+        },
+      ],
     };
   },
   created() {
@@ -116,6 +157,14 @@ export default {
       .get("data/index.json")
       .then((response) => {
         this.sources = response.data.sources;
+        this.countDataSources = this.sources.length;
+        this.sources.forEach((source) => {
+          this.countPeople += source.releases[0].count_person;
+          this.countDataQualityIssues +=
+            source.releases[0].count_data_quality_issues;
+          this.countDataSourceReleases += source.releases.length;
+          this.dataSourceRecords.push(source);
+        });
       })
       .catch((error) => {
         this.indexAvailable = false;
@@ -125,9 +174,11 @@ export default {
   },
   components: {
     error,
-    infopanel,
   },
   methods: {
+    getDataSourceRoute(item) {
+      return "/datasource/" + item.cdm_source_abbreviation;
+    },
     personCountFormatter: function (count) {
       return d3.format(".3s")(count);
     },
