@@ -78,6 +78,10 @@
                   <td class="text-end">
                     {{ formatComma(item.releases[0].count_person) }}
                   </td>
+                  <td class="text-start">
+                    {{ item.releases[0].obs_period_start }} to
+                    {{ item.releases[0].obs_period_end }}
+                  </td>
                   <td class="text-end">{{ item.releases[0].release_name }}</td>
                   <td class="text-end">
                     {{ item.releases[0].count_data_quality_issues }}
@@ -126,6 +130,11 @@ export default {
           align: "end",
           sortable: true,
           value: "releases[0].count_person",
+        },
+        {
+          text: "Dates Observed",
+          align: "start",
+          sortable: false,
         },
         {
           text: "Latest Release",
