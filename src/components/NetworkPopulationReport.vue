@@ -42,13 +42,16 @@ export default {
       historyRecords: [],
       cdmSourceName: "",
       specAgeAtFirstObservation: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 200,
         data: {},
         width: "container",
-        mark: { type: "line", interpolate: "linear" },
         encoding: {
-          x: { field: "INTERVAL_INDEX", type: "quantitative", title: "Age" },
+          x: {
+            field: "INTERVAL_INDEX",
+            type: "quantitative",
+            title: "Age",
+          },
           y: {
             field: "PERCENT_VALUE",
             type: "quantitative",
@@ -58,30 +61,76 @@ export default {
           color: {
             field: "DATA_SOURCE_KEY",
             title: "Data Source",
-            legend: { orient: "bottom", direction: "horizontal", columns: 3 },
           },
-          tooltip: [
-            {
-              field: "PERCENT_VALUE",
-              title: "% of People",
-              format: "0.2p",
-            },
-            {
-              field: "INTERVAL_INDEX",
-              title: "Age",
-            },
-            {
-              field: "DATA_SOURCE_KEY",
-              title: "Data Source",
-            },
-          ],
         },
+        layer: [
+          {
+            mark: { type: "line", interpolate: "linear" },
+            params: [
+              {
+                name: "source",
+                select: { type: "point", fields: ["DATA_SOURCE_KEY"] },
+                bind: "legend",
+              },
+            ],
+            encoding: {
+              opacity: {
+                condition: { param: "source", value: 1 },
+                value: 0.2,
+              },
+            },
+          },
+          {
+            selection: {
+              dataSource: {
+                type: "multi",
+                fields: ["DATA_SOURCE_KEY"],
+                bind: "legend",
+              },
+              x: {
+                type: "single",
+                on: "mousemove",
+                encodings: ["x"],
+                nearest: true,
+              },
+            },
+            transform: [
+              {
+                filter: { selection: "dataSource" },
+              },
+            ],
+            mark: { type: "point", tooltip: true },
+          },
+          {
+            transform: [
+              {
+                filter: {
+                  and: ["x.INTERVAL_INDEX", { selection: "x" }],
+                },
+              },
+              { filter: { selection: "dataSource" } },
+            ],
+            layer: [
+              {
+                mark: "rule",
+                encoding: {
+                  y: {
+                    height: 1,
+                  },
+                  color: {
+                    value: "black",
+                  },
+                },
+              },
+            ],
+          },
+        ],
       },
+
       specCumulativeObservation: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 150,
         width: "container",
-        mark: { type: "line", tooltip: {}, interpolate: "linear" },
         data: {},
         encoding: {
           x: {
@@ -93,30 +142,76 @@ export default {
             field: "PERCENT_PEOPLE",
             type: "quantitative",
             title: "% of People",
-            axis: { format: "%" },
+            axis: { format: "0.0%" },
           },
           color: {
             field: "DATA_SOURCE_KEY",
             title: "Data Source",
-            legend: { orient: "bottom", direction: "horizontal", columns: 3 },
           },
-          tooltip: [
-            {
-              field: "PERCENT_PEOPLE",
-              title: "% of People",
-              format: "0.2p",
-            },
-            {
-              field: "YEARS",
-              title: "Years of Observation",
-              format: "0.3",
-            },
-            {
-              field: "DATA_SOURCE_KEY",
-              title: "Data Source",
-            },
-          ],
         },
+
+        layer: [
+          {
+            mark: { type: "line", interpolate: "linear" },
+            params: [
+              {
+                name: "source",
+                select: { type: "point", fields: ["DATA_SOURCE_KEY"] },
+                bind: "legend",
+              },
+            ],
+            encoding: {
+              opacity: {
+                condition: { param: "source", value: 1 },
+                value: 0.2,
+              },
+            },
+          },
+          {
+            selection: {
+              dataSource: {
+                type: "multi",
+                fields: ["DATA_SOURCE_KEY"],
+                bind: "legend",
+              },
+              x: {
+                type: "single",
+                on: "mousemove",
+                encodings: ["x"],
+                nearest: true,
+              },
+            },
+            transform: [
+              {
+                filter: { selection: "dataSource" },
+              },
+            ],
+            mark: { type: "point", tooltip: true },
+          },
+          {
+            transform: [
+              {
+                filter: {
+                  and: ["x.YEARS", { selection: "x" }],
+                },
+              },
+              { filter: { selection: "dataSource" } },
+            ],
+            layer: [
+              {
+                mark: "rule",
+                encoding: {
+                  y: {
+                    height: 1,
+                  },
+                  color: {
+                    value: "black",
+                  },
+                },
+              },
+            ],
+          },
+        ],
       },
     };
   },
@@ -178,9 +273,10 @@ export default {
                 allCumulativeDurationData = allCumulativeDurationData.concat(
                   r.data.CUMULATIVE_DURATION
                 );
-                allAgeAtFirstObservationData = allAgeAtFirstObservationData.concat(
-                  r.data.AGE_AT_FIRST_OBSERVATION
-                );
+                allAgeAtFirstObservationData =
+                  allAgeAtFirstObservationData.concat(
+                    r.data.AGE_AT_FIRST_OBSERVATION
+                  );
               });
 
               self.specAgeAtFirstObservation.data = {
