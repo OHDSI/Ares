@@ -146,17 +146,17 @@ export default {
       specRecordProportionByAgeSexYear: {
         $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: {},
-        spacing: 5,
+        spacing: 10,
         autosize: { resize: true },
         facet: {
           row: {
             field: "TRELLIS_NAME",
             title: "Age Deciles",
+            sort: { field: "trellisOrder" },
           },
           field: "TRELLIS_NAME",
           type: "nominal",
           title: null,
-          sort: { field: "trellisOrder" },
         },
         spec: {
           width: "container",
