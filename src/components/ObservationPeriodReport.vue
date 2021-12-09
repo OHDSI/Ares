@@ -18,26 +18,19 @@
           class="ma-4 pa-2"
         >
           <v-card-title>Observation Periods per Person</v-card-title>
-          <v-simple-table>
-            <template v-slot:default
-              ><thead>
-                <tr>
-                  <th class="text-right">Number of Observation Periods</th>
-                  <th class="text-right">Number of People</th>
-                  <th class="text-right">% of People</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in personPeriods" :key="item.CONCEPT_ID">
-                  <td class="text-right">{{ item.CONCEPT_NAME }}</td>
-                  <td class="text-right">{{ item.COUNT_VALUE }}</td>
-                  <td class="text-right">
-                    {{ getPersonPeriodsPercent(item.COUNT_VALUE) }}
-                  </td>
-                </tr>
-              </tbody></template
-            ></v-simple-table
+          <v-data-table
+            class="mt-4"
+            dense
+            :headers="headers"
+            :items="personPeriods"
+            :footer-props="{
+              'items-per-page-options': [5, 10, 25, 50],
+            }"
+            :items-per-page="5"
+            :sort-by="['PERCENT_PEOPLE']"
+            :sort-desc="[true, false]"
           >
+          </v-data-table>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Observation over Time</v-card-title>
@@ -79,8 +72,29 @@ export default {
       errorText: "",
       errorDetails: "",
       dataLoaded: false,
-      personPeriods: null,
+      headers: [],
+      personPeriods: [],
       observationPeriodData: null,
+      headersMap: {
+        CONCEPT_ID: {
+          text: "Number of Observation Periods",
+          sortable: true,
+          value: "CONCEPT_ID",
+          align: "start",
+        },
+        COUNT_VALUE: {
+          text: "Number of People",
+          sortable: true,
+          value: "COUNT_VALUE",
+          align: "start",
+        },
+        PERCENT_PEOPLE: {
+          text: "% of People",
+          sortable: true,
+          value: "PERCENT_PEOPLE",
+          align: "end",
+        },
+      },
       specAgeAtFirstObservation: {
         $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 150,
@@ -186,12 +200,15 @@ export default {
       },
       specObservationByAge: {
         $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        height: {"step": "20"},
+        height: { step: "20" },
         width: "container",
         data: null,
         encoding: {
           y: {
-            field: "CATEGORY", type: "nominal", title: null, sort: {"field": "categoryOrder"},
+            field: "CATEGORY",
+            type: "nominal",
+            title: null,
+            sort: { field: "categoryOrder" },
           },
         },
         layer: [
@@ -349,11 +366,6 @@ export default {
     this.load();
   },
   methods: {
-    getPersonPeriodsPercent: function (value) {
-      let denominator = 0;
-      this.personPeriods.forEach((item) => (denominator += item.COUNT_VALUE));
-      return (value / denominator).toFixed(3) * 100 + " %";
-    },
     triggerResize: function () {
       window.dispatchEvent(new Event("resize"));
     },
@@ -369,10 +381,19 @@ export default {
         .get(dataUrl)
         .then((response) => {
           this.observationPeriodData = response.data;
-          this.personPeriods = response.data.PERSON_PERIODS_DATA;
+          this.personPeriods = response.data.PERSON_PERIODS_DATA.map(
+            (item) => ({
+              ...item,
+              PERCENT_PEOPLE: dataService.getPercentage(
+                item.COUNT_VALUE,
+                response.data.PERSON_PERIODS_DATA
+              ),
+            })
+          );
           this.specAgeAtFirstObservation.data = {
             values: this.observationPeriodData.AGE_AT_FIRST_OBSERVATION,
           };
+          this.headers = Object.values(this.headersMap);
           this.specAgeBySex.data = {
             values: this.observationPeriodData.AGE_BY_GENDER,
           };
@@ -380,7 +401,12 @@ export default {
             values: this.observationPeriodData.CUMULATIVE_DURATION,
           };
           this.specObservationByAge.data = {
-            values: dataService.sortByRange(this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE, "ascending", "CATEGORY", "categoryOrder"),
+            values: dataService.sortByRange(
+              this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
+              "ascending",
+              "CATEGORY",
+              "categoryOrder"
+            ),
           };
           this.specObservationBySex.data = {
             values:
