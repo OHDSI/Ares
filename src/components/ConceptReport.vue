@@ -2,12 +2,16 @@
   <div>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
-        <v-layout class="ma-0 mb-6 text-uppercase text-h6">{{
-          conceptName
-        }}</v-layout>
+        <v-layout class="ma-0 mb-6 d-flex justify-md-space-between">
+          <h2 class="text-uppercase">
+            {{conceptName}}
+          </h2>
+          <ReturnButton />
+        </v-layout>
         <v-row v-if="dataLoaded" justify="start"
           ><v-col cols="2" align="center">
             <v-icon left color="info">mdi-identifier</v-icon>
@@ -73,6 +77,12 @@
           class="ma-4 pa-2"
         >
           <v-card-title>Measurement Value Distributions</v-card-title>
+          <v-layout class="pa-4" justify-end>
+            <v-btn small color="primary" @click="toggleMeasurementValueChart()"
+              ><v-icon dark left>mdi-toggle-switch</v-icon
+              >{{ toggleMode }}</v-btn
+            >
+          </v-layout>
           <div
             class="viz-container"
             id="viz-measurementvaluedistribution"
@@ -303,6 +313,7 @@ import * as d3 from "d3-time-format";
 import * as d3Format from "d3-format";
 import InfoPanel from "./InfoPanel.vue";
 import dataService from "../services/DataService";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data() {
@@ -310,6 +321,7 @@ export default {
       componentFailed: false,
       errorText: "",
       errorDetails: "",
+      toggleMode: "P10/P90",
       hasMeasurementValueDistribution: false,
       hasAgeAtFirstDiagnosis: false,
       hasAgeAtFirstOccurrence: false,
@@ -335,7 +347,7 @@ export default {
       historyRecords: [],
       cdmSourceName: "",
       specConditionsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -375,7 +387,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -387,7 +400,7 @@ export default {
         },
       },
       specDrugsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -427,7 +440,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -439,7 +453,7 @@ export default {
         },
       },
       specRecordsByUnit: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         autosize: "fit",
@@ -482,7 +496,7 @@ export default {
             legend: {
               orient: "right",
               title: null,
-              columns: 2
+              columns: 2,
             },
           },
           order: {
@@ -493,7 +507,7 @@ export default {
         },
       },
       specRecordProportionByAgeSexYear: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         width: 60,
         height: 150,
         data: {},
@@ -517,14 +531,14 @@ export default {
             field: "SERIES_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
             },
           },
           facet: {
             field: "TRELLIS_NAME",
             type: "nominal",
             title: null,
-            sort: {"field": "trellisOrder"},
+            sort: { field: "trellisOrder" },
             rows: 1,
             spacing: 20,
             header: {
@@ -538,7 +552,7 @@ export default {
         },
       },
       specMeasurementValueDistribution: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: {"step": "20"},
         width: "container",
         data: {},
@@ -548,12 +562,12 @@ export default {
             mark: { type: "rule" },
             encoding: {
               x: {
-                field: "MIN_VALUE",
+                field: "P10_VALUE",
                 type: "quantitative",
                 scale: { zero: false },
                 title: null,
               },
-              x2: { field: "MAX_VALUE" },
+              x2: { field: "P90_VALUE" },
             },
           },
           {
@@ -578,7 +592,7 @@ export default {
         },
       },
       specMeasurementsByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -618,7 +632,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -630,7 +645,7 @@ export default {
         },
       },
       specAgeAtFirstOccurrence: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -665,7 +680,7 @@ export default {
         ],
       },
       specVisitDurationByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -700,7 +715,7 @@ export default {
         ],
       },
       specDaysSupply: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -733,7 +748,7 @@ export default {
         ],
       },
       specQuantity: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -766,7 +781,7 @@ export default {
         ],
       },
       specLengthOfEra: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -799,7 +814,7 @@ export default {
         ],
       },
       specAgeAtFirstExposure: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -840,7 +855,7 @@ export default {
         ],
       },
       specAgeAtFirstDiagnosis: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -875,7 +890,7 @@ export default {
         ],
       },
       specRecordProportionByMonth: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         vconcat: [
           {
@@ -937,6 +952,7 @@ export default {
     };
   },
   components: {
+    ReturnButton,
     error,
     InfoPanel,
   },
@@ -944,19 +960,38 @@ export default {
     this.load();
   },
   updated() {
-    this.load()
+    this.load();
   },
   methods: {
     getSourceConceptReportLink: function () {
       return (
         "/datasource/" +
         this.$route.params.cdm +
-            "/" +
+        "/" +
         this.$route.params.domain +
         "/" +
         this.$route.params.concept +
         "/overlay"
       );
+    },
+    toggleMeasurementValueChart() {
+      let encoding = this.specMeasurementValueDistribution.layer[0].encoding;
+
+      if (this.toggleMode === "MIN/MAX") {
+        encoding.x.field = "P10_VALUE";
+        encoding.x2.field = "P90_VALUE";
+        this.toggleMode = "P10/P90";
+      } else {
+        encoding.x.field = "MIN_VALUE";
+        encoding.x2.field = "MAX_VALUE";
+        this.toggleMode = "MIN/MAX";
+      }
+      embed(
+        "#viz-measurementvaluedistribution",
+        this.specMeasurementValueDistribution
+      ).then(() => {
+        window.dispatchEvent(new Event("resize"));
+      });
     },
     formatPercent: function (value) {
       return d3Format.format("0.0%")(value);
@@ -988,8 +1023,7 @@ export default {
       });
     },
     load: function () {
-      var self = this;
-      var dataUrl =
+      let dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -1002,193 +1036,198 @@ export default {
       axios
         .get(dataUrl)
         .then((response) => {
-          self.componentFailed = false;
-          var dateParse = d3.timeParse("%Y%m");
-          self.conceptData = response.data;
-          self.conceptName = response.data.CONCEPT_NAME[0];
-          self.conceptId = response.data.CONCEPT_ID[0];
-          self.numPersons = self.formatComma(response.data.NUM_PERSONS[0]);
-          self.percentPersons = response.data.PERCENT_PERSONS[0];
-          self.recordsPerPerson = response.data.RECORDS_PER_PERSON[0];
+          this.componentFailed = false;
+          let dateParse = d3.timeParse("%Y%m");
+          this.conceptData = response.data;
+          this.conceptName = response.data.CONCEPT_NAME[0];
+          this.conceptId = response.data.CONCEPT_ID[0];
+          this.numPersons = this.formatComma(response.data.NUM_PERSONS[0]);
+          this.percentPersons = response.data.PERCENT_PERSONS[0];
+          this.recordsPerPerson = response.data.RECORDS_PER_PERSON[0];
 
-          if (self.conceptData.COUNT_FAILED) {
-            self.hasCountFailed = true;
-            self.countFailed = self.conceptData.COUNT_FAILED[0];
+          if (this.conceptData.COUNT_FAILED) {
+            this.hasCountFailed = true;
+            this.countFailed = this.conceptData.COUNT_FAILED[0];
           }
 
-          if (self.conceptData.IS_STATIONARY) {
-            self.isNotStationary = !self.conceptData.IS_STATIONARY[0];
+          if (this.conceptData.IS_STATIONARY) {
+            this.isNotStationary = !this.conceptData.IS_STATIONARY[0];
           }
 
-          if (self.conceptData.SEASONALITY_SCORE) {
-            self.hasSeasonalityScore = true;
-            self.seasonalityScore = self.conceptData.SEASONALITY_SCORE[0];
-            self.seasonalityComment =
-              "Seasonality score of " + self.seasonalityScore + ".";
+          if (this.conceptData.SEASONALITY_SCORE) {
+            this.hasSeasonalityScore = true;
+            this.seasonalityScore = this.conceptData.SEASONALITY_SCORE[0];
+            this.seasonalityComment =
+              "Seasonality score of " + this.seasonalityScore + ".";
           }
 
-          if (self.conceptData.LENGTH_OF_ERA) {
-            self.specLengthOfEra.data = {
-              values: self.conceptData.LENGTH_OF_ERA,
+          if (this.conceptData.LENGTH_OF_ERA) {
+            this.specLengthOfEra.data = {
+              values: this.conceptData.LENGTH_OF_ERA,
             };
-            self.hasLengthOfEra = true;
-            embed("#viz-lengthofera", self.specLengthOfEra).then(() => {
+            this.hasLengthOfEra = true;
+            embed("#viz-lengthofera", this.specLengthOfEra).then(() => {
               window.dispatchEvent(new Event("resize"));
             });
           }
 
-          if (self.conceptData.DAYS_SUPPLY_DISTRIBUTION) {
-            self.specDaysSupply.data = {
-              values: self.conceptData.DAYS_SUPPLY_DISTRIBUTION,
+          if (this.conceptData.DAYS_SUPPLY_DISTRIBUTION) {
+            this.specDaysSupply.data = {
+              values: this.conceptData.DAYS_SUPPLY_DISTRIBUTION,
             };
-            self.hasDaysSupply = true;
-            embed("#viz-dayssupply", self.specDaysSupply);
+            this.hasDaysSupply = true;
+            embed("#viz-dayssupply", this.specDaysSupply);
           }
 
-          if (self.conceptData.QUANTITY_DISTRIBUTION) {
-            self.specQuantity.data = {
-              values: self.conceptData.QUANTITY_DISTRIBUTION,
+          if (this.conceptData.QUANTITY_DISTRIBUTION) {
+            this.specQuantity.data = {
+              values: this.conceptData.QUANTITY_DISTRIBUTION,
             };
-            self.hasQuantity = true;
-            embed("#viz-quantity", self.specQuantity);
+            this.hasQuantity = true;
+            embed("#viz-quantity", this.specQuantity);
           }
 
-          if (self.conceptData.AGE_AT_FIRST_OCCURRENCE) {
-            self.specAgeAtFirstOccurrence.data = {
-              values: self.conceptData.AGE_AT_FIRST_OCCURRENCE,
+          if (this.conceptData.AGE_AT_FIRST_OCCURRENCE) {
+            this.specAgeAtFirstOccurrence.data = {
+              values: this.conceptData.AGE_AT_FIRST_OCCURRENCE,
             };
-            self.hasAgeAtFirstOccurrence = true;
+            this.hasAgeAtFirstOccurrence = true;
             embed(
               "#viz-ageatfirstoccurrence",
-              self.specAgeAtFirstOccurrence
+              this.specAgeAtFirstOccurrence
             ).then(() => {
               window.dispatchEvent(new Event("resize"));
             });
           }
 
-          if (self.conceptData.VISIT_DURATION_BY_TYPE) {
-            self.specVisitDurationByType.data = {
-              values: self.conceptData.VISIT_DURATION_BY_TYPE,
+          if (this.conceptData.VISIT_DURATION_BY_TYPE) {
+            this.specVisitDurationByType.data = {
+              values: this.conceptData.VISIT_DURATION_BY_TYPE,
             };
-            self.hasVisitDurationByType = true;
+            this.hasVisitDurationByType = true;
             embed(
               "#viz-visitdurationbytype",
-              self.specVisitDurationByType
+              this.specVisitDurationByType
             ).then(() => {
               window.dispatchEvent(new Event("resize"));
             });
           }
 
-          if (self.conceptData.CONDITIONS_BY_TYPE) {
-            self.specConditionsByType.data = {
-              values: self.conceptData.CONDITIONS_BY_TYPE,
+          if (this.conceptData.CONDITIONS_BY_TYPE) {
+            this.specConditionsByType.data = {
+              values: this.conceptData.CONDITIONS_BY_TYPE,
             };
-            self.hasConditionsByType = true;
-            embed("#viz-conditionsbytype", self.specConditionsByType).then(
+            this.hasConditionsByType = true;
+            embed("#viz-conditionsbytype", this.specConditionsByType).then(
               () => {
                 window.dispatchEvent(new Event("resize"));
               }
             );
           }
 
-          if (self.conceptData.DRUGS_BY_TYPE) {
-            self.specDrugsByType.data = {
-              values: self.conceptData.DRUGS_BY_TYPE,
+          if (this.conceptData.DRUGS_BY_TYPE) {
+            this.specDrugsByType.data = {
+              values: this.conceptData.DRUGS_BY_TYPE,
             };
-            self.hasDrugsByType = true;
-            embed("#viz-drugsbytype", self.specDrugsByType);
+            this.hasDrugsByType = true;
+            embed("#viz-drugsbytype", this.specDrugsByType);
           }
 
-          if (self.conceptData.RECORDS_BY_UNIT) {
-            self.specRecordsByUnit.data = {
-              values: self.conceptData.RECORDS_BY_UNIT,
+          if (this.conceptData.RECORDS_BY_UNIT) {
+            this.specRecordsByUnit.data = {
+              values: this.conceptData.RECORDS_BY_UNIT,
             };
-            self.hasRecordsByUnit = true;
-            embed("#viz-recordsbyunit", self.specRecordsByUnit);
+            this.hasRecordsByUnit = true;
+            embed("#viz-recordsbyunit", this.specRecordsByUnit);
           }
 
-          if (self.conceptData.MEASUREMENTS_BY_TYPE) {
-            self.specMeasurementsByType.data = {
-              values: self.conceptData.MEASUREMENTS_BY_TYPE,
+          if (this.conceptData.MEASUREMENTS_BY_TYPE) {
+            this.specMeasurementsByType.data = {
+              values: this.conceptData.MEASUREMENTS_BY_TYPE,
             };
-            self.hasMeasurementsByType = true;
-            embed("#viz-measurementsbytype", self.specMeasurementsByType);
+            this.hasMeasurementsByType = true;
+            embed("#viz-measurementsbytype", this.specMeasurementsByType);
           }
 
-          if (self.conceptData.AGE_AT_FIRST_EXPOSURE) {
-            self.specAgeAtFirstExposure.data = {
-              values: self.conceptData.AGE_AT_FIRST_EXPOSURE,
+          if (this.conceptData.AGE_AT_FIRST_EXPOSURE) {
+            this.specAgeAtFirstExposure.data = {
+              values: this.conceptData.AGE_AT_FIRST_EXPOSURE,
             };
-            self.hasAgeAtFirstExposure = true;
-            embed("#viz-ageatfirstexposure", self.specAgeAtFirstExposure).then(
+            this.hasAgeAtFirstExposure = true;
+            embed("#viz-ageatfirstexposure", this.specAgeAtFirstExposure).then(
               () => {
                 window.dispatchEvent(new Event("resize"));
               }
             );
           }
 
-          if (self.conceptData.AGE_AT_FIRST_DIAGNOSIS) {
-            self.specAgeAtFirstDiagnosis.data = {
-              values: self.conceptData.AGE_AT_FIRST_DIAGNOSIS,
+          if (this.conceptData.AGE_AT_FIRST_DIAGNOSIS) {
+            this.specAgeAtFirstDiagnosis.data = {
+              values: this.conceptData.AGE_AT_FIRST_DIAGNOSIS,
             };
-            self.hasAgeAtFirstDiagnosis = true;
+            this.hasAgeAtFirstDiagnosis = true;
             embed(
               "#viz-ageatfirstdiagnosis",
-              self.specAgeAtFirstDiagnosis
+              this.specAgeAtFirstDiagnosis
             ).then(() => {
               window.dispatchEvent(new Event("resize"));
             });
           }
 
-          self.specRecordProportionByAgeSexYear.data = {
-            values: dataService.sortByRange(self.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "trellisOrder")
+          this.specRecordProportionByAgeSexYear.data = {
+            values: dataService.sortByRange(
+              this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,
+              "ascending",
+              "TRELLIS_NAME",
+              "trellisOrder"
+            ),
           };
-          self.specRecordProportionByMonth.data = {
-            values: self.conceptData.PREVALENCE_BY_MONTH,
+          this.specRecordProportionByMonth.data = {
+            values: this.conceptData.PREVALENCE_BY_MONTH,
           };
 
           if (
-            self.conceptData.MEASUREMENT_VALUE_DISTRIBUTION &&
-            self.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.length > 0
+            this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION &&
+            this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.length > 0
           ) {
-            self.specMeasurementValueDistribution.data = {
-              values: self.conceptData.MEASUREMENT_VALUE_DISTRIBUTION,
+            this.specMeasurementValueDistribution.data = {
+              values: this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION,
             };
-            self.hasMeasurementValueDistribution = true;
+            this.hasMeasurementValueDistribution = true;
             embed(
               "#viz-measurementvaluedistribution",
-              self.specMeasurementValueDistribution
+              this.specMeasurementValueDistribution
             ).then(() => {
               window.dispatchEvent(new Event("resize"));
             });
           }
 
-          self.conceptData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-            self.conceptData.PREVALENCE_BY_MONTH[i].date = dateParse(
+          this.conceptData.PREVALENCE_BY_MONTH.forEach((v, i) => {
+            this.conceptData.PREVALENCE_BY_MONTH[i].date = dateParse(
               v.X_CALENDAR_MONTH
             );
           });
 
           embed(
             "#viz-recordproportionbymonth",
-            self.specRecordProportionByMonth
+            this.specRecordProportionByMonth
           ).then(() => {
             window.dispatchEvent(new Event("resize"));
           });
 
           embed(
             "#viz-recordproportionbyagesexyear",
-            self.specRecordProportionByAgeSexYear
+            this.specRecordProportionByAgeSexYear
           ).then(() => {
             window.dispatchEvent(new Event("resize"));
           });
 
-          self.dataLoaded = true;
+          this.dataLoaded = true;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to obtain concept summary data file.";
-          self.errorDetails = err + " (" + dataUrl + ") ";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain concept summary data file.";
+          this.errorDetails = err + " (" + dataUrl + ") ";
         });
     },
   },

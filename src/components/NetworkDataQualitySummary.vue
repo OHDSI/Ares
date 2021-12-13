@@ -2,6 +2,7 @@
   <div id="network-data-quality-summary" class="pa-2">
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Network Data Quality Issues by Category</v-card-title>
@@ -19,6 +20,7 @@ import axios from "axios";
 import * as d3 from "d3-dsv";
 import error from "./Error.vue";
 import embed from "vega-embed";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data() {
@@ -27,7 +29,7 @@ export default {
       dataLoaded: false,
       failureSummary: [],
       specIssueStratificationByCategory: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         autosize: "fit",
@@ -67,7 +69,7 @@ export default {
         },
       },
       specIssueStratificationByTable: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         autosize: "fit",
@@ -138,6 +140,7 @@ export default {
   },
   components: {
     error,
+    ReturnButton
   },
   methods: {
     navigate: function (route) {

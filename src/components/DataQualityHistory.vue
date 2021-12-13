@@ -88,7 +88,7 @@ export default {
         },
       ],
       specDataQualityResultsByDomain: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 150,
@@ -146,7 +146,7 @@ export default {
         },
       },
       specDataQualityResultsByCategory: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 150,
@@ -203,7 +203,7 @@ export default {
         },
       },
       specDataQualityResults: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 100,

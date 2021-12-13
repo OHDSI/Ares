@@ -2,6 +2,7 @@
   <div>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
@@ -44,6 +45,7 @@ import embed from "vega-embed";
 import error from "./Error.vue";
 import * as d3 from "d3-time-format";
 import dataService from "../services/DataService";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data() {
@@ -54,7 +56,7 @@ export default {
       deathData: null,
       dataLoaded: false,
       specDeathByType: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         width: "container",
         height: 75,
@@ -94,7 +96,8 @@ export default {
             field: "CONCEPT_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
+              columns: 2,
               title: null,
             },
           },
@@ -106,7 +109,7 @@ export default {
         },
       },
       specAgeAtDeath: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         height: 100,
         width: "container",
         data: {},
@@ -141,7 +144,7 @@ export default {
         ],
       },
       specRecordProportionByAgeSexYear: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         width: 60,
         height: 150,
         data: {},
@@ -165,7 +168,7 @@ export default {
             field: "SERIES_NAME",
             type: "nominal",
             legend: {
-              orient: "top",
+              orient: "right",
             },
           },
           facet: {
@@ -186,7 +189,7 @@ export default {
         },
       },
       specRecordProportionByMonth: {
-        $schema: "https://vega.github.io/schema/vega-lite/v4.json",
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
         data: null,
         vconcat: [
           {
@@ -247,6 +250,7 @@ export default {
     };
   },
   components: {
+    ReturnButton,
     error,
   },
   created() {

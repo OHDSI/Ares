@@ -2,6 +2,7 @@
   <div>
     <div v-if="componentFailed">
       <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <ReturnButton block />
     </div>
     <v-container v-if="dataLoaded && !componentFailed" class="pa-1">
       <v-card elevation="10" class="ma-4 pa-2">
@@ -74,6 +75,7 @@
 import axios from "axios";
 import * as d3 from "d3-dsv";
 import error from "./Error.vue";
+import ReturnButton from "@/components/ReturnButton";
 
 export default {
   data: function () {
@@ -172,6 +174,7 @@ export default {
     );
   },
   components: {
+    ReturnButton,
     error,
   },
   computed: {
