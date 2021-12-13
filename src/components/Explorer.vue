@@ -78,17 +78,17 @@
           </template>
         </v-autocomplete>
       </v-col>
-        <v-col cols="auto" v-if="showConceptSelector">
-          <v-text-field
-              readonly
-              class="mt-4"
-              label="Concept ID"
-              return-object
-              prepend-icon="mdi-chart-timeline-variant-shimmer"
-              dense
-              :value="showConceptSelector"
-          ></v-text-field>
-        </v-col>
+      <v-col cols="auto" v-if="showConceptSelector">
+        <v-text-field
+          readonly
+          class="mt-4"
+          label="Concept ID"
+          return-object
+          prepend-icon="mdi-chart-timeline-variant-shimmer"
+          dense
+          :value="showConceptSelector"
+        ></v-text-field>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -290,8 +290,8 @@ export default {
       .then((response) => {
         this.networkIndex = response.data.dataQualityRecords;
         this.sources = response.data.sources;
-        this.folder = response.data.folder
-        this.dataLoaded = true
+        this.folder = response.data.folder;
+        this.dataLoaded = true;
       })
       .catch((err) => {
         console.log("explorer failed to load network index");
@@ -366,8 +366,12 @@ export default {
       this.$router.push({
         name: data.key,
         params: {
-          cdm: this.sources[0].cdm_source_key,
-          release: this.sources[0].releases[0].release_id,
+          cdm: this.getSelectedSource
+            ? this.getSelectedSource.cdm_source_key
+            : this.sources[0].cdm_source_key,
+          release: this.getSelectedSource
+            ? this.getSelectedRelease.release_id
+            : this.sources[0].releases[0].release_id,
         },
       });
     },
