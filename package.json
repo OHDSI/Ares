@@ -46,26 +46,27 @@
     "electron": "^16.0.1",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^6.8.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
     "eslint-plugin-vue": "^6.2.2",
     "fibers": "^5.0.0",
     "sass": "^1.43.4",
+    "lint-staged": "^12.1.2",
     "sass-loader": "^10.2.0",
     "vue-cli-plugin-electron-builder": "^2.1.1",
     "vue-template-compiler": "^2.6.14"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "vue-cli-service lint",
+      "git add"
     ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {}
+    "*.vue": [
+      "vue-cli-service lint",
+      "git add"
+    ]
   },
   "browserslist": [
     "> 1%",

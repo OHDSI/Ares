@@ -1,0 +1,22 @@
+{
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "plugin:vue/essential",
+    "plugin:vue/recommended",
+    "@vue/prettier"
+  ],
+  "parserOptions": {
+    "parser": "babel-eslint"
+  },
+  "rules": {
+    "eqeqeq": "warn",
+    "vue/eqeqeq": "warn",
+    "no-shadow": "warn",
+    "no-var": "warn",
+    "prefer-const": "warn",
+    "no-console": "warn"
+  }
+}
