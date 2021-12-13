@@ -145,47 +145,116 @@ export default {
       },
       specRecordProportionByAgeSexYear: {
         $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        width: 60,
-        height: 150,
         data: {},
-        mark: "line",
-        encoding: {
-          x: {
-            field: "X_CALENDAR_YEAR",
-            type: "quantitative",
-            title: "",
-            axis: {
-              format: "d",
-            },
-          },
-          y: {
-            field: "Y_PREVALENCE_1000PP",
-            type: "quantitative",
-            title: "",
-          },
-          color: {
-            title: "Sex",
-            field: "SERIES_NAME",
-            type: "nominal",
-            legend: {
-              orient: "right",
-            },
-          },
-          facet: {
+        spacing: 10,
+        autosize: { resize: true },
+        facet: {
+          row: {
             field: "TRELLIS_NAME",
-            type: "nominal",
-            title: null,
-            sort: {"field": "trellisOrder"},
-            rows: 1,
-            spacing: 5,
-            header: {
-              title: "Age Deciles",
-              labelOrient: "top",
-              labelAnchor: "start",
-              labelFontSize: 10,
-              labelPadding: 5,
-            },
+            title: "Age Deciles",
+            sort: { field: "trellisOrder" },
           },
+          field: "TRELLIS_NAME",
+          type: "nominal",
+          title: null,
+        },
+        spec: {
+          width: "container",
+          height: 30,
+          encoding: {
+            x: {
+              field: "X_CALENDAR_YEAR",
+              type: "quantitative",
+              title: "",
+              axis: {
+                format: "d",
+              },
+            },
+            y: {
+              field: "Y_PREVALENCE_1000PP",
+              type: "quantitative",
+              title: "",
+            },
+            color: {
+              title: "Sex",
+              field: "SERIES_NAME",
+              type: "nominal",
+              legend: {
+                orient: "right",
+                offset: 5,
+              },
+            },
+            tooltip: [
+              { field: "X_CALENDAR_YEAR", title: "Year" },
+              {
+                field: "Y_PREVALENCE_1000PP",
+                title: "Record Proportion per 1000",
+              },
+              { field: "TRELLIS_NAME", title: "Age Decile" },
+            ],
+          },
+          layer: [
+            {
+              mark: { type: "line", interpolate: "linear" },
+              params: [
+                {
+                  name: "source",
+                  select: { type: "point", fields: ["SERIES_NAME"] },
+                  bind: "legend",
+                },
+              ],
+              encoding: {
+                opacity: {
+                  condition: { param: "source", value: 1 },
+                  value: 0.2,
+                },
+              },
+            },
+            {
+              selection: {
+                dataSource: {
+                  type: "multi",
+                  fields: ["SERIES_NAME"],
+                  bind: "legend",
+                },
+                x: {
+                  type: "single",
+                  on: "mousemove",
+                  encodings: ["x"],
+                  nearest: true,
+                },
+              },
+              transform: [
+                {
+                  filter: { selection: "dataSource" },
+                },
+              ],
+              mark: { type: "point", tooltip: true },
+            },
+            {
+              transform: [
+                {
+                  filter: {
+                    and: ["x.X_CALENDAR_YEAR", { selection: "x" }],
+                  },
+                },
+                { filter: { selection: "dataSource" } },
+              ],
+              layer: [
+                {
+                  mark: "rule",
+                  encoding: {
+                    y: {
+                      height: 1,
+                    },
+                    color: {
+                      value: "black",
+                    },
+                  },
+                },
+              ],
+            },
+          ],
         },
       },
       specRecordProportionByMonth: {
@@ -283,7 +352,12 @@ export default {
           embed("#viz-deathbytype", vm.specDeathByType);
 
           vm.specRecordProportionByAgeSexYear.data = {
-            values: dataService.sortByRange(vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR, "ascending", "TRELLIS_NAME", "trellisOrder")
+            values: dataService.sortByRange(
+              vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
+              "ascending",
+              "TRELLIS_NAME",
+              "trellisOrder"
+            ),
           };
 
           embed(
