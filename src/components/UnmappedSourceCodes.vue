@@ -1,18 +1,18 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
     </div>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Unmapped Source Codes</v-card-title>
       <v-row>
         <v-col cols="3">
           <v-text-field
-            @input="delayedSearch"
             prepend-icon="mdi-magnify"
             label="Search in Table"
             single-line
             hide-details
+            @input="delayedSearch"
           ></v-text-field>
         </v-col>
         <v-col cols="9"> </v-col>
@@ -37,12 +37,12 @@
             <th v-for="header in showHeaders" :key="header.text">
               <div v-if="filters.hasOwnProperty(header.value)">
                 <v-select
+                  v-model="filters[header.value]"
                   small-chips
                   deletable-chips
                   hide-details
                   multiple
                   :items="columnValueList(header.value)"
-                  v-model="filters[header.value]"
                 ></v-select>
               </div>
             </th>
@@ -58,7 +58,7 @@
           {{ item.SOURCE_VALUE }}
         </template>
         <template v-slot:item.RECORD_COUNT="{ item }">
-          <v-layout justify-end>{{ item.RECORD_COUNT }}</v-layout>
+          <v-layout justify-end>{{ formatComma(item.RECORD_COUNT) }}</v-layout>
         </template>
       </v-data-table>
       <v-card-text>
@@ -73,11 +73,18 @@
 
 <script>
 import axios from "axios";
-import * as d3 from "d3-dsv";
+import { csvParse } from "d3-dsv";
+import { format } from "d3-format";
 import error from "./Error.vue";
 import { debounce } from "lodash";
 
 export default {
+  components: {
+    error,
+  },
+  props: {
+    resultFile: String,
+  },
   data: function () {
     return {
       chooseHeaderMenu: false,
@@ -117,14 +124,42 @@ export default {
       },
     };
   },
+  computed: {
+    showHeaders() {
+      return this.headers.filter((s) => this.selectedHeaders.includes(s));
+    },
+    filteredRecords() {
+      return this.domainTable.filter((d) => {
+        return Object.keys(this.filters).every((f) => {
+          return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
+        });
+      });
+    },
+  },
   watch: {
     $route() {
       this.load();
     },
   },
+  created() {
+    this.load();
+    this.headers = Object.values(this.headersMap);
+    this.selectedHeaders = this.headers.filter((h) =>
+      [
+        "CDM_TABLE_NAME",
+        "CDM_FIELD_NAME",
+        "SOURCE_VALUE",
+        "RECORD_COUNT",
+      ].includes(h.value)
+    );
+  },
+
   methods: {
+    formatComma: function (value) {
+      return format(",")(value);
+    },
     delayedSearch: debounce(function (data) {
-      this.search = data
+      this.search = data;
     }, 300),
     getMenuOffset: function () {
       return true;
@@ -144,8 +179,7 @@ export default {
       );
     },
     load() {
-      var self = this;
-      var dataUrl =
+      const dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -154,47 +188,17 @@ export default {
       axios
         .get(dataUrl)
         .then((response) => {
-          this.domainTable = d3.csvParse(response.data);
+          this.domainTable = csvParse(response.data);
           this.dataLoaded = true;
-          self.componentFailed = false;
+          this.componentFailed = false;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText =
+          this.componentFailed = true;
+          this.errorText =
             "Failed to obtain unmapped source code table data file.";
-          self.errorDetails = err + ". (" + dataUrl + ")";
+          this.errorDetails = err + ". (" + dataUrl + ")";
         });
     },
-  },
-  created() {
-    this.load();
-    this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers.filter((h) =>
-      [
-        "CDM_TABLE_NAME",
-        "CDM_FIELD_NAME",
-        "SOURCE_VALUE",
-        "RECORD_COUNT",
-      ].includes(h.value)
-    );
-  },
-  components: {
-    error,
-  },
-  computed: {
-    showHeaders() {
-      return this.headers.filter((s) => this.selectedHeaders.includes(s));
-    },
-    filteredRecords() {
-      return this.domainTable.filter((d) => {
-        return Object.keys(this.filters).every((f) => {
-          return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
-        });
-      });
-    },
-  },
-  props: {
-    resultFile: String,
   },
 };
 </script>
