@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
@@ -71,8 +71,8 @@
           ></v-row
         >
         <v-card
-          :loading="!dataLoaded"
           v-if="hasMeasurementValueDistribution"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
@@ -84,8 +84,8 @@
             >
           </v-layout>
           <div
-            class="viz-container"
             id="viz-measurementvaluedistribution"
+            class="viz-container"
           ></div>
           <v-card-text>
             <v-layout>
@@ -101,13 +101,13 @@
           </v-card-text>
         </v-card>
         <v-card
-          :loading="!dataLoaded"
           v-if="hasAgeAtFirstDiagnosis"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Age at First Diagnosis</v-card-title>
-          <div class="viz-container" id="viz-ageatfirstdiagnosis"></div>
+          <div id="viz-ageatfirstdiagnosis" class="viz-container"></div>
           <v-card-text>
             <router-link to="/help">
               <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
@@ -116,13 +116,13 @@
           </v-card-text>
         </v-card>
         <v-card
-          :loading="!dataLoaded"
           v-if="hasAgeAtFirstExposure"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Age at First Exposure</v-card-title>
-          <div class="viz-container" id="viz-ageatfirstexposure"></div>
+          <div id="viz-ageatfirstexposure" class="viz-container"></div>
           <v-card-text>
             <router-link to="/help">
               <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
@@ -132,23 +132,23 @@
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasLengthOfEra"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Length of Era</v-card-title>
-          <div class="viz-container" id="viz-lengthofera"></div>
+          <div id="viz-lengthofera" class="viz-container"></div>
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasConditionsByType"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Conditions by Type</v-card-title>
-          <div class="viz-container" id="viz-conditionsbytype"></div>
+          <div id="viz-conditionsbytype" class="viz-container"></div>
           <v-card-text>
             <a
               href="https://ohdsi.github.io/CommonDataModel/cdm531.html#CONDITION_OCCURRENCE"
@@ -161,13 +161,13 @@
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasDrugsByType"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Drugs by Type</v-card-title>
-          <div class="viz-container" id="viz-drugsbytype"></div>
+          <div id="viz-drugsbytype" class="viz-container"></div>
           <v-card-text>
             <a
               href="https://ohdsi.github.io/CommonDataModel/cdm531.html#DRUG_EXPOSURE"
@@ -180,23 +180,23 @@
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasRecordsByUnit"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Records by Unit</v-card-title>
-          <div class="viz-container" id="viz-recordsbyunit"></div>
+          <div id="viz-recordsbyunit" class="viz-container"></div>
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasMeasurementsByType"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Measurements by Type</v-card-title>
-          <div class="viz-container" id="viz-measurementsbytype"></div>
+          <div id="viz-measurementsbytype" class="viz-container"></div>
           <v-card-text>
             <a
               href="https://ohdsi.github.io/CommonDataModel/cdm531.html#MEASUREMENT"
@@ -209,22 +209,22 @@
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasAgeAtFirstOccurrence"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Age at First Occurrence</v-card-title>
-          <div class="viz-container" id="viz-ageatfirstoccurrence"></div>
+          <div id="viz-ageatfirstoccurrence" class="viz-container"></div>
           <info-panel
             details="Learn how to interpret this plot"
-            routeLink="/help"
+            route-link="/help"
           ></info-panel>
         </v-card>
 
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Record Count Proportion by Month</v-card-title>
-          <div class="viz-container" id="viz-recordproportionbymonth"></div>
+          <div id="viz-recordproportionbymonth" class="viz-container"></div>
           <info-panel
             details="Proportion of people with at least one record per 1000 people."
           ></info-panel>
@@ -244,48 +244,48 @@
           <info-panel
             icon="mdi-database-clock"
             :divider="false"
-            :linkDetails="true"
-            :routeLink="getSourceConceptReportLink()"
+            :link-details="true"
+            :route-link="getSourceConceptReportLink()"
             details="Review this Time-Series across data source releases."
           ></info-panel>
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasDaysSupply"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Days Supply</v-card-title>
-          <div class="viz-container" id="viz-dayssupply"></div>
+          <div id="viz-dayssupply" class="viz-container"></div>
           <info-panel
             details="Learn how to interpret this plot"
-            routeLink="/help"
+            route-link="/help"
           ></info-panel>
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasQuantity"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Quantity</v-card-title>
-          <div class="viz-container" id="viz-quantity"></div>
+          <div id="viz-quantity" class="viz-container"></div>
           <info-panel
             details="Learn how to interpret this plot"
-            routeLink="/help"
+            route-link="/help"
           ></info-panel>
         </v-card>
 
         <v-card
-          :loading="!dataLoaded"
           v-if="hasVisitDurationByType"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Visit Duration by Type</v-card-title>
-          <div class="viz-container" id="viz-visitdurationbytype"></div>
+          <div id="viz-visitdurationbytype" class="viz-container"></div>
         </v-card>
 
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
@@ -293,8 +293,8 @@
             Record Count Proportion by Age, Sex, and Year
           </v-card-title>
           <div
-            class="viz-container"
             id="viz-recordproportionbyagesexyear"
+            class="viz-container"
           ></div>
           <info-panel
             details="Proportion of people with at least one record per 1000 people."
@@ -316,6 +316,11 @@ import dataService from "../services/DataService";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+    InfoPanel,
+  },
   data() {
     return {
       componentFailed: false,
@@ -1020,15 +1025,13 @@ export default {
       },
     };
   },
-  components: {
-    ReturnButton,
-    error,
-    InfoPanel,
+  computed: {},
+  watch: {
+    $route() {
+      this.load();
+    },
   },
   created() {
-    this.load();
-  },
-  updated() {
     this.load();
   },
   methods: {
@@ -1044,7 +1047,7 @@ export default {
       );
     },
     toggleMeasurementValueChart() {
-      let encoding = this.specMeasurementValueDistribution.layer[0].encoding;
+      const encoding = this.specMeasurementValueDistribution.layer[0].encoding;
 
       if (this.toggleMode === "MIN/MAX") {
         encoding.x.field = "P10_VALUE";
@@ -1092,7 +1095,8 @@ export default {
       });
     },
     load: function () {
-      let dataUrl =
+      this.dataLoaded = false;
+      const dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -1106,7 +1110,7 @@ export default {
         .get(dataUrl)
         .then((response) => {
           this.componentFailed = false;
-          let dateParse = d3.timeParse("%Y%m");
+          const dateParse = d3.timeParse("%Y%m");
           this.conceptData = response.data;
           this.conceptName = response.data.CONCEPT_NAME[0];
           this.conceptId = response.data.CONCEPT_ID[0];
@@ -1300,7 +1304,6 @@ export default {
         });
     },
   },
-  computed: {},
 };
 </script>
 

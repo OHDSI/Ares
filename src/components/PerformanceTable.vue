@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container v-if="dataLoaded && !componentFailed" class="pa-1">
@@ -37,12 +37,12 @@
               <th v-for="header in showHeaders" :key="header.text">
                 <div v-if="filters.hasOwnProperty(header.value)">
                   <v-select
+                    v-model="filters[header.value]"
                     small-chips
                     deletable-chips
                     hide-details
                     multiple
                     :items="columnValueList(header.value)"
-                    v-model="filters[header.value]"
                   ></v-select>
                 </div>
               </th>
@@ -78,6 +78,13 @@ import error from "./Error.vue";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+  },
+  props: {
+    resultFile: String,
+  },
   data: function () {
     return {
       chooseHeaderMenu: false,
@@ -114,10 +121,29 @@ export default {
       },
     };
   },
+  computed: {
+    showHeaders() {
+      return this.headers.filter((s) => this.selectedHeaders.includes(s));
+    },
+    filteredRecords() {
+      return this.domainTable.filter((d) => {
+        return Object.keys(this.filters).every((f) => {
+          return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
+        });
+      });
+    },
+  },
   watch: {
     $route() {
       this.load();
     },
+  },
+  created() {
+    this.load();
+    this.headers = Object.values(this.headersMap);
+    this.selectedHeaders = this.headers.filter((h) =>
+      ["analysis_id", "analysis_name", "elapsed_seconds"].includes(h.value)
+    );
   },
   methods: {
     getAnalysisLink: function (id) {
@@ -145,8 +171,9 @@ export default {
       );
     },
     load() {
-      var self = this;
-      var dataUrl =
+      this.dataLoaded = false;
+      this.domainTable = [];
+      const dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -157,40 +184,14 @@ export default {
         .then((response) => {
           this.domainTable = d3.csvParse(response.data);
           this.dataLoaded = true;
-          self.componentFailed = false;
+          this.componentFailed = false;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to obtain completeness table data file.";
-          self.errorDetails = err + ". (" + dataUrl + ")";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain completeness table data file.";
+          this.errorDetails = err + ". (" + dataUrl + ")";
         });
     },
-  },
-  created() {
-    this.load();
-    this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers.filter((h) =>
-      ["analysis_id", "analysis_name", "elapsed_seconds"].includes(h.value)
-    );
-  },
-  components: {
-    ReturnButton,
-    error,
-  },
-  computed: {
-    showHeaders() {
-      return this.headers.filter((s) => this.selectedHeaders.includes(s));
-    },
-    filteredRecords() {
-      return this.domainTable.filter((d) => {
-        return Object.keys(this.filters).every((f) => {
-          return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
-        });
-      });
-    },
-  },
-  props: {
-    resultFile: String,
   },
 };
 </script>

@@ -2,7 +2,7 @@
   <div>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Historical Data Quality</v-card-title>
-      <div class="viz-container" id="viz-dataqualityresults"></div>
+      <div id="viz-dataqualityresults" class="viz-container"></div>
       <v-data-table
         class="viz-container"
         dense
@@ -35,12 +35,12 @@
 
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Historical Data Quality by Category</v-card-title>
-      <div class="viz-container" id="viz-dataqualityresultsbycategory"></div>
+      <div id="viz-dataqualityresultsbycategory" class="viz-container"></div>
     </v-card>
 
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Historical Data Quality by Domain</v-card-title>
-      <div class="viz-container" id="viz-dataqualityresultsbydomain"></div>
+      <div id="viz-dataqualityresultsbydomain" class="viz-container"></div>
     </v-card>
   </div>
 </template>
@@ -243,51 +243,54 @@ export default {
       },
     };
   },
-  created() {
-    this.load();
-  },
   watch: {
     $route() {
       this.load();
     },
   },
+  created() {
+    this.load();
+  },
   methods: {
     load: function () {
-      var vm = this;
-      var dataUrl =
+      this.dataLoaded = false;
+      this.historyRecords = [];
+      const dataUrl =
         "data/" + this.$route.params.cdm + "/data-quality-index.json";
 
       axios.get(dataUrl).then((response) => {
-        vm.dataLoaded = true;
-        var dataQualityRecords = response.data.dataQualityRecords;
+        this.dataLoaded = true;
+        let dataQualityRecords = response.data.dataQualityRecords;
         dataQualityRecords = _(dataQualityRecords)
           .orderBy("cdm_release_date")
           .reverse()
           .value();
-        vm.historyRecords = dataQualityRecords;
-        vm.specDataQualityResults.data = {
-          values: vm.historyRecords,
+        this.historyRecords = dataQualityRecords;
+        this.specDataQualityResults.data = {
+          values: this.historyRecords,
         };
-        embed("#viz-dataqualityresults", vm.specDataQualityResults).then(() => {
-          window.dispatchEvent(new Event("resize"));
-        });
+        embed("#viz-dataqualityresults", this.specDataQualityResults).then(
+          () => {
+            window.dispatchEvent(new Event("resize"));
+          }
+        );
 
-        vm.specDataQualityResultsByCategory.data = {
+        this.specDataQualityResultsByCategory.data = {
           values: response.data.dataQualityRecordsStratified,
         };
         embed(
           "#viz-dataqualityresultsbycategory",
-          vm.specDataQualityResultsByCategory
+          this.specDataQualityResultsByCategory
         ).then(() => {
           window.dispatchEvent(new Event("resize"));
         });
 
-        vm.specDataQualityResultsByDomain.data = {
+        this.specDataQualityResultsByDomain.data = {
           values: response.data.dataQualityRecordsStratified,
         };
         embed(
           "#viz-dataqualityresultsbydomain",
-          vm.specDataQualityResultsByDomain
+          this.specDataQualityResultsByDomain
         ).then(() => {
           window.dispatchEvent(new Event("resize"));
         });

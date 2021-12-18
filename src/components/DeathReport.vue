@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
@@ -9,24 +9,24 @@
         <div class="text-uppercase text-h6">Death Report</div>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Age at Death </v-card-title>
-          <div class="viz-container" id="viz-ageatdeath"></div>
+          <div id="viz-ageatdeath" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Death by Type</v-card-title>
-          <div class="viz-container" id="viz-deathbytype"></div>
+          <div id="viz-deathbytype" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title
             >Record Count Proportion by Age, Sex, and Year</v-card-title
           >
           <div
-            class="viz-container"
             id="viz-recordproportionbyagesexyear"
+            class="viz-container"
           ></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Record Count Proportion by Month</v-card-title>
-          <div class="viz-container" id="viz-recordproportionbymonth"></div>
+          <div id="viz-recordproportionbymonth" class="viz-container"></div>
           <v-card-text>
             <v-layout align-baseline>
               <v-icon small color="info" left> mdi-help-circle</v-icon>
@@ -48,6 +48,10 @@ import dataService from "../services/DataService";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+  },
   data() {
     return {
       componentFailed: false,
@@ -318,17 +322,20 @@ export default {
       },
     };
   },
-  components: {
-    ReturnButton,
-    error,
+  computed: {},
+  watch: {
+    $route() {
+      this.load();
+    },
   },
   created() {
     this.load();
   },
   methods: {
     load: function () {
-      var vm = this;
-      var dataUrl =
+      this.dataLoaded = false;
+      this.deathData = [];
+      const dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -337,23 +344,23 @@ export default {
       axios
         .get(dataUrl)
         .then((response) => {
-          vm.componentFailed = false;
-          var dateParse = d3.timeParse("%Y%m");
-          vm.deathData = response.data;
+          this.componentFailed = false;
+          const dateParse = d3.timeParse("%Y%m");
+          this.deathData = response.data;
 
-          vm.specAgeAtDeath.data = {
-            values: vm.deathData.AGE_AT_DEATH,
+          this.specAgeAtDeath.data = {
+            values: this.deathData.AGE_AT_DEATH,
           };
-          embed("#viz-ageatdeath", vm.specAgeAtDeath);
+          embed("#viz-ageatdeath", this.specAgeAtDeath);
 
-          vm.specDeathByType.data = {
-            values: vm.deathData.DEATH_BY_TYPE,
+          this.specDeathByType.data = {
+            values: this.deathData.DEATH_BY_TYPE,
           };
-          embed("#viz-deathbytype", vm.specDeathByType);
+          embed("#viz-deathbytype", this.specDeathByType);
 
-          vm.specRecordProportionByAgeSexYear.data = {
+          this.specRecordProportionByAgeSexYear.data = {
             values: dataService.sortByRange(
-              vm.deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
+              this.deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
               "ascending",
               "TRELLIS_NAME",
               "trellisOrder"
@@ -362,29 +369,31 @@ export default {
 
           embed(
             "#viz-recordproportionbyagesexyear",
-            vm.specRecordProportionByAgeSexYear
+            this.specRecordProportionByAgeSexYear
           );
 
-          vm.deathData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-            vm.deathData.PREVALENCE_BY_MONTH[i].date = dateParse(
+          this.deathData.PREVALENCE_BY_MONTH.forEach((v, i) => {
+            this.deathData.PREVALENCE_BY_MONTH[i].date = dateParse(
               v.X_CALENDAR_MONTH
             );
           });
-          vm.specRecordProportionByMonth.data = {
-            values: vm.deathData.PREVALENCE_BY_MONTH,
+          this.specRecordProportionByMonth.data = {
+            values: this.deathData.PREVALENCE_BY_MONTH,
           };
-          embed("#viz-recordproportionbymonth", vm.specRecordProportionByMonth);
+          embed(
+            "#viz-recordproportionbymonth",
+            this.specRecordProportionByMonth
+          );
 
-          vm.dataLoaded = true;
+          this.dataLoaded = true;
         })
         .catch((err) => {
-          vm.componentFailed = true;
-          vm.errorText = "Failed to obtain death summary data file.";
-          vm.errorDetails = err + " (" + dataUrl + ") ";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain death summary data file.";
+          this.errorDetails = err + " (" + dataUrl + ") ";
         });
     },
   },
-  computed: {},
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container class="pa-1">
@@ -17,13 +17,13 @@
           <v-col cols="4">
             <v-layout justify-end align-center class="ml-4 mr-4">
               <v-tooltip
+                v-if="issueDataLoaded & (issueCount > 0)"
                 left
                 nudge-left="15"
-                v-if="issueDataLoaded & (issueCount > 0)"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn icon tile @click="navigateToDataQuality()"
-                    ><v-icon left v-bind="attrs" v-on="on" large color="error"
+                    ><v-icon left v-bind="attrs" large color="error" v-on="on"
                       >mdi-database-alert</v-icon
                     >
                     <v-badge
@@ -46,17 +46,17 @@
           <v-row>
             <v-col>
               <v-text-field
-                @input="delayedSearch"
                 prepend-icon="mdi-magnify"
                 label="Search in Table"
                 single-line
                 hide-details
+                @input="delayedSearch"
               ></v-text-field>
             </v-col>
             <v-col>
               <v-menu
-                bottom
                 v-model="chooseHeaderMenu"
+                bottom
                 :close-on-content-click="false"
                 :offset-y="getMenuOffset()"
               >
@@ -177,10 +177,10 @@
       </v-card>
     </v-container>
     <v-card
+      v-if="this.$route.params.domain.toUpperCase() == 'VISIT_OCCURRENCE'"
       :loading="!dataLoaded"
       elevation="10"
       class="ma-4 pa-2"
-      v-if="this.$route.params.domain.toUpperCase() == 'VISIT_OCCURRENCE'"
     >
       <v-card-title>Domain Data Stratification by Visit</v-card-title>
       <div id="viz-stratificationbyvisit" class="viz-container"></div>
@@ -200,7 +200,7 @@ import * as d3Format from "d3-format";
 import error from "./Error.vue";
 import embed from "vega-embed";
 import InfoPanel from "./InfoPanel.vue";
-import { debounce } from "lodash"
+import { debounce } from "lodash";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
@@ -321,7 +321,7 @@ export default {
       return d3Format.format(",")(value);
     },
     navigateToDataQuality: function () {
-      var qualitypath =
+      const qualitypath =
         "/cdm/" +
         this.$route.params.cdm +
         "/" +
@@ -355,10 +355,14 @@ export default {
       );
     },
     load() {
-      var self = this;
+      this.dataLoaded = false;
+      this.domainTable = [];
+      this.domainIssues = [];
+      this.issueCount = 0;
+      this.issueDataLoaded = false;
 
       // load domain data
-      var dataUrl =
+      const dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -367,57 +371,57 @@ export default {
         this.$route.params.domain +
         ".csv";
 
-      var domain = this.$route.params.domain.toUpperCase();
+      const domain = this.$route.params.domain.toUpperCase();
 
       if (domain == "VISIT_OCCURRENCE" || domain == "VISIT_DETAIL") {
-        self.isVisit = true;
-        self.headersMap.AVERAGE_DURATION = {
+        this.isVisit = true;
+        this.headersMap.AVERAGE_DURATION = {
           text: "Avg Duration",
           sortable: true,
           value: "AVERAGE_DURATION",
           align: "end",
         };
       } else {
-        self.isVisit = false;
-        delete self.headersMap.AVERAGE_DURATION;
+        this.isVisit = false;
+        delete this.headersMap.AVERAGE_DURATION;
       }
 
       if (domain == "MEASUREMENT") {
-        self.isMeasurement = true;
-        self.headersMap.PERCENT_WITH_VALUE = {
+        this.isMeasurement = true;
+        this.headersMap.PERCENT_WITH_VALUE = {
           text: "% with Values",
           sortable: true,
           value: "PERCENT_MISSING_VALUES",
           align: "end",
         };
       } else {
-        self.isMeasurement = false;
-        delete self.headersMap.PERCENT_WITH_VALUE;
+        this.isMeasurement = false;
+        delete this.headersMap.PERCENT_WITH_VALUE;
       }
 
       if (domain == "DRUG_ERA" || domain == "CONDITION_ERA") {
-        self.isEra = true;
-        self.headersMap.MEDIAN_VALUE = {
+        this.isEra = true;
+        this.headersMap.MEDIAN_VALUE = {
           text: "Median Era Length (Days)",
           sortable: true,
           value: "MEDIAN_VALUE",
           align: "end",
         };
-        self.headersMap.P25_VALUE = {
+        this.headersMap.P25_VALUE = {
           text: "25th % Era Length (Days)",
           sortable: true,
           value: "P25_VALUE",
         };
-        self.headersMap.P75_VALUE = {
+        this.headersMap.P75_VALUE = {
           text: "75th % Era Length (Days)",
           sortable: true,
           value: "P75_VALUE",
         };
       } else {
-        self.isEra = false;
-        delete self.headersMap.MEDIAN_VALUE;
-        delete self.headersMap.P25_VALUE;
-        delete self.headersMap.P75_VALUE;
+        this.isEra = false;
+        delete this.headersMap.MEDIAN_VALUE;
+        delete this.headersMap.P25_VALUE;
+        delete this.headersMap.P75_VALUE;
       }
 
       axios
@@ -425,10 +429,10 @@ export default {
         .then((response) => {
           this.domainTable = d3Import.csvParse(response.data);
 
-          self.headers = Object.values(self.headersMap);
+          this.headers = Object.values(this.headersMap);
 
-          if (self.isVisit) {
-            self.selectedHeaders = self.headers.filter((h) =>
+          if (this.isVisit) {
+            this.selectedHeaders = this.headers.filter((h) =>
               [
                 "CONCEPT_ID",
                 "CONCEPT_NAME",
@@ -437,8 +441,8 @@ export default {
                 "AVERAGE_DURATION",
               ].includes(h.value)
             );
-          } else if (self.isEra) {
-            self.selectedHeaders = self.headers.filter((h) =>
+          } else if (this.isEra) {
+            this.selectedHeaders = this.headers.filter((h) =>
               [
                 "CONCEPT_ID",
                 "CONCEPT_NAME",
@@ -447,8 +451,8 @@ export default {
                 "MEDIAN_VALUE",
               ].includes(h.value)
             );
-          } else if (self.isMeasurement) {
-            self.selectedHeaders = self.headers.filter((h) =>
+          } else if (this.isMeasurement) {
+            this.selectedHeaders = this.headers.filter((h) =>
               [
                 "CONCEPT_ID",
                 "CONCEPT_NAME",
@@ -458,7 +462,7 @@ export default {
               ].includes(h.value)
             );
           } else {
-            self.selectedHeaders = self.headers.filter((h) =>
+            this.selectedHeaders = this.headers.filter((h) =>
               [
                 "CONCEPT_ID",
                 "CONCEPT_NAME",
@@ -467,17 +471,17 @@ export default {
               ].includes(h.value)
             );
           }
-          self.dataLoaded = true;
-          self.componentFailed = false;
+          this.dataLoaded = true;
+          this.componentFailed = false;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to obtain domain table data file.";
-          self.errorDetails = err + ". (" + dataUrl + ")";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain domain table data file.";
+          this.errorDetails = err + ". (" + dataUrl + ")";
         });
 
       // load domain issues
-      var issueDataUrl =
+      const issueDataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -487,22 +491,22 @@ export default {
       axios
         .get(issueDataUrl)
         .then((response) => {
-          self.issueDataLoaded = true;
-          self.domainIssues = d3Import.csvParse(response.data);
-          const domainIssue = self.domainIssues.find(
-            (di) => di.cdm_table_name === self.$route.params.domain
+          this.issueDataLoaded = true;
+          this.domainIssues = d3Import.csvParse(response.data);
+          const domainIssue = this.domainIssues.find(
+            (di) => di.cdm_table_name === this.$route.params.domain
           );
-          self.issueCount = domainIssue?.count_failed || 0;
+          this.issueCount = domainIssue?.count_failed || 0;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to obtain domain issues data file.";
-          self.errorDetails = err + ". (" + issueDataUrl + ")";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain domain issues data file.";
+          this.errorDetails = err + ". (" + issueDataUrl + ")";
         });
 
       // conditionally load other domain detail information
       if (this.$route.params.domain.toUpperCase() == "VISIT_OCCURRENCE") {
-        var visitUrl =
+        const visitUrl =
           "data/" +
           this.$route.params.cdm +
           "/" +
@@ -512,12 +516,12 @@ export default {
         axios
           .get(visitUrl)
           .then((response) => {
-            self.specVisitStratification.data = {
+            this.specVisitStratification.data = {
               values: d3Import.csvParse(response.data),
             };
             embed(
               "#viz-stratificationbyvisit",
-              self.specVisitStratification
+              this.specVisitStratification
             ).then(() => {
               window.dispatchEvent(new Event("resize"));
             });
@@ -532,7 +536,7 @@ export default {
   components: {
     error,
     InfoPanel,
-    ReturnButton
+    ReturnButton,
   },
   computed: {
     showHeaders() {
