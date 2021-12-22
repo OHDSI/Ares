@@ -2,7 +2,7 @@
   <v-responsive min-width="900">
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Domain Continuity</v-card-title>
-      <div class="viz-container" id="viz-continuity"></div>
+      <div id="viz-continuity" class="viz-container"></div>
       <info-panel
         details="Domain continuity shows the number of records in each domain table for multiple releases of data from a specific vendor or data source. This is NOT the number of records that occur at specific times within a CDM, but a count of the number of records in a release of a data source, graphed over time. This visualization allows one to see how the data is changing across updates for a single data source."
       ></info-panel>
@@ -16,6 +16,9 @@ import axios from "axios";
 import InfoPanel from "./InfoPanel.vue";
 
 export default {
+  components: {
+    InfoPanel,
+  },
   data() {
     return {
       dataLoaded: false,
@@ -72,32 +75,29 @@ export default {
       },
     };
   },
-  components: {
-    InfoPanel,
-  },
-  created() {
-    this.load();
-  },
   watch: {
     $route() {
       this.load();
     },
   },
+  created() {
+    this.load();
+  },
   methods: {
     load: function () {
-      var vm = this;
-      var dataUrl =
+      this.dataLoaded = false;
+      const dataUrl =
         "data/" + this.$route.params.cdm + "/data-source-history-index.json";
 
       axios.get(dataUrl).then((response) => {
-        vm.dataLoaded = true;
-        vm.specOverview.data = {
+        this.dataLoaded = true;
+        this.specOverview.data = {
           values: response.data.domainRecords,
         };
-        embed("#viz-continuity", vm.specOverview).then(() => {
+        embed("#viz-continuity", this.specOverview).then(() => {
           window.dispatchEvent(new Event("resize"));
         });
-        vm.dataLoaded = true;
+        this.dataLoaded = true;
       });
     },
   },

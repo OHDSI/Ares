@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
@@ -55,19 +55,19 @@
         </v-row>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Population by Age &amp; Sex</v-card-title>
-          <div class="viz-container" id="viz-populationbyageandsex"></div>
+          <div id="viz-populationbyageandsex" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Population by Race</v-card-title>
-          <div class="viz-container" id="viz-race"></div>
+          <div id="viz-race" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Population by Year of Birth</v-card-title>
-          <div class="viz-container" id="viz-birthyear"></div>
+          <div id="viz-birthyear" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Population by Ethnicity</v-card-title>
-          <div class="viz-container" id="viz-ethnicity"></div>
+          <div id="viz-ethnicity" class="viz-container"></div>
         </v-card>
       </v-responsive>
     </v-container>
@@ -83,6 +83,10 @@ import * as d3Format from "d3-format";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+  },
   data() {
     return {
       componentFailed: false,
@@ -242,17 +246,14 @@ export default {
       },
     };
   },
-  components: {
-    ReturnButton,
-    error,
-  },
-  created() {
-    this.load();
-  },
+  computed: {},
   watch: {
     $route() {
       this.load();
     },
+  },
+  created() {
+    this.load();
   },
   methods: {
     triggerResize: function () {
@@ -268,8 +269,8 @@ export default {
     },
 
     load: function () {
-      var self = this;
-      var dataUrl =
+      this.dataLoaded = false;
+      const dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -278,65 +279,64 @@ export default {
       axios
         .get(dataUrl)
         .then((response) => {
-          self.componentFailed = false;
-          var dateParse = d3.timeParse("%Y");
-          self.personData = response.data;
+          this.componentFailed = false;
+          const dateParse = d3.timeParse("%Y");
+          this.personData = response.data;
 
           //Pulls number of persons from person.json
-          self.numPersons = response.data.SUMMARY[1].ATTRIBUTE_VALUE;
+          this.numPersons = response.data.SUMMARY[1].ATTRIBUTE_VALUE;
 
           //Pulls gender from person.json
           if (response.data.GENDER_DATA[0].CONCEPT_NAME == "MALE") {
-            self.genderMaleCount = response.data.GENDER_DATA[0].COUNT_VALUE;
-            self.genderFemaleCount = response.data.GENDER_DATA[1].COUNT_VALUE;
+            this.genderMaleCount = response.data.GENDER_DATA[0].COUNT_VALUE;
+            this.genderFemaleCount = response.data.GENDER_DATA[1].COUNT_VALUE;
           } else {
-            self.genderMaleCount = response.data.GENDER_DATA[1].COUNT_VALUE;
-            self.genderFemaleCount = response.data.GENDER_DATA[0].COUNT_VALUE;
+            this.genderMaleCount = response.data.GENDER_DATA[1].COUNT_VALUE;
+            this.genderFemaleCount = response.data.GENDER_DATA[0].COUNT_VALUE;
           }
 
           // Gender breakdown (percentage)
-          self.genderMalePct = self.genderMaleCount / self.numPersons;
-          self.genderFemalePct = self.genderFemaleCount / self.numPersons;
+          this.genderMalePct = this.genderMaleCount / this.numPersons;
+          this.genderFemalePct = this.genderFemaleCount / this.numPersons;
 
-          self.personData.BIRTH_YEAR_DATA.forEach((v, i) => {
-            self.personData.BIRTH_YEAR_DATA[i].YEAR = dateParse(v.YEAR);
+          this.personData.BIRTH_YEAR_DATA.forEach((v, i) => {
+            this.personData.BIRTH_YEAR_DATA[i].YEAR = dateParse(v.YEAR);
           });
-          self.specBirthYear.data = {
-            values: self.personData.BIRTH_YEAR_DATA,
+          this.specBirthYear.data = {
+            values: this.personData.BIRTH_YEAR_DATA,
           };
-          embed("#viz-birthyear", self.specBirthYear).then(() => {
+          embed("#viz-birthyear", this.specBirthYear).then(() => {
             window.dispatchEvent(new Event("resize"));
           });
 
-          self.specAgeSex.data = {
-            values: self.personData.AGE_GENDER_DATA,
+          this.specAgeSex.data = {
+            values: this.personData.AGE_GENDER_DATA,
           };
-          embed("#viz-populationbyageandsex", self.specAgeSex);
+          embed("#viz-populationbyageandsex", this.specAgeSex);
 
-          self.specRace.data = {
-            values: self.personData.RACE_DATA,
+          this.specRace.data = {
+            values: this.personData.RACE_DATA,
           };
-          embed("#viz-race", self.specRace).then(() => {
+          embed("#viz-race", this.specRace).then(() => {
             window.dispatchEvent(new Event("resize"));
           });
 
-          self.specEthnicity.data = {
-            values: self.personData.ETHNICITY_DATA,
+          this.specEthnicity.data = {
+            values: this.personData.ETHNICITY_DATA,
           };
-          embed("#viz-ethnicity", self.specEthnicity).then(() => {
+          embed("#viz-ethnicity", this.specEthnicity).then(() => {
             window.dispatchEvent(new Event("resize"));
           });
 
-          self.dataLoaded = true;
+          this.dataLoaded = true;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to obtain person summary data file.";
-          self.errorDetails = err + " (" + dataUrl + ") ";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain person summary data file.";
+          this.errorDetails = err + " (" + dataUrl + ") ";
         });
     },
   },
-  computed: {},
 };
 </script>
 

@@ -179,6 +179,8 @@ export default {
       );
     },
     load() {
+      this.dataLoaded = false;
+      this.domainTable = [];
       const dataUrl =
         "data/" +
         this.$route.params.cdm +

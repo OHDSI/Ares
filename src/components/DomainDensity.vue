@@ -2,12 +2,12 @@
   <div>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Domain Density</v-card-title>
-      <div style="width: 80%" id="viz-overview"></div>
+      <div id="viz-overview" style="width: 80%"></div>
     </v-card>
 
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Domain Records per Person</v-card-title>
-      <div style="width: 80%" id="viz-recordsperperson"></div>
+      <div id="viz-recordsperperson" style="width: 80%"></div>
     </v-card>
   </div>
 </template>
@@ -235,6 +235,7 @@ export default {
       },
     };
   },
+  computed: {},
   watch: {
     $route() {
       this.load();
@@ -248,17 +249,17 @@ export default {
       window.dispatchEvent(new Event("resize"));
     },
     load: function () {
-      var self = this;
-      var dataRequests = [];
+      this.dataLoaded = false;
+      const dataRequests = [];
 
-      var urlRecordsPerPerson =
+      const urlRecordsPerPerson =
         "data/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +
         "/datadensity-records-per-person.csv";
 
-      var urlOverview =
+      const urlOverview =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -270,21 +271,20 @@ export default {
 
       axios.all(dataRequests).then(
         axios.spread((...responses) => {
-          self.defRecordsPerPerson.data = {
+          this.defRecordsPerPerson.data = {
             values: d3Import.csvParse(responses[0].data),
           };
-          self.defOverview.data = {
+          this.defOverview.data = {
             values: d3Import.csvParse(responses[1].data),
           };
 
-          embed("#viz-overview", self.defOverview);
-          embed("#viz-recordsperperson", self.defRecordsPerPerson);
-          self.dataLoaded = true;
+          embed("#viz-overview", this.defOverview);
+          embed("#viz-recordsperperson", this.defRecordsPerPerson);
+          this.dataLoaded = true;
         })
       );
     },
   },
-  computed: {},
 };
 </script>
 

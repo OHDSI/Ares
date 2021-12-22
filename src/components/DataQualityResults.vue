@@ -1,7 +1,7 @@
 <template>
   <v-responsive>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <div v-if="!componentFailed">
@@ -177,17 +177,17 @@
               <v-row>
                 <v-col cols="3">
                   <v-text-field
-                    @input="delayedSearch"
                     prepend-icon="mdi-magnify"
                     label="Search in Table"
                     single-line
                     hide-details
+                    @input="delayedSearch"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="auto">
                   <v-menu
-                    bottom
                     v-model="chooseHeaderMenu"
+                    bottom
                     :close-on-content-click="false"
                     :offset-y="getMenuOffset()"
                   >
@@ -211,8 +211,8 @@
                 </v-col>
                 <v-col cols="auto">
                   <v-menu
-                    bottom
                     v-model="chooseFilter"
+                    bottom
                     :close-on-content-click="false"
                     :offset-y="getMenuOffset()"
                   >
@@ -226,11 +226,11 @@
                       <v-list-item v-for="(f, i) in helpfulFilters" :key="i">
                         <v-checkbox
                           v-model="selectedFilter"
-                          v-on:change="helpfulFilterUpdate(f.preset)"
                           :label="f.text"
                           :value="f"
                           hide-details="auto"
                           :multiple="false"
+                          @change="helpfulFilterUpdate(f.preset)"
                         ></v-checkbox>
                       </v-list-item>
                     </v-list>
@@ -256,12 +256,12 @@
                   <th v-for="header in showHeaders" :key="header.text">
                     <div v-if="filters.hasOwnProperty(header.value)">
                       <v-select
+                        v-model="filters[header.value]"
                         small-chips
                         deletable-chips
                         hide-details
                         multiple
                         :items="columnValueList(header.value)"
-                        v-model="filters[header.value]"
                       ></v-select>
                     </div>
                   </th>
@@ -406,6 +406,12 @@ import { debounce } from "lodash";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+    codemirror,
+    infopanel,
+  },
   data: function () {
     return {
       componentFailed: false,
@@ -547,12 +553,6 @@ export default {
       },
     };
   },
-  components: {
-    ReturnButton,
-    error,
-    codemirror,
-    infopanel,
-  },
   watch: {
     $route() {
       this.load();
@@ -560,7 +560,7 @@ export default {
   },
   methods: {
     delayedSearch: debounce(function (data) {
-      this.search = data
+      this.search = data;
     }, 300),
     formatThousands: function (value) {
       return d3.format(",")(value);
@@ -589,8 +589,7 @@ export default {
       return "https://ohdsi.github.io/CommonDataModel/cdm531.html#" + table;
     },
     load: function () {
-      var self = this;
-      var dataUrl =
+      const dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -603,10 +602,10 @@ export default {
           this.dqResults = response.data;
           this.derivedResults = dataService.deriveResults(response.data);
           this.dataLoaded = true;
-          self.componentFailed = false;
+          this.componentFailed = false;
 
-          if (self.$route.query.conceptFailFilter) {
-            self.helpfulFilterUpdate({
+          if (this.$route.query.conceptFailFilter) {
+            this.helpfulFilterUpdate({
               FAILED: ["FAIL"],
               CDM_TABLE_NAME: [],
               CDM_FIELD_NAME: [],
@@ -617,13 +616,13 @@ export default {
               CONTEXT: [],
               CHECK_LEVEL: [],
             });
-            self.search = self.$route.query.conceptFailFilter;
+            this.search = this.$route.query.conceptFailFilter;
           }
-          if (self.$route.query.domainFailFilter) {
-            self.helpfulFilterUpdate({
+          if (this.$route.query.domainFailFilter) {
+            this.helpfulFilterUpdate({
               FAILED: ["FAIL"],
               CDM_TABLE_NAME: [
-                self.$route.query.domainFailFilter.toUpperCase(),
+                this.$route.query.domainFailFilter.toUpperCase(),
               ],
               CDM_FIELD_NAME: [],
               CHECK_NAME: [],
@@ -634,21 +633,21 @@ export default {
               CHECK_LEVEL: [],
             });
           }
-          if (self.$route.query.categoryFailFilter) {
-            self.helpfulFilterUpdate({
+          if (this.$route.query.categoryFailFilter) {
+            this.helpfulFilterUpdate({
               FAILED: ["FAIL"],
               CDM_TABLE_NAME: [],
               CDM_FIELD_NAME: [],
               CHECK_NAME: [],
               NOTES_EXIST: [],
-              CATEGORY: [self.$route.query.categoryFailFilter.toUpperCase()],
+              CATEGORY: [this.$route.query.categoryFailFilter.toUpperCase()],
               SUBCATEGORY: [],
               CONTEXT: [],
               CHECK_LEVEL: [],
             });
           }
-          if (self.$route.query.failFilter) {
-            self.helpfulFilterUpdate({
+          if (this.$route.query.failFilter) {
+            this.helpfulFilterUpdate({
               FAILED: ["FAIL"],
               CDM_TABLE_NAME: [],
               CDM_FIELD_NAME: [],
@@ -662,9 +661,9 @@ export default {
           }
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to load data quality results file.";
-          self.errorDetails = err + " (" + dataUrl + ")";
+          this.componentFailed = true;
+          this.errorText = "Failed to load data quality results file.";
+          this.errorDetails = err + " (" + dataUrl + ")";
         });
     },
     columnValueList(val) {
@@ -672,7 +671,7 @@ export default {
     },
     renderDescription: function (d) {
       let thresholdMessage = "";
-      if (d.THRESHOLD_VALUE != undefined) {
+      if (d.THRESHOLD_VALUE !== undefined) {
         thresholdMessage = " (Threshold=" + d.THRESHOLD_VALUE + "%).";
       }
       return d.CHECK_DESCRIPTION + thresholdMessage;

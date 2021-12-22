@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-card :loading="!cdmsourceDataLoaded" elevation="10" class="ma-4 pa-2">
@@ -45,6 +45,13 @@ import error from "./Error.vue";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
+  components: {
+    error,
+    ReturnButton,
+  },
+  props: {
+    resultFile: String,
+  },
   data: function () {
     return {
       cdmsourceData: null,
@@ -54,15 +61,18 @@ export default {
       componentFailed: false,
       errorText: "",
       errorDetails: "",
-      dataLoaded: false,
       domainTable: [],
       search: "",
     };
   },
+  computed: {},
   watch: {
     $route() {
       this.load();
     },
+  },
+  created() {
+    this.load();
   },
   methods: {
     getMenuOffset: function () {
@@ -72,14 +82,15 @@ export default {
       return this.domainTable.map((d) => d[val]);
     },
     load() {
-      var self = this;
-      var metadataUrl =
+      this.metadataDataLoaded = false;
+      this.cdmsourceDataLoaded = false;
+      const metadataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
         this.$route.params.release +
         "/metadata.csv";
-      var cdmsourceUrl =
+      const cdmsourceUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -89,40 +100,29 @@ export default {
       axios
         .get(metadataUrl)
         .then((response) => {
-          self.metadataData = d3.csvParse(response.data);
-          self.metadataDataLoaded = true;
-          self.componentFailed = false;
+          this.metadataData = d3.csvParse(response.data);
+          this.metadataDataLoaded = true;
+          this.componentFailed = false;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to obtain metadata table data file.";
-          self.errorDetails = err + ". (" + metadataUrl + ")";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain metadata table data file.";
+          this.errorDetails = err + ". (" + metadataUrl + ")";
         });
 
       axios
         .get(cdmsourceUrl)
         .then((response) => {
-          self.cdmsourceData = d3.csvParse(response.data);
-          self.cdmsourceDataLoaded = true;
-          self.componentFailed = false;
+          this.cdmsourceData = d3.csvParse(response.data);
+          this.cdmsourceDataLoaded = true;
+          this.componentFailed = false;
         })
         .catch((err) => {
-          self.componentFailed = true;
-          self.errorText = "Failed to obtain cdmsource table data file.";
-          self.errorDetails = err + ". (" + cdmsourceUrl + ")";
+          this.componentFailed = true;
+          this.errorText = "Failed to obtain cdmsource table data file.";
+          this.errorDetails = err + ". (" + cdmsourceUrl + ")";
         });
     },
-  },
-  created() {
-    this.load();
-  },
-  components: {
-    error,
-    ReturnButton
-  },
-  computed: {},
-  props: {
-    resultFile: String,
   },
 };
 </script>

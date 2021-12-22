@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
@@ -9,11 +9,11 @@
         <div class="text-uppercase text-h6">Observation Period Report</div>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Cumulative Observation</v-card-title>
-          <div class="viz-container" id="viz-cumulativeobservation"></div>
+          <div id="viz-cumulativeobservation" class="viz-container"></div>
         </v-card>
         <v-card
-          :loading="!dataLoaded"
           v-if="dataLoaded"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
@@ -34,23 +34,23 @@
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Observation over Time</v-card-title>
-          <div class="viz-container" id="viz-observationbymonth"></div>
+          <div id="viz-observationbymonth" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Years of Observation by Age</v-card-title>
-          <div class="viz-container" id="viz-observationbyage"></div>
+          <div id="viz-observationbyage" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Years of Observation by Sex</v-card-title>
-          <div class="viz-container" id="viz-observationbysex"></div>
+          <div id="viz-observationbysex" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Age at First Observation</v-card-title>
-          <div class="viz-container" id="viz-ageatfirstobservation"></div>
+          <div id="viz-ageatfirstobservation" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Age at First Observation by Sex</v-card-title>
-          <div class="viz-container" id="viz-agebysex"></div>
+          <div id="viz-agebysex" class="viz-container"></div>
         </v-card>
       </v-responsive>
     </v-container>
@@ -66,6 +66,10 @@ import dataService from "../services/DataService";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+  },
   data() {
     return {
       componentFailed: false,
@@ -353,10 +357,7 @@ export default {
       },
     };
   },
-  components: {
-    ReturnButton,
-    error,
-  },
+  computed: {},
   watch: {
     $route() {
       this.load();
@@ -370,8 +371,9 @@ export default {
       window.dispatchEvent(new Event("resize"));
     },
     load: function () {
-      let dateParse = d3.timeParse("%Y%m");
-      let dataUrl =
+      this.dataLoaded = false;
+      const dateParse = d3.timeParse("%Y%m");
+      const dataUrl =
         "data/" +
         this.$route.params.cdm +
         "/" +
@@ -433,7 +435,6 @@ export default {
         });
     },
   },
-  computed: {},
 };
 </script>
 
