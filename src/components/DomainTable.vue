@@ -86,7 +86,7 @@
           :headers="showHeaders"
           :items="domainTable"
           :footer-props="{
-            'items-per-page-options': [10, 25, 50],
+            'items-per-page-options': [10, 25, 50]
           }"
           item-key="CONCEPT_ID"
           :items-per-page="10"
@@ -190,6 +190,15 @@
         that this data had no associated Visit on the Domain record.
       </v-card-text>
     </v-card>
+    <v-card
+      v-if="this.$route.params.domain.toUpperCase() == 'DRUG_EXPOSURE'"
+      :loading="!dataLoaded"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
+      <v-card-title>Drug Domain Stratification by Drug Type</v-card-title>
+      <div id="viz-stratificationbydrugtype" class="viz-container"></div>
+    </v-card>
   </div>
 </template>
 
@@ -204,7 +213,7 @@ import { debounce } from "lodash";
 import ReturnButton from "@/components/ReturnButton";
 
 export default {
-  data: function () {
+  data: function() {
     return {
       chooseHeaderMenu: false,
       componentFailed: false,
@@ -216,6 +225,7 @@ export default {
       isEra: false,
       isMeasurement: false,
       isVisit: false,
+      isDrugExposure: false,
       domainTable: [],
       domainIssues: [],
       search: "",
@@ -226,44 +236,44 @@ export default {
           text: "Concept Id",
           sortable: true,
           value: "CONCEPT_ID",
-          align: "start",
+          align: "start"
         },
         CONCEPT_NAME: {
           text: "Concept Name",
           sortable: true,
           value: "CONCEPT_NAME",
-          align: "start",
+          align: "start"
         },
         NUM_PERSONS: {
           text: "# People",
           sortable: true,
           value: "NUM_PERSONS",
-          align: "end",
+          align: "end"
         },
         PERCENT_PERSONS: {
           text: "% People",
           sortable: true,
           value: "PERCENT_PERSONS",
-          align: "end",
+          align: "end"
         },
         RECORDS_PER_PERSON: {
           text: "Records per Person",
           sortable: true,
           value: "RECORDS_PER_PERSON",
-          align: "end",
+          align: "end"
         },
         AVERAGE_DURATION: {
           text: "Avg Duration",
           sortable: true,
           value: "AVERAGE_DURATION",
-          align: "end",
+          align: "end"
         },
         PERCENT_WITH_VALUE: {
           text: "% with Values",
           sortable: true,
           value: "PERCENT_MISSING_VALUES",
-          align: "end",
-        },
+          align: "end"
+        }
       },
       specVisitStratification: {
         $schema: "https://vega.github.io/schema/vega-lite/v5.json",
@@ -275,12 +285,12 @@ export default {
           y: {
             field: "CONCEPT_NAME",
             type: "ordinal",
-            title: null,
+            title: null
           },
           x: {
             field: "RECORD_COUNT",
             aggregate: "sum",
-            title: "Number of Records",
+            title: "Number of Records"
           },
           color: {
             field: "CDM_TABLE_NAME",
@@ -288,23 +298,42 @@ export default {
             title: "Event Domain Table",
             legend: {
               orient: "bottom",
-              title: null,
-            },
-          },
-        },
+              title: null
+            }
+          }
+        }
       },
+      specDrugTypeStratification: {
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        data: null,
+        width: "container",
+        height: 300,
+        mark: "bar",
+        encoding: {
+          y: {
+            field: "CONCEPT_NAME",
+            type: "ordinal",
+            title: null
+          },
+          x: {
+            field: "RECORD_COUNT",
+            aggregate: "sum",
+            title: "Number of Records"
+          }
+        }
+      }
     };
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   methods: {
-    delayedSearch: debounce(function (data) {
+    delayedSearch: debounce(function(data) {
       this.search = data;
     }, 300),
-    getWeight: function (decile) {
+    getWeight: function(decile) {
       if (decile == 1) {
         return "font-weight-black";
       } else if (decile == 2) {
@@ -317,10 +346,10 @@ export default {
         return "font-weight-regular";
       }
     },
-    formatThousands: function (value) {
+    formatThousands: function(value) {
       return d3Format.format(",")(value);
     },
-    navigateToDataQuality: function () {
+    navigateToDataQuality: function() {
       const qualitypath =
         "/cdm/" +
         this.$route.params.cdm +
@@ -332,15 +361,15 @@ export default {
         path: qualitypath,
         query: {
           tab: "results",
-          domainFailFilter: this.$route.params.domain,
-        },
+          domainFailFilter: this.$route.params.domain
+        }
       });
     },
-    getMenuOffset: function () {
+    getMenuOffset: function() {
       return true;
     },
     columnValueList(val) {
-      return this.checkResults.map((d) => d[val]);
+      return this.checkResults.map(d => d[val]);
     },
     getReportRoute(item) {
       return (
@@ -373,13 +402,19 @@ export default {
 
       const domain = this.$route.params.domain.toUpperCase();
 
+      if (domain == "DRUG_EXPOSURE") {
+        this.isDrugExposure = true;
+      } else {
+        this.isDrugExposure = false;
+      }
+
       if (domain == "VISIT_OCCURRENCE" || domain == "VISIT_DETAIL") {
         this.isVisit = true;
         this.headersMap.AVERAGE_DURATION = {
           text: "Avg Duration",
           sortable: true,
           value: "AVERAGE_DURATION",
-          align: "end",
+          align: "end"
         };
       } else {
         this.isVisit = false;
@@ -392,7 +427,7 @@ export default {
           text: "% with Values",
           sortable: true,
           value: "PERCENT_MISSING_VALUES",
-          align: "end",
+          align: "end"
         };
       } else {
         this.isMeasurement = false;
@@ -405,17 +440,17 @@ export default {
           text: "Median Era Length (Days)",
           sortable: true,
           value: "MEDIAN_VALUE",
-          align: "end",
+          align: "end"
         };
         this.headersMap.P25_VALUE = {
           text: "25th % Era Length (Days)",
           sortable: true,
-          value: "P25_VALUE",
+          value: "P25_VALUE"
         };
         this.headersMap.P75_VALUE = {
           text: "75th % Era Length (Days)",
           sortable: true,
-          value: "P75_VALUE",
+          value: "P75_VALUE"
         };
       } else {
         this.isEra = false;
@@ -426,55 +461,55 @@ export default {
 
       axios
         .get(dataUrl)
-        .then((response) => {
+        .then(response => {
           this.domainTable = d3Import.csvParse(response.data);
 
           this.headers = Object.values(this.headersMap);
 
           if (this.isVisit) {
-            this.selectedHeaders = this.headers.filter((h) =>
+            this.selectedHeaders = this.headers.filter(h =>
               [
                 "CONCEPT_ID",
                 "CONCEPT_NAME",
                 "PERCENT_PERSONS",
                 "RECORDS_PER_PERSON",
-                "AVERAGE_DURATION",
+                "AVERAGE_DURATION"
               ].includes(h.value)
             );
           } else if (this.isEra) {
-            this.selectedHeaders = this.headers.filter((h) =>
+            this.selectedHeaders = this.headers.filter(h =>
               [
                 "CONCEPT_ID",
                 "CONCEPT_NAME",
                 "PERCENT_PERSONS",
                 "RECORDS_PER_PERSON",
-                "MEDIAN_VALUE",
+                "MEDIAN_VALUE"
               ].includes(h.value)
             );
           } else if (this.isMeasurement) {
-            this.selectedHeaders = this.headers.filter((h) =>
+            this.selectedHeaders = this.headers.filter(h =>
               [
                 "CONCEPT_ID",
                 "CONCEPT_NAME",
                 "PERCENT_PERSONS",
                 "RECORDS_PER_PERSON",
-                "PERCENT_MISSING_VALUES",
+                "PERCENT_MISSING_VALUES"
               ].includes(h.value)
             );
           } else {
-            this.selectedHeaders = this.headers.filter((h) =>
+            this.selectedHeaders = this.headers.filter(h =>
               [
                 "CONCEPT_ID",
                 "CONCEPT_NAME",
                 "PERCENT_PERSONS",
-                "RECORDS_PER_PERSON",
+                "RECORDS_PER_PERSON"
               ].includes(h.value)
             );
           }
           this.dataLoaded = true;
           this.componentFailed = false;
         })
-        .catch((err) => {
+        .catch(err => {
           this.componentFailed = true;
           this.errorText = "Failed to obtain domain table data file.";
           this.errorDetails = err + ". (" + dataUrl + ")";
@@ -490,15 +525,15 @@ export default {
 
       axios
         .get(issueDataUrl)
-        .then((response) => {
+        .then(response => {
           this.issueDataLoaded = true;
           this.domainIssues = d3Import.csvParse(response.data);
           const domainIssue = this.domainIssues.find(
-            (di) => di.cdm_table_name === this.$route.params.domain
+            di => di.cdm_table_name === this.$route.params.domain
           );
           this.issueCount = domainIssue?.count_failed || 0;
         })
-        .catch((err) => {
+        .catch(err => {
           this.componentFailed = true;
           this.errorText = "Failed to obtain domain issues data file.";
           this.errorDetails = err + ". (" + issueDataUrl + ")";
@@ -515,9 +550,9 @@ export default {
 
         axios
           .get(visitUrl)
-          .then((response) => {
+          .then(response => {
             this.specVisitStratification.data = {
-              values: d3Import.csvParse(response.data),
+              values: d3Import.csvParse(response.data)
             };
             embed(
               "#viz-stratificationbyvisit",
@@ -528,7 +563,31 @@ export default {
           })
           .catch(() => {});
       }
-    },
+
+      if (this.$route.params.domain.toUpperCase() == "DRUG_EXPOSURE") {
+        const drugTypeUrl =
+          "data/" +
+          this.$route.params.cdm +
+          "/" +
+          this.$route.params.release +
+          "/domain-drug-stratification.csv";
+
+        axios
+          .get(drugTypeUrl)
+          .then(response => {
+            this.specDrugTypeStratification.data = {
+              values: d3Import.csvParse(response.data)
+            };
+            embed(
+              "#viz-stratificationbydrugtype",
+              this.specDrugTypeStratification
+            ).then(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
+          })
+          .catch(() => {});
+      }
+    }
   },
   created() {
     this.load();
@@ -536,16 +595,16 @@ export default {
   components: {
     error,
     InfoPanel,
-    ReturnButton,
+    ReturnButton
   },
   computed: {
     showHeaders() {
-      return this.headers.filter((s) => this.selectedHeaders.includes(s));
-    },
+      return this.headers.filter(s => this.selectedHeaders.includes(s));
+    }
   },
   props: {
-    resultFile: String,
-  },
+    resultFile: String
+  }
 };
 </script>
 
