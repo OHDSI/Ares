@@ -62,8 +62,9 @@ import axios from "axios";
 import embed from "vega-embed";
 import error from "../../components/Error.vue";
 import * as d3 from "d3-time-format";
-import dataService from "../../../services/DataService";
 import ReturnButton from "@/interface/components/ReturnButton";
+import sortByRange from "@/services/range-sort";
+import getPercentage from "@/services/get-percentage";
 
 export default {
   components: {
@@ -386,7 +387,7 @@ export default {
           this.personPeriods = response.data.PERSON_PERIODS_DATA.map(
             (item) => ({
               ...item,
-              PERCENT_PEOPLE: dataService.getPercentage(
+              PERCENT_PEOPLE: getPercentage(
                 item.COUNT_VALUE,
                 response.data.PERSON_PERIODS_DATA
               ),
@@ -403,7 +404,7 @@ export default {
             values: this.observationPeriodData.CUMULATIVE_DURATION,
           };
           this.specObservationByAge.data = {
-            values: dataService.sortByRange(
+            values: sortByRange(
               this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
               "ascending",
               "CATEGORY",

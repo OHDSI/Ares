@@ -44,8 +44,8 @@ import axios from "axios";
 import embed from "vega-embed";
 import error from "../../components/Error.vue";
 import * as d3 from "d3-time-format";
-import dataService from "../../../services/DataService";
 import ReturnButton from "@/interface/components/ReturnButton";
+import sortByRange from "@/services/range-sort";
 
 export default {
   components: {
@@ -359,7 +359,7 @@ export default {
           embed("#viz-deathbytype", this.specDeathByType);
 
           this.specRecordProportionByAgeSexYear.data = {
-            values: dataService.sortByRange(
+            values: sortByRange(
               this.deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
               "ascending",
               "TRELLIS_NAME",

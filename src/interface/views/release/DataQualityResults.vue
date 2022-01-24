@@ -394,7 +394,6 @@
 
 <script>
 import axios from "axios";
-import dataService from "../../../services/DataService";
 import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
@@ -404,6 +403,7 @@ import error from "../../components/Error.vue";
 import * as d3 from "d3-format";
 import { debounce } from "lodash";
 import ReturnButton from "@/interface/components/ReturnButton";
+import deriveResults from "@/services/derive-results";
 
 export default {
   components: {
@@ -600,7 +600,7 @@ export default {
         .get(dataUrl)
         .then((response) => {
           this.dqResults = response.data;
-          this.derivedResults = dataService.deriveResults(response.data);
+          this.derivedResults = deriveResults(response.data);
           this.dataLoaded = true;
           this.componentFailed = false;
 
