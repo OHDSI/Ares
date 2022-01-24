@@ -6,7 +6,7 @@
         <v-icon color="blue-grey" right>{{ icon }}</v-icon> </v-col
       ><v-col cols="11" class="text-caption pa-2">
         <v-layout v-if="!linkDetails">{{ details }}</v-layout>
-        <a v-if="link != undefined" target="_blank" v-bind:href="link">
+        <a v-if="link != undefined" target="_blank" :href="link">
           <v-layout v-if="!linkDetails"
             >Click here to learn more
             <v-icon left small color="primary"
@@ -41,6 +41,7 @@
 
 <script>
 export default {
+  name: "Infopanel",
   props: {
     details: { type: String },
     link: { type: String },
@@ -53,7 +54,6 @@ export default {
     return {};
   },
   created() {},
-  name: "infopanel",
 };
 </script>
 

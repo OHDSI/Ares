@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
@@ -10,7 +10,7 @@
           >Data Source Release Comparison
         </v-layout>
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
-          <h2 class="text-uppercase">{{conceptName}}</h2>
+          <h2 class="text-uppercase">{{ conceptName }}</h2>
           <ReturnButton />
         </v-layout>
         <v-row v-if="dataLoaded" justify="start"
@@ -38,7 +38,7 @@
         >
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Record Proportion by Month</v-card-title>
-          <div class="viz-container" id="viz-recordproportionbymonth"></div>
+          <div id="viz-recordproportionbymonth" class="viz-container"></div>
         </v-card>
       </v-responsive>
     </v-container>
@@ -48,13 +48,17 @@
 <script>
 import axios from "axios";
 import embed from "vega-embed";
-import {flatten, sumBy} from "lodash";
-import error from "./Error.vue";
+import { flatten, sumBy } from "lodash";
+import error from "../../components/Error.vue";
 import * as d3Format from "d3-format";
 import * as d3 from "d3-time-format";
-import ReturnButton from "@/components/ReturnButton";
+import ReturnButton from "@/interface/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+  },
   data() {
     return {
       sources: [],
@@ -143,10 +147,7 @@ export default {
       },
     };
   },
-  components: {
-    ReturnButton,
-    error,
-  },
+  computed: {},
   created() {
     this.load();
   },
@@ -160,12 +161,13 @@ export default {
 
     loadRelease(selectedSource, release) {
       return new Promise((resolve, reject) => {
-        const url = `data/${selectedSource.cdm_source_key}/${release.release_id}/concepts/${this.$route.params.domain}/concept_${this.$route.params.concept}.json`
+        const url = `data/${selectedSource.cdm_source_key}/${release.release_id}/concepts/${this.$route.params.domain}/concept_${this.$route.params.concept}.json`;
 
-        axios.get(url)
-            .then(response => resolve({response, release}))
-            .catch(error => reject(error));
-      })
+        axios
+          .get(url)
+          .then((response) => resolve({ response, release }))
+          .catch((error) => reject(error));
+      });
     },
     load() {
       // first get network data source listing
@@ -173,48 +175,55 @@ export default {
         this.sources = response.data.sources;
 
         const dateParse = d3.timeParse("%Y%m");
-        const selectedSource = this.sources.find(s => s.cdm_source_key === this.$route.params.cdm);
+        const selectedSource = this.sources.find(
+          (s) => s.cdm_source_key === this.$route.params.cdm
+        );
 
-        const requests = selectedSource.releases.map(release => this.loadRelease(selectedSource, release))
+        const requests = selectedSource.releases.map((release) =>
+          this.loadRelease(selectedSource, release)
+        );
 
-        Promise.allSettled(requests).then(responses => {
+        Promise.allSettled(requests).then((responses) => {
           const parsedResponses = responses
-              .filter(response => response.status === 'fulfilled')
-              .map(response => ({
-                data: response.value.response.data,
-                release: response.value.release
-              }))
+            .filter((response) => response.status === "fulfilled")
+            .map((response) => ({
+              data: response.value.response.data,
+              release: response.value.release,
+            }));
 
-          if (!parsedResponses.length) return
+          if (!parsedResponses.length) return;
 
-          this.componentFailed = false
-          this.conceptName = parsedResponses[0].data.CONCEPT_NAME[0]
-          this.conceptId = parsedResponses[0].data.CONCEPT_ID[0]
-          this.numPersons = sumBy(parsedResponses, item => item.data.NUM_PERSONS[0])
+          this.componentFailed = false;
+          this.conceptName = parsedResponses[0].data.CONCEPT_NAME[0];
+          this.conceptId = parsedResponses[0].data.CONCEPT_ID[0];
+          this.numPersons = sumBy(
+            parsedResponses,
+            (item) => item.data.NUM_PERSONS[0]
+          );
 
-          const prevalence = parsedResponses.map(response => response.data.PREVALENCE_BY_MONTH.map(prevalence => {
-                return {
-                  ...prevalence,
-                  date: dateParse(prevalence.X_CALENDAR_MONTH),
-                  release: response.release.release_name
-                }
-              }
-          ))
+          const prevalence = parsedResponses.map((response) =>
+            response.data.PREVALENCE_BY_MONTH.map((prevalence) => {
+              return {
+                ...prevalence,
+                date: dateParse(prevalence.X_CALENDAR_MONTH),
+                release: response.release.release_name,
+              };
+            })
+          );
 
           this.specRecordProportionByMonth.data = {
-            values: flatten(prevalence)
-          }
+            values: flatten(prevalence),
+          };
 
           embed(
-              "#viz-recordproportionbymonth",
-              this.specRecordProportionByMonth
+            "#viz-recordproportionbymonth",
+            this.specRecordProportionByMonth
           );
           this.dataLoaded = true;
-        })
+        });
       });
     },
   },
-  computed: {},
 };
 </script>
 

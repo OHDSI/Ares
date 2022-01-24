@@ -2,7 +2,7 @@
   <v-responsive min-width="900">
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Data Strands</v-card-title>
-      <div class="viz-container" id="viz-datastrand"></div>
+      <div id="viz-datastrand" class="viz-container"></div>
       <infopanel
         details="Data strands are simple visualizations that describe the composition of
         a data source across the various CDM domain tables. Each individual
@@ -17,10 +17,13 @@
 <script>
 import embed from "vega-embed";
 import axios from "axios";
-import infopanel from "./InfoPanel.vue";
+import infopanel from "../../components/InfoPanel.vue";
 import * as d3 from "d3-dsv";
 
 export default {
+  components: {
+    infopanel,
+  },
   data() {
     return {
       dataLoaded: false,
@@ -43,8 +46,7 @@ export default {
             transform: [
               {
                 type: "filter",
-                expr:
-                  "indexof(['condition occurrence','drug exposure','measurement','observation','procedure occurrence','visit occurrence','device exposure'], lower(datum.domain)) >= 0",
+                expr: "indexof(['condition occurrence','drug exposure','measurement','observation','procedure occurrence','visit occurrence','device exposure'], lower(datum.domain)) >= 0",
               },
               {
                 type: "joinaggregate",
@@ -82,8 +84,7 @@ export default {
               },
               {
                 type: "filter",
-                expr:
-                  'isValid(datum["sum_percent"]) && isFinite(+datum["sum_percent"])',
+                expr: 'isValid(datum["sum_percent"]) && isFinite(+datum["sum_percent"])',
               },
             ],
           },
@@ -176,9 +177,6 @@ export default {
       },
     };
   },
-  components: {
-    infopanel,
-  },
   created() {
     this.load();
   },
@@ -189,15 +187,15 @@ export default {
       document.getElementById("vg-tooltip-element").style.display = "none";
     },
     load: function () {
-      var vm = this;
-      var sourceRequests = [];
-      var domainData = [];
+      const vm = this;
+      const sourceRequests = [];
+      let domainData = [];
 
       // first get network data source listing
       axios.get("data/index.json").then((response) => {
         vm.sources = response.data.sources;
         vm.sources.forEach((source) => {
-          var dataUrl =
+          const dataUrl =
             "data/" +
             source.cdm_source_key +
             "/" +
@@ -213,7 +211,7 @@ export default {
               vm.dataLoaded = true;
 
               responses.forEach((r, i) => {
-                var responseData = d3.csvParse(r.data);
+                const responseData = d3.csvParse(r.data);
                 responseData.forEach((d) => {
                   d.cdm_source_key = vm.sources[i].cdm_source_key;
                   d.cdm_release_key = vm.sources[i].releases[0].release_id;
@@ -227,8 +225,10 @@ export default {
 
               embed("#viz-datastrand", vm.specDatastrand).then((result) => {
                 result.view.addSignalListener("selectDomain", (name, value) => {
-                  var domainKey = value.domain.toLowerCase().replace(" ", "_");
-                  var routeUrl =
+                  const domainKey = value.domain
+                    .toLowerCase()
+                    .replace(" ", "_");
+                  const routeUrl =
                     "/cdm/" +
                     value.cdm_source_key +
                     "/" +

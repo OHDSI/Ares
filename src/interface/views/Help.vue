@@ -13,6 +13,11 @@ import axios from "axios";
 
 export default {
   name: "Help",
+  components: {
+    markdown,
+  },
+
+  props: {},
   data() {
     return {
       contentLoaded: false,
@@ -26,19 +31,14 @@ export default {
     };
   },
   created() {
-    var contentUrl = "doc/DefaultHelp.md";
-    var vm = this;
+    const contentUrl = "doc/DefaultHelp.md";
+    const vm = this;
     axios.get(contentUrl).then((response) => {
       vm.markdownContent = response.data;
       vm.contentLoaded = true;
     });
   },
   methods: {},
-
-  props: {},
-  components: {
-    markdown,
-  },
 };
 </script>
 

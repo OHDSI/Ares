@@ -9,14 +9,13 @@
 
 <script>
 export default {
+  name: "Error",
   props: ["text", "details"],
   data() {
     return {};
   },
   created() {},
-  name: "error",
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -42,10 +42,10 @@
 <script>
 import axios from "axios";
 import embed from "vega-embed";
-import error from "./Error.vue";
+import error from "../../components/Error.vue";
 import * as d3 from "d3-time-format";
-import dataService from "../services/DataService";
-import ReturnButton from "@/components/ReturnButton";
+import dataService from "../../../services/DataService";
+import ReturnButton from "@/interface/components/ReturnButton";
 
 export default {
   components: {

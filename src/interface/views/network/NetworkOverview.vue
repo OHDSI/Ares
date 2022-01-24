@@ -102,11 +102,14 @@
 
 <script>
 import axios from "axios";
-import error from "./Error.vue";
+import error from "../../components/Error.vue";
 import * as d3 from "d3-format";
 
 export default {
   name: "NetworkOverview",
+  components: {
+    error,
+  },
   data() {
     return {
       indexAvailable: true,
@@ -182,9 +185,6 @@ export default {
         this.errorText = "data network index not found";
         this.errorDetails = error;
       });
-  },
-  components: {
-    error,
   },
   methods: {
     getDataSourceRoute(item) {

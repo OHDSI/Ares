@@ -74,8 +74,8 @@
 <script>
 import axios from "axios";
 import * as d3 from "d3-dsv";
-import error from "./Error.vue";
-import ReturnButton from "@/components/ReturnButton";
+import error from "../../components/Error.vue";
+import ReturnButton from "@/interface/components/ReturnButton";
 
 export default {
   components: {

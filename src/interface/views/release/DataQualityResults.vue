@@ -394,16 +394,16 @@
 
 <script>
 import axios from "axios";
-import dataService from "../services/DataService";
+import dataService from "../../../services/DataService";
 import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
 import "codemirror/theme/neat.css";
-import infopanel from "./InfoPanel.vue";
-import error from "./Error.vue";
+import infopanel from "../../components/InfoPanel.vue";
+import error from "../../components/Error.vue";
 import * as d3 from "d3-format";
 import { debounce } from "lodash";
-import ReturnButton from "@/components/ReturnButton";
+import ReturnButton from "@/interface/components/ReturnButton";
 
 export default {
   components: {

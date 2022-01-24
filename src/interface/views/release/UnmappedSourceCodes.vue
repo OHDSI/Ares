@@ -75,7 +75,7 @@
 import axios from "axios";
 import { csvParse } from "d3-dsv";
 import { format } from "d3-format";
-import error from "./Error.vue";
+import error from "../../components/Error.vue";
 import { debounce } from "lodash";
 
 export default {

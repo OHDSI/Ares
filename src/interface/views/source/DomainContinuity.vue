@@ -13,7 +13,7 @@
 <script>
 import embed from "vega-embed";
 import axios from "axios";
-import InfoPanel from "./InfoPanel.vue";
+import InfoPanel from "../../components/InfoPanel.vue";
 
 export default {
   components: {

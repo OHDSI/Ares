@@ -1,16 +1,16 @@
 <template>
   <div id="network-data-quality-summary" class="pa-2">
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Network Data Quality Issues by Category</v-card-title>
-      <div class="viz-container" id="viz-category"></div>
+      <div id="viz-category" class="viz-container"></div>
     </v-card>
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Network Data Quality Issues by CDM Table</v-card-title>
-      <div class="viz-container" id="viz-table"></div>
+      <div id="viz-table" class="viz-container"></div>
     </v-card>
   </div>
 </template>
@@ -18,11 +18,17 @@
 <script>
 import axios from "axios";
 import * as d3 from "d3-dsv";
-import error from "./Error.vue";
+import error from "../../components/Error.vue";
 import embed from "vega-embed";
-import ReturnButton from "@/components/ReturnButton";
+import ReturnButton from "@/interface/components/ReturnButton";
 
 export default {
+  name: "NetworkDataQualitySummary",
+  components: {
+    error,
+    ReturnButton,
+  },
+  props: {},
   data() {
     return {
       componentFailed: false,
@@ -93,7 +99,7 @@ export default {
             legend: {
               orient: "right",
               title: null,
-              columns: 2
+              columns: 2,
             },
           },
         },
@@ -116,7 +122,7 @@ export default {
         embed("#viz-category", this.specIssueStratificationByCategory).then(
           (vega) => {
             vega.view.addSignalListener("select", (name, value) => {
-              var routeUrl =
+              const routeUrl =
                 "/cdm/" +
                 value.CDM_SOURCE_ +
                 "/" +
@@ -138,10 +144,6 @@ export default {
         console.log(err);
       });
   },
-  components: {
-    error,
-    ReturnButton
-  },
   methods: {
     navigate: function (route) {
       this.$router.push(route);
@@ -149,8 +151,6 @@ export default {
       document.getElementById("vg-tooltip-element").style.display = "none";
     },
   },
-  name: "network-data-quality-summary",
-  props: {},
 };
 </script>
 

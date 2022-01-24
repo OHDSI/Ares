@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
@@ -11,11 +11,11 @@
         >
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Age at First Observation</v-card-title>
-          <div class="viz-container" id="viz-ageatfirstobservation"></div>
+          <div id="viz-ageatfirstobservation" class="viz-container"></div>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
           <v-card-title>Cumulative Observation</v-card-title>
-          <div class="viz-container" id="viz-cumulativeobservation"></div>
+          <div id="viz-cumulativeobservation" class="viz-container"></div>
         </v-card>
       </v-responsive>
     </v-container>
@@ -26,11 +26,15 @@
 import axios from "axios";
 import embed from "vega-embed";
 /*import _ from "lodash";*/
-import error from "./Error.vue";
+import error from "../../components/Error.vue";
 import * as d3Format from "d3-format";
-import ReturnButton from "@/components/ReturnButton";
+import ReturnButton from "@/interface/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+  },
   data() {
     return {
       sources: [],
@@ -219,10 +223,7 @@ export default {
       },
     };
   },
-  components: {
-    ReturnButton,
-    error,
-  },
+  computed: {},
   created() {
     this.load();
   },
@@ -245,13 +246,13 @@ export default {
       });
     },
     load: function () {
-      var self = this;
-      var sourceRequests = [];
+      const self = this;
+      const sourceRequests = [];
 
       axios.get("data/index.json").then((response) => {
         self.sources = response.data.sources;
         self.sources.forEach((source) => {
-          var dataUrl =
+          const dataUrl =
             "data/" +
             source.cdm_source_key +
             "/" +
@@ -265,8 +266,8 @@ export default {
             axios.spread((...responses) => {
               self.componentFailed = false;
 
-              var allAgeAtFirstObservationData = [];
-              var allCumulativeDurationData = [];
+              let allAgeAtFirstObservationData = [];
+              let allCumulativeDurationData = [];
 
               responses.forEach((r, i) => {
                 r.data.AGE_AT_FIRST_OBSERVATION.forEach((d) => {
@@ -307,7 +308,6 @@ export default {
       });
     },
   },
-  computed: {},
 };
 </script>
 

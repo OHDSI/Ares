@@ -6,16 +6,14 @@
 </template>
 
 <script>
-import Explorer from "./Explorer";
+import Explorer from "../components/Explorer";
 
 export default {
   name: "ExplorerWrapper",
   components: {
-    Explorer
-  }
-}
+    Explorer,
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -6,7 +6,7 @@
     <v-layout justify-center>
       <v-img
         class="inverted"
-        :src="require('../assets/icon.png')"
+        :src="require('../../assets/icon.png')"
         max-height="64"
         max-width="64"
       ></v-img>
@@ -37,7 +37,7 @@
 
 <script>
 export default {
-  name: "home",
+  name: "Home",
 };
 </script>
 

@@ -1,13 +1,13 @@
 <template>
   <div>
     <div v-if="componentFailed">
-      <error v-bind:text="errorText" v-bind:details="errorDetails"></error>
+      <error :text="errorText" :details="errorDetails"></error>
       <ReturnButton block />
     </div>
     <v-container v-if="!componentFailed">
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
-          <h2 class="text-uppercase">{{conceptName}} NETWORK REPORT</h2>
+          <h2 class="text-uppercase">{{ conceptName }} NETWORK REPORT</h2>
           <ReturnButton />
         </v-layout>
         <v-row v-if="dataLoaded" justify="start"
@@ -34,8 +34,8 @@
           ></v-row
         >
         <v-card
-          :loading="!dataLoaded"
           v-if="hasMeasurementValueDistribution"
+          :loading="!dataLoaded"
           elevation="10"
           class="ma-4 pa-2"
         >
@@ -49,8 +49,8 @@
             >
           </v-layout>
           <div
-            class="viz-container"
             id="viz-measurementvaluedistribution"
+            class="viz-container"
           ></div>
           <v-card-text>
             <router-link to="/help">
@@ -68,11 +68,15 @@
 import axios from "axios";
 import embed from "vega-embed";
 import _ from "lodash";
-import error from "./Error.vue";
+import error from "../../components/Error.vue";
 import * as d3Format from "d3-format";
-import ReturnButton from "@/components/ReturnButton";
+import ReturnButton from "@/interface/components/ReturnButton";
 
 export default {
+  components: {
+    ReturnButton,
+    error,
+  },
   data() {
     return {
       sources: [],
@@ -143,10 +147,7 @@ export default {
       },
     };
   },
-  components: {
-    ReturnButton,
-    error,
-  },
+  computed: {},
   created() {
     this.load();
   },
@@ -158,19 +159,15 @@ export default {
       window.dispatchEvent(new Event("resize"));
     },
     toggleMeasurementValueChart() {
-      let encoding = this.specMeasurementValueDistribution.layer[0].encoding;
+      const encoding = this.specMeasurementValueDistribution.layer[0].encoding;
 
       if (this.toggleMode === "MIN/MAX") {
-        encoding.x.field =
-            "P10_VALUE";
-        encoding.x2.field =
-            "P90_VALUE";
+        encoding.x.field = "P10_VALUE";
+        encoding.x2.field = "P90_VALUE";
         this.toggleMode = "P10/P90";
       } else {
-        encoding.x.field =
-            "MIN_VALUE";
-        encoding.x2.field =
-            "MAX_VALUE";
+        encoding.x.field = "MIN_VALUE";
+        encoding.x2.field = "MAX_VALUE";
         this.toggleMode = "MIN/MAX";
       }
       embed(
@@ -192,12 +189,12 @@ export default {
       });
     },
     load: function () {
-      let sourceRequests = [];
+      const sourceRequests = [];
       // first get network data source listing
       axios.get("data/index.json").then((response) => {
         this.sources = response.data.sources;
         this.sources.forEach((source) => {
-          let dataUrl =
+          const dataUrl =
             "data/" +
             source.cdm_source_key +
             "/" +
@@ -253,7 +250,6 @@ export default {
       });
     },
   },
-  computed: {},
 };
 </script>
 

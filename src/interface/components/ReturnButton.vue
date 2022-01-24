@@ -1,5 +1,5 @@
 <template>
-  <v-btn v-bind:block="block" color="blue" dark small @click="$router.back()">
+  <v-btn :block="block" color="blue" dark small @click="$router.back()">
     <v-icon>mdi-arrow-left</v-icon>
     Back
   </v-btn>
@@ -9,11 +9,9 @@
 export default {
   name: "ReturnButton",
   props: {
-    block: Boolean
-  }
-}
+    block: Boolean,
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
