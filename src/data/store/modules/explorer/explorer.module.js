@@ -42,9 +42,11 @@ const getters = {
     return getters.getSelectedSource.releases;
   },
   getSelectedRelease: function (state, getters, rootState) {
-    return getters.getReleases.find(
-      (release) => rootState.route.params.release === release.release_id
-    );
+    return rootState.route.params.release
+      ? getters.getReleases.find(
+          (release) => rootState.route.params.release === release.release_id
+        )
+      : getters.getReleases[0];
   },
   getSelectedReport: function (state, getters, rootState) {
     return getters.getFilteredReports.find((report) =>
