@@ -32,6 +32,9 @@
             :sort-by="['PERCENT_PEOPLE']"
             :sort-desc="[true, false]"
           >
+            <template v-slot:item.PERCENT_PEOPLE="{ item }">
+              {{ item.PERCENT_PEOPLE }}%
+            </template>
           </v-data-table>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
