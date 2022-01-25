@@ -75,7 +75,11 @@ export default {
   computed: {
     ...mapGetters(["getData", "getSelectedSource", "getSources"]),
   },
-
+  watch: {
+    $route() {
+      this.load();
+    },
+  },
   created() {
     this.load();
   },
