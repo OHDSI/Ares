@@ -1,9 +1,5 @@
 <template>
-  <div>
-    <div v-if="componentFailed">
-      <error :text="errorText" :details="errorDetails"></error>
-      <ReturnButton block />
-    </div>
+  <div v-if="!getErrors">
     <v-container class="pa-1">
       <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
         <v-row
@@ -182,8 +178,13 @@
       elevation="10"
       class="ma-4 pa-2"
     >
-      <v-card-title>Domain Data Stratification by Visit</v-card-title>
-      <div id="viz-stratificationbyvisit" class="viz-container"></div>
+      <VegaChart
+        v-if="visitStratification && dataLoaded"
+        id="viz-stratificationbyvisit"
+        :config="specVisitStratification"
+        :data="$store.getters.getData.domainVisitStratification"
+        title="Domain Data Stratification by Visit"
+      />
       <v-card-text>
         <v-icon color="info" small left>mdi-help-circle</v-icon>
         Any domain data categorized as a Visit of 'No matching concept' implies
@@ -191,34 +192,41 @@
       </v-card-text>
     </v-card>
     <v-card
-      v-if="this.$route.params.domain.toUpperCase() == 'DRUG_EXPOSURE'"
+      v-if="isDrugExposure"
       :loading="!dataLoaded"
       elevation="10"
       class="ma-4 pa-2"
     >
-      <v-card-title>Drug Domain Stratification by Drug Type</v-card-title>
-      <div id="viz-stratificationbydrugtype" class="viz-container"></div>
+      <VegaChart
+        v-if="dataLoaded"
+        id="viz-stratificationbydrugtype"
+        :config="specDrugTypeStratification"
+        :data="drugStratification"
+        title="Drug Domain Stratification by Drug Type"
+      />
     </v-card>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import * as d3Import from "d3-dsv";
 import * as d3Format from "d3-format";
-import error from "../../components/Error.vue";
-import embed from "vega-embed";
 import InfoPanel from "../../components/InfoPanel.vue";
 import { debounce } from "lodash";
-import ReturnButton from "@/interface/components/ReturnButton";
-
+import { charts } from "@/configs";
+import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import {
+  DOMAIN_DRUG_STRATIFICATION,
+  DOMAIN_ISSUES,
+  DOMAIN_SUMMARY,
+  DOMAIN_VISIT_STRATIFICATION,
+} from "@/data/services/getFilePath";
+import { mapGetters } from "vuex";
+import VegaChart from "@/interface/components/VegaChart";
 export default {
   data: function () {
     return {
       chooseHeaderMenu: false,
-      componentFailed: false,
-      errorText: "",
-      errorDetails: "",
       dataLoaded: false,
       issueDataLoaded: false,
       issueCount: 0,
@@ -226,6 +234,8 @@ export default {
       isMeasurement: false,
       isVisit: false,
       isDrugExposure: false,
+      visitStratification: false,
+      drugStratification: [],
       domainTable: [],
       domainIssues: [],
       search: "",
@@ -275,53 +285,8 @@ export default {
           align: "end",
         },
       },
-      specVisitStratification: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 300,
-        mark: "bar",
-        encoding: {
-          y: {
-            field: "CONCEPT_NAME",
-            type: "ordinal",
-            title: null,
-          },
-          x: {
-            field: "RECORD_COUNT",
-            aggregate: "sum",
-            title: "Number of Records",
-          },
-          color: {
-            field: "CDM_TABLE_NAME",
-            type: "nominal",
-            title: "Event Domain Table",
-            legend: {
-              orient: "bottom",
-              title: null,
-            },
-          },
-        },
-      },
-      specDrugTypeStratification: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 300,
-        mark: "bar",
-        encoding: {
-          y: {
-            field: "CONCEPT_NAME",
-            type: "ordinal",
-            title: null,
-          },
-          x: {
-            field: "RECORD_COUNT",
-            aggregate: "sum",
-            title: "Number of Records",
-          },
-        },
-      },
+      specVisitStratification: charts.specVisitStratification,
+      specDrugTypeStratification: charts.specDrugTypeStratification,
     };
   },
   watch: {
@@ -390,23 +355,7 @@ export default {
       this.issueCount = 0;
       this.issueDataLoaded = false;
 
-      // load domain data
-      const dataUrl =
-        "data/" +
-        this.$route.params.cdm +
-        "/" +
-        this.$route.params.release +
-        "/domain-summary-" +
-        this.$route.params.domain +
-        ".csv";
-
       const domain = this.$route.params.domain.toUpperCase();
-
-      if (domain == "DRUG_EXPOSURE") {
-        this.isDrugExposure = true;
-      } else {
-        this.isDrugExposure = false;
-      }
 
       if (domain == "VISIT_OCCURRENCE" || domain == "VISIT_DETAIL") {
         this.isVisit = true;
@@ -459,13 +408,23 @@ export default {
         delete this.headersMap.P75_VALUE;
       }
 
-      axios
-        .get(dataUrl)
-        .then((response) => {
-          this.domainTable = d3Import.csvParse(response.data);
+      const files = [
+        { name: DOMAIN_SUMMARY, required: true },
+        { name: DOMAIN_ISSUES, required: true },
+      ];
+      if (this.$route.params.domain.toUpperCase() === "DRUG_EXPOSURE") {
+        files.push({ name: DOMAIN_DRUG_STRATIFICATION, required: false });
+      }
+      if (this.$route.params.domain.toUpperCase() === "VISIT_OCCURRENCE") {
+        files.push({ name: DOMAIN_VISIT_STRATIFICATION, required: true });
+      }
 
+      this.$store
+        .dispatch(FETCH_DATA, {
+          files: files,
+        })
+        .then(() => {
           this.headers = Object.values(this.headersMap);
-
           if (this.isVisit) {
             this.selectedHeaders = this.headers.filter((h) =>
               [
@@ -506,101 +465,42 @@ export default {
               ].includes(h.value)
             );
           }
-          this.dataLoaded = true;
-          this.componentFailed = false;
-        })
-        .catch((err) => {
-          this.componentFailed = true;
-          this.errorText = "Failed to obtain domain table data file.";
-          this.errorDetails = err + ". (" + dataUrl + ")";
-        });
-
-      // load domain issues
-      const issueDataUrl =
-        "data/" +
-        this.$route.params.cdm +
-        "/" +
-        this.$route.params.release +
-        "/domain-issues.csv";
-
-      axios
-        .get(issueDataUrl)
-        .then((response) => {
-          this.issueDataLoaded = true;
-          this.domainIssues = d3Import.csvParse(response.data);
+          this.domainTable = d3Import.csvParse(this.getData[DOMAIN_SUMMARY]);
+          this.domainIssues = d3Import.csvParse(this.getData[DOMAIN_ISSUES]);
           const domainIssue = this.domainIssues.find(
             (di) => di.cdm_table_name === this.$route.params.domain
           );
           this.issueCount = domainIssue?.count_failed || 0;
-        })
-        .catch((err) => {
-          this.componentFailed = true;
-          this.errorText = "Failed to obtain domain issues data file.";
-          this.errorDetails = err + ". (" + issueDataUrl + ")";
+
+          if (this.getData[DOMAIN_DRUG_STRATIFICATION]) {
+            this.isDrugExposure = true;
+            this.drugStratification = d3Import.csvParse(
+              this.getData[DOMAIN_DRUG_STRATIFICATION]
+            );
+          }
+          if (this.$route.params.domain.toUpperCase() == "VISIT_OCCURRENCE") {
+            this.getData[DOMAIN_VISIT_STRATIFICATION] = d3Import.csvParse(
+              this.getData[DOMAIN_VISIT_STRATIFICATION]
+            );
+            this.visitStratification = true;
+          }
+          this.dataLoaded = true;
+          this.issueDataLoaded = true;
         });
-
-      // conditionally load other domain detail information
-      if (this.$route.params.domain.toUpperCase() == "VISIT_OCCURRENCE") {
-        const visitUrl =
-          "data/" +
-          this.$route.params.cdm +
-          "/" +
-          this.$route.params.release +
-          "/domain-visit-stratification.csv";
-
-        axios
-          .get(visitUrl)
-          .then((response) => {
-            this.specVisitStratification.data = {
-              values: d3Import.csvParse(response.data),
-            };
-            embed(
-              "#viz-stratificationbyvisit",
-              this.specVisitStratification
-            ).then(() => {
-              window.dispatchEvent(new Event("resize"));
-            });
-          })
-          .catch(() => {});
-      }
-
-      if (this.$route.params.domain.toUpperCase() == "DRUG_EXPOSURE") {
-        const drugTypeUrl =
-          "data/" +
-          this.$route.params.cdm +
-          "/" +
-          this.$route.params.release +
-          "/domain-drug-stratification.csv";
-
-        axios
-          .get(drugTypeUrl)
-          .then((response) => {
-            this.specDrugTypeStratification.data = {
-              values: d3Import.csvParse(response.data),
-            };
-            embed(
-              "#viz-stratificationbydrugtype",
-              this.specDrugTypeStratification
-            ).then(() => {
-              window.dispatchEvent(new Event("resize"));
-            });
-          })
-          .catch(() => {});
-      }
     },
   },
   created() {
     this.load();
   },
   components: {
-    error,
+    VegaChart,
     InfoPanel,
-    ReturnButton,
   },
   computed: {
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
+    ...mapGetters(["getData", "getErrors"]),
   },
   props: {
     resultFile: String,

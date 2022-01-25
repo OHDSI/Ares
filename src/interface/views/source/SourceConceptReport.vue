@@ -1,10 +1,6 @@
 <template>
   <div>
-    <div v-if="componentFailed">
-      <error :text="errorText" :details="errorDetails"></error>
-      <ReturnButton block />
-    </div>
-    <v-container v-if="!componentFailed">
+    <v-container>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-1 text-uppercase text-h6"
           >Data Source Release Comparison
@@ -37,8 +33,13 @@
           ></v-row
         >
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
-          <v-card-title>Record Proportion by Month</v-card-title>
-          <div id="viz-recordproportionbymonth" class="viz-container"></div>
+          <VegaChart
+            v-if="dataLoaded"
+            id="viz-recordproportionbymonth"
+            :config="specRecordProportionByMonth"
+            :data="conceptData"
+            title="Record Proportion by Month"
+          />
         </v-card>
       </v-responsive>
     </v-container>
@@ -46,108 +47,35 @@
 </template>
 
 <script>
-import axios from "axios";
-import embed from "vega-embed";
 import { flatten, sumBy } from "lodash";
-import error from "../../components/Error.vue";
 import * as d3Format from "d3-format";
 import * as d3 from "d3-time-format";
 import ReturnButton from "@/interface/components/ReturnButton";
-
+import { charts } from "@/configs";
+import { FETCH_MULTIPLE_BY_RELEASE } from "@/data/store/modules/view/actions.type";
+import { SOURCE_CONCEPT } from "@/data/services/getFilePath";
+import { mapGetters } from "vuex";
+import VegaChart from "@/interface/components/VegaChart";
 export default {
   components: {
+    VegaChart,
     ReturnButton,
-    error,
   },
   data() {
     return {
       sources: [],
-      componentFailed: false,
-      errorText: "",
-      errorDetails: "",
-      conceptData: null,
+      conceptData: [],
       conceptName: "",
       conceptId: 0,
       dataLoaded: false,
       cdmSourceName: "",
-      specRecordProportionByMonth: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        vconcat: [
-          {
-            height: 150,
-            width: "container",
-            description: "Domain Data Density",
-            mark: { type: "circle", opacity: 0.5 },
-            selection: {
-              release: { type: "multi", fields: ["release"], bind: "legend" },
-            },
-            encoding: {
-              x: {
-                field: "date",
-                type: "temporal",
-                timeUnit: "yearmonth",
-                scale: { domain: { selection: "brush" } },
-                axis: { title: "" },
-              },
-              y: {
-                field: "Y_PREVALENCE_1000PP",
-                type: "quantitative",
-                title: "Record Proportion per 1000",
-              },
-              color: {
-                title: "Release",
-                field: "release",
-              },
-              opacity: {
-                condition: { selection: "release", value: 1 },
-                value: 0.2,
-              },
-              tooltip: [
-                { field: "release", title: "Release" },
-                {
-                  field: "Y_PREVALENCE_1000PP",
-                  title: "RPP1000",
-                  type: "quantitative",
-                },
-                {
-                  field: "date",
-                  title: "Date",
-                  type: "temporal",
-                  timeUnit: "yearmonth",
-                },
-              ],
-            },
-          },
-          {
-            width: "container",
-            height: 25,
-            mark: { type: "line", opacity: 0.5 },
-            selection: {
-              brush: { type: "interval", encodings: ["x"] },
-            },
-            encoding: {
-              x: {
-                field: "date",
-                type: "temporal",
-                title: "Date",
-                timeUnit: "yearmonth",
-              },
-              y: {
-                field: "Y_PREVALENCE_1000PP",
-                type: "quantitative",
-                title: "",
-              },
-              color: {
-                field: "release",
-              },
-            },
-          },
-        ],
-      },
+      specRecordProportionByMonth: charts.specRecordProportionByMonth,
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["getData", "getSelectedSource", "getSources"]),
+  },
+
   created() {
     this.load();
   },
@@ -158,42 +86,18 @@ export default {
     triggerResize: function () {
       window.dispatchEvent(new Event("resize"));
     },
-
-    loadRelease(selectedSource, release) {
-      return new Promise((resolve, reject) => {
-        const url = `data/${selectedSource.cdm_source_key}/${release.release_id}/concepts/${this.$route.params.domain}/concept_${this.$route.params.concept}.json`;
-
-        axios
-          .get(url)
-          .then((response) => resolve({ response, release }))
-          .catch((error) => reject(error));
-      });
-    },
     load() {
-      // first get network data source listing
-      axios.get("data/index.json").then((response) => {
-        this.sources = response.data.sources;
-
-        const dateParse = d3.timeParse("%Y%m");
-        const selectedSource = this.sources.find(
-          (s) => s.cdm_source_key === this.$route.params.cdm
-        );
-
-        const requests = selectedSource.releases.map((release) =>
-          this.loadRelease(selectedSource, release)
-        );
-
-        Promise.allSettled(requests).then((responses) => {
-          const parsedResponses = responses
-            .filter((response) => response.status === "fulfilled")
-            .map((response) => ({
-              data: response.value.response.data,
-              release: response.value.release,
-            }));
+      this.dataLoaded = false;
+      this.$store
+        .dispatch(FETCH_MULTIPLE_BY_RELEASE, {
+          files: [SOURCE_CONCEPT],
+        })
+        .then(() => {
+          const parsedResponses = this.getData[SOURCE_CONCEPT];
+          const dateParse = d3.timeParse("%Y%m");
 
           if (!parsedResponses.length) return;
 
-          this.componentFailed = false;
           this.conceptName = parsedResponses[0].data.CONCEPT_NAME[0];
           this.conceptId = parsedResponses[0].data.CONCEPT_ID[0];
           this.numPersons = sumBy(
@@ -206,22 +110,14 @@ export default {
               return {
                 ...prevalence,
                 date: dateParse(prevalence.X_CALENDAR_MONTH),
-                release: response.release.release_name,
+                release: response.release,
               };
             })
           );
 
-          this.specRecordProportionByMonth.data = {
-            values: flatten(prevalence),
-          };
-
-          embed(
-            "#viz-recordproportionbymonth",
-            this.specRecordProportionByMonth
-          );
+          this.conceptData = flatten(prevalence);
           this.dataLoaded = true;
         });
-      });
     },
   },
 };

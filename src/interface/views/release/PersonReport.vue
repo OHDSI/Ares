@@ -1,10 +1,6 @@
 <template>
   <div>
-    <div v-if="componentFailed">
-      <error :text="errorText" :details="errorDetails"></error>
-      <ReturnButton block />
-    </div>
-    <v-container v-if="!componentFailed">
+    <v-container v-if="!getErrors">
       <v-responsive min-width="900">
         <div class="text-uppercase text-h6">Person Report</div>
         <br />
@@ -54,20 +50,40 @@
           </v-col>
         </v-row>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
-          <v-card-title>Population by Age &amp; Sex</v-card-title>
-          <div id="viz-populationbyageandsex" class="viz-container"></div>
+          <VegaChart
+            v-if="dataLoaded"
+            id="viz-populationbyageandsex"
+            title="Population by Age &amp; Sex"
+            :data="personData.AGE_GENDER_DATA"
+            :config="specAgeSex"
+          />
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
-          <v-card-title>Population by Race</v-card-title>
-          <div id="viz-race" class="viz-container"></div>
+          <VegaChart
+            v-if="dataLoaded"
+            id="viz-race"
+            :config="specRace"
+            :data="personData.RACE_DATA"
+            title="Population by Race"
+          />
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
-          <v-card-title>Population by Year of Birth</v-card-title>
-          <div id="viz-birthyear" class="viz-container"></div>
+          <VegaChart
+            v-if="dataLoaded"
+            id="viz-birthyear"
+            :config="specBirthYear"
+            :data="personData.BIRTH_YEAR_DATA"
+            title="Population by Year of Birth"
+          />
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
-          <v-card-title>Population by Ethnicity</v-card-title>
-          <div id="viz-ethnicity" class="viz-container"></div>
+          <VegaChart
+            v-if="dataLoaded"
+            id="viz-ethnicity"
+            :config="specEthnicity"
+            :data="personData.ETHNICITY_DATA"
+            title="Population by Ethnicity"
+          />
         </v-card>
       </v-responsive>
     </v-container>
@@ -75,23 +91,20 @@
 </template>
 
 <script>
-import axios from "axios";
-import embed from "vega-embed";
-import error from "../../components/Error.vue";
 import * as d3 from "d3-time-format";
 import * as d3Format from "d3-format";
-import ReturnButton from "@/interface/components/ReturnButton";
-
+import { charts } from "@/configs";
+import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { METADATA, PERSON } from "@/data/services/getFilePath";
+import { mapGetters } from "vuex";
+import VegaChart from "@/interface/components/VegaChart";
 export default {
   components: {
-    ReturnButton,
-    error,
+    VegaChart,
   },
   data() {
     return {
-      componentFailed: false,
-      errorText: "",
-      errorDetails: "",
+      personData: "",
       hasMeasurementValueDistribution: false,
       hasAgeAtFirstDiagnosis: false,
       hasAgeAtFirstOccurrence: false,
@@ -106,147 +119,15 @@ export default {
       genderMalePct: "",
       genderFemalePct: "",
       genderFemaleCount: "",
-      specBirthYear: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 100,
-        mark: "bar",
-        encoding: {
-          tooltip: [
-            { field: "COUNT_PERSON", title: "# of People", format: "," },
-          ],
-          x: {
-            field: "YEAR",
-            type: "temporal",
-            title: "Year of Birth",
-          },
-          y: {
-            field: "COUNT_PERSON",
-            aggregate: "sum",
-            title: "Number of People",
-          },
-        },
-      },
-      specRace: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 75,
-        mark: "bar",
-        transform: [
-          {
-            window: [
-              {
-                op: "sum",
-                field: "COUNT_VALUE",
-                as: "TOTAL_VALUE",
-              },
-            ],
-            frame: [null, null],
-          },
-          {
-            calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
-            as: "PERCENT",
-          },
-        ],
-        encoding: {
-          tooltip: [
-            { field: "CONCEPT_NAME", title: "Race" },
-            { field: "PERCENT", title: "Percent", format: "0.2%" },
-            { field: "COUNT_VALUE", title: "Number of People" },
-          ],
-          x: {
-            field: "PERCENT",
-            type: "quantitative",
-            aggregate: "sum",
-            title: "% of People",
-            axis: {
-              format: "0%",
-            },
-          },
-          color: {
-            field: "CONCEPT_NAME",
-            type: "nominal",
-            legend: {
-              orient: "right",
-              title: null,
-            },
-          },
-          order: {
-            aggregate: "sum",
-            field: "COUNT_VALUE",
-            sort: "descending",
-          },
-        },
-      },
-      specEthnicity: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 100,
-        mark: "bar",
-        encoding: {
-          x: {
-            field: "COUNT_VALUE",
-            aggregate: "sum",
-            title: "Number of People",
-          },
-          color: {
-            field: "CONCEPT_NAME",
-            legend: {
-              orient: "right",
-              columns: 2,
-              title: "Ethnicity",
-            },
-          },
-        },
-      },
-      specAgeSex: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 75,
-        mark: "bar",
-        transform: [{ filter: "datum.AGE >= 0" }],
-        encoding: {
-          tooltip: [
-            { field: "CONCEPT_NAME", title: "Sex" },
-            { field: "AGE", title: "Age" },
-            { field: "COUNT_VALUE", title: "# of People", format: "," },
-          ],
-          color: {
-            field: "CONCEPT_NAME",
-            legend: null,
-          },
-          row: {
-            field: "CONCEPT_NAME",
-            title: null,
-            header: {
-              title: "Number of People",
-              labelOrient: "top",
-              labelAnchor: "start",
-              labelFontSize: 12,
-              labelPadding: 2,
-              labelFontWeight: "bold",
-            },
-          },
-          x: {
-            field: "AGE",
-            title: "Age at First Observation",
-            type: "quantitative",
-            scale: { domain: [0, 100] },
-          },
-          y: {
-            aggregate: "sum",
-            field: "COUNT_VALUE",
-            title: null,
-          },
-        },
-      },
+      specBirthYear: charts.specBirthYear,
+      specRace: charts.specRace,
+      specEthnicity: charts.specEthnicity,
+      specAgeSex: charts.specAgeSex,
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["getData", "getErrors"]),
+  },
   watch: {
     $route() {
       this.load();
@@ -270,31 +151,21 @@ export default {
 
     load: function () {
       this.dataLoaded = false;
-      const dataUrl =
-        "data/" +
-        this.$route.params.cdm +
-        "/" +
-        this.$route.params.release +
-        "/person.json";
-      axios
-        .get(dataUrl)
-        .then((response) => {
-          this.componentFailed = false;
+      this.$store
+        .dispatch(FETCH_DATA, {
+          files: [{ name: PERSON, required: true }],
+        })
+        .then(() => {
           const dateParse = d3.timeParse("%Y");
-          this.personData = response.data;
-
-          //Pulls number of persons from person.json
-          this.numPersons = response.data.SUMMARY[1].ATTRIBUTE_VALUE;
-
-          //Pulls gender from person.json
-          if (response.data.GENDER_DATA[0].CONCEPT_NAME == "MALE") {
-            this.genderMaleCount = response.data.GENDER_DATA[0].COUNT_VALUE;
-            this.genderFemaleCount = response.data.GENDER_DATA[1].COUNT_VALUE;
+          this.personData = this.getData[PERSON];
+          this.numPersons = this.personData.SUMMARY[1].ATTRIBUTE_VALUE;
+          if (this.personData.GENDER_DATA[0].CONCEPT_NAME === "MALE") {
+            this.genderMaleCount = this.personData.GENDER_DATA[0].COUNT_VALUE;
+            this.genderFemaleCount = this.personData.GENDER_DATA[1].COUNT_VALUE;
           } else {
-            this.genderMaleCount = response.data.GENDER_DATA[1].COUNT_VALUE;
-            this.genderFemaleCount = response.data.GENDER_DATA[0].COUNT_VALUE;
+            this.genderMaleCount = this.personData.GENDER_DATA[1].COUNT_VALUE;
+            this.genderFemaleCount = this.personData.GENDER_DATA[0].COUNT_VALUE;
           }
-
           // Gender breakdown (percentage)
           this.genderMalePct = this.genderMaleCount / this.numPersons;
           this.genderFemalePct = this.genderFemaleCount / this.numPersons;
@@ -302,38 +173,7 @@ export default {
           this.personData.BIRTH_YEAR_DATA.forEach((v, i) => {
             this.personData.BIRTH_YEAR_DATA[i].YEAR = dateParse(v.YEAR);
           });
-          this.specBirthYear.data = {
-            values: this.personData.BIRTH_YEAR_DATA,
-          };
-          embed("#viz-birthyear", this.specBirthYear).then(() => {
-            window.dispatchEvent(new Event("resize"));
-          });
-
-          this.specAgeSex.data = {
-            values: this.personData.AGE_GENDER_DATA,
-          };
-          embed("#viz-populationbyageandsex", this.specAgeSex);
-
-          this.specRace.data = {
-            values: this.personData.RACE_DATA,
-          };
-          embed("#viz-race", this.specRace).then(() => {
-            window.dispatchEvent(new Event("resize"));
-          });
-
-          this.specEthnicity.data = {
-            values: this.personData.ETHNICITY_DATA,
-          };
-          embed("#viz-ethnicity", this.specEthnicity).then(() => {
-            window.dispatchEvent(new Event("resize"));
-          });
-
           this.dataLoaded = true;
-        })
-        .catch((err) => {
-          this.componentFailed = true;
-          this.errorText = "Failed to obtain person summary data file.";
-          this.errorDetails = err + " (" + dataUrl + ") ";
         });
     },
   },

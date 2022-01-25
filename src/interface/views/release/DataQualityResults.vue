@@ -1,10 +1,6 @@
 <template>
   <v-responsive>
-    <div v-if="componentFailed">
-      <error :text="errorText" :details="errorDetails"></error>
-      <ReturnButton block />
-    </div>
-    <div v-if="!componentFailed">
+    <div v-if="!getErrors">
       <v-card :loading="!dataLoaded" elevation="10" class="ma-4">
         <v-tabs v-model="tab" dark>
           <v-tab href="#overview">Overview</v-tab>
@@ -393,36 +389,31 @@
 </template>
 
 <script>
-import axios from "axios";
 import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
 import "codemirror/theme/neat.css";
 import infopanel from "../../components/InfoPanel.vue";
-import error from "../../components/Error.vue";
 import * as d3 from "d3-format";
 import { debounce } from "lodash";
-import ReturnButton from "@/interface/components/ReturnButton";
+import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { QUALITY_RESULTS } from "@/data/services/getFilePath";
+import { mapGetters } from "vuex";
 import deriveResults from "@/services/derive-results";
 
 export default {
   components: {
-    ReturnButton,
-    error,
     codemirror,
     infopanel,
   },
   data: function () {
     return {
-      componentFailed: false,
       chooseHeaderMenu: false,
       chooseFilter: false,
       versions: [],
       dataLoaded: false,
       dqResults: null,
       derivedResults: {},
-      errorText: "",
-      errorDetails: "",
       helpfulFilters: [
         {
           text: "Failed Checks",
@@ -589,21 +580,13 @@ export default {
       return "https://ohdsi.github.io/CommonDataModel/cdm531.html#" + table;
     },
     load: function () {
-      const dataUrl =
-        "data/" +
-        this.$route.params.cdm +
-        "/" +
-        this.$route.params.release +
-        "/" +
-        "dq-result.json";
-      axios
-        .get(dataUrl)
-        .then((response) => {
-          this.dqResults = response.data;
-          this.derivedResults = deriveResults(response.data);
+      this.$store
+        .dispatch(FETCH_DATA, {
+          files: [{ name: QUALITY_RESULTS, required: true }],
+        })
+        .then(() => {
           this.dataLoaded = true;
-          this.componentFailed = false;
-
+          this.derivedResults = deriveResults(this.getData[QUALITY_RESULTS]);
           if (this.$route.query.conceptFailFilter) {
             this.helpfulFilterUpdate({
               FAILED: ["FAIL"],
@@ -659,11 +642,6 @@ export default {
               CHECK_LEVEL: [],
             });
           }
-        })
-        .catch((err) => {
-          this.componentFailed = true;
-          this.errorText = "Failed to load data quality results file.";
-          this.errorDetails = err + " (" + dataUrl + ")";
         });
     },
     columnValueList(val) {
@@ -671,7 +649,7 @@ export default {
     },
     renderDescription: function (d) {
       let thresholdMessage = "";
-      if (d.THRESHOLD_VALUE !== undefined) {
+      if (d.THRESHOLD_VALUE != undefined) {
         thresholdMessage = " (Threshold=" + d.THRESHOLD_VALUE + "%).";
       }
       return d.CHECK_DESCRIPTION + thresholdMessage;
@@ -694,6 +672,8 @@ export default {
     this.load();
   },
   computed: {
+    ...mapGetters(["getData", "getErrors"]),
+
     tab: {
       set(tab) {
         this.$router.replace({ query: { ...this.$route.query, tab } });
@@ -716,34 +696,35 @@ export default {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
     cdmSourceName() {
-      return this.dqResults.Metadata[0].CDM_SOURCE_NAME;
+      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_SOURCE_NAME;
     },
     sourceDescription() {
-      return this.dqResults.Metadata[0].SOURCE_DESCRIPTION;
+      return this.getData[QUALITY_RESULTS].Metadata[0].SOURCE_DESCRIPTION;
     },
     cdmHolder() {
-      return this.dqResults.Metadata[0].CDM_HOLDER;
+      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_HOLDER;
     },
     cdmEtlReference() {
-      return this.dqResults.Metadata[0].CDM_ETL_REFERENCE;
+      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_ETL_REFERENCE;
     },
     sourceDocumentationReference() {
-      return this.dqResults.Metadata[0].SOURCE_DOCUMENTATION_REFERENCE;
+      return this.getData[QUALITY_RESULTS].Metadata[0]
+        .SOURCE_DOCUMENTATION_REFERENCE;
     },
     cdmVersion() {
-      return this.dqResults.Metadata[0].CDM_VERSION;
+      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_VERSION;
     },
     vocabularyVersion() {
-      return this.dqResults.Metadata[0].VOCABULARY_VERSION;
+      return this.getData[QUALITY_RESULTS].Metadata[0].VOCABULARY_VERSION;
     },
     sourceReleaseDate() {
-      return this.dqResults.Metadata[0].SOURCE_RELEASE_DATE;
+      return this.getData[QUALITY_RESULTS].Metadata[0].SOURCE_RELEASE_DATE;
     },
     cdmReleaseDate() {
-      return this.dqResults.Metadata[0].CDM_RELEASE_DATE;
+      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_RELEASE_DATE;
     },
     checkResults() {
-      return this.dqResults.CheckResults;
+      return this.getData[QUALITY_RESULTS].CheckResults;
     },
   },
 };

@@ -1,10 +1,5 @@
 <template>
   <div id="network-data-quality-overview" class="pa-4">
-    <error
-      v-if="!indexAvailable"
-      :text="errorText"
-      :details="errorDetails"
-    ></error>
     <v-row>
       <v-col>
         <v-card elevation="10" class="mx-auto pb-6" outlined>
@@ -101,15 +96,12 @@
 </template>
 
 <script>
-import axios from "axios";
-import error from "../../components/Error.vue";
 import * as d3 from "d3-format";
+import { mapGetters } from "vuex";
 
 export default {
   name: "NetworkOverview",
-  components: {
-    error,
-  },
+  components: {},
   data() {
     return {
       indexAvailable: true,
@@ -117,8 +109,6 @@ export default {
       countPeople: 0,
       countDataQualityIssues: 0,
       countDataSourceReleases: 0,
-      errorText: "",
-      errorDetails: "",
       sources: [],
       dataSourceRecords: [],
       dataSourceColumns: [
@@ -167,24 +157,22 @@ export default {
     };
   },
   created() {
-    axios
-      .get("data/index.json")
-      .then((response) => {
-        this.sources = response.data.sources;
-        this.countDataSources = this.sources.length;
-        this.sources.forEach((source) => {
-          this.countPeople += source.releases[0].count_person;
-          this.countDataQualityIssues +=
-            source.releases[0].count_data_quality_issues;
-          this.countDataSourceReleases += source.releases.length;
-          this.dataSourceRecords.push(source);
-        });
-      })
-      .catch((error) => {
+    console.log("Overview");
+    const sources = this.getSources;
+    this.countDataSources = sources.length;
+    sources.forEach((source) => {
+      this.countPeople += source.releases[0].count_person;
+      this.countDataQualityIssues +=
+        source.releases[0].count_data_quality_issues;
+      this.countDataSourceReleases += source.releases.length;
+      this.dataSourceRecords.push(source);
+    });
+
+    /*   .catch((error) => {
         this.indexAvailable = false;
         this.errorText = "data network index not found";
         this.errorDetails = error;
-      });
+      });*/
   },
   methods: {
     getDataSourceRoute(item) {
@@ -222,6 +210,9 @@ export default {
           "/data_quality",
       });
     },
+  },
+  computed: {
+    ...mapGetters(["getSources"]),
   },
 };
 </script>

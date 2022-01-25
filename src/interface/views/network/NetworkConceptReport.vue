@@ -1,10 +1,6 @@
 <template>
   <div>
-    <div v-if="componentFailed">
-      <error :text="errorText" :details="errorDetails"></error>
-      <ReturnButton block />
-    </div>
-    <v-container v-if="!componentFailed">
+    <v-container>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
           <h2 class="text-uppercase">{{ conceptName }} NETWORK REPORT</h2>
@@ -48,10 +44,13 @@
               >{{ toggleMode }}</v-btn
             >
           </v-layout>
-          <div
+          <VegaChart
+            v-if="dataLoaded"
             id="viz-measurementvaluedistribution"
-            class="viz-container"
-          ></div>
+            ref="measurementvalue"
+            :config="specMeasurementValueDistribution"
+            :data="measurementValueDistribution"
+          />
           <v-card-text>
             <router-link to="/help">
               <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
@@ -65,24 +64,22 @@
 </template>
 
 <script>
-import axios from "axios";
-import embed from "vega-embed";
 import _ from "lodash";
-import error from "../../components/Error.vue";
 import * as d3Format from "d3-format";
 import ReturnButton from "@/interface/components/ReturnButton";
-
+import { charts } from "@/configs";
+import { FETCH_MULTIPLE_BY_SOURCE } from "@/data/store/modules/view/actions.type";
+import { CONCEPT } from "@/data/services/getFilePath";
+import { mapGetters } from "vuex";
+import VegaChart from "@/interface/components/VegaChart";
 export default {
   components: {
+    VegaChart,
     ReturnButton,
-    error,
   },
   data() {
     return {
       sources: [],
-      componentFailed: false,
-      errorText: "",
-      errorDetails: "",
       toggleMode: "MIN/MAX",
       hasMeasurementValueDistribution: false,
       hasAgeAtFirstDiagnosis: false,
@@ -90,64 +87,24 @@ export default {
       hasAgeAtFirstExposure: false,
       hasConditionsByType: false,
       hasVisitDurationByType: false,
+      measurementValueDistribution: [],
       hasLengthOfEra: false,
       hasCountFailed: false,
       countFailed: 0,
       conceptData: null,
+      numPersons: 0,
       conceptName: "",
       conceptId: 0,
       dataLoaded: false,
       historyRecords: [],
       cdmSourceName: "",
-      specMeasurementValueDistribution: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        height: 400,
-        width: "container",
-        data: {},
-        encoding: {
-          y: { field: "SOURCE_UNIT_KEY", type: "nominal", title: null },
-        },
-        layer: [
-          {
-            mark: { type: "rule" },
-            encoding: {
-              x: {
-                field: "MIN_VALUE",
-                type: "quantitative",
-                scale: { zero: false },
-                title: null,
-              },
-              x2: { field: "MAX_VALUE" },
-            },
-          },
-          {
-            mark: { type: "bar", size: 14, tooltip: {} },
-            encoding: {
-              x: { field: "P25_VALUE", type: "quantitative" },
-              x2: { field: "P75_VALUE" },
-              color: {
-                field: "SOURCE_UNIT_KEY",
-                type: "nominal",
-                legend: null,
-              },
-            },
-          },
-          {
-            mark: { type: "tick", color: "white", size: 14 },
-            encoding: {
-              x: { field: "MEDIAN_VALUE", type: "quantitative" },
-            },
-          },
-        ],
-        row: {
-          field: "SOURCE_UNIT_KEY",
-          type: "nominal",
-          title: "Measurement",
-        },
-      },
+      specMeasurementValueDistribution:
+        charts.specMeasurementValueDistribution1,
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["getData", "getSources"]),
+  },
   created() {
     this.load();
   },
@@ -170,12 +127,7 @@ export default {
         encoding.x2.field = "MAX_VALUE";
         this.toggleMode = "MIN/MAX";
       }
-      embed(
-        "#viz-measurementvaluedistribution",
-        this.specMeasurementValueDistribution
-      ).then(() => {
-        window.dispatchEvent(new Event("resize"));
-      });
+      this.$refs.measurementvalue.load();
     },
     navigateToDataQuality() {
       this.$router.push({
@@ -189,65 +141,37 @@ export default {
       });
     },
     load: function () {
-      const sourceRequests = [];
-      // first get network data source listing
-      axios.get("data/index.json").then((response) => {
-        this.sources = response.data.sources;
-        this.sources.forEach((source) => {
-          const dataUrl =
-            "data/" +
-            source.cdm_source_key +
-            "/" +
-            source.releases[0].release_id +
-            "/concepts/" +
-            this.$route.params.domain +
-            "/concept_" +
-            this.$route.params.concept +
-            ".json";
-          sourceRequests.push(axios.get(dataUrl));
-
-          // get concept summary data for each network data source
-          axios.all(sourceRequests).then(
-            axios.spread((...responses) => {
-              this.componentFailed = false;
-              this.conceptName = responses[0].data.CONCEPT_NAME[0];
-              this.conceptId = responses[0].data.CONCEPT_ID[0];
-              this.numPersons = _.sumBy(
-                responses,
-                (r) => r.data.NUM_PERSONS[0]
-              );
-
-              if (
-                responses[0].data.MEASUREMENT_VALUE_DISTRIBUTION &&
-                responses[0].data.MEASUREMENT_VALUE_DISTRIBUTION.length > 0
-              ) {
-                let allData = [];
-                responses.forEach((r, i) => {
-                  r.data.MEASUREMENT_VALUE_DISTRIBUTION.forEach((d) => {
-                    d.SOURCE_UNIT_KEY =
-                      this.sources[i].cdm_source_key + " - " + d.CATEGORY;
-                  });
-                  allData = allData.concat(
-                    r.data.MEASUREMENT_VALUE_DISTRIBUTION
-                  );
-                });
-                this.specMeasurementValueDistribution.data = {
-                  values: allData,
-                };
-                this.hasMeasurementValueDistribution = true;
-                embed(
-                  "#viz-measurementvaluedistribution",
-                  this.specMeasurementValueDistribution
-                ).then(() => {
-                  window.dispatchEvent(new Event("resize"));
-                });
-              }
-
-              this.dataLoaded = true;
-            })
+      this.dataLoaded = false;
+      this.$store
+        .dispatch(FETCH_MULTIPLE_BY_SOURCE, {
+          files: [CONCEPT],
+        })
+        .then(() => {
+          this.conceptName = this.getData[CONCEPT][0].CONCEPT_NAME[0];
+          this.conceptId = this.getData[CONCEPT][0].CONCEPT_ID[0];
+          this.numPersons = _.sumBy(
+            this.getData[CONCEPT],
+            (r) => r.NUM_PERSONS[0]
           );
+
+          if (
+            this.getData[CONCEPT][0].MEASUREMENT_VALUE_DISTRIBUTION &&
+            this.getData[CONCEPT][0].MEASUREMENT_VALUE_DISTRIBUTION.length > 0
+          ) {
+            this.getData[CONCEPT].forEach((r, i) => {
+              r.MEASUREMENT_VALUE_DISTRIBUTION.forEach((d) => {
+                d.SOURCE_UNIT_KEY =
+                  this.getSources[i].cdm_source_key + " - " + d.CATEGORY;
+              });
+              this.measurementValueDistribution =
+                this.measurementValueDistribution.concat(
+                  r.MEASUREMENT_VALUE_DISTRIBUTION
+                );
+            });
+            this.hasMeasurementValueDistribution = true;
+          }
+          this.dataLoaded = true;
         });
-      });
     },
   },
 };

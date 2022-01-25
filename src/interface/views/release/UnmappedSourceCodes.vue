@@ -1,9 +1,11 @@
 <template>
   <div>
-    <div v-if="componentFailed">
-      <error :text="errorText" :details="errorDetails"></error>
-    </div>
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card
+      v-if="!getErrors"
+      :loading="!dataLoaded"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
       <v-card-title>Unmapped Source Codes</v-card-title>
       <v-row>
         <v-col cols="3">
@@ -72,25 +74,21 @@
 </template>
 
 <script>
-import axios from "axios";
 import { csvParse } from "d3-dsv";
 import { format } from "d3-format";
-import error from "../../components/Error.vue";
 import { debounce } from "lodash";
+import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { QUALITY_COMPLETENESS } from "@/data/services/getFilePath";
+import { mapGetters } from "vuex";
 
 export default {
-  components: {
-    error,
-  },
+  components: {},
   props: {
     resultFile: String,
   },
   data: function () {
     return {
       chooseHeaderMenu: false,
-      componentFailed: false,
-      errorText: "",
-      errorDetails: "",
       dataLoaded: false,
       domainTable: [],
       search: "",
@@ -125,6 +123,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["getData", "getErrors"]),
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
@@ -179,26 +178,13 @@ export default {
       );
     },
     load() {
-      this.dataLoaded = false;
-      this.domainTable = [];
-      const dataUrl =
-        "data/" +
-        this.$route.params.cdm +
-        "/" +
-        this.$route.params.release +
-        "/quality-completeness.csv";
-      axios
-        .get(dataUrl)
-        .then((response) => {
-          this.domainTable = csvParse(response.data);
-          this.dataLoaded = true;
-          this.componentFailed = false;
+      this.$store
+        .dispatch(FETCH_DATA, {
+          files: [{ name: QUALITY_COMPLETENESS, required: true }],
         })
-        .catch((err) => {
-          this.componentFailed = true;
-          this.errorText =
-            "Failed to obtain unmapped source code table data file.";
-          this.errorDetails = err + ". (" + dataUrl + ")";
+        .then(() => {
+          this.domainTable = csvParse(this.getData[QUALITY_COMPLETENESS]);
+          this.dataLoaded = true;
         });
     },
   },

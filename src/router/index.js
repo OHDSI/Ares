@@ -23,7 +23,7 @@ import metadataReport from "../interface/views/release/MetadataReport.vue";
 import home from "../interface/views/Home.vue";
 import article from "../interface/views/Article.vue";
 import unmappedSourceCodes from "../interface/views/release/UnmappedSourceCodes.vue";
-import ExplorerWrapper from "../interface/views/ExplorerWrapper";
+import DataSourcesExplorer from "../interface/views/DataSourcesExplorer";
 
 Vue.use(VueRouter);
 
@@ -40,33 +40,33 @@ const routes = [
   {
     path: "/network",
     name: "network",
-    components: { main: ExplorerWrapper },
+    components: { main: DataSourcesExplorer },
     redirect: { name: "overview" },
     children: [
       {
         path: "network_data_quality",
         name: "networkDataQuality",
-        components: { ExplorerWrapper: networkDataQualitySummary },
+        components: { DataSourcesExplorer: networkDataQualitySummary },
       },
       {
         path: "data_strand_report",
         name: "dataStrandReport",
-        components: { ExplorerWrapper: networkDatastrandReport },
+        components: { DataSourcesExplorer: networkDatastrandReport },
       },
       {
         path: "population",
         name: "population",
-        components: { ExplorerWrapper: networkPopulationReport },
+        components: { DataSourcesExplorer: networkPopulationReport },
       },
       {
         path: "overview",
         name: "overview",
-        components: { ExplorerWrapper: networkOverview },
+        components: { DataSourcesExplorer: networkOverview },
       },
       {
         path: "concept/:domain/:concept/summary",
         name: "concept",
-        components: { ExplorerWrapper: networkConceptReport },
+        components: { DataSourcesExplorer: networkConceptReport },
       },
     ],
   },
@@ -74,80 +74,80 @@ const routes = [
   {
     path: "/cdm/:cdm/:release",
     name: "cdm",
-    components: { main: ExplorerWrapper },
+    components: { main: DataSourcesExplorer },
     redirect: { name: "person" },
     children: [
       {
         path: "observation_period",
         name: "observationPeriod",
-        components: { ExplorerWrapper: observationPeriodReport },
+        components: { DataSourcesExplorer: observationPeriodReport },
       },
       {
         path: "metadata",
         name: "metadata",
-        components: { ExplorerWrapper: metadataReport },
+        components: { DataSourcesExplorer: metadataReport },
       },
       {
         path: "death",
         name: "death",
-        components: { ExplorerWrapper: deathReport },
+        components: { DataSourcesExplorer: deathReport },
       },
       {
         path: "data_quality",
         name: "dataQuality",
-        components: { ExplorerWrapper: dataQualityResults },
+        components: { DataSourcesExplorer: dataQualityResults },
       },
       {
         path: "data_density",
         name: "dataDensity",
-        components: { ExplorerWrapper: domainDensity },
+        components: { DataSourcesExplorer: domainDensity },
       },
       {
         path: "unmapped_source_codes",
         name: "unmappedSourceCodes",
-        components: { ExplorerWrapper: unmappedSourceCodes },
+        components: { DataSourcesExplorer: unmappedSourceCodes },
       },
       {
         path: "performance",
         name: "performance",
-        components: { ExplorerWrapper: performanceReport },
+        components: { DataSourcesExplorer: performanceReport },
       },
       {
         path: "person",
         name: "person",
-        components: { ExplorerWrapper: personReport },
+        components: { DataSourcesExplorer: personReport },
       },
       {
         path: ":domain",
-        components: { ExplorerWrapper: domainTable },
+        components: { DataSourcesExplorer: domainTable },
         name: "domainTable",
       },
       {
         path: ":domain/:concept/",
-        components: { ExplorerWrapper: conceptReport },
+        components: { DataSourcesExplorer: conceptReport },
       },
     ],
   },
   {
     path: "/datasource/:cdm",
     name: "datasource",
-    components: { main: ExplorerWrapper },
+    components: { main: DataSourcesExplorer },
     redirect: { name: "dataQualityHistory" },
     children: [
       {
         path: "data_quality_history",
         name: "dataQualityHistory",
-        components: { ExplorerWrapper: dataQualityHistory },
+        components: { DataSourcesExplorer: dataQualityHistory },
       },
       {
         path: "domain_continuity",
         name: "domainContinuity",
-        components: { ExplorerWrapper: domainContinuity },
+        components: { DataSourcesExplorer: domainContinuity },
       },
       {
         path: ":domain/:concept/overlay",
         name: "sourceConceptOverlay",
-        components: { ExplorerWrapper: sourceConceptReport },
+        components: { DataSourcesExplorer: sourceConceptReport },
       },
     ],
   },

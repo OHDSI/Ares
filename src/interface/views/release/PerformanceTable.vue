@@ -1,10 +1,6 @@
 <template>
   <div>
-    <div v-if="componentFailed">
-      <error :text="errorText" :details="errorDetails"></error>
-      <ReturnButton block />
-    </div>
-    <v-container v-if="dataLoaded && !componentFailed" class="pa-1">
+    <v-container v-if="dataLoaded && !getErrors" class="pa-1">
       <v-card elevation="10" class="ma-4 pa-2">
         <v-card-title>Performance</v-card-title>
         <v-row>
@@ -72,25 +68,19 @@
 </template>
 
 <script>
-import axios from "axios";
 import * as d3 from "d3-dsv";
-import error from "../../components/Error.vue";
-import ReturnButton from "@/interface/components/ReturnButton";
+import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { ACHILLES_PERFORMANCE } from "@/data/services/getFilePath";
+import { mapGetters } from "vuex";
 
 export default {
-  components: {
-    ReturnButton,
-    error,
-  },
+  components: {},
   props: {
     resultFile: String,
   },
   data: function () {
     return {
       chooseHeaderMenu: false,
-      componentFailed: false,
-      errorText: "",
-      errorDetails: "",
       dataLoaded: false,
       domainTable: [],
       search: "",
@@ -122,6 +112,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["getData", "getErrors"]),
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
@@ -172,24 +163,13 @@ export default {
     },
     load() {
       this.dataLoaded = false;
-      this.domainTable = [];
-      const dataUrl =
-        "data/" +
-        this.$route.params.cdm +
-        "/" +
-        this.$route.params.release +
-        "/achilles-performance.csv";
-      axios
-        .get(dataUrl)
-        .then((response) => {
-          this.domainTable = d3.csvParse(response.data);
-          this.dataLoaded = true;
-          this.componentFailed = false;
+      this.$store
+        .dispatch(FETCH_DATA, {
+          files: [{ name: ACHILLES_PERFORMANCE, required: true }],
         })
-        .catch((err) => {
-          this.componentFailed = true;
-          this.errorText = "Failed to obtain completeness table data file.";
-          this.errorDetails = err + ". (" + dataUrl + ")";
+        .then(() => {
+          this.domainTable = d3.csvParse(this.getData[ACHILLES_PERFORMANCE]);
+          this.dataLoaded = true;
         });
     },
   },

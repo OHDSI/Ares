@@ -1,15 +1,26 @@
 <template>
   <div>
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
-      <v-card-title>Historical Data Quality</v-card-title>
-      <div id="viz-dataqualityresults" class="viz-container"></div>
+    <v-card
+      v-if="!getErrors"
+      :loading="!dataLoaded"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
+      <VegaChart
+        v-if="dataLoaded"
+        id="viz-dataqualityresults"
+        title="Historical Data Quality"
+        :data="getData.qualityIndex.dataQualityRecords"
+        :config="specDataQualityResults"
+      />
       <v-data-table
+        v-if="dataLoaded"
         class="viz-container"
         dense
-        :items="historyRecords"
+        :items="getData.qualityIndex.dataQualityRecords"
         :headers="historyColumns"
       >
-        <template v-slot:item="records">
+        <template v-if="dataLoaded" v-slot:item="records">
           <tr>
             <td>
               <router-link
@@ -34,27 +45,39 @@
     </v-card>
 
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
-      <v-card-title>Historical Data Quality by Category</v-card-title>
-      <div id="viz-dataqualityresultsbycategory" class="viz-container"></div>
+      <VegaChart
+        v-if="dataLoaded"
+        id="viz-dataqualityresultsbycategory"
+        title="Historical Data Quality by Category"
+        :data="getData.qualityIndex.dataQualityRecordsStratified"
+        :config="specDataQualityResultsByCategory"
+      />
     </v-card>
 
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
-      <v-card-title>Historical Data Quality by Domain</v-card-title>
-      <div id="viz-dataqualityresultsbydomain" class="viz-container"></div>
+      <VegaChart
+        v-if="dataLoaded"
+        id="viz-dataqualityresultsbydomain"
+        title="Historical Data Quality by Domain"
+        :config="specDataQualityResultsByDomain"
+        :data="getData.qualityIndex.dataQualityRecordsStratified"
+      />
     </v-card>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import _ from "lodash";
-import embed from "vega-embed";
+import { charts } from "@/configs";
+import { QUALITY_INDEX } from "@/data/services/getFilePath";
+import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import VegaChart from "@/interface/components/VegaChart";
+import { mapGetters } from "vuex";
 
 export default {
+  components: { VegaChart },
   data() {
     return {
       dataLoaded: false,
-      historyRecords: [],
       historyColumns: [
         {
           text: "CDM Release Date",
@@ -87,160 +110,9 @@ export default {
           value: "count_total",
         },
       ],
-      specDataQualityResultsByDomain: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 150,
-        description: "Data Quality Results by Date",
-        mark: { type: "line", interpolate: "linear", point: true },
-        selection: {
-          domain: { type: "multi", fields: ["cdm_table_name"], bind: "legend" },
-        },
-        encoding: {
-          opacity: {
-            condition: { selection: "domain", value: 1 },
-            value: 0.2,
-          },
-          x: {
-            field: "cdm_release_date",
-            type: "temporal",
-            timeUnit: "yearmonthdate",
-            axis: {
-              title: "CDM Release Date",
-            },
-            scale: {
-              type: "utc",
-            },
-          },
-          y: {
-            field: "count_value",
-            aggregate: "sum",
-            type: "quantitative",
-            axis: {
-              title: "Checks Failed",
-            },
-          },
-          color: {
-            field: "cdm_table_name",
-            title: "Check Domain",
-          },
-          tooltip: [
-            {
-              field: "cdm_release_date",
-              title: "CDM Release Date",
-              type: "temporal",
-              format: "%Y-%m-%d",
-              scale: {
-                type: "utc",
-              },
-            },
-            { field: "cdm_table_name", title: "Check Domain" },
-            {
-              field: "count_value",
-              aggregate: "sum",
-              type: "quantitative",
-              title: "Checks Failed",
-            },
-          ],
-        },
-      },
-      specDataQualityResultsByCategory: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 150,
-        mark: { type: "line", interpolate: "linear", point: true },
-        selection: {
-          category: { type: "multi", fields: ["category"], bind: "legend" },
-        },
-        encoding: {
-          opacity: {
-            condition: { selection: "category", value: 1 },
-            value: 0.2,
-          },
-          x: {
-            field: "cdm_release_date",
-            type: "temporal",
-            timeUnit: "yearmonthdate",
-            axis: {
-              title: "CDM Release Date",
-            },
-            scale: {
-              type: "utc",
-            },
-          },
-          y: {
-            field: "count_value",
-            aggregate: "sum",
-            type: "quantitative",
-            axis: {
-              title: "Checks Failed",
-            },
-          },
-          color: {
-            field: "category",
-            title: "Check Category",
-          },
-          tooltip: [
-            {
-              field: "cdm_release_date",
-              title: "CDM Release Date",
-              type: "temporal",
-              format: "%Y-%m-%d",
-              scale: {
-                type: "utc",
-              },
-            },
-            { field: "category", title: "Check Category" },
-            {
-              field: "count_value",
-              aggregate: "sum",
-              type: "quantitative",
-              title: "Checks Failed",
-            },
-          ],
-        },
-      },
-      specDataQualityResults: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: null,
-        width: "container",
-        height: 100,
-        mark: { type: "line", interpolate: "linear", point: true },
-        encoding: {
-          tooltip: [
-            {
-              field: "cdm_release_date",
-              title: "CDM Release Date",
-              type: "temporal",
-              format: "%Y-%m-%d",
-              scale: {
-                type: "utc",
-              },
-            },
-            { field: "count_failed", title: "Checks Failed" },
-          ],
-          x: {
-            field: "cdm_release_date",
-            type: "temporal",
-            timeUnit: "yearmonthdate",
-            axis: {
-              title: "CDM Release Date",
-            },
-            scale: {
-              type: "utc",
-            },
-          },
-          y: {
-            field: "count_failed",
-            type: "quantitative",
-            axis: {
-              title: "Checks Failed",
-            },
-          },
-        },
-      },
+      specDataQualityResultsByDomain: charts.specDataQualityResultsByDomain,
+      specDataQualityResultsByCategory: charts.specDataQualityResultsByCategory,
+      specDataQualityResults: charts.specDataQualityResults,
     };
   },
   watch: {
@@ -251,50 +123,21 @@ export default {
   created() {
     this.load();
   },
+
+  computed: {
+    ...mapGetters(["getData", "getErrors"]),
+  },
+
   methods: {
-    load: function () {
+    load() {
       this.dataLoaded = false;
-      this.historyRecords = [];
-      const dataUrl =
-        "data/" + this.$route.params.cdm + "/data-quality-index.json";
-
-      axios.get(dataUrl).then((response) => {
-        this.dataLoaded = true;
-        let dataQualityRecords = response.data.dataQualityRecords;
-        dataQualityRecords = _(dataQualityRecords)
-          .orderBy("cdm_release_date")
-          .reverse()
-          .value();
-        this.historyRecords = dataQualityRecords;
-        this.specDataQualityResults.data = {
-          values: this.historyRecords,
-        };
-        embed("#viz-dataqualityresults", this.specDataQualityResults).then(
-          () => {
-            window.dispatchEvent(new Event("resize"));
-          }
-        );
-
-        this.specDataQualityResultsByCategory.data = {
-          values: response.data.dataQualityRecordsStratified,
-        };
-        embed(
-          "#viz-dataqualityresultsbycategory",
-          this.specDataQualityResultsByCategory
-        ).then(() => {
-          window.dispatchEvent(new Event("resize"));
+      this.$store
+        .dispatch(FETCH_DATA, {
+          files: [{ name: QUALITY_INDEX, required: true }],
+        })
+        .then(() => {
+          this.dataLoaded = true;
         });
-
-        this.specDataQualityResultsByDomain.data = {
-          values: response.data.dataQualityRecordsStratified,
-        };
-        embed(
-          "#viz-dataqualityresultsbydomain",
-          this.specDataQualityResultsByDomain
-        ).then(() => {
-          window.dispatchEvent(new Event("resize"));
-        });
-      });
     },
     displayDetails: function (resultFileName) {
       this.$router.push({ path: "/dq-results/" + resultFileName });
@@ -321,8 +164,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.viz-container {
-  width: 90%;
-}
-</style>
+<style scoped></style>

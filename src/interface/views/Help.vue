@@ -9,7 +9,9 @@
 </template>
 <script>
 import markdown from "markdown-it-vue";
-import axios from "axios";
+import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { HELP } from "@/data/services/getFilePath";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Help",
@@ -31,14 +33,19 @@ export default {
     };
   },
   created() {
-    const contentUrl = "doc/DefaultHelp.md";
-    const vm = this;
-    axios.get(contentUrl).then((response) => {
-      vm.markdownContent = response.data;
-      vm.contentLoaded = true;
-    });
+    this.$store
+      .dispatch(FETCH_DATA, {
+        files: [{ name: HELP, required: true }],
+      })
+      .then(() => {
+        this.markdownContent = this.getData[HELP];
+        this.contentLoaded = true;
+      });
   },
   methods: {},
+  computed: {
+    ...mapGetters(["getData"]),
+  },
 };
 </script>
 

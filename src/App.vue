@@ -21,9 +21,7 @@
         <v-btn to="/help">
           <v-icon dark>mdi-help-circle-outline</v-icon>
         </v-btn>
-        <v-btn to="/network/overview"
-          ><v-icon dark>mdi-database</v-icon></v-btn
-        >
+        <v-btn to="/network/overview"><v-icon dark>mdi-database</v-icon></v-btn>
         <v-btn to="/"
           ><v-img
             :src="require('./assets/icon.png')"
@@ -38,17 +36,22 @@
 
 <script>
 import isElectron from "is-electron";
+import { CLEAR_ERRORS } from "@/data/store/modules/errors/actions.type";
 
 export default {
+  name: "ARES",
   data() {
     return {
       dialog: false,
       isElectron: isElectron(),
     };
   },
-  name: "ARES",
+  watch: {
+    $route() {
+      this.$store.dispatch(CLEAR_ERRORS);
+    },
+  },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
