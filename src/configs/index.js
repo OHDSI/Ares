@@ -1,4 +1,3 @@
-//Charts imports
 import { specRace } from "@/configs/charts/specRace";
 import { specAgeSex } from "@/configs/charts/specAgeSex";
 import { defOverview } from "@/configs/charts/defOverview";
@@ -26,9 +25,9 @@ import { specAgeAtFirstDiagnosis } from "@/configs/charts/specAgeAtFirstDiagnosi
 import { specVisitDurationByType } from "@/configs/charts/specVisitDurationByType";
 import { specVisitStratification } from "@/configs/charts/specVisitStratification";
 import { specAgeAtFirstOccurrence } from "@/configs/charts/specAgeAtFirstOccurrence";
-import { specAgeAtFirstObservation } from "@/configs/charts/specAgeAtFirstObservation";
-import { specCumulativeObservation } from "@/configs/charts/specCumulativeObservation";
-import { specRecordProportionByMonth } from "@/configs/charts/specRecordProportionByMonth";
+import { specAgeAtFirstObservationBySource } from "@/configs/charts/specAgeAtFirstObservationBySource";
+import { specCumulativeObservationBySource } from "@/configs/charts/specCumulativeObservationBySource";
+import { specRecordProportionByMonthByRelease } from "@/configs/charts/specRecordProportionByMonthByRelease";
 import { specDataQualityResultsByDomain } from "@/configs/charts/specDataQualityResultsByDomain";
 import { specIssueStratificationByTable } from "@/configs/charts/specIssueStratificationByTable";
 import { specDataQualityResultsByCategory } from "@/configs/charts/specDataQualityResultsByCategory";
@@ -37,8 +36,11 @@ import { specRecordProportionByAgeSexYear } from "@/configs/charts/specRecordPro
 import { specIssueStratificationByCategory } from "@/configs/charts/specIssueStratificationByCategory";
 import { specMeasurementValueDistribution1 } from "@/configs/charts/specMeasurementValueDistribution1";
 import { specDrugTypeStratification } from "@/configs/charts/specDrugTypeStratification";
-
-//Tables
+import { specCumulativeObservation } from "@/configs/charts/specCumulativeObservation";
+import { specAgeAtFirstObservation } from "@/configs/charts/specAgeAtFirstObservation";
+import { specRecordProportionByMonth } from "@/configs/charts/specRecordProportionByMonth";
+import { folders } from "@/configs/explorer/folders";
+import { reports } from "@/configs/explorer/reports";
 
 export const charts = {
   specRace,
@@ -63,6 +65,7 @@ export const charts = {
   specObservationByMonth,
   specObservationBySex,
   specAgeAtFirstObservation,
+  specAgeAtFirstObservationBySource,
   specAgeAtFirstDiagnosis,
   specAgeAtFirstExposure,
   specDataQualityResults,
@@ -74,11 +77,16 @@ export const charts = {
   specIssueStratificationByTable,
   specIssueStratificationByCategory,
   specAgeAtFirstOccurrence,
+  specRecordProportionByMonthByRelease,
   specRecordProportionByMonth,
   specRecordProportionByAgeSexYear,
-  specCumulativeObservation,
+  specCumulativeObservationBySource,
   specDataQualityResultsByDomain,
   specDataQualityResultsByCategory,
+  specCumulativeObservation,
 };
 
-export const tables = {};
+export const explorerConfigs = {
+  folders,
+  reports,
+};

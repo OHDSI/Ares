@@ -1,5 +1,5 @@
 <template>
-  <div id="help">
+  <div v-if="!getErrors" id="help">
     <markdown
       v-if="contentLoaded"
       :content="markdownContent"
@@ -9,7 +9,7 @@
 </template>
 <script>
 import markdown from "markdown-it-vue";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { HELP } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 
@@ -34,17 +34,19 @@ export default {
   },
   created() {
     this.$store
-      .dispatch(FETCH_DATA, {
+      .dispatch(FETCH_FILES, {
         files: [{ name: HELP, required: true }],
       })
       .then(() => {
-        this.markdownContent = this.getData[HELP];
-        this.contentLoaded = true;
+        if (!this.getErrors) {
+          this.markdownContent = this.getData[HELP];
+          this.contentLoaded = true;
+        }
       });
   },
   methods: {},
   computed: {
-    ...mapGetters(["getData"]),
+    ...mapGetters(["getData", "getErrors"]),
   },
 };
 </script>

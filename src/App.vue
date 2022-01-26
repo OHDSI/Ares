@@ -36,7 +36,7 @@
 
 <script>
 import isElectron from "is-electron";
-import { CLEAR_ERRORS } from "@/data/store/modules/errors/actions.type";
+import { RESET_ERRORS } from "@/data/store/modules/errors/actions.type";
 
 export default {
   name: "ARES",
@@ -48,7 +48,7 @@ export default {
   },
   watch: {
     $route() {
-      this.$store.dispatch(CLEAR_ERRORS);
+      this.$store.dispatch(RESET_ERRORS);
     },
   },
 };

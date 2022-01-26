@@ -396,7 +396,7 @@ import "codemirror/theme/neat.css";
 import infopanel from "../../components/InfoPanel.vue";
 import * as d3 from "d3-format";
 import { debounce } from "lodash";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { QUALITY_RESULTS } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import deriveResults from "@/services/derive-results";
@@ -581,66 +581,68 @@ export default {
     },
     load: function () {
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: QUALITY_RESULTS, required: true }],
         })
         .then(() => {
-          this.dataLoaded = true;
-          this.derivedResults = deriveResults(this.getData[QUALITY_RESULTS]);
-          if (this.$route.query.conceptFailFilter) {
-            this.helpfulFilterUpdate({
-              FAILED: ["FAIL"],
-              CDM_TABLE_NAME: [],
-              CDM_FIELD_NAME: [],
-              CHECK_NAME: [],
-              NOTES_EXIST: [],
-              CATEGORY: [],
-              SUBCATEGORY: [],
-              CONTEXT: [],
-              CHECK_LEVEL: [],
-            });
-            this.search = this.$route.query.conceptFailFilter;
-          }
-          if (this.$route.query.domainFailFilter) {
-            this.helpfulFilterUpdate({
-              FAILED: ["FAIL"],
-              CDM_TABLE_NAME: [
-                this.$route.query.domainFailFilter.toUpperCase(),
-              ],
-              CDM_FIELD_NAME: [],
-              CHECK_NAME: [],
-              NOTES_EXIST: [],
-              CATEGORY: [],
-              SUBCATEGORY: [],
-              CONTEXT: [],
-              CHECK_LEVEL: [],
-            });
-          }
-          if (this.$route.query.categoryFailFilter) {
-            this.helpfulFilterUpdate({
-              FAILED: ["FAIL"],
-              CDM_TABLE_NAME: [],
-              CDM_FIELD_NAME: [],
-              CHECK_NAME: [],
-              NOTES_EXIST: [],
-              CATEGORY: [this.$route.query.categoryFailFilter.toUpperCase()],
-              SUBCATEGORY: [],
-              CONTEXT: [],
-              CHECK_LEVEL: [],
-            });
-          }
-          if (this.$route.query.failFilter) {
-            this.helpfulFilterUpdate({
-              FAILED: ["FAIL"],
-              CDM_TABLE_NAME: [],
-              CDM_FIELD_NAME: [],
-              CHECK_NAME: [],
-              NOTES_EXIST: [],
-              CATEGORY: [],
-              SUBCATEGORY: [],
-              CONTEXT: [],
-              CHECK_LEVEL: [],
-            });
+          if (!this.getErrors) {
+            this.derivedResults = deriveResults(this.getData[QUALITY_RESULTS]);
+            if (this.$route.query.conceptFailFilter) {
+              this.helpfulFilterUpdate({
+                FAILED: ["FAIL"],
+                CDM_TABLE_NAME: [],
+                CDM_FIELD_NAME: [],
+                CHECK_NAME: [],
+                NOTES_EXIST: [],
+                CATEGORY: [],
+                SUBCATEGORY: [],
+                CONTEXT: [],
+                CHECK_LEVEL: [],
+              });
+              this.search = this.$route.query.conceptFailFilter;
+            }
+            if (this.$route.query.domainFailFilter) {
+              this.helpfulFilterUpdate({
+                FAILED: ["FAIL"],
+                CDM_TABLE_NAME: [
+                  this.$route.query.domainFailFilter.toUpperCase(),
+                ],
+                CDM_FIELD_NAME: [],
+                CHECK_NAME: [],
+                NOTES_EXIST: [],
+                CATEGORY: [],
+                SUBCATEGORY: [],
+                CONTEXT: [],
+                CHECK_LEVEL: [],
+              });
+            }
+            if (this.$route.query.categoryFailFilter) {
+              this.helpfulFilterUpdate({
+                FAILED: ["FAIL"],
+                CDM_TABLE_NAME: [],
+                CDM_FIELD_NAME: [],
+                CHECK_NAME: [],
+                NOTES_EXIST: [],
+                CATEGORY: [this.$route.query.categoryFailFilter.toUpperCase()],
+                SUBCATEGORY: [],
+                CONTEXT: [],
+                CHECK_LEVEL: [],
+              });
+            }
+            if (this.$route.query.failFilter) {
+              this.helpfulFilterUpdate({
+                FAILED: ["FAIL"],
+                CDM_TABLE_NAME: [],
+                CDM_FIELD_NAME: [],
+                CHECK_NAME: [],
+                NOTES_EXIST: [],
+                CATEGORY: [],
+                SUBCATEGORY: [],
+                CONTEXT: [],
+                CHECK_LEVEL: [],
+              });
+            }
+            this.dataLoaded = true;
           }
         });
     },

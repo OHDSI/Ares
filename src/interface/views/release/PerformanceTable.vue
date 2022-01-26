@@ -69,7 +69,7 @@
 
 <script>
 import * as d3 from "d3-dsv";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { ACHILLES_PERFORMANCE } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 
@@ -164,12 +164,14 @@ export default {
     load() {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: ACHILLES_PERFORMANCE, required: true }],
         })
         .then(() => {
-          this.domainTable = d3.csvParse(this.getData[ACHILLES_PERFORMANCE]);
-          this.dataLoaded = true;
+          if (!this.getErrors) {
+            this.domainTable = d3.csvParse(this.getData[ACHILLES_PERFORMANCE]);
+            this.dataLoaded = true;
+          }
         });
     },
   },

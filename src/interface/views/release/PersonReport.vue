@@ -94,7 +94,7 @@
 import * as d3 from "d3-time-format";
 import * as d3Format from "d3-format";
 import { charts } from "@/configs";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { METADATA, PERSON } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
@@ -152,28 +152,32 @@ export default {
     load: function () {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: PERSON, required: true }],
         })
         .then(() => {
-          const dateParse = d3.timeParse("%Y");
-          this.personData = this.getData[PERSON];
-          this.numPersons = this.personData.SUMMARY[1].ATTRIBUTE_VALUE;
-          if (this.personData.GENDER_DATA[0].CONCEPT_NAME === "MALE") {
-            this.genderMaleCount = this.personData.GENDER_DATA[0].COUNT_VALUE;
-            this.genderFemaleCount = this.personData.GENDER_DATA[1].COUNT_VALUE;
-          } else {
-            this.genderMaleCount = this.personData.GENDER_DATA[1].COUNT_VALUE;
-            this.genderFemaleCount = this.personData.GENDER_DATA[0].COUNT_VALUE;
-          }
-          // Gender breakdown (percentage)
-          this.genderMalePct = this.genderMaleCount / this.numPersons;
-          this.genderFemalePct = this.genderFemaleCount / this.numPersons;
+          if (!this.getErrors) {
+            const dateParse = d3.timeParse("%Y");
+            this.personData = this.getData[PERSON];
+            this.numPersons = this.personData.SUMMARY[1].ATTRIBUTE_VALUE;
+            if (this.personData.GENDER_DATA[0].CONCEPT_NAME === "MALE") {
+              this.genderMaleCount = this.personData.GENDER_DATA[0].COUNT_VALUE;
+              this.genderFemaleCount =
+                this.personData.GENDER_DATA[1].COUNT_VALUE;
+            } else {
+              this.genderMaleCount = this.personData.GENDER_DATA[1].COUNT_VALUE;
+              this.genderFemaleCount =
+                this.personData.GENDER_DATA[0].COUNT_VALUE;
+            }
+            // Gender breakdown (percentage)
+            this.genderMalePct = this.genderMaleCount / this.numPersons;
+            this.genderFemalePct = this.genderFemaleCount / this.numPersons;
 
-          this.personData.BIRTH_YEAR_DATA.forEach((v, i) => {
-            this.personData.BIRTH_YEAR_DATA[i].YEAR = dateParse(v.YEAR);
-          });
-          this.dataLoaded = true;
+            this.personData.BIRTH_YEAR_DATA.forEach((v, i) => {
+              this.personData.BIRTH_YEAR_DATA[i].YEAR = dateParse(v.YEAR);
+            });
+            this.dataLoaded = true;
+          }
         });
     },
   },

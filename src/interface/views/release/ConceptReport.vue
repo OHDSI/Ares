@@ -370,7 +370,7 @@ import * as d3Format from "d3-format";
 import InfoPanel from "../../components/InfoPanel.vue";
 import ReturnButton from "@/interface/components/ReturnButton";
 import { charts } from "@/configs";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { CONCEPT } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
@@ -494,103 +494,105 @@ export default {
     load: function () {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: CONCEPT, required: true }],
         })
         .then(() => {
-          const dateParse = d3.timeParse("%Y%m");
-          this.conceptData = this.getData[CONCEPT];
-          this.conceptName = this.conceptData.CONCEPT_NAME[0];
-          this.conceptId = this.conceptData.CONCEPT_ID[0];
-          this.numPersons = this.formatComma(this.conceptData.NUM_PERSONS[0]);
-          this.percentPersons = this.conceptData.PERCENT_PERSONS[0];
-          this.recordsPerPerson = this.conceptData.RECORDS_PER_PERSON[0];
+          if (!this.getErrors) {
+            const dateParse = d3.timeParse("%Y%m");
+            this.conceptData = this.getData[CONCEPT];
+            this.conceptName = this.conceptData.CONCEPT_NAME[0];
+            this.conceptId = this.conceptData.CONCEPT_ID[0];
+            this.numPersons = this.formatComma(this.conceptData.NUM_PERSONS[0]);
+            this.percentPersons = this.conceptData.PERCENT_PERSONS[0];
+            this.recordsPerPerson = this.conceptData.RECORDS_PER_PERSON[0];
 
-          if (this.conceptData.COUNT_FAILED) {
-            this.hasCountFailed = true;
-            this.countFailed = this.conceptData.COUNT_FAILED[0];
-          }
+            if (this.conceptData.COUNT_FAILED) {
+              this.hasCountFailed = true;
+              this.countFailed = this.conceptData.COUNT_FAILED[0];
+            }
 
-          if (this.conceptData.IS_STATIONARY) {
-            this.isNotStationary = !this.conceptData.IS_STATIONARY[0];
-          }
+            if (this.conceptData.IS_STATIONARY) {
+              this.isNotStationary = !this.conceptData.IS_STATIONARY[0];
+            }
 
-          if (this.conceptData.SEASONALITY_SCORE) {
-            this.hasSeasonalityScore = true;
-            this.seasonalityScore = this.conceptData.SEASONALITY_SCORE[0];
-            this.seasonalityComment =
-              "Seasonality score of " + this.seasonalityScore + ".";
-          }
+            if (this.conceptData.SEASONALITY_SCORE) {
+              this.hasSeasonalityScore = true;
+              this.seasonalityScore = this.conceptData.SEASONALITY_SCORE[0];
+              this.seasonalityComment =
+                "Seasonality score of " + this.seasonalityScore + ".";
+            }
 
-          if (this.conceptData.LENGTH_OF_ERA) {
-            this.hasLengthOfEra = true;
-          }
+            if (this.conceptData.LENGTH_OF_ERA) {
+              this.hasLengthOfEra = true;
+            }
 
-          if (this.conceptData.DAYS_SUPPLY_DISTRIBUTION) {
-            this.hasDaysSupply = true;
-          }
+            if (this.conceptData.DAYS_SUPPLY_DISTRIBUTION) {
+              this.hasDaysSupply = true;
+            }
 
-          if (this.conceptData.QUANTITY_DISTRIBUTION) {
-            this.hasQuantity = true;
-          }
+            if (this.conceptData.QUANTITY_DISTRIBUTION) {
+              this.hasQuantity = true;
+            }
 
-          if (this.conceptData.AGE_AT_FIRST_OCCURRENCE) {
-            this.hasAgeAtFirstOccurrence = true;
-          }
+            if (this.conceptData.AGE_AT_FIRST_OCCURRENCE) {
+              this.hasAgeAtFirstOccurrence = true;
+            }
 
-          if (this.conceptData.VISIT_DURATION_BY_TYPE) {
-            this.hasVisitDurationByType = true;
-          }
+            if (this.conceptData.VISIT_DURATION_BY_TYPE) {
+              this.hasVisitDurationByType = true;
+            }
 
-          if (this.conceptData.CONDITIONS_BY_TYPE) {
-            this.hasConditionsByType = true;
-          }
+            if (this.conceptData.CONDITIONS_BY_TYPE) {
+              this.hasConditionsByType = true;
+            }
 
-          if (this.conceptData.DRUGS_BY_TYPE) {
-            this.hasDrugsByType = true;
-          }
+            if (this.conceptData.DRUGS_BY_TYPE) {
+              this.hasDrugsByType = true;
+            }
 
-          if (this.conceptData.RECORDS_BY_UNIT) {
-            this.hasRecordsByUnit = true;
-          }
+            if (this.conceptData.RECORDS_BY_UNIT) {
+              this.hasRecordsByUnit = true;
+            }
 
-          if (this.conceptData.MEASUREMENTS_BY_TYPE) {
-            this.hasMeasurementsByType = true;
-          }
+            if (this.conceptData.MEASUREMENTS_BY_TYPE) {
+              this.hasMeasurementsByType = true;
+            }
 
-          if (this.conceptData.AGE_AT_FIRST_EXPOSURE) {
-            this.hasAgeAtFirstExposure = true;
-          }
+            if (this.conceptData.AGE_AT_FIRST_EXPOSURE) {
+              this.hasAgeAtFirstExposure = true;
+            }
 
-          if (this.conceptData.AGE_AT_FIRST_DIAGNOSIS) {
-            this.hasAgeAtFirstDiagnosis = true;
-          }
+            if (this.conceptData.AGE_AT_FIRST_DIAGNOSIS) {
+              this.hasAgeAtFirstDiagnosis = true;
+            }
 
-          this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR = sortByRange(
-            this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,
-            "ascending",
-            "TRELLIS_NAME",
-            "trellisOrder"
-          );
-
-          this.specRecordProportionByMonth.data = {
-            values: this.conceptData.PREVALENCE_BY_MONTH,
-          };
-
-          if (
-            this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION &&
-            this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.length > 0
-          ) {
-            this.hasMeasurementValueDistribution = true;
-          }
-
-          this.conceptData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-            this.conceptData.PREVALENCE_BY_MONTH[i].date = dateParse(
-              v.X_CALENDAR_MONTH
+            this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR = sortByRange(
+              this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,
+              "ascending",
+              "TRELLIS_NAME",
+              "trellisOrder"
             );
-          });
 
-          this.dataLoaded = true;
+            this.specRecordProportionByMonth.data = {
+              values: this.conceptData.PREVALENCE_BY_MONTH,
+            };
+
+            if (
+              this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION &&
+              this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.length > 0
+            ) {
+              this.hasMeasurementValueDistribution = true;
+            }
+
+            this.conceptData.PREVALENCE_BY_MONTH.forEach((v, i) => {
+              this.conceptData.PREVALENCE_BY_MONTH[i].date = dateParse(
+                v.X_CALENDAR_MONTH
+              );
+            });
+
+            this.dataLoaded = true;
+          }
         });
     },
   },

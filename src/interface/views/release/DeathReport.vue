@@ -53,7 +53,7 @@
 <script>
 import * as d3 from "d3-time-format";
 import { charts } from "@/configs";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { DEATH } from "@/data/services/getFilePath";
 import VegaChart from "@/interface/components/VegaChart";
 import { mapGetters } from "vuex";
@@ -87,24 +87,26 @@ export default {
     load: function () {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: DEATH, required: true }],
         })
         .then(() => {
-          const dateParse = d3.timeParse("%Y%m");
-          this.deathData = this.getData[DEATH];
-          this.deathData.PREVALENCE_BY_GENDER_AGE_YEAR = sortByRange(
-            this.deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
-            "ascending",
-            "TRELLIS_NAME",
-            "trellisOrder"
-          );
-          this.deathData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-            this.deathData.PREVALENCE_BY_MONTH[i].date = dateParse(
-              v.X_CALENDAR_MONTH
+          if (!this.getErrors) {
+            const dateParse = d3.timeParse("%Y%m");
+            this.deathData = this.getData[DEATH];
+            this.deathData.PREVALENCE_BY_GENDER_AGE_YEAR = sortByRange(
+              this.deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
+              "ascending",
+              "TRELLIS_NAME",
+              "trellisOrder"
             );
-          });
-          this.dataLoaded = true;
+            this.deathData.PREVALENCE_BY_MONTH.forEach((v, i) => {
+              this.deathData.PREVALENCE_BY_MONTH[i].date = dateParse(
+                v.X_CALENDAR_MONTH
+              );
+            });
+            this.dataLoaded = true;
+          }
         });
     },
   },

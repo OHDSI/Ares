@@ -90,7 +90,7 @@
 <script>
 import * as d3 from "d3-time-format";
 import { charts } from "@/configs";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { OBSERVATION_PERIOD } from "@/data/services/getFilePath";
 import VegaChart from "@/interface/components/VegaChart";
 import { mapGetters } from "vuex";
@@ -149,32 +149,34 @@ export default {
     load: function () {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: OBSERVATION_PERIOD, required: true }],
         })
         .then(() => {
-          const dateParse = d3.timeParse("%Y%m");
-          this.observationPeriodData = this.getData[OBSERVATION_PERIOD];
-          this.headers = Object.values(this.headersMap);
-          this.personPeriods =
-            this.observationPeriodData.PERSON_PERIODS_DATA.map((item) => ({
-              ...item,
-              PERCENT_PEOPLE: getPercentage(
-                item.COUNT_VALUE,
-                this.observationPeriodData.PERSON_PERIODS_DATA
-              ),
-            }));
-          this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE =
-            sortByRange(
-              this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
-              "ascending",
-              "CATEGORY",
-              "categoryOrder"
-            );
-          this.observationPeriodData.OBSERVED_BY_MONTH.forEach((v) => {
-            v.DATE = dateParse(v.MONTH_YEAR);
-          });
-          this.dataLoaded = true;
+          if (!this.getErrors) {
+            const dateParse = d3.timeParse("%Y%m");
+            this.observationPeriodData = this.getData[OBSERVATION_PERIOD];
+            this.headers = Object.values(this.headersMap);
+            this.personPeriods =
+              this.observationPeriodData.PERSON_PERIODS_DATA.map((item) => ({
+                ...item,
+                PERCENT_PEOPLE: getPercentage(
+                  item.COUNT_VALUE,
+                  this.observationPeriodData.PERSON_PERIODS_DATA
+                ),
+              }));
+            this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE =
+              sortByRange(
+                this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
+                "ascending",
+                "CATEGORY",
+                "categoryOrder"
+              );
+            this.observationPeriodData.OBSERVED_BY_MONTH.forEach((v) => {
+              v.DATE = dateParse(v.MONTH_YEAR);
+            });
+            this.dataLoaded = true;
+          }
         });
     },
   },

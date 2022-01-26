@@ -36,7 +36,7 @@
 
 <script>
 import * as d3 from "d3-dsv";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { CDM_SOURCE, METADATA } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 
@@ -79,22 +79,24 @@ export default {
       this.cdmsourceDataLoaded = false;
       this.metadataDataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [
             { name: METADATA, required: true },
             { name: CDM_SOURCE, required: true },
           ],
         })
         .then(() => {
-          if (this.getData[METADATA]) {
-            this.metadataData = d3.csvParse(this.getData[METADATA]);
-            this.metadataDataLoaded = true;
+          if (!this.getErrors) {
+            if (this.getData[METADATA]) {
+              this.metadataData = d3.csvParse(this.getData[METADATA]);
+              this.metadataDataLoaded = true;
+            }
+            if (this.getData[CDM_SOURCE]) {
+              this.cdmsourceData = d3.csvParse(this.getData[CDM_SOURCE]);
+              this.cdmsourceDataLoaded = true;
+            }
+            this.dataLoaded = true;
           }
-          if (this.getData[CDM_SOURCE]) {
-            this.cdmsourceData = d3.csvParse(this.getData[CDM_SOURCE]);
-            this.cdmsourceDataLoaded = true;
-          }
-          this.dataLoaded = true;
         });
     },
   },

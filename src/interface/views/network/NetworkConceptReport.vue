@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!getErrors">
     <v-container>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
@@ -68,7 +68,7 @@ import _ from "lodash";
 import * as d3Format from "d3-format";
 import ReturnButton from "@/interface/components/ReturnButton";
 import { charts } from "@/configs";
-import { FETCH_MULTIPLE_BY_SOURCE } from "@/data/store/modules/view/actions.type";
+import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/data/store/modules/view/actions.type";
 import { CONCEPT } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
@@ -103,7 +103,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getSources"]),
+    ...mapGetters(["getData", "getSources", "getErrors"]),
   },
   created() {
     this.load();
@@ -143,34 +143,36 @@ export default {
     load: function () {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_MULTIPLE_BY_SOURCE, {
+        .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
           files: [CONCEPT],
         })
         .then(() => {
-          this.conceptName = this.getData[CONCEPT][0].CONCEPT_NAME[0];
-          this.conceptId = this.getData[CONCEPT][0].CONCEPT_ID[0];
-          this.numPersons = _.sumBy(
-            this.getData[CONCEPT],
-            (r) => r.NUM_PERSONS[0]
-          );
+          if (!this.getErrors) {
+            this.conceptName = this.getData[CONCEPT][0].CONCEPT_NAME[0];
+            this.conceptId = this.getData[CONCEPT][0].CONCEPT_ID[0];
+            this.numPersons = _.sumBy(
+              this.getData[CONCEPT],
+              (r) => r.NUM_PERSONS[0]
+            );
 
-          if (
-            this.getData[CONCEPT][0].MEASUREMENT_VALUE_DISTRIBUTION &&
-            this.getData[CONCEPT][0].MEASUREMENT_VALUE_DISTRIBUTION.length > 0
-          ) {
-            this.getData[CONCEPT].forEach((r, i) => {
-              r.MEASUREMENT_VALUE_DISTRIBUTION.forEach((d) => {
-                d.SOURCE_UNIT_KEY =
-                  this.getSources[i].cdm_source_key + " - " + d.CATEGORY;
+            if (
+              this.getData[CONCEPT][0].MEASUREMENT_VALUE_DISTRIBUTION &&
+              this.getData[CONCEPT][0].MEASUREMENT_VALUE_DISTRIBUTION.length > 0
+            ) {
+              this.getData[CONCEPT].forEach((r, i) => {
+                r.MEASUREMENT_VALUE_DISTRIBUTION.forEach((d) => {
+                  d.SOURCE_UNIT_KEY =
+                    this.getSources[i].cdm_source_key + " - " + d.CATEGORY;
+                });
+                this.measurementValueDistribution =
+                  this.measurementValueDistribution.concat(
+                    r.MEASUREMENT_VALUE_DISTRIBUTION
+                  );
               });
-              this.measurementValueDistribution =
-                this.measurementValueDistribution.concat(
-                  r.MEASUREMENT_VALUE_DISTRIBUTION
-                );
-            });
-            this.hasMeasurementValueDistribution = true;
+              this.hasMeasurementValueDistribution = true;
+            }
+            this.dataLoaded = true;
           }
-          this.dataLoaded = true;
         });
     },
   },

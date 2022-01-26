@@ -1,11 +1,14 @@
-export const specRecordProportionByMonth = {
+export const specRecordProportionByMonthByRelease = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   vconcat: [
     {
       height: 150,
       width: "container",
       description: "Domain Data Density",
-      mark: { type: "circle" },
+      mark: { type: "circle", opacity: 0.5 },
+      selection: {
+        release: { type: "multi", fields: ["release"], bind: "legend" },
+      },
       encoding: {
         x: {
           field: "date",
@@ -19,7 +22,16 @@ export const specRecordProportionByMonth = {
           type: "quantitative",
           title: "Record Proportion per 1000",
         },
+        color: {
+          title: "Release",
+          field: "release",
+        },
+        opacity: {
+          condition: { selection: "release", value: 1 },
+          value: 0.2,
+        },
         tooltip: [
+          { field: "release", title: "Release" },
           {
             field: "Y_PREVALENCE_1000PP",
             title: "RPP1000",
@@ -37,7 +49,7 @@ export const specRecordProportionByMonth = {
     {
       width: "container",
       height: 25,
-      mark: "line",
+      mark: { type: "line", opacity: 0.5 },
       selection: {
         brush: { type: "interval", encodings: ["x"] },
       },
@@ -52,6 +64,9 @@ export const specRecordProportionByMonth = {
           field: "Y_PREVALENCE_1000PP",
           type: "quantitative",
           title: "",
+        },
+        color: {
+          field: "release",
         },
       },
     },

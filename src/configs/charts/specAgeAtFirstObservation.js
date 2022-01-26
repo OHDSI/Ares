@@ -1,85 +1,32 @@
 export const specAgeAtFirstObservation = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-  height: 200,
+  height: 150,
   width: "container",
+  mark: { type: "bar", tooltip: {}, width: 10 },
+  data: null,
   encoding: {
     x: {
       field: "INTERVAL_INDEX",
       type: "quantitative",
       title: "Age",
+      scale: { domainMin: 0 },
     },
     y: {
-      field: "PERCENT_VALUE",
+      field: "COUNT_VALUE",
       type: "quantitative",
-      axis: { format: "0.0%" },
-      title: "% of Population",
+      title: "Count People",
     },
-    color: {
-      field: "DATA_SOURCE_KEY",
-      title: "Data Source",
-      legend: { orient: "right", columns: 2 },
-    },
+    tooltip: [
+      {
+        field: "INTERVAL_INDEX",
+        title: "Age",
+      },
+      {
+        field: "COUNT_VALUE",
+        title: "Number of People",
+        format: ",",
+      },
+      { field: "PERCENT_VALUE", title: "% of People", format: "0.1%" },
+    ],
   },
-  layer: [
-    {
-      mark: { type: "line", interpolate: "linear" },
-      params: [
-        {
-          name: "source",
-          select: { type: "point", fields: ["DATA_SOURCE_KEY"] },
-          bind: "legend",
-        },
-      ],
-      encoding: {
-        opacity: {
-          condition: { param: "source", value: 1 },
-          value: 0.2,
-        },
-      },
-    },
-    {
-      selection: {
-        dataSource: {
-          type: "multi",
-          fields: ["DATA_SOURCE_KEY"],
-          bind: "legend",
-        },
-        x: {
-          type: "single",
-          on: "mousemove",
-          encodings: ["x"],
-          nearest: true,
-        },
-      },
-      transform: [
-        {
-          filter: { selection: "dataSource" },
-        },
-      ],
-      mark: { type: "point", tooltip: true },
-    },
-    {
-      transform: [
-        {
-          filter: {
-            and: ["x.INTERVAL_INDEX", { selection: "x" }],
-          },
-        },
-        { filter: { selection: "dataSource" } },
-      ],
-      layer: [
-        {
-          mark: "rule",
-          encoding: {
-            y: {
-              height: 1,
-            },
-            color: {
-              value: "black",
-            },
-          },
-        },
-      ],
-    },
-  ],
 };

@@ -5,6 +5,7 @@ import router from "./router";
 import vuetify from "@/plugins/vuetify";
 import sync from "./services/vuex-router-sync";
 
+// adds reactive router module to global state
 sync(store, router);
 
 new Vue({

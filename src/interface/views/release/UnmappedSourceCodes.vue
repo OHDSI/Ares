@@ -77,7 +77,7 @@
 import { csvParse } from "d3-dsv";
 import { format } from "d3-format";
 import { debounce } from "lodash";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { QUALITY_COMPLETENESS } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 
@@ -179,12 +179,14 @@ export default {
     },
     load() {
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: QUALITY_COMPLETENESS, required: true }],
         })
         .then(() => {
-          this.domainTable = csvParse(this.getData[QUALITY_COMPLETENESS]);
-          this.dataLoaded = true;
+          if (!this.getErrors) {
+            this.domainTable = csvParse(this.getData[QUALITY_COMPLETENESS]);
+            this.dataLoaded = true;
+          }
         });
     },
   },

@@ -24,7 +24,7 @@
 <script>
 import { charts } from "@/configs";
 import VegaChart from "@/interface/components/VegaChart";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { NETWORK_QUALITY_SUMMARY } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 export default {
@@ -44,11 +44,13 @@ export default {
   created() {
     this.dataLoaded = false;
     this.$store
-      .dispatch(FETCH_DATA, {
+      .dispatch(FETCH_FILES, {
         files: [{ name: NETWORK_QUALITY_SUMMARY, required: true }],
       })
       .then(() => {
-        this.dataLoaded = true;
+        if (!this.getErrors) {
+          this.dataLoaded = true;
+        }
       });
   },
   methods: {

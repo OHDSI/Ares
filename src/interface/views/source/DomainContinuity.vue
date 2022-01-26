@@ -25,7 +25,7 @@
 import InfoPanel from "../../components/InfoPanel.vue";
 import { charts } from "@/configs";
 import VegaChart from "@/interface/components/VegaChart";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { SOURCE_HISTORY_INDEX } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 
@@ -55,7 +55,7 @@ export default {
     load: function () {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: SOURCE_HISTORY_INDEX, required: true }],
         })
         .then(() => {

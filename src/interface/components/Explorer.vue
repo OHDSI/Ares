@@ -94,16 +94,16 @@
 </template>
 
 <script>
-import explorerConfig from "@/configs/routes/explorer.configs";
 import { mapGetters } from "vuex";
 import { FETCH_INDEX } from "@/data/store/modules/explorer/actions.type";
+import { explorerConfigs } from "@/configs";
 
 export default {
   name: "Explorer",
   data() {
     return {
-      folders: explorerConfig.folders,
-      reports: explorerConfig.reports,
+      folders: explorerConfigs.folders,
+      reports: explorerConfigs.reports,
     };
   },
 

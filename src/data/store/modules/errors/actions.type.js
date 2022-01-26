@@ -1,2 +1,2 @@
-export const ADD_ERROR = "addError";
-export const CLEAR_ERRORS = "clearErrors";
+export const NEW_ERROR = "addError";
+export const RESET_ERRORS = "clearErrors";

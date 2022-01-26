@@ -69,7 +69,7 @@
 <script>
 import { charts } from "@/configs";
 import { QUALITY_INDEX } from "@/data/services/getFilePath";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import VegaChart from "@/interface/components/VegaChart";
 import { mapGetters } from "vuex";
 
@@ -132,11 +132,13 @@ export default {
     load() {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [{ name: QUALITY_INDEX, required: true }],
         })
         .then(() => {
-          this.dataLoaded = true;
+          if (!this.getErrors) {
+            this.dataLoaded = true;
+          }
         });
     },
     displayDetails: function (resultFileName) {

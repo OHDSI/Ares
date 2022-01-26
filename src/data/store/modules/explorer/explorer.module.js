@@ -5,14 +5,14 @@ import {
 
 import { FETCH_INDEX } from "@/data/store/modules/explorer/actions.type";
 import { INDEX } from "@/data/services/getFilePath";
-import explorerConfig from "@/configs/routes/explorer.configs";
+import { explorerConfigs } from "@/configs";
 import loadFile from "@/data/services/loadFile";
 import getFilePath from "@/data/services/getFilePath";
 
 const state = {
-  folders: explorerConfig.folders,
+  folders: explorerConfigs.folders,
   sources: [],
-  reports: explorerConfig.reports,
+  reports: explorerConfigs.reports,
   dataLoaded: false,
 };
 

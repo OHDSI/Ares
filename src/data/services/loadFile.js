@@ -1,6 +1,6 @@
 import axios from "axios";
 import store from "../store";
-import { ADD_ERROR } from "@/data/store/modules/errors/actions.type";
+import { NEW_ERROR } from "@/data/store/modules/errors/actions.type";
 
 const loadFile = (path, payload) => {
   const instance = axios.create();
@@ -10,7 +10,7 @@ const loadFile = (path, payload) => {
     },
     function (error) {
       if (payload.required) {
-        store.dispatch(ADD_ERROR, {
+        store.dispatch(NEW_ERROR, {
           message: error,
           details: error.config.url,
         });

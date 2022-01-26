@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!getErrors">
     <v-container>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-6 text-uppercase text-h6"
@@ -31,7 +31,7 @@
 <script>
 import * as d3Format from "d3-format";
 import { charts } from "@/configs";
-import { FETCH_MULTIPLE_BY_SOURCE } from "@/data/store/modules/view/actions.type";
+import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/data/store/modules/view/actions.type";
 import { OBSERVATION_PERIOD } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
@@ -50,12 +50,12 @@ export default {
       dataLoaded: false,
       historyRecords: [],
       cdmSourceName: "",
-      specAgeAtFirstObservation: charts.specAgeAtFirstObservation,
-      specCumulativeObservation: charts.specCumulativeObservation,
+      specAgeAtFirstObservation: charts.specAgeAtFirstObservationBySource,
+      specCumulativeObservation: charts.specCumulativeObservationBySource,
     };
   },
   computed: {
-    ...mapGetters(["getData", "getSources"]),
+    ...mapGetters(["getData", "getSources", "getErrors"]),
   },
   created() {
     this.load();
@@ -81,25 +81,27 @@ export default {
     load: function () {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_MULTIPLE_BY_SOURCE, {
+        .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
           files: [OBSERVATION_PERIOD],
         })
         .then(() => {
-          this.getData[OBSERVATION_PERIOD].forEach((r, i) => {
-            r.AGE_AT_FIRST_OBSERVATION.forEach((d) => {
-              d.DATA_SOURCE_KEY = this.getSources[i].cdm_source_key;
+          if (!this.getErrors) {
+            this.getData[OBSERVATION_PERIOD].forEach((r, i) => {
+              r.AGE_AT_FIRST_OBSERVATION.forEach((d) => {
+                d.DATA_SOURCE_KEY = this.getSources[i].cdm_source_key;
+              });
+              r.CUMULATIVE_DURATION.forEach((d) => {
+                d.DATA_SOURCE_KEY = this.getSources[i].cdm_source_key;
+              });
+              this.allCumulativeDurationData =
+                this.allCumulativeDurationData.concat(r.CUMULATIVE_DURATION);
+              this.allAgeAtFirstObservationData =
+                this.allAgeAtFirstObservationData.concat(
+                  r.AGE_AT_FIRST_OBSERVATION
+                );
             });
-            r.CUMULATIVE_DURATION.forEach((d) => {
-              d.DATA_SOURCE_KEY = this.getSources[i].cdm_source_key;
-            });
-            this.allCumulativeDurationData =
-              this.allCumulativeDurationData.concat(r.CUMULATIVE_DURATION);
-            this.allAgeAtFirstObservationData =
-              this.allAgeAtFirstObservationData.concat(
-                r.AGE_AT_FIRST_OBSERVATION
-              );
-          });
-          this.dataLoaded = true;
+            this.dataLoaded = true;
+          }
         });
     },
   },

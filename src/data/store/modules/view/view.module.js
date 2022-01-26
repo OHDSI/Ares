@@ -3,10 +3,11 @@ import loadFile from "@/data/services/loadFile";
 import processors from "@/data/store/modules/view/processors";
 import { SET_DATA } from "./mutations.type";
 import {
-  FETCH_DATA,
-  FETCH_MULTIPLE_BY_RELEASE,
-  FETCH_MULTIPLE_BY_SOURCE,
+  FETCH_FILES,
+  FETCH_MULTIPLE_FILES_BY_RELEASE,
+  FETCH_MULTIPLE_FILES_BY_SOURCE,
 } from "@/data/store/modules/view/actions.type";
+import { NEW_ERROR } from "@/data/store/modules/errors/actions.type";
 
 const state = {
   data: [],
@@ -19,9 +20,10 @@ const getters = {
 };
 
 const actions = {
-  async [FETCH_DATA]({ commit, dispatch, rootState }, payload) {
+  async [FETCH_FILES]({ commit, dispatch, rootState }, payload) {
     const promises = payload.files.map((file) => {
       return loadFile(getFilePath(rootState.route.params)[file.name], {
+        // if required === true && no file loaded then add an error
         required: file.required,
       });
     });
@@ -42,9 +44,9 @@ const actions = {
     });
   },
 
-  async [FETCH_MULTIPLE_BY_SOURCE](
+  async [FETCH_MULTIPLE_FILES_BY_SOURCE](
     //todo save cdm data on data load
-    { commit, rootState, rootGetters },
+    { commit, dispatch, rootState, rootGetters },
     payload
   ) {
     const promises = payload.files.reduce(
@@ -70,14 +72,19 @@ const actions = {
         data[file] = responses
           .filter((response) => response.value?.response?.data)
           .map((filtered) => filtered.value.response.data);
+        if (data[file].length === 0) {
+          dispatch(NEW_ERROR, {
+            message: "No files found across data sources",
+            details: rootGetters.getSelectedSource.cdm_source_abbreviation,
+          });
+        }
       });
     }
-
     commit(SET_DATA, data);
   },
 
-  async [FETCH_MULTIPLE_BY_RELEASE](
-    { commit, rootState, rootGetters },
+  async [FETCH_MULTIPLE_FILES_BY_RELEASE](
+    { commit, dispatch, rootState, rootGetters },
     payload
   ) {
     const promises = payload.files.reduce(
@@ -106,6 +113,12 @@ const actions = {
             data: filtered.value.response.data,
             release: filtered.value.payload,
           }));
+        if (data[file].length === 0) {
+          dispatch(NEW_ERROR, {
+            message: "No files found across current data source releases",
+            details: rootGetters.getSelectedSource.cdm_source_abbreviation,
+          });
+        }
       });
     }
     commit(SET_DATA, data);

@@ -2,9 +2,7 @@
   <div>
     <Explorer />
     <ErrorAlert />
-    <div v-if="explorerLoaded">
-      <router-view name="DataSourcesExplorer" />
-    </div>
+    <router-view v-if="explorerLoaded" name="DataSourcesExplorer" />
   </div>
 </template>
 

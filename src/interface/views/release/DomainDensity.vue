@@ -28,7 +28,7 @@
 import VegaChart from "@/interface/components/VegaChart";
 import * as d3Import from "d3-dsv";
 import { charts } from "@/configs";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import {
   DENSITY_RECORDS_PERSON,
   DENSITY_TOTAL,
@@ -65,18 +65,20 @@ export default {
     load: function () {
       this.dataLoaded = false;
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: [
             { name: DENSITY_TOTAL, required: true },
             { name: DENSITY_RECORDS_PERSON, required: true },
           ],
         })
         .then(() => {
-          this.domainDensity = d3Import.csvParse(
-            this.getData[DENSITY_RECORDS_PERSON]
-          );
-          this.domainRecords = d3Import.csvParse(this.getData[DENSITY_TOTAL]);
-          this.dataLoaded = true;
+          if (!this.getErrors) {
+            this.domainDensity = d3Import.csvParse(
+              this.getData[DENSITY_RECORDS_PERSON]
+            );
+            this.domainRecords = d3Import.csvParse(this.getData[DENSITY_TOTAL]);
+            this.dataLoaded = true;
+          }
         });
     },
   },

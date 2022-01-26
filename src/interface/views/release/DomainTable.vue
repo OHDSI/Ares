@@ -214,7 +214,7 @@ import * as d3Format from "d3-format";
 import InfoPanel from "../../components/InfoPanel.vue";
 import { debounce } from "lodash";
 import { charts } from "@/configs";
-import { FETCH_DATA } from "@/data/store/modules/view/actions.type";
+import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import {
   DOMAIN_DRUG_STRATIFICATION,
   DOMAIN_ISSUES,
@@ -420,72 +420,74 @@ export default {
       }
 
       this.$store
-        .dispatch(FETCH_DATA, {
+        .dispatch(FETCH_FILES, {
           files: files,
         })
         .then(() => {
-          this.headers = Object.values(this.headersMap);
-          if (this.isVisit) {
-            this.selectedHeaders = this.headers.filter((h) =>
-              [
-                "CONCEPT_ID",
-                "CONCEPT_NAME",
-                "PERCENT_PERSONS",
-                "RECORDS_PER_PERSON",
-                "AVERAGE_DURATION",
-              ].includes(h.value)
+          if (!this.getErrors) {
+            this.headers = Object.values(this.headersMap);
+            if (this.isVisit) {
+              this.selectedHeaders = this.headers.filter((h) =>
+                [
+                  "CONCEPT_ID",
+                  "CONCEPT_NAME",
+                  "PERCENT_PERSONS",
+                  "RECORDS_PER_PERSON",
+                  "AVERAGE_DURATION",
+                ].includes(h.value)
+              );
+            } else if (this.isEra) {
+              this.selectedHeaders = this.headers.filter((h) =>
+                [
+                  "CONCEPT_ID",
+                  "CONCEPT_NAME",
+                  "PERCENT_PERSONS",
+                  "RECORDS_PER_PERSON",
+                  "MEDIAN_VALUE",
+                ].includes(h.value)
+              );
+            } else if (this.isMeasurement) {
+              this.selectedHeaders = this.headers.filter((h) =>
+                [
+                  "CONCEPT_ID",
+                  "CONCEPT_NAME",
+                  "PERCENT_PERSONS",
+                  "RECORDS_PER_PERSON",
+                  "PERCENT_MISSING_VALUES",
+                ].includes(h.value)
+              );
+            } else {
+              this.selectedHeaders = this.headers.filter((h) =>
+                [
+                  "CONCEPT_ID",
+                  "CONCEPT_NAME",
+                  "PERCENT_PERSONS",
+                  "RECORDS_PER_PERSON",
+                ].includes(h.value)
+              );
+            }
+            this.domainTable = d3Import.csvParse(this.getData[DOMAIN_SUMMARY]);
+            this.domainIssues = d3Import.csvParse(this.getData[DOMAIN_ISSUES]);
+            const domainIssue = this.domainIssues.find(
+              (di) => di.cdm_table_name === this.$route.params.domain
             );
-          } else if (this.isEra) {
-            this.selectedHeaders = this.headers.filter((h) =>
-              [
-                "CONCEPT_ID",
-                "CONCEPT_NAME",
-                "PERCENT_PERSONS",
-                "RECORDS_PER_PERSON",
-                "MEDIAN_VALUE",
-              ].includes(h.value)
-            );
-          } else if (this.isMeasurement) {
-            this.selectedHeaders = this.headers.filter((h) =>
-              [
-                "CONCEPT_ID",
-                "CONCEPT_NAME",
-                "PERCENT_PERSONS",
-                "RECORDS_PER_PERSON",
-                "PERCENT_MISSING_VALUES",
-              ].includes(h.value)
-            );
-          } else {
-            this.selectedHeaders = this.headers.filter((h) =>
-              [
-                "CONCEPT_ID",
-                "CONCEPT_NAME",
-                "PERCENT_PERSONS",
-                "RECORDS_PER_PERSON",
-              ].includes(h.value)
-            );
-          }
-          this.domainTable = d3Import.csvParse(this.getData[DOMAIN_SUMMARY]);
-          this.domainIssues = d3Import.csvParse(this.getData[DOMAIN_ISSUES]);
-          const domainIssue = this.domainIssues.find(
-            (di) => di.cdm_table_name === this.$route.params.domain
-          );
-          this.issueCount = domainIssue?.count_failed || 0;
+            this.issueCount = domainIssue?.count_failed || 0;
 
-          if (this.getData[DOMAIN_DRUG_STRATIFICATION]) {
-            this.isDrugExposure = true;
-            this.drugStratification = d3Import.csvParse(
-              this.getData[DOMAIN_DRUG_STRATIFICATION]
-            );
+            if (this.getData[DOMAIN_DRUG_STRATIFICATION]) {
+              this.isDrugExposure = true;
+              this.drugStratification = d3Import.csvParse(
+                this.getData[DOMAIN_DRUG_STRATIFICATION]
+              );
+            }
+            if (this.$route.params.domain.toUpperCase() == "VISIT_OCCURRENCE") {
+              this.getData[DOMAIN_VISIT_STRATIFICATION] = d3Import.csvParse(
+                this.getData[DOMAIN_VISIT_STRATIFICATION]
+              );
+              this.visitStratification = true;
+            }
+            this.dataLoaded = true;
+            this.issueDataLoaded = true;
           }
-          if (this.$route.params.domain.toUpperCase() == "VISIT_OCCURRENCE") {
-            this.getData[DOMAIN_VISIT_STRATIFICATION] = d3Import.csvParse(
-              this.getData[DOMAIN_VISIT_STRATIFICATION]
-            );
-            this.visitStratification = true;
-          }
-          this.dataLoaded = true;
-          this.issueDataLoaded = true;
         });
     },
   },
