@@ -148,27 +148,29 @@ export default {
         })
         .then(() => {
           if (!this.getErrors) {
-            this.conceptName = this.getData[CONCEPT][0].CONCEPT_NAME[0];
-            this.conceptId = this.getData[CONCEPT][0].CONCEPT_ID[0];
+            this.conceptName = this.getData[CONCEPT][0].data.CONCEPT_NAME[0];
+            this.conceptId = this.getData[CONCEPT][0].data.CONCEPT_ID[0];
             this.numPersons = _.sumBy(
               this.getData[CONCEPT],
-              (r) => r.NUM_PERSONS[0]
+              (r) => r.data.NUM_PERSONS[0]
             );
 
             if (
-              this.getData[CONCEPT][0].MEASUREMENT_VALUE_DISTRIBUTION &&
-              this.getData[CONCEPT][0].MEASUREMENT_VALUE_DISTRIBUTION.length > 0
+              this.getData[CONCEPT][0].data.MEASUREMENT_VALUE_DISTRIBUTION
+                ?.length > 0
             ) {
-              this.getData[CONCEPT].forEach((r, i) => {
-                r.MEASUREMENT_VALUE_DISTRIBUTION.forEach((d) => {
-                  d.SOURCE_UNIT_KEY =
-                    this.getSources[i].cdm_source_key + " - " + d.CATEGORY;
-                });
-                this.measurementValueDistribution =
-                  this.measurementValueDistribution.concat(
-                    r.MEASUREMENT_VALUE_DISTRIBUTION
-                  );
-              });
+              this.measurementValueDistribution = this.getData[CONCEPT].reduce(
+                (prevValue, current) => [
+                  ...prevValue,
+                  ...current.data.MEASUREMENT_VALUE_DISTRIBUTION.map(
+                    (value) => ({
+                      ...value,
+                      SOURCE_UNIT_KEY: `${current.source.cdm_source_key} - ${value.CATEGORY}`,
+                    })
+                  ),
+                ],
+                []
+              );
               this.hasMeasurementValueDistribution = true;
             }
             this.dataLoaded = true;

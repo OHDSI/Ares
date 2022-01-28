@@ -86,20 +86,31 @@ export default {
         })
         .then(() => {
           if (!this.getErrors) {
-            this.getData[OBSERVATION_PERIOD].forEach((r, i) => {
-              r.AGE_AT_FIRST_OBSERVATION.forEach((d) => {
-                d.DATA_SOURCE_KEY = this.getSources[i].cdm_source_key;
-              });
-              r.CUMULATIVE_DURATION.forEach((d) => {
-                d.DATA_SOURCE_KEY = this.getSources[i].cdm_source_key;
-              });
-              this.allCumulativeDurationData =
-                this.allCumulativeDurationData.concat(r.CUMULATIVE_DURATION);
-              this.allAgeAtFirstObservationData =
-                this.allAgeAtFirstObservationData.concat(
-                  r.AGE_AT_FIRST_OBSERVATION
-                );
-            });
+            this.allCumulativeDurationData = this.getData[
+              OBSERVATION_PERIOD
+            ].reduce(
+              (prevValue, current) => [
+                ...prevValue,
+                ...current.data.CUMULATIVE_DURATION.map((value) => ({
+                  ...value,
+                  DATA_SOURCE_KEY: current.source.cdm_source_key,
+                })),
+              ],
+              []
+            );
+
+            this.allAgeAtFirstObservationData = this.getData[
+              OBSERVATION_PERIOD
+            ].reduce(
+              (prevValue, current) => [
+                ...prevValue,
+                ...current.data.AGE_AT_FIRST_OBSERVATION.map((value) => ({
+                  ...value,
+                  DATA_SOURCE_KEY: current.source.cdm_source_key,
+                })),
+              ],
+              []
+            );
             this.dataLoaded = true;
           }
         });

@@ -51,18 +51,19 @@ export default {
         })
         .then(() => {
           if (!this.getErrors) {
-            this.getData[RECORDS_DOMAIN].forEach((r, i) => {
-              const responseData = d3.csvParse(r);
-
-              //todo may produce an incorrect result in case one of the datasources lacks its version of the records_domain file.
-              responseData.forEach((d) => {
-                d.cdm_source_key = this.getSources[i].cdm_source_key;
-                d.cdm_release_key = this.getSources[i].releases[0].release_id;
-                d.cdm_source_abbreviation =
-                  this.getSources[i].cdm_source_abbreviation;
-              });
-              this.domainData = this.domainData.concat(responseData);
-            });
+            this.domainData = this.getData[RECORDS_DOMAIN].reduce(
+              (prevValue, current) => [
+                ...prevValue,
+                ...d3.csvParse(current.data).map((value) => ({
+                  ...value,
+                  cdm_source_key: current.source.cdm_source_key,
+                  cdm_release_key: current.source.releases[0].release_id,
+                  cdm_source_abbreviation:
+                    current.source.cdm_source_abbreviation,
+                })),
+              ],
+              []
+            );
             this.specDatastrand.data[0].values = this.domainData;
 
             //todo switch to using the VChart component
