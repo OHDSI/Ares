@@ -1,6 +1,6 @@
 export const specMeasurementValueDistribution1 = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-  height: 400,
+  height: { step: 20 },
   width: "container",
   encoding: {
     y: { field: "SOURCE_UNIT_KEY", type: "nominal", title: null },

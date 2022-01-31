@@ -59,7 +59,8 @@ const actions = {
               release: source.releases[0].release_id,
               domain: rootState.route.params.domain,
               concept: rootState.route.params.concept,
-            })[file]
+            })[file],
+            { source }
           );
         }),
       }),
@@ -71,7 +72,10 @@ const actions = {
       await Promise.allSettled(promises[file]).then((responses) => {
         data[file] = responses
           .filter((response) => response.value?.response?.data)
-          .map((filtered) => filtered.value.response.data);
+          .map((filtered) => ({
+            data: filtered.value.response.data,
+            source: filtered.value.payload.source,
+          }));
         if (data[file].length === 0) {
           dispatch(NEW_ERROR, {
             message: "No files found across data sources",
