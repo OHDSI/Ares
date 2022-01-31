@@ -16,15 +16,14 @@
     <v-card :loading="!metadataDataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Metadata</v-card-title>
       <v-container v-if="metadataDataLoaded">
-        <v-layout v-for="(m, mi) in metadataData" :key="mi">
-          <v-layout
-            v-for="(mc, mci) in metadataData.columns"
-            :key="mci"
-            class="pl-8"
-          >
-            {{ mc }}: {{ metadataData[mi][mc] }}
-          </v-layout>
-        </v-layout>
+        <v-data-table
+          v-if="dataLoaded"
+          class="mt-4"
+          dense
+          :headers="headers"
+          :items="metadataData"
+        >
+        </v-data-table>
       </v-container>
       <v-card-text>
         <v-icon left color="info" small>mdi-help-circle</v-icon>Metadata is
@@ -54,6 +53,45 @@ export default {
       dataLoaded: false,
       domainTable: [],
       search: "",
+      headersMap: {
+        METADATA_CONCEPT_ID: {
+          text: "METADATA_CONCEPT_ID",
+          sortable: true,
+          value: "METADATA_CONCEPT_ID",
+          align: "start",
+        },
+        NAME: {
+          text: "NAME",
+          sortable: true,
+          value: "NAME",
+          align: "start",
+        },
+        VALUE_AS_STRING: {
+          text: "VALUE_AS_STRING",
+          sortable: true,
+          value: "VALUE_AS_STRING",
+          align: "start",
+        },
+        VALUE_AS_CONCEPT_ID: {
+          text: "VALUE_AS_CONCEPT_ID",
+          sortable: true,
+          value: "VALUE_AS_CONCEPT_ID",
+          align: "start",
+        },
+        METADATA_DATE: {
+          text: "METADATA_DATE",
+          sortable: true,
+          value: "METADATA_DATE",
+          align: "start",
+        },
+        METADATA_DATETIME: {
+          text: "METADATA_DATETIME",
+          sortable: true,
+          value: "METADATA_DATETIME",
+          align: "start",
+        },
+      },
+      headers: [],
     };
   },
   computed: {
@@ -89,6 +127,7 @@ export default {
           if (!this.getErrors) {
             if (this.getData[METADATA]) {
               this.metadataData = d3.csvParse(this.getData[METADATA]);
+              this.headers = Object.values(this.headersMap);
               this.metadataDataLoaded = true;
             }
             if (this.getData[CDM_SOURCE]) {
