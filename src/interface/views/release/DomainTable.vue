@@ -142,10 +142,11 @@
           <template v-slot:item.PERCENT_MISSING_VALUES="{ item }">
             <v-layout justify-end
               >{{
-                ((1 - item.PERCENT_MISSING_VALUES) * 100).toFixed(2)
+                item.PERCENT_MISSING_VALUES
+                  ? `${((1 - item.PERCENT_MISSING_VALUES) * 100).toFixed(2)}%`
+                  : "No data"
               }}
-              %</v-layout
-            >
+            </v-layout>
           </template>
           <template v-slot:item.AVERAGE_DURATION="{ item }">
             <v-layout justify-end>{{ item.AVERAGE_DURATION }}</v-layout>
