@@ -8,7 +8,7 @@
 
 <script>
 import Explorer from "../components/Explorer";
-import ErrorAlert from "@/interface/components/ErrorAlert";
+import ErrorAlert from "@/interface/components/CriticalError";
 import { mapGetters } from "vuex";
 
 export default {
