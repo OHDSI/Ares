@@ -49,7 +49,23 @@
               :content="recordsPerPerson"
             ></v-badge>
             <p class="text-caption">Records per Person</p></v-col
-          ><v-col v-if="hasCountFailed" cols="2" align="center">
+          >
+          <v-col
+            v-if="$route.params.domain === 'measurement'"
+            cols="2"
+            align="center"
+          >
+            <v-icon left color="info">mdi-database-check-outline</v-icon>
+            <v-badge
+              tile
+              inline
+              dark
+              color="info"
+              :content="getPercentWithValues"
+            ></v-badge>
+            <p class="text-caption">% with Values</p></v-col
+          >
+          <v-col v-if="hasCountFailed" cols="2" align="center">
             <v-icon left color="error" @click="navigateToDataQuality()"
               >mdi-database-alert</v-icon
             >
@@ -366,12 +382,13 @@
 
 <script>
 import * as d3 from "d3-time-format";
+import { csvParse } from "d3-dsv";
 import * as d3Format from "d3-format";
 import InfoPanel from "../../components/InfoPanel.vue";
 import ReturnButton from "@/interface/components/ReturnButton";
 import { charts } from "@/configs";
 import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import { CONCEPT } from "@/data/services/getFilePath";
+import { CONCEPT, DOMAIN_SUMMARY } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
 import sortByRange from "@/services/range-sort";
@@ -426,6 +443,14 @@ export default {
   },
   computed: {
     ...mapGetters(["getData", "getErrors"]),
+    getPercentWithValues: function () {
+      const missingData = csvParse(this.getData[DOMAIN_SUMMARY]).filter(
+        (data) => data.CONCEPT_ID === this.$route.params.concept
+      )[0].PERCENT_MISSING_VALUES;
+      return missingData
+        ? `${(1 - missingData) * (100).toFixed(2)}%`
+        : "No data";
+    },
   },
   watch: {
     $route() {
@@ -493,9 +518,14 @@ export default {
     },
     load: function () {
       this.dataLoaded = false;
+      const files = [{ name: CONCEPT, required: true }];
+      if (this.$route.params.domain === "measurement") {
+        files.push({ name: DOMAIN_SUMMARY, required: true });
+      }
+
       this.$store
         .dispatch(FETCH_FILES, {
-          files: [{ name: CONCEPT, required: true }],
+          files,
         })
         .then(() => {
           if (!this.getErrors) {
