@@ -76,9 +76,9 @@ export default {
                   value.cdm_source_key +
                   "/" +
                   value.cdm_release_key +
-                  "/domain/" +
-                  domainKey +
-                  "/summary";
+                  "/" +
+                  domainKey;
+
                 this.navigate(routeUrl);
               });
             });
