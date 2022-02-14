@@ -91,7 +91,7 @@ const actions = {
         if (data[file].length === 0) {
           dispatch(NEW_ERROR, {
             message: "No files found across data sources",
-            details: rootGetters.getSelectedSource.cdm_source_abbreviation,
+            details: "No additional data",
           });
         }
       });

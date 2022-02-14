@@ -24,7 +24,7 @@ import home from "../interface/views/Home.vue";
 import article from "../interface/views/Article.vue";
 import unmappedSourceCodes from "../interface/views/release/UnmappedSourceCodes.vue";
 import DataSourcesExplorer from "../interface/views/DataSourcesExplorer";
-import NetworkDataFeasibilityReport from "../interface/views/network/NetworkDataFeasibilityReport/NetworkDataFeasibilityReport";
+import NetworkDataFeasibilityReport from "../interface/views/network/NetworkDataFeasibilityReport/Index";
 
 Vue.use(VueRouter);
 
