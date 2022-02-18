@@ -1,47 +1,47 @@
 <template>
-  <v-card elevation="10" class="ma-4" pa-2>
-    <v-container>
-      <v-card-title>Required visit types</v-card-title>
-      <v-row>
-        <v-col>
-          <v-data-table
-            v-model="visitTypesSelected"
-            dense
-            item-key="concept_id"
-            :search="visitTypesSearch"
-            :headers="domainSummaryHeaders"
-            :items="getVisitTypes"
-            show-select
-          >
-            <template v-slot:top>
-              <v-text-field
-                v-model="visitTypesSearch"
-                label="Search"
-                class="mx-4"
-              ></v-text-field>
-            </template>
-          </v-data-table>
-        </v-col>
-        <v-col>
-          <v-data-table
-            dense
-            :search="resultsSearch"
-            item-key="cdm_name"
-            :items="getSmallestVisitTypeValue"
-            :headers="domainTypesResults"
-          >
-            <template v-slot:top>
-              <v-text-field
-                v-model="resultsSearch"
-                label="Search"
-                class="mx-4"
-              ></v-text-field>
-            </template>
-          </v-data-table>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card>
+  <v-container>
+    <v-row>
+      <v-col>
+        <v-data-table
+          v-model="visitTypesSelected"
+          dense
+          item-key="concept_id"
+          :search="visitTypesSearch"
+          :headers="domainSummaryHeaders"
+          :items="getVisitTypes"
+          show-select
+        >
+          <template v-slot:top>
+            <v-text-field
+              v-model="visitTypesSearch"
+              label="Filter Visit Types"
+              class="mx-4"
+            ></v-text-field>
+          </template>
+        </v-data-table>
+      </v-col>
+      <v-col>
+        <v-data-table
+          dense
+          :search="resultsSearch"
+          item-key="cdm_name"
+          :items="getSmallestVisitTypeValue"
+          :headers="domainTypesResults"
+        >
+          <template v-slot:top>
+            <v-text-field
+              v-model="resultsSearch"
+              label="Filter Data Sources "
+              class="mx-4"
+            ></v-text-field>
+          </template>
+          <template v-slot:item.percentage="{ item }">{{
+            item.percentage ? (item.percentage * 100).toFixed(2) : undefined
+          }}</template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -108,12 +108,14 @@ export default {
     },
 
     getSmallestVisitTypeValue: function () {
-      return this.filterSelectedVisitTypes.map((value) => ({
-        cdm_name: value.source,
-        percentage: value.data
-          .map((data) => data.PERCENT_PERSONS)
-          .sort((a, b) => a - b)[0],
-      }));
+      return this.filterSelectedVisitTypes
+        .map((value) => ({
+          cdm_name: value.source,
+          percentage: value.data
+            .map((data) => data.PERCENT_PERSONS)
+            .sort((a, b) => a - b)[0],
+        }))
+        .filter((value) => value.percentage);
     },
   },
   watch: {

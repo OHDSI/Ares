@@ -88,7 +88,7 @@ const actions = {
             data: filtered.value.response.data,
             source: filtered.value.payload.source,
           }));
-        if (data[file].length === 0) {
+        if (data[file].length === 0 && payload.criticalError) {
           dispatch(NEW_ERROR, {
             message: "No files found across data sources",
             details: "No additional data",

@@ -1,144 +1,140 @@
 <template>
-  <v-card elevation="10" class="ma-4 pa-2">
-    <v-container fluid>
-      <v-card-title>Range Based Requirements</v-card-title>
-      <v-row>
-        <v-col cols="2">
-          <v-label>Age</v-label>
-        </v-col>
-        <v-col>
-          <v-range-slider
-            v-model="rangeAge"
-            :max="maxAge"
-            :min="minAge"
-            hide-details
-            class="align-center"
-          >
-            <template v-slot:prepend>
-              <v-text-field
-                :value="rangeAge[0]"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 60px"
-                @change="$set(rangeAge, 0, $event)"
-              ></v-text-field>
-            </template>
-            <template v-slot:append>
-              <v-text-field
-                :value="rangeAge[1]"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 60px"
-                @change="$set(rangeAge, 1, $event)"
-              ></v-text-field>
-            </template>
-          </v-range-slider>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="2">
-          <v-label>Year</v-label>
-        </v-col>
-        <v-col>
-          <v-range-slider
-            v-model="rangeYear"
-            :max="maxYear"
-            :min="minYear"
-            hide-details
-            class="align-center"
-          >
-            <template v-slot:prepend>
-              <v-text-field
-                :value="rangeYear[0]"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 60px"
-                @change="$set(rangeYear, 0, $event)"
-              ></v-text-field>
-            </template>
-            <template v-slot:append>
-              <v-text-field
-                :value="rangeYear[1]"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 60px"
-                @change="$set(rangeYear, 1, $event)"
-              ></v-text-field>
-            </template>
-          </v-range-slider>
-        </v-col>
+  <v-container fluid>
+    <v-subheader>Age range</v-subheader>
+    <v-range-slider
+      v-model="rangeAge"
+      :max="getAgeMinMax[1]"
+      :min="getAgeMinMax[0]"
+      hide-details
+      class="align-center"
+    >
+      <template v-slot:prepend>
+        <v-text-field
+          :value="rangeAge[0]"
+          class="mt-0 pt-0"
+          hide-details
+          single-line
+          type="number"
+          style="width: 60px"
+          @change="$set(rangeAge, 0, $event)"
+        ></v-text-field>
+      </template>
+      <template v-slot:append>
+        <v-text-field
+          :value="rangeAge[1]"
+          class="mt-0 pt-0"
+          hide-details
+          single-line
+          type="number"
+          style="width: 60px"
+          @change="$set(rangeAge, 1, $event)"
+        ></v-text-field>
+      </template>
+    </v-range-slider>
+    <v-subheader>Observation year range</v-subheader>
+    <v-range-slider
+      v-model="rangeYear"
+      :max="getYearsMinMax[1]"
+      :min="getYearsMinMax[0]"
+      hide-details
+      class="align-center"
+    >
+      <template v-slot:prepend>
+        <v-text-field
+          :value="rangeYear[0]"
+          class="mt-0 pt-0"
+          hide-details
+          single-line
+          type="number"
+          style="width: 60px"
+          @change="$set(rangeYear, 0, $event)"
+        ></v-text-field>
+      </template>
+      <template v-slot:append>
+        <v-text-field
+          :value="rangeYear[1]"
+          class="mt-0 pt-0"
+          hide-details
+          single-line
+          type="number"
+          style="width: 60px"
+          @change="$set(rangeYear, 1, $event)"
+        ></v-text-field>
+      </template>
+    </v-range-slider>
+    <v-subheader>Cumulative duration range</v-subheader>
+    <v-range-slider
+      v-model="cumulativeObservation"
+      :max="getDurationMinMax[1]"
+      :min="getDurationMinMax[0]"
+      hide-details
+      class="align-center"
+    >
+      <template v-slot:prepend>
+        <v-text-field
+          :value="cumulativeObservation[0]"
+          class="mt-0 pt-0"
+          hide-details
+          single-line
+          type="number"
+          style="width: 60px"
+          @change="$set(cumulativeObservation, 0, $event)"
+        ></v-text-field>
+      </template>
+      <template v-slot:append>
+        <v-text-field
+          :value="cumulativeObservation[1]"
+          class="mt-0 pt-0"
+          hide-details
+          single-line
+          type="number"
+          style="width: 60px"
+          @change="$set(cumulativeObservation, 1, $event)"
+        ></v-text-field>
+      </template>
+    </v-range-slider>
 
-        >
-      </v-row>
-      <v-row>
-        <v-col cols="2">
-          <v-label>Cumulative observation range</v-label>
-        </v-col>
-        <v-col>
-          <v-range-slider
-            v-model="cumulativeObservation"
-            :max="100"
-            :min="0"
-            hide-details
-            class="align-center"
-          >
-            <template v-slot:prepend>
-              <v-text-field
-                :value="cumulativeObservation[0]"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 60px"
-                @change="$set(cumulativeObservation, 0, $event)"
-              ></v-text-field>
-            </template>
-            <template v-slot:append>
-              <v-text-field
-                :value="cumulativeObservation[1]"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 60px"
-                @change="$set(cumulativeObservation, 1, $event)"
-              ></v-text-field>
-            </template>
-          </v-range-slider>
-        </v-col>
-
-        >
-      </v-row>
-
-      <v-row>
-        <v-col>
-          <v-data-table
-            dense
-            :headers="yearHeaders"
-            :items="getObservationRangeDataPerDatasource"
-          >
-          </v-data-table>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card>
+    <v-data-table
+      dense
+      :headers="yearHeaders"
+      :items="getObservationRangeDataPerDatasource"
+    >
+      <template v-slot:item.population_observed="{ item }">{{
+        !isNaN(item.population_observed)
+          ? formatComma(item.population_observed)
+          : "No data"
+      }}</template>
+      <template v-slot:item.populationByAge="{ item }">{{
+        item.populationByAge ? formatComma(item.populationByAge) : "No data"
+      }}</template>
+      <template v-slot:item.average_population_percentage="{ item }">{{
+        item.average_population_percentage
+          ? (item.average_population_percentage * 100).toFixed(2)
+          : "No data"
+      }}</template>
+      <template v-slot:item.cumulativeDuration="{ item }">{{
+        item.cumulativeDuration
+          ? (item.cumulativeDuration * 100).toFixed(2)
+          : "No data"
+      }}</template>
+      <template v-slot:item.percentPopulationByAge="{ item }">{{
+        item.percentPopulationByAge
+          ? (item.percentPopulationByAge * 100).toFixed(2)
+          : "No data"
+      }}</template>
+    </v-data-table>
+  </v-container>
 </template>
 
 <script>
 import { timeParse } from "d3-time-format";
+import * as d3Format from "d3-format";
 
 export default {
   name: "RangeBased",
   props: {
-    data: Array,
+    observationPeriod: Array,
+    person: Array,
   },
   data() {
     return {
@@ -158,12 +154,12 @@ export default {
         },
         {
           text: "Population by Age",
-          value: "populationAgeCount",
+          value: "populationByAge",
           align: "end",
         },
         {
           text: "% population by Age",
-          value: "populationAgePercent",
+          value: "percentPopulationByAge",
           align: "end",
         },
         {
@@ -182,7 +178,7 @@ export default {
           align: "end",
         },
         {
-          text: "Years accounted",
+          text: "Years observed",
           value: "years_observed",
           align: "end",
         },
@@ -191,8 +187,12 @@ export default {
   },
   computed: {
     getObservationRangeDataPerDatasource: function () {
+      const person = this.person;
       const timeparse = timeParse("%Y%m");
-      return this.data
+      const sources = this.$store.getters.getSources.map((value) => ({
+        cdm_name: value.cdm_source_abbreviation,
+      }));
+      const observationData = this.observationPeriod
         .map((source) => ({
           source: source.source.cdm_source_abbreviation,
           data: source.data.OBSERVED_BY_MONTH.filter((filtered) => {
@@ -238,17 +238,71 @@ export default {
               0
             ) / Object.keys(source.data).length,
           years_observed: Object.keys(source.data).length,
-          cumulativeDuration:
-            source.cumulativeDuration.reduce(
-              (prevValue, current) => prevValue + current.PERCENT_PEOPLE,
-              0
-            ) / Object.keys(source.cumulativeDuration).length,
+          cumulativeDuration: source.cumulativeDuration
+            .map((value) => value.PERCENT_PEOPLE)
+            .sort((a, b) => a - b)[0],
         }));
+      const personData = person.map((value) => {
+        const filteredPopulationCount = value.data.AGE_GENDER_DATA.filter(
+          (value) =>
+            value.AGE >= this.rangeAge[0] && value.AGE <= this.rangeAge[1]
+        ).reduce((prevValue, current) => prevValue + current.COUNT_VALUE, 0);
+        return {
+          cdm_name: value.source.cdm_source_abbreviation,
+          populationByAge: filteredPopulationCount,
+          percentPopulationByAge:
+            filteredPopulationCount / value.data.SUMMARY[1].ATTRIBUTE_VALUE,
+        };
+      });
+      return observationData.map((value) => ({
+        ...value,
+        ...personData.filter((data) => data.cdm_name === value.cdm_name)[0],
+      }));
+    },
+    getAgeMinMax: function () {
+      const data = this.person.reduce(
+        (prevValue, current) => [
+          ...prevValue,
+          ...current.data.AGE_GENDER_DATA.map((age) => age.AGE),
+        ],
+        []
+      );
+      return [Math.min(...data), Math.max(...data)];
+    },
+    getYearsMinMax: function () {
+      const timeparse = timeParse("%Y%m");
+      const data = this.observationPeriod.reduce(
+        (prevValue, current) => [
+          ...prevValue,
+          ...current.data.OBSERVED_BY_MONTH.map((year) =>
+            timeparse(year.MONTH_YEAR).getFullYear()
+          ),
+        ],
+        []
+      );
+      return [Math.min(...data), Math.max(...data)];
+    },
+
+    getDurationMinMax: function () {
+      const data = this.observationPeriod.reduce(
+        (prevValue, current) => [
+          ...prevValue,
+          ...current.data.CUMULATIVE_DURATION.map((value) => value.YEARS),
+        ],
+        []
+      );
+
+      return [Math.min(...data), Math.max(...data)];
     },
   },
   watch: {
     getObservationRangeDataPerDatasource: function () {
       this.$emit("rangeDataChanged", this.getObservationRangeDataPerDatasource);
+    },
+  },
+  methods: {
+    formatComma: function (value) {
+      return d3Format.format(",")(value);
     },
   },
 };

@@ -1,16 +1,63 @@
 <template>
   <v-responsive min-width="900">
-    <DomainRequirements
-      :data="sources"
-      @domainsDataChanged="changeDomainData"
-    />
-    <Range :data="observationPeriod" @rangeDataChanged="changeRangeData" />
-    <VisitTypes
-      :data="domainSummary"
-      @visitTypesChanged="changeVisitTypesData"
-    />
-    <RequiredConcepts @overlappingDataChanged="changeRequiredConceptsData" />
-    <FinalEstimation :data="finalEstimation" />
+    <v-card elevation="10" class="ma-4" pa-2>
+      <v-container>
+        <v-expansion-panels v-model="panel" multiple>
+          <v-expansion-panel elevation="10" class="ma-4">
+            <v-expansion-panel-header class="text-lg-h6"
+              >Domain Requirements</v-expansion-panel-header
+            >
+            <v-expansion-panel-content>
+              <DomainRequirements
+                :data="sources"
+                @domainsDataChanged="changeDomainData"
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel elevation="10" class="ma-4" pa-2>
+            <v-expansion-panel-header class="text-lg-h6"
+              >Range requirements</v-expansion-panel-header
+            >
+            <v-expansion-panel-content>
+              <Range
+                :observation-period="observationPeriod"
+                :person="person"
+                @rangeDataChanged="changeRangeData"
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel elevation="10" class="ma-4" pa-2>
+            <v-expansion-panel-header class="text-lg-h6"
+              >Visit types requirements</v-expansion-panel-header
+            >
+            <v-expansion-panel-content>
+              <VisitTypes
+                :data="domainSummary"
+                @visitTypesChanged="changeVisitTypesData"
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel elevation="10" class="ma-4" pa-2>
+            <v-expansion-panel-header class="text-lg-h6"
+              >Concepts requirements</v-expansion-panel-header
+            >
+            <v-expansion-panel-content>
+              <RequiredConcepts
+                @overlappingDataChanged="changeRequiredConceptsData"
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel elevation="10" class="ma-4">
+            <v-expansion-panel-header class="text-lg-h6"
+              >Data Source Feasibility Overview</v-expansion-panel-header
+            >
+            <v-expansion-panel-content>
+              <FinalEstimation :data="finalEstimation" />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-container>
+    </v-card>
   </v-responsive>
 </template>
 
@@ -46,7 +93,8 @@ export default {
       switchDomains: [],
       chosenDomains: [],
       rangeData: [],
-      requiredConcepts: {},
+      panel: [0],
+      requiredConcepts: [],
       visitTypes: [],
       domainData: [],
       observationPeriod: [],

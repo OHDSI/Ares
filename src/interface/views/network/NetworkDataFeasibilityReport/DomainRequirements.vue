@@ -1,93 +1,37 @@
 <template>
-  <v-card elevation="10" class="ma-4 pa-2">
-    <v-card-title>Domain Requirements</v-card-title>
-    <p>
-      <v-container>
-        <v-row>
-          <v-col cols="1"></v-col>
-          <v-col cols="5">
-            <v-switch
-              v-model="switchDomains"
-              dense
-              label="Condition Occurrence"
-              color="blue"
-              value="condition_occurrence"
-              hide-details
-              @change="updateBits()"
-            ></v-switch>
-            <v-switch
-              v-model="switchDomains"
-              dense
-              label="Drug Exposure"
-              color="blue"
-              value="drug_exposure"
-              hide-details
-              @change="updateBits()"
-            ></v-switch>
-            <v-switch
-              v-model="switchDomains"
-              dense
-              label="Device Exposure"
-              color="blue"
-              value="device_exposure"
-              hide-details
-              @change="updateBits()"
-            ></v-switch>
-            <v-switch
-              v-model="switchDomains"
-              dense
-              label="Measurement"
-              color="blue"
-              value="measurement"
-              hide-details
-              @change="updateBits()"
-            ></v-switch>
-            <v-switch
-              v-model="switchDomains"
-              dense
-              label="Death"
-              color="blue"
-              value="death"
-              hide-details
-              @change="updateBits()"
-            ></v-switch>
-            <v-switch
-              v-model="switchDomains"
-              dense
-              label="Procedure Occurrence"
-              color="blue"
-              value="procedure_occurrence"
-              hide-details
-              @change="updateBits()"
-            ></v-switch>
-            <v-switch
-              v-model="switchDomains"
-              dense
-              label="Observation Period"
-              color="blue"
-              value="observation_period"
-              hide-details
-              @change="updateBits()"
-            ></v-switch>
-          </v-col>
-          <v-col cols="6">
-            <v-data-table
-              dense
-              :hide-default-footer="true"
-              :disable-pagination="true"
-              :headers="domainHeaders"
-              :items="getDomainsData"
-            >
-            </v-data-table>
-          </v-col>
-        </v-row>
-      </v-container>
-      >
-    </p>
-  </v-card>
+  <v-container>
+    <v-data-table
+      dense
+      :hide-default-footer="true"
+      :disable-pagination="true"
+      :headers="domainHeaders"
+      :items="getDomainsData"
+    >
+      <template v-slot:top>
+        <v-select
+          v-model="switchDomains"
+          :items="items"
+          chips
+          label="Select domains"
+          deletable-chips
+          multiple
+          hide-selected
+          @change="updateBits"
+        ></v-select>
+      </template>
+      <template v-slot:item.percentage="{ item }">{{
+        (item.percentage * 100).toFixed(2)
+      }}</template>
+      <template v-slot:item.population="{ item }">{{
+        formatComma(item.population)
+      }}</template>
+    </v-data-table>
+  </v-container>
 </template>
 
 <script>
+import * as d3Format from "d3-format";
+
 export default {
   name: "DomainRequirements",
   props: {
@@ -96,6 +40,15 @@ export default {
   data() {
     return {
       switchDomains: [],
+      items: [
+        { value: "condition_occurrence", text: "Condition occurrence" },
+        { value: "drug_exposure", text: "Drug exposure" },
+        { value: "device_exposure", text: "Device exposure" },
+        { value: "measurement", text: "Measurement" },
+        { value: "death", text: "Death" },
+        { value: "procedure_occurrence", text: "Procedure occurrence" },
+        { value: "observation_period", text: "Observation period" },
+      ],
       domainBits: "0000000",
       domainHeaders: [
         {
@@ -128,8 +81,8 @@ export default {
           );
           return {
             cdm_name: value.source,
-            percentage: data[0].PERCENT_VALUE,
-            population: data[0].COUNT_VALUE,
+            percentage: data[0]?.PERCENT_VALUE,
+            population: data[0]?.COUNT_VALUE,
           };
         });
       }
@@ -141,6 +94,9 @@ export default {
     },
   },
   methods: {
+    formatComma: function (value) {
+      return d3Format.format(",")(value);
+    },
     updateBits: function () {
       this.domainBits = "";
       this.domainBits = this.domainBits.concat(
