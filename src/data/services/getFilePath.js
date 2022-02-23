@@ -17,6 +17,7 @@ export const ACHILLES_PERFORMANCE = "achillesPerformance";
 export const PERSON = "person";
 export const SOURCE_CONCEPT = "sourceConcept";
 export const QUALITY_COMPLETENESS = "qualityCompleteness";
+export const NETWORK_UNMAPPED_SOURCE_CODES = "networkUnmappedSourceCodes";
 export const DOMAIN_ISSUES = "domainIssues";
 export const DOMAIN_VISIT_STRATIFICATION = "domainVisitStratification";
 export const DOMAIN_DRUG_STRATIFICATION = "domainDrugStratification";
@@ -42,8 +43,9 @@ export default function getFilePath(params = "") {
     [PERSON]: `data/${params.cdm}/${params.release}/person.json`,
     [SOURCE_CONCEPT]: `data/${params.cdm}/${params.release}/concepts/${params.domain}/concept_${params.concept}.json`,
     [QUALITY_COMPLETENESS]: `data/${params.cdm}/${params.release}/quality-completeness.csv`,
+    [NETWORK_UNMAPPED_SOURCE_CODES]: `data/network-unmapped-source-codes.csv`,
     [DOMAIN_ISSUES]: `data/${params.cdm}/${params.release}/domain-issues.csv`,
     [DOMAIN_VISIT_STRATIFICATION]: `data/${params.cdm}/${params.release}/domain-visit-stratification.csv`,
-    [DOMAIN_DRUG_STRATIFICATION]: `data/${params.cdm}/${params.release}/domain-drug-stratification.csv`,
+    [DOMAIN_DRUG_STRATIFICATION]: `data/${params.cdm}/${params.release}/domain-drug-stratification.csv`
   };
 }

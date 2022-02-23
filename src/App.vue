@@ -1,18 +1,5 @@
 <template>
   <v-app>
-    <!--
-    <div class="mb-2">
-      <v-app-bar class="d-flex justify-center" v-if="!isElectron" dense dark>
-        <v-img
-          @click="goHome()"
-          :src="require('./assets/icon.png')"
-          max-height="32"
-          max-width="32"
-        ></v-img>
-        <v-spacer></v-spacer>
-      </v-app-bar>
-    </div>
-    -->
     <v-container class="pt-4 pl-2 pr-2 mb-16">
       <router-view name="main"></router-view>
     </v-container>
@@ -35,22 +22,20 @@
 </template>
 
 <script>
-import isElectron from "is-electron";
 import { RESET_ERRORS } from "@/data/store/modules/errors/actions.type";
 
 export default {
   name: "ARES",
   data() {
     return {
-      dialog: false,
-      isElectron: isElectron(),
+      dialog: false
     };
   },
   watch: {
     $route() {
       this.$store.dispatch(RESET_ERRORS);
-    },
-  },
+    }
+  }
 };
 </script>
 

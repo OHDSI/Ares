@@ -52,7 +52,7 @@
     <v-row>
       <v-col>
         <v-card elevation="10" class="mx-auto pb-6" outlined>
-          <v-card-title>Data Source Listing</v-card-title>
+          <v-card-title>Data Sources</v-card-title>
           <v-card-text>
             <v-data-table
               dense
@@ -74,7 +74,9 @@
                     {{ formatComma(item.releases[0].count_person) }}
                   </td>
                   <td class="text-start">
-                    {{ item.releases[0].obs_period_start }} to
+                    {{ item.releases[0].obs_period_start }}
+                  </td>
+                  <td class="text-start">
                     {{ item.releases[0].obs_period_end }}
                   </td>
                   <td class="text-end">{{ item.releases[0].release_name }}</td>
@@ -84,6 +86,9 @@
                   <td class="text-end">{{ item.count_releases }}</td>
                   <td class="text-end">
                     {{ item.releases[0].vocabulary_version }}
+                  </td>
+                  <td class="text-end">
+                    {{ item.average_update_interval_days }}
                   </td>
                 </tr>
               </template>
@@ -116,51 +121,64 @@ export default {
           text: "Data Source",
           align: "start",
           sortable: true,
-          value: "cdm_source_name",
+          value: "cdm_source_name"
         },
         {
           text: "Person Count",
           align: "end",
           sortable: true,
-          value: "releases[0].count_person",
+          value: "releases[0].count_person"
         },
         {
-          text: "Dates Observed",
+          text: "Start Observed",
           align: "start",
-          sortable: false,
+          value: "obs_period_end",
+          sortable: false
+        },
+        {
+          text: "End Observed",
+          align: "start",
+          value: "obs_period_end",
+          sortable: false
         },
         {
           text: "Latest Release",
           align: "end",
-          sortable: true,
-          value: "releases[0].release_name",
+          sortable: false,
+          value: "releases[0].release_name"
         },
         {
           text: "Data Quality Issues",
           align: "end",
           sortable: true,
-          value: "releases[0].count_data_quality_issues",
+          value: "releases[0].count_data_quality_issues"
         },
         {
           text: "Data Source Releases",
           align: "end",
           sortable: true,
-          value: "count_releases",
+          value: "count_releases"
         },
         {
           text: "Vocabulary Version",
           align: "end",
           sortable: true,
-          value: "releases[0].vocabulary_version",
+          value: "releases[0].vocabulary_version"
         },
-      ],
+        {
+          text: "Update Frequency (days)",
+          align: "end",
+          sortable: true,
+          value: "average_update_interval_days"
+        }
+      ]
     };
   },
   created() {
     console.log("Overview");
     const sources = this.getSources;
     this.countDataSources = sources.length;
-    sources.forEach((source) => {
+    sources.forEach(source => {
       this.countPeople += source.releases[0].count_person;
       this.countDataQualityIssues +=
         source.releases[0].count_data_quality_issues;
@@ -178,42 +196,42 @@ export default {
     getDataSourceRoute(item) {
       return "/datasource/" + item.cdm_source_key;
     },
-    personCountFormatter: function (count) {
+    personCountFormatter: function(count) {
       return d3.format(".3s")(count);
     },
-    formatComma: function (value) {
+    formatComma: function(value) {
       return d3.format(",")(value);
     },
-    displayPersonReport: function (source) {
+    displayPersonReport: function(source) {
       this.$router.push({
         path:
           "/cdm/" +
           source.cdm_source_key +
           "/" +
           source.releases[0].release_id +
-          "/person",
+          "/person"
       });
     },
     navigateToDataSourceHistory(datasource) {
       this.$router.push({
         path:
-          "/datasource/" + datasource.cdm_source_key + "/data_quality_history",
+          "/datasource/" + datasource.cdm_source_key + "/data_quality_history"
       });
     },
-    displayDetails: function (source) {
+    displayDetails: function(source) {
       this.$router.push({
         path:
           "/cdm/" +
           source.cdm_source_key +
           "/" +
           source.releases[0].release_id +
-          "/data_quality",
+          "/data_quality"
       });
-    },
+    }
   },
   computed: {
-    ...mapGetters(["getSources"]),
-  },
+    ...mapGetters(["getSources"])
+  }
 };
 </script>
 
