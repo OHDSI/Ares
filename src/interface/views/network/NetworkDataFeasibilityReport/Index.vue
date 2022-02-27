@@ -14,7 +14,7 @@
               />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel elevation="10" class="ma-4" pa-2>
+          <v-expansion-panel elevation="10" class="ma-4">
             <v-expansion-panel-header class="text-lg-h6"
               >Range requirements</v-expansion-panel-header
             >
@@ -26,7 +26,7 @@
               />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel elevation="10" class="ma-4" pa-2>
+          <v-expansion-panel elevation="10" class="ma-4">
             <v-expansion-panel-header class="text-lg-h6"
               >Visit types requirements</v-expansion-panel-header
             >
@@ -37,7 +37,7 @@
               />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel elevation="10" class="ma-4" pa-2>
+          <v-expansion-panel elevation="10" class="ma-4">
             <v-expansion-panel-header class="text-lg-h6"
               >Concepts requirements</v-expansion-panel-header
             >

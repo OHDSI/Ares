@@ -1,11 +1,14 @@
 <template>
   <v-container>
     <v-data-table
+      class="mb-4"
       dense
       :hide-default-footer="true"
       :disable-pagination="true"
       :headers="headers"
       :items="getEstimations"
+      :sort-by="['estimation']"
+      :sort-desc="[true, false]"
     >
       <template v-slot:item.domain_percent.data="{ item }">{{
         item.domain_percent.data
@@ -27,18 +30,28 @@
           ? (item.concepts_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
+      <template v-slot:item.cumulative_duration_percent.data="{ item }">{{
+        item.cumulative_duration_percent.data
+          ? (item.cumulative_duration_percent.data * 100).toFixed(2)
+          : "No data"
+      }}</template>
       <template v-slot:item.population.data="{ item }">{{
         item.population.data ? formatComma(item.population.data) : "No data"
       }}</template>
-      <template v-slot:item.overall="{ item }">{{
-        item.overall ? formatComma(item.overall.toFixed(2)) : "No data"
+      <template v-slot:item.estimation="{ item }">{{
+        item.estimation ? formatComma(item.estimation.toFixed(2)) : "No data"
       }}</template>
-      <template v-slot:item.percent_population_age.data="{ item }">{{
-        item.percent_population_age.data
-          ? (item.percent_population_age.data * 100).toFixed(2)
+      <template v-slot:item.population_age_percent.data="{ item }">{{
+        item.population_age_percent.data
+          ? (item.population_age_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
     </v-data-table>
+    <v-divider></v-divider>
+    <v-alert color="grey darken-3" dark dense icon="mdi-help-rhombus" prominent>
+      This section derives data from the sections above. The contents of the
+      table depend on the sections used in calculations.
+    </v-alert>
   </v-container>
 </template>
 
@@ -70,7 +83,7 @@ export default {
           show: true,
         },
         {
-          text: "Population",
+          text: "Source population",
           align: "end",
           value: "population.data",
           show: true,
@@ -82,25 +95,31 @@ export default {
           show: this.getEstimations[0].domain_percent.isIncluded,
         },
         {
-          text: "% Population by age",
+          text: "% Cumulative Duration",
           align: "end",
-          value: "percent_population_age.data",
-          show: this.getEstimations[0].percent_population_age.isIncluded,
+          value: "cumulative_duration_percent.data",
+          show: this.getEstimations[0].cumulative_duration_percent.isIncluded,
         },
         {
-          text: "% observation",
+          text: "% Population by age",
+          align: "end",
+          value: "population_age_percent.data",
+          show: this.getEstimations[0].population_age_percent.isIncluded,
+        },
+        {
+          text: "% Observed",
           align: "end",
           value: "observation_percent.data",
           show: this.getEstimations[0].observation_percent.isIncluded,
         },
         {
-          text: "% visit types",
+          text: "% Visit types",
           align: "end",
           value: "visit_types_percent.data",
           show: this.getEstimations[0].visit_types_percent.isIncluded,
         },
         {
-          text: "% concepts",
+          text: "% Concepts",
           align: "end",
           value: "concepts_percent.data",
           show: this.getEstimations[0].concepts_percent.isIncluded,
@@ -108,7 +127,7 @@ export default {
         {
           text: "Estimated population",
           align: "end",
-          value: "overall",
+          value: "estimation",
           show: true,
         },
       ].filter((x) => x.show);
@@ -119,69 +138,84 @@ export default {
       }));
 
       return estimations
-        .map((obj) => ({
-          ...obj,
-          domain_percent: {
-            data: this.data.domainData.filter(
-              (domainData) => obj.cdm_name === domainData.cdm_name
-            )[0]?.percentage,
-            isIncluded: this.data.domainData.length,
-          },
-          percent_population_age: {
-            data: this.data.rangeData.filter(
-              (domainData) => obj.cdm_name === domainData.cdm_name
-            )[0]?.percentPopulationByAge,
-            isIncluded: this.data.rangeData.length,
-          },
-          observation_percent: {
-            data: this.data.rangeData.filter(
-              (domainData) => obj.cdm_name === domainData.cdm_name
-            )[0]?.average_population_percentage,
-            isIncluded: this.data.rangeData.length,
-          },
-          visit_types_percent: {
-            data: this.data.visitTypes.filter(
-              (visitData) => obj.cdm_name === visitData.cdm_name
-            )[0]?.percentage,
-            isIncluded: this.data.visitTypes.length,
-          },
-          population: {
-            data: this.data.sourcePopulation.filter(
-              (personData) =>
-                obj.cdm_name === personData.source.cdm_source_abbreviation
-            )[0]?.data.SUMMARY[1].ATTRIBUTE_VALUE,
-            isIncluded: this.data.sourcePopulation.length,
-          },
-          concepts_percent: {
-            data: this.data.requiredConcepts
-              .filter((concept) => concept.cdm_name === obj.cdm_name)[0]
-              ?.concepts.reduce(
-                (prevValue, current) => [...prevValue, current.percentage],
-                []
-              )
-              .sort((a, b) => a - b)[0],
-            isIncluded: this.data.requiredConcepts.length,
-          },
-        }))
         .map((obj) => {
+          const domainData = this.data.domainData.filter(
+            (value) => obj.cdm_name === value.cdm_name
+          );
+          const rangeData = this.data.rangeData.filter(
+            (value) => value.cdm_name === obj.cdm_name
+          );
+
+          const visitTypesData = this.data.visitTypes.filter(
+            (value) => obj.cdm_name === value.cdm_name
+          );
+
+          const sourcePopulation = this.data.sourcePopulation.filter(
+            (value) => obj.cdm_name === value.source.cdm_source_abbreviation
+          );
+
+          const requiredConcepts = this.data.requiredConcepts.filter(
+            (value) => value.cdm_name === obj.cdm_name
+          );
+
           return {
             ...obj,
-            overall:
-              obj.population.data *
-              (obj.domain_percent.isIncluded
-                ? obj.domain_percent.data || 0
-                : 1) *
-              (obj.observation_percent.isIncluded
-                ? obj.observation_percent.data || 0
-                : 1) *
-              (obj.visit_types_percent.isIncluded
-                ? obj.visit_types_percent.data || 0
-                : 1) *
-              (obj.concepts_percent.isIncluded
-                ? obj.concepts_percent.data || 0
-                : 1),
+            domain_percent: {
+              data: domainData[0]?.percentage,
+              isIncluded: this.data.domainData.length,
+            },
+            cumulative_duration_percent: {
+              data: rangeData[0]?.cumulative_duration,
+              isIncluded: this.data.rangeData.length,
+            },
+            population_age_percent: {
+              data: rangeData[0]?.population_age_percent,
+              isIncluded: this.data.rangeData.length,
+            },
+            observation_percent: {
+              data: rangeData[0]?.average_population_percentage,
+              isIncluded: this.data.rangeData.length,
+            },
+            visit_types_percent: {
+              data: visitTypesData[0]?.percentage,
+              isIncluded: this.data.visitTypes.length,
+            },
+            population: {
+              data: sourcePopulation[0]?.data.SUMMARY[1].ATTRIBUTE_VALUE,
+              isIncluded: this.data.sourcePopulation.length,
+            },
+            concepts_percent: {
+              data: requiredConcepts[0]?.concepts
+                .reduce(
+                  (prevValue, current) => [...prevValue, current.percentage],
+                  []
+                )
+                .sort((a, b) => a - b)[0],
+              isIncluded: this.data.requiredConcepts.length,
+            },
           };
-        });
+        })
+        .map((obj) => ({
+          ...obj,
+          estimation:
+            obj.population.data *
+            (obj.domain_percent.isIncluded ? obj.domain_percent.data || 0 : 1) *
+            (obj.population_age_percent.isIncluded
+              ? obj.population_age_percent.data || 0
+              : 1) *
+            (obj.cumulative_duration_percent.isIncluded
+              ? obj.cumulative_duration_percent.data || 0
+              : 1) *
+            (obj.observation_percent.isIncluded
+              ? obj.observation_percent.data || 0
+              : 1) *
+            (obj.visit_types_percent.isIncluded
+              ? obj.visit_types_percent.data || 0
+              : 1) *
+            (obj.concepts_percent.isIncluded
+              ? obj.concepts_percent.data || 0
+              : 1),
+        }));
     },
     ...mapGetters(["getSources"]),
   },

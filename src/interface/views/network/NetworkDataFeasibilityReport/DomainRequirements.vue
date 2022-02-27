@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <v-data-table
+      class="mb-4"
       dense
       :hide-default-footer="true"
       :disable-pagination="true"
@@ -26,6 +27,10 @@
         formatComma(item.population)
       }}</template>
     </v-data-table>
+    <v-divider></v-divider>
+    <v-alert color="grey darken-3" dark dense icon="mdi-help-rhombus" prominent>
+      This section uses pre-calculated data to display % of overlapping values
+    </v-alert>
   </v-container>
 </template>
 

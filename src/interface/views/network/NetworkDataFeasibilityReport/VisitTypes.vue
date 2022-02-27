@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row class="mb-4">
       <v-col>
         <v-data-table
           v-model="visitTypesSelected"
@@ -36,11 +36,17 @@
             ></v-text-field>
           </template>
           <template v-slot:item.percentage="{ item }">{{
-            item.percentage ? (item.percentage * 100).toFixed(2) : undefined
+            item.percentage ? (item.percentage * 100).toFixed(2) : ""
           }}</template>
         </v-data-table>
       </v-col>
     </v-row>
+    <v-divider></v-divider>
+    <v-alert color="grey darken-3" dark dense icon="mdi-help-rhombus" prominent>
+      The table on the left lists all visit types found across available data
+      sources. The table on the right lists all matching data sources displaying
+      the lowest % of all chosen visit types.
+    </v-alert>
   </v-container>
 </template>
 
@@ -71,7 +77,7 @@ export default {
           sortable: false,
           value: "cdm_name",
         },
-        { text: "Smallest value", value: "percentage" },
+        { text: "%", value: "percentage" },
       ],
     };
   },
