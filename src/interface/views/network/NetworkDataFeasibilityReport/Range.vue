@@ -122,7 +122,8 @@
     </v-data-table>
     <v-divider></v-divider>
     <v-alert color="grey darken-3" dark dense icon="mdi-help-rhombus" prominent>
-      This section uses pre-calculated data to show domain data overlap
+      The cumulative duration column shows the lowest % of all values found in
+      the range.
     </v-alert>
   </v-container>
 </template>
