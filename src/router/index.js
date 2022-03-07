@@ -24,6 +24,7 @@ import home from "../interface/views/Home.vue";
 import article from "../interface/views/Article.vue";
 import unmappedSourceCodes from "../interface/views/release/UnmappedSourceCodes.vue";
 import DataSourcesExplorer from "../interface/views/DataSourcesExplorer";
+import NetworkDataFeasibilityReport from "../interface/views/network/NetworkDataFeasibilityReport/Index";
 
 Vue.use(VueRouter);
 
@@ -47,6 +48,11 @@ const routes = [
         path: "network_data_quality",
         name: "networkDataQuality",
         components: { DataSourcesExplorer: networkDataQualitySummary },
+      },
+      {
+        path: "feasibility",
+        name: "feasibility",
+        components: { DataSourcesExplorer: NetworkDataFeasibilityReport },
       },
       {
         path: "data_strand_report",

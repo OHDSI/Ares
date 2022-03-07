@@ -1,7 +1,7 @@
 import getFilePath from "@/data/services/getFilePath";
 import loadFile from "@/data/services/loadFile";
 import processors from "@/data/store/modules/view/processors";
-import { SET_DATA } from "./mutations.type";
+import { CLEAR_DATA, SET_DATA } from "./mutations.type";
 import {
   FETCH_FILES,
   FETCH_MULTIPLE_FILES_BY_RELEASE,
@@ -20,12 +20,20 @@ const getters = {
 };
 
 const actions = {
+  [CLEAR_DATA]({ commit }) {
+    commit(CLEAR_DATA);
+  },
   async [FETCH_FILES]({ commit, dispatch, rootState }, payload) {
     const promises = payload.files.map((file) => {
-      return loadFile(getFilePath(rootState.route.params)[file.name], {
-        // if required === true && no file loaded then add an error
-        required: file.required,
-      });
+      return loadFile(
+        getFilePath(payload.params ? payload.params : rootState.route.params)[
+          file.name
+        ],
+        {
+          // if required === true && no file loaded then add an error
+          required: file.required,
+        }
+      );
     });
 
     await Promise.allSettled(promises).then((responses) => {
@@ -57,8 +65,12 @@ const actions = {
             getFilePath({
               cdm: source.cdm_source_key,
               release: source.releases[0].release_id,
-              domain: rootState.route.params.domain,
-              concept: rootState.route.params.concept,
+              domain: payload.params?.domain
+                ? payload.params.domain
+                : rootState.route.params.domain,
+              concept: payload.params?.concept
+                ? payload.params.concept
+                : rootState.route.params.concept,
             })[file],
             { source }
           );
@@ -76,10 +88,10 @@ const actions = {
             data: filtered.value.response.data,
             source: filtered.value.payload.source,
           }));
-        if (data[file].length === 0) {
+        if (data[file].length === 0 && payload.criticalError) {
           dispatch(NEW_ERROR, {
             message: "No files found across data sources",
-            details: rootGetters.getSelectedSource.cdm_source_abbreviation,
+            details: "No additional data",
           });
         }
       });
@@ -132,6 +144,9 @@ const actions = {
 const mutations = {
   [SET_DATA](state, payload) {
     state.data = payload;
+  },
+  [CLEAR_DATA](state) {
+    state.data = [];
   },
 };
 
