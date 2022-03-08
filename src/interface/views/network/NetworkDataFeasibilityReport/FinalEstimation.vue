@@ -95,7 +95,7 @@ export default {
           show: this.getEstimations[0].domain_percent.isIncluded,
         },
         {
-          text: "% Cumulative Duration",
+          text: "% Cumulative Observation",
           align: "end",
           value: "cumulative_duration_percent.data",
           show: this.getEstimations[0].cumulative_duration_percent.isIncluded,

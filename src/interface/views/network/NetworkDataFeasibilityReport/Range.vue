@@ -63,11 +63,11 @@
           ></v-text-field>
         </template>
       </v-range-slider>
-      <v-subheader>Cumulative duration range</v-subheader>
-      <v-range-slider
-        v-model="cumulativeObservation"
-        :max="getDurationMinMax[1]"
+      <v-subheader>Minimum cumulative observation</v-subheader>
+      <v-slider
+        v-model="cumulativeObservation[0]"
         :min="getDurationMinMax[0]"
+        :max="getDurationMinMax[1]"
         hide-details
         class="align-center"
       >
@@ -82,18 +82,7 @@
             @change="$set(cumulativeObservation, 0, $event)"
           ></v-text-field>
         </template>
-        <template v-slot:append>
-          <v-text-field
-            :value="cumulativeObservation[1]"
-            class="mt-0 pt-0"
-            hide-details
-            single-line
-            type="number"
-            style="width: 60px"
-            @change="$set(cumulativeObservation, 1, $event)"
-          ></v-text-field>
-        </template>
-      </v-range-slider>
+      </v-slider>
     </v-container>
     <v-data-table dense :headers="yearHeaders" :items="getRangeData">
       <template v-slot:item.population_observed="{ item }">{{
@@ -146,7 +135,7 @@ export default {
       maxYear: 2021,
       rangeAge: [0, 100],
       rangeYear: [1900, 2021],
-      cumulativeObservation: [0, 100],
+      cumulativeObservation: [50],
       yearHeaders: [
         {
           text: "Data source",
@@ -165,7 +154,7 @@ export default {
           align: "end",
         },
         {
-          text: "Cumulative duration %",
+          text: "Cumulative observation %",
           value: "cumulative_duration",
           align: "end",
         },
@@ -218,9 +207,7 @@ export default {
             };
           }, {}),
           filtered_duration: value.data.CUMULATIVE_DURATION.filter(
-            (data) =>
-              data.YEARS >= this.cumulativeObservation[0] &&
-              data.YEARS <= this.cumulativeObservation[1]
+            (data) => data.YEARS <= this.cumulativeObservation[0]
           ),
         }))
         .map((value) => ({
