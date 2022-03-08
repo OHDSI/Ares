@@ -35,6 +35,9 @@
             <template v-slot:item.PERCENT_PEOPLE="{ item }">
               {{ item.PERCENT_PEOPLE }}%
             </template>
+            <template v-slot:item.COUNT_VALUE="{ item }">
+              {{ formatComma(item.COUNT_VALUE) }}
+            </template>
           </v-data-table>
         </v-card>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
@@ -89,6 +92,7 @@
 
 <script>
 import * as d3 from "d3-time-format";
+import * as d3Format from "d3-format";
 import { charts } from "@/configs";
 import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
 import { OBSERVATION_PERIOD } from "@/data/services/getFilePath";
@@ -146,6 +150,9 @@ export default {
     this.load();
   },
   methods: {
+    formatComma: function (value) {
+      return d3Format.format(",")(value);
+    },
     load: function () {
       this.dataLoaded = false;
       this.$store
