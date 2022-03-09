@@ -21,10 +21,6 @@ export const specOverview = {
     height: 75,
     width: 600,
     description: "Domain Continuity",
-    mark: {
-      type: "line",
-      point: true,
-    },
     encoding: {
       x: {
         field: "release_date",
@@ -42,6 +38,47 @@ export const specOverview = {
       tooltip: [{ field: "count_records", title: "# of Records", format: "," }],
       color: { field: "domain", type: "nominal", legend: null },
     },
+    layer: [
+      {
+        mark: {
+          type: "line",
+          point: true,
+        },
+      },
+      {
+        selection: {
+          x: {
+            type: "single",
+            on: "mousemove",
+            encodings: ["x"],
+            nearest: true,
+          },
+        },
+        mark: { type: "point", tooltip: true },
+      },
+      {
+        transform: [
+          {
+            filter: {
+              and: ["x", { selection: "x" }],
+            },
+          },
+        ],
+        layer: [
+          {
+            mark: "rule",
+            encoding: {
+              y: {
+                height: 1,
+              },
+              color: {
+                value: "black",
+              },
+            },
+          },
+        ],
+      },
+    ],
   },
   resolve: { scale: { y: "independent" } },
 };

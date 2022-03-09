@@ -1,32 +1,56 @@
 export const specAgeAtFirstObservation = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-  height: 150,
+  height: 200,
   width: "container",
-  mark: { type: "bar", tooltip: {}, width: 10 },
-  data: null,
   encoding: {
     x: {
       field: "INTERVAL_INDEX",
       type: "quantitative",
       title: "Age",
-      scale: { domainMin: 0 },
     },
     y: {
-      field: "COUNT_VALUE",
+      field: "PERCENT_VALUE",
       type: "quantitative",
-      title: "Count People",
+      axis: { format: "0.0%" },
+      title: "% of Population",
     },
-    tooltip: [
-      {
-        field: "INTERVAL_INDEX",
-        title: "Age",
-      },
-      {
-        field: "COUNT_VALUE",
-        title: "Number of People",
-        format: ",",
-      },
-      { field: "PERCENT_VALUE", title: "% of People", format: "0.1%" },
-    ],
   },
+  layer: [
+    {
+      mark: { type: "line", interpolate: "linear" },
+    },
+    {
+      selection: {
+        x: {
+          type: "single",
+          on: "mousemove",
+          encodings: ["x"],
+          nearest: true,
+        },
+      },
+      mark: { type: "point", tooltip: true },
+    },
+    {
+      transform: [
+        {
+          filter: {
+            and: ["x.INTERVAL_INDEX", { selection: "x" }],
+          },
+        },
+      ],
+      layer: [
+        {
+          mark: "rule",
+          encoding: {
+            y: {
+              height: 1,
+            },
+            color: {
+              value: "black",
+            },
+          },
+        },
+      ],
+    },
+  ],
 };

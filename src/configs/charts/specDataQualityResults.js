@@ -2,7 +2,6 @@ export const specDataQualityResults = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   width: "container",
   height: 100,
-  mark: { type: "line", interpolate: "linear", point: true },
   encoding: {
     tooltip: [
       {
@@ -35,4 +34,42 @@ export const specDataQualityResults = {
       },
     },
   },
+  layer: [
+    {
+      mark: { type: "line", interpolate: "linear" },
+    },
+    {
+      selection: {
+        x: {
+          type: "single",
+          on: "mousemove",
+          encodings: ["x"],
+          nearest: true,
+        },
+      },
+      mark: { type: "point", tooltip: true },
+    },
+    {
+      transform: [
+        {
+          filter: {
+            and: ["x", { selection: "x" }],
+          },
+        },
+      ],
+      layer: [
+        {
+          mark: "rule",
+          encoding: {
+            y: {
+              height: 1,
+            },
+            color: {
+              value: "black",
+            },
+          },
+        },
+      ],
+    },
+  ],
 };

@@ -2,6 +2,12 @@ export const specAgeSex = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   width: "container",
   height: 75,
+  params: [
+    {
+      name: "paintbrush",
+      select: { type: "point", on: "mouseover", nearest: true },
+    },
+  ],
   mark: "bar",
   transform: [{ filter: "datum.AGE >= 0" }],
   encoding: {
@@ -11,9 +17,18 @@ export const specAgeSex = {
       { field: "COUNT_VALUE", title: "# of People", format: "," },
     ],
     color: {
+      condition: {
+        param: "paintbrush",
+        field: "CONCEPT_NAME",
+        type: "ordinal",
+        legend: null,
+      },
+      value: "grey",
+    },
+    /* color: {
       field: "CONCEPT_NAME",
       legend: null,
-    },
+    },*/
     row: {
       field: "CONCEPT_NAME",
       title: null,

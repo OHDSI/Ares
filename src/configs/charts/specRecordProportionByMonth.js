@@ -5,7 +5,50 @@ export const specRecordProportionByMonth = {
       height: 150,
       width: "container",
       description: "Domain Data Density",
-      mark: { type: "circle" },
+      layer: [
+        {
+          mark: { type: "circle" },
+          encoding: {
+            y: { field: "Y_PREVALENCE_1000PP", type: "quantitative" },
+          },
+        },
+        {
+          params: [
+            {
+              name: "index",
+              select: {
+                type: "point",
+                encodings: ["x"],
+                on: "mousemove",
+                nearest: true,
+              },
+            },
+          ],
+          mark: { type: "point" },
+          encoding: {
+            y: { field: "Y_PREVALENCE_1000PP", type: "quantitative" },
+            opacity: { value: 0 },
+          },
+        },
+        {
+          transform: [
+            {
+              filter: {
+                and: ["index", { param: "index" }],
+              },
+            },
+          ],
+          mark: "rule",
+          encoding: {
+            y: {
+              height: 1,
+            },
+            color: {
+              value: "black",
+            },
+          },
+        },
+      ],
       encoding: {
         x: {
           field: "date",
