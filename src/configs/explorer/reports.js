@@ -36,6 +36,11 @@ export const reports = [
   },
   {
     folder: "Data Source",
+    name: "Data Source Overview",
+    routeName: "dataSourceOverview",
+  },
+  {
+    folder: "Data Source",
     name: "Domain Continuity",
     routeName: "domainContinuity",
   },
