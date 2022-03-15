@@ -36,6 +36,28 @@
     <v-row>
       <v-col>
         <v-card elevation="10" class="mx-auto pb-6" outlined>
+          <VegaChart
+            id="population_releases"
+            title="Population dynamics"
+            :config="specPopulationAcrossReleases"
+            :data="getSelectedSource.releases"
+          />
+        </v-card>
+      </v-col>
+      <v-col>
+        <v-card elevation="10" class="mx-auto pb-6" outlined>
+          <VegaChart
+            id="issues_releases"
+            title="Issues dynamics"
+            :config="specIssuesByRelease"
+            :data="getSelectedSource.releases"
+          />
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card elevation="10" class="mx-auto pb-6" outlined>
           <v-card-title>Releases Listing</v-card-title>
           <v-card-text>
             <v-data-table
@@ -62,26 +84,21 @@
         </v-card>
       </v-col> </v-row
     >'
-    <v-card>
-      <v-sparkline
-        :fill="fill"
-        :line-width="width"
-        :padding="padding"
-        :smooth="radius || false"
-        :value="getPeopleSparkline"
-        auto-draw
-      ></v-sparkline>
-    </v-card>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import VegaChart from "@/interface/components/VegaChart";
+import { charts } from "@/configs";
 
 export default {
   name: "SourceOverview",
+  components: { VegaChart },
   data() {
     return {
+      specPopulationAcrossReleases: charts.specPopulationAcrossReleases,
+      specIssuesByRelease: charts.specIssuesByRelease,
       overviewTable: [
         {
           text: "Release date",
@@ -141,8 +158,15 @@ export default {
       return this.getSelectedSource.count_releases;
     },
 
+    getPeopleChart: function () {
+      return [];
+    },
+
     getPeopleSparkline: function () {
-      return this.getSelectedSource.releases.map((value) => value.count_person);
+      return this.getSelectedSource.releases.map((value) => ({
+        count: value.count_person,
+        date: value,
+      }));
     },
 
     getDaysBetweenReleases: function () {
