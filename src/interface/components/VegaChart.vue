@@ -23,6 +23,14 @@ export default {
       return "width: " + this.width + "%";
     },
   },
+  watch: {
+    config: function () {
+      this.load();
+    },
+    data: function () {
+      this.load();
+    },
+  },
   created() {
     this.load();
   },

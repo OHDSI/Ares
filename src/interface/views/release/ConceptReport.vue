@@ -89,7 +89,17 @@
           class="ma-4 pa-2"
         >
           <v-card-title>Measurement Value Distributions</v-card-title>
-          <v-layout class="pa-4" justify-end>
+          <v-layout class="pa-4 flex justify-space-between">
+            <v-select
+              v-model="selectedMeasurementUnits"
+              :items="getMeasurementUnits"
+              attach
+              hide-selected
+              deletable-chips
+              chips
+              label="Units"
+              multiple
+            ></v-select>
             <v-btn small color="primary" @click="toggleMeasurementValueChart()"
               ><v-icon dark left>mdi-toggle-switch</v-icon
               >{{ toggleMode }}</v-btn
@@ -100,7 +110,7 @@
             id="viz-measurementvaluedistribution"
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
-            :data="conceptData.MEASUREMENT_VALUE_DISTRIBUTION"
+            :data="getSelectedMeasurementUnits"
           />
           <v-card-text>
             <v-layout>
@@ -402,6 +412,7 @@ export default {
     return {
       toggleMode: "P10/P90",
       hasMeasurementValueDistribution: false,
+      selectedMeasurementUnits: [],
       hasAgeAtFirstDiagnosis: false,
       hasAgeAtFirstOccurrence: false,
       hasAgeAtFirstExposure: false,
@@ -450,6 +461,17 @@ export default {
       return missingData
         ? `${(1 - missingData) * (100).toFixed(2)}%`
         : "No data";
+    },
+
+    getMeasurementUnits: function () {
+      return this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.map(
+        (value) => value.CATEGORY
+      );
+    },
+    getSelectedMeasurementUnits: function () {
+      return this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.filter(
+        (value) => this.selectedMeasurementUnits.includes(value.CATEGORY)
+      );
     },
   },
   watch: {
