@@ -23,6 +23,20 @@ export default {
       return "width: " + this.width + "%";
     },
   },
+  watch: {
+    data: {
+      deep: true,
+      handler() {
+        this.load();
+      },
+    },
+    config: {
+      deep: true,
+      handler() {
+        this.load();
+      },
+    },
+  },
   created() {
     this.load();
   },

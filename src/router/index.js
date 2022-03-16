@@ -138,7 +138,7 @@ const routes = [
     path: "/datasource/:cdm",
     name: "datasource",
     components: { main: DataSourcesExplorer },
-    redirect: { name: "dataQualityHistory" },
+    redirect: { name: "dataSourceOverview" },
     children: [
       {
         path: "data_quality_history",

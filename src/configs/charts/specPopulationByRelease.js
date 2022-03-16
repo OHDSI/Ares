@@ -1,4 +1,4 @@
-export const specIssuesByRelease = {
+export const specPopulationByRelease = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   width: "container",
   height: 200,
@@ -13,11 +13,11 @@ export const specIssuesByRelease = {
     tooltip: [
       {
         field: "date",
-        title: "Release",
+        title: "Release date",
         type: "temporal",
         format: "%Y-%m-%d",
       },
-      { field: "count_data_quality_issues", title: "Issues", format: "," },
+      { field: "count_person", title: "Population", format: "," },
     ],
     x: {
       field: "date",
@@ -28,10 +28,10 @@ export const specIssuesByRelease = {
       },
     },
     y: {
-      field: "count_data_quality_issues",
+      field: "count_person",
       type: "quantitative",
       axis: {
-        title: "Issues",
+        title: "People",
       },
       scale: {
         zero: false,
