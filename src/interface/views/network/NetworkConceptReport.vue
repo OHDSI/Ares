@@ -39,6 +39,17 @@
             >Measurement Value Distributions by Database and Unit</v-card-title
           >
           <v-layout class="pa-4" justify-end>
+            <v-select
+              v-model="selectedMeasurementUnits"
+              class="mr-13"
+              :items="getMeasurementUnits"
+              attach
+              hide-selected
+              deletable-chips
+              chips
+              label="Filter units"
+              multiple
+            ></v-select>
             <v-btn color="primary" @click="toggleMeasurementValueChart()"
               ><v-icon dark left>mdi-toggle-switch</v-icon
               >{{ toggleMode }}</v-btn
@@ -49,7 +60,7 @@
             id="viz-measurementvaluedistribution"
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
-            :data="measurementValueDistribution"
+            :data="getSelectedMeasurementUnits"
           />
           <v-card-text>
             <router-link to="/help">
@@ -84,6 +95,7 @@ export default {
       hasMeasurementValueDistribution: false,
       hasAgeAtFirstDiagnosis: false,
       hasAgeAtFirstOccurrence: false,
+      selectedMeasurementUnits: [],
       hasAgeAtFirstExposure: false,
       hasConditionsByType: false,
       hasVisitDurationByType: false,
@@ -104,6 +116,16 @@ export default {
   },
   computed: {
     ...mapGetters(["getData", "getSources", "getErrors"]),
+    getSelectedMeasurementUnits: function () {
+      return this.selectedMeasurementUnits.length
+        ? this.measurementValueDistribution.filter((value) =>
+            this.selectedMeasurementUnits.includes(value.CATEGORY)
+          )
+        : this.measurementValueDistribution;
+    },
+    getMeasurementUnits: function () {
+      return this.measurementValueDistribution.map((value) => value.CATEGORY);
+    },
   },
   created() {
     this.load();

@@ -89,15 +89,16 @@
           class="ma-4 pa-2"
         >
           <v-card-title>Measurement Value Distributions</v-card-title>
-          <v-layout class="pa-4 flex justify-space-between">
+          <v-layout class="pa-4">
             <v-select
               v-model="selectedMeasurementUnits"
+              class="mr-13"
               :items="getMeasurementUnits"
               attach
               hide-selected
               deletable-chips
               chips
-              label="Units"
+              label="Filter units"
               multiple
             ></v-select>
             <v-btn small color="primary" @click="toggleMeasurementValueChart()"
@@ -469,9 +470,11 @@ export default {
       );
     },
     getSelectedMeasurementUnits: function () {
-      return this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.filter(
-        (value) => this.selectedMeasurementUnits.includes(value.CATEGORY)
-      );
+      return this.selectedMeasurementUnits.length
+        ? this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.filter((value) =>
+            this.selectedMeasurementUnits.includes(value.CATEGORY)
+          )
+        : this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION;
     },
   },
   watch: {
