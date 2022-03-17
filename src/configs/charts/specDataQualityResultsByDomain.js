@@ -73,7 +73,7 @@ export const specDataQualityResultsByDomain = {
         x: {
           type: "single",
           on: "mousemove",
-          encodings: ["x"],
+          fields: ["cdm_release_date"],
           nearest: true,
         },
       },
@@ -88,7 +88,7 @@ export const specDataQualityResultsByDomain = {
       transform: [
         {
           filter: {
-            and: ["x", { selection: "x" }],
+            and: ["x.cdm_release_date", { selection: "x" }],
           },
         },
         { filter: { selection: "dataSource" } },

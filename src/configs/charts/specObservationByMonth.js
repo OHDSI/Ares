@@ -53,7 +53,7 @@ export const specObservationByMonth = {
               name: "index",
               select: {
                 type: "point",
-                encodings: ["x"],
+                fields: ["DATE"],
                 on: "mousemove",
                 nearest: true,
               },
@@ -69,7 +69,7 @@ export const specObservationByMonth = {
           transform: [
             {
               filter: {
-                and: ["index", { param: "index" }],
+                and: ["index.DATE", { param: "index" }],
               },
             },
           ],

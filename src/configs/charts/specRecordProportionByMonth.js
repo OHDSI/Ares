@@ -18,7 +18,7 @@ export const specRecordProportionByMonth = {
               name: "index",
               select: {
                 type: "point",
-                encodings: ["x"],
+                fields: ["date"],
                 on: "mousemove",
                 nearest: true,
               },
@@ -34,7 +34,7 @@ export const specRecordProportionByMonth = {
           transform: [
             {
               filter: {
-                and: ["index", { param: "index" }],
+                and: ["index.date", { param: "index" }],
               },
             },
           ],

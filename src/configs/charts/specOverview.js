@@ -50,7 +50,7 @@ export const specOverview = {
           x: {
             type: "single",
             on: "mousemove",
-            encodings: ["x"],
+            fields: ["release_date"],
             nearest: true,
           },
         },
@@ -60,7 +60,7 @@ export const specOverview = {
         transform: [
           {
             filter: {
-              and: ["x", { selection: "x" }],
+              and: ["x.release_date", { selection: "x" }],
             },
           },
         ],
