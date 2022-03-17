@@ -24,11 +24,17 @@ export default {
     },
   },
   watch: {
-    config: function () {
-      this.load();
+    data: {
+      deep: true,
+      handler() {
+        this.load();
+      },
     },
-    data: function () {
-      this.load();
+    config: {
+      deep: true,
+      handler() {
+        this.load();
+      },
     },
   },
   created() {
