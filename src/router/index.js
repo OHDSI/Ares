@@ -25,7 +25,7 @@ import article from "../interface/views/Article.vue";
 import unmappedSourceCodes from "../interface/views/release/UnmappedSourceCodes.vue";
 import DataSourcesExplorer from "../interface/views/DataSourcesExplorer";
 import NetworkDataFeasibilityReport from "../interface/views/network/NetworkDataFeasibilityReport/Index";
-
+import SourceOverview from "../interface/views/source/SourceOverview";
 Vue.use(VueRouter);
 
 const routes = [
@@ -138,12 +138,17 @@ const routes = [
     path: "/datasource/:cdm",
     name: "datasource",
     components: { main: DataSourcesExplorer },
-    redirect: { name: "dataQualityHistory" },
+    redirect: { name: "dataSourceOverview" },
     children: [
       {
         path: "data_quality_history",
         name: "dataQualityHistory",
         components: { DataSourcesExplorer: dataQualityHistory },
+      },
+      {
+        path: "data_source_overview",
+        name: "dataSourceOverview",
+        components: { DataSourcesExplorer: SourceOverview },
       },
       {
         path: "domain_continuity",
