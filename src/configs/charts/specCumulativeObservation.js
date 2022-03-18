@@ -2,8 +2,6 @@ export const specCumulativeObservation = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   height: 150,
   width: "container",
-  mark: { type: "area", point: true, tooltip: {} },
-  data: {},
   encoding: {
     x: {
       field: "YEARS",
@@ -14,19 +12,45 @@ export const specCumulativeObservation = {
       field: "PERCENT_PEOPLE",
       type: "quantitative",
       title: "% of People",
-      axis: { format: "%" },
+      axis: { format: "0.0%" },
     },
-    tooltip: [
-      {
-        field: "PERCENT_PEOPLE",
-        title: "% of People",
-        format: "0.2p",
-      },
-      {
-        field: "YEARS",
-        title: "Years of Observation",
-        format: "0.3",
-      },
-    ],
   },
+  layer: [
+    {
+      mark: { type: "line", interpolate: "linear" },
+    },
+    {
+      selection: {
+        x: {
+          type: "single",
+          on: "mousemove",
+          encodings: ["x"],
+          nearest: true,
+        },
+      },
+      mark: { type: "point", tooltip: true },
+    },
+    {
+      transform: [
+        {
+          filter: {
+            and: ["x.YEARS", { selection: "x" }],
+          },
+        },
+      ],
+      layer: [
+        {
+          mark: "rule",
+          encoding: {
+            y: {
+              height: 1,
+            },
+            color: {
+              value: "black",
+            },
+          },
+        },
+      ],
+    },
+  ],
 };

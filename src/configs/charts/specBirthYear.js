@@ -2,7 +2,13 @@ export const specBirthYear = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   width: "container",
   height: 100,
-  mark: "bar",
+  params: [
+    {
+      name: "paintbrush",
+      select: { type: "point", on: "mouseover", nearest: true },
+    },
+  ],
+  mark: { type: "bar" },
   encoding: {
     tooltip: [{ field: "COUNT_PERSON", title: "# of People", format: "," }],
     x: {
@@ -14,6 +20,15 @@ export const specBirthYear = {
       field: "COUNT_PERSON",
       aggregate: "sum",
       title: "Number of People",
+    },
+    color: {
+      condition: {
+        param: "paintbrush",
+        field: "YEAR",
+        type: "ordinal",
+        legend: null,
+      },
+      value: "grey",
     },
   },
 };

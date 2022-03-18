@@ -4,11 +4,6 @@ export const specObservationByMonth = {
     {
       height: 150,
       width: "container",
-      mark: {
-        type: "line",
-        point: true,
-        strokeWidth: 1,
-      },
       encoding: {
         x: {
           field: "DATE",
@@ -41,6 +36,54 @@ export const specObservationByMonth = {
           },
         ],
       },
+      layer: [
+        {
+          mark: {
+            type: "line",
+            point: true,
+            strokeWidth: 1,
+          },
+          encoding: {
+            y: { field: "PERCENT_VALUE", type: "quantitative" },
+          },
+        },
+        {
+          params: [
+            {
+              name: "index",
+              select: {
+                type: "point",
+                fields: ["DATE"],
+                on: "mousemove",
+                nearest: true,
+              },
+            },
+          ],
+          mark: { type: "point" },
+          encoding: {
+            y: { field: "PERCENT_VALUE", type: "quantitative" },
+            opacity: { value: 0 },
+          },
+        },
+        {
+          transform: [
+            {
+              filter: {
+                and: ["index.DATE", { param: "index" }],
+              },
+            },
+          ],
+          mark: "rule",
+          encoding: {
+            y: {
+              height: 1,
+            },
+            color: {
+              value: "black",
+            },
+          },
+        },
+      ],
     },
     {
       width: "container",

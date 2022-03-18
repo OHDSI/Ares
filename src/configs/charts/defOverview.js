@@ -41,6 +41,14 @@ export const defOverview = {
         },
         {
           transform: [{ filter: { param: "source" } }],
+          selection: {
+            x: {
+              type: "single",
+              on: "mousemove",
+              encodings: ["x"],
+              nearest: true,
+            },
+          },
           mark: { type: "point", tooltip: true },
           encoding: {
             tooltip: [
@@ -55,8 +63,31 @@ export const defOverview = {
                 type: "temporal",
                 title: "Date",
               },
+              { field: "domain", type: "nominal", title: "Domain" },
             ],
           },
+        },
+        {
+          transform: [
+            {
+              filter: {
+                and: ["x.date", { selection: "x" }],
+              },
+            },
+          ],
+          layer: [
+            {
+              mark: "rule",
+              encoding: {
+                y: {
+                  height: 1,
+                },
+                color: {
+                  value: "black",
+                },
+              },
+            },
+          ],
         },
       ],
     },

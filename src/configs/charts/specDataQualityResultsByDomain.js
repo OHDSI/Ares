@@ -3,15 +3,7 @@ export const specDataQualityResultsByDomain = {
   width: "container",
   height: 150,
   description: "Data Quality Results by Date",
-  mark: { type: "line", interpolate: "linear", point: true },
-  selection: {
-    domain: { type: "multi", fields: ["cdm_table_name"], bind: "legend" },
-  },
   encoding: {
-    opacity: {
-      condition: { selection: "domain", value: 1 },
-      value: 0.2,
-    },
     x: {
       field: "cdm_release_date",
       type: "temporal",
@@ -54,4 +46,66 @@ export const specDataQualityResultsByDomain = {
       },
     ],
   },
+  layer: [
+    {
+      mark: { type: "line", interpolate: "linear", point: true },
+      params: [
+        {
+          name: "source",
+          select: { type: "point", fields: ["cdm_table_name"] },
+          bind: "legend",
+        },
+      ],
+      encoding: {
+        opacity: {
+          condition: { param: "source", value: 1 },
+          value: 0.2,
+        },
+      },
+    },
+    {
+      selection: {
+        dataSource: {
+          type: "multi",
+          fields: ["cdm_table_name"],
+          bind: "legend",
+        },
+        x: {
+          type: "single",
+          on: "mousemove",
+          fields: ["cdm_release_date"],
+          nearest: true,
+        },
+      },
+      transform: [
+        {
+          filter: { selection: "dataSource" },
+        },
+      ],
+      mark: { type: "point", tooltip: true },
+    },
+    {
+      transform: [
+        {
+          filter: {
+            and: ["x.cdm_release_date", { selection: "x" }],
+          },
+        },
+        { filter: { selection: "dataSource" } },
+      ],
+      layer: [
+        {
+          mark: "rule",
+          encoding: {
+            y: {
+              height: 1,
+            },
+            color: {
+              value: "black",
+            },
+          },
+        },
+      ],
+    },
+  ],
 };

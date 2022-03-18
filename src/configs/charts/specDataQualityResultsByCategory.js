@@ -2,15 +2,7 @@ export const specDataQualityResultsByCategory = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   width: "container",
   height: 150,
-  mark: { type: "line", interpolate: "linear", point: true },
-  selection: {
-    category: { type: "multi", fields: ["category"], bind: "legend" },
-  },
   encoding: {
-    opacity: {
-      condition: { selection: "category", value: 1 },
-      value: 0.2,
-    },
     x: {
       field: "cdm_release_date",
       type: "temporal",
@@ -53,4 +45,66 @@ export const specDataQualityResultsByCategory = {
       },
     ],
   },
+  layer: [
+    {
+      mark: { type: "line", interpolate: "linear", point: true },
+      params: [
+        {
+          name: "source",
+          select: { type: "point", fields: ["category"] },
+          bind: "legend",
+        },
+      ],
+      encoding: {
+        opacity: {
+          condition: { param: "source", value: 1 },
+          value: 0.2,
+        },
+      },
+    },
+    {
+      selection: {
+        dataSource: {
+          type: "multi",
+          fields: ["category"],
+          bind: "legend",
+        },
+        x: {
+          type: "single",
+          on: "mousemove",
+          fields: ["cdm_release_date"],
+          nearest: true,
+        },
+      },
+      transform: [
+        {
+          filter: { selection: "dataSource" },
+        },
+      ],
+      mark: { type: "point", tooltip: true },
+    },
+    {
+      transform: [
+        {
+          filter: {
+            and: ["x.cdm_release_date", { selection: "x" }],
+          },
+        },
+        { filter: { selection: "dataSource" } },
+      ],
+      layer: [
+        {
+          mark: "rule",
+          encoding: {
+            y: {
+              height: 1,
+            },
+            color: {
+              value: "black",
+            },
+          },
+        },
+      ],
+    },
+  ],
 };
