@@ -1,105 +1,107 @@
-export const specObservationByMonth = {
-  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-  vconcat: [
-    {
-      height: 150,
-      width: "container",
-      encoding: {
-        x: {
-          field: "DATE",
-          type: "temporal",
-          scale: { domain: { selection: "brush" } },
-          axis: { title: "" },
-          timeUnit: "yearmonth",
-        },
-        y: {
-          field: "PERCENT_VALUE",
-          type: "quantitative",
-          title: "% of People",
-          axis: { format: "%" },
-        },
-        tooltip: [
-          {
+export function specObservationByMonth(zeroBaseline = false) {
+  return {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    vconcat: [
+      {
+        height: 150,
+        width: "container",
+        encoding: {
+          x: {
             field: "DATE",
-            title: "Date",
+            type: "temporal",
+            scale: { domain: { selection: "brush" } },
+            axis: { title: "" },
             timeUnit: "yearmonth",
           },
+          y: {
+            field: "PERCENT_VALUE",
+            type: "quantitative",
+            title: "% of People",
+            axis: { format: "%" },
+            scale: {
+              zero: zeroBaseline,
+            },
+          },
+          tooltip: [
+            {
+              field: "DATE",
+              title: "Date",
+              timeUnit: "yearmonth",
+            },
+            {
+              field: "COUNT_VALUE",
+              title: "# of People",
+              format: ",",
+            },
+            {
+              field: "PERCENT_VALUE",
+              title: "% of People",
+              format: "0.2%",
+            },
+          ],
+        },
+        layer: [
           {
-            field: "COUNT_VALUE",
-            title: "# of People",
-            format: ",",
+            mark: {
+              type: "line",
+              point: true,
+              strokeWidth: 1,
+            },
+            encoding: {
+              y: { field: "PERCENT_VALUE", type: "quantitative" },
+            },
           },
           {
-            field: "PERCENT_VALUE",
-            title: "% of People",
-            format: "0.2%",
+            params: [
+              {
+                name: "index",
+                select: {
+                  type: "point",
+                  fields: ["DATE"],
+                  on: "mousemove",
+                  nearest: true,
+                },
+              },
+            ],
+            mark: { type: "point" },
+            encoding: {
+              y: { field: "PERCENT_VALUE", type: "quantitative" },
+              opacity: { value: 0 },
+            },
+          },
+          {
+            transform: [
+              {
+                filter: {
+                  and: ["index.DATE", { param: "index" }],
+                },
+              },
+            ],
+            mark: "rule",
+            encoding: {
+              y: {
+                height: 1,
+              },
+            },
           },
         ],
       },
-      layer: [
-        {
-          mark: {
-            type: "line",
-            point: true,
-            strokeWidth: 1,
-          },
-          encoding: {
-            y: { field: "PERCENT_VALUE", type: "quantitative" },
-          },
+      {
+        width: "container",
+        height: 50,
+        mark: "line",
+        selection: {
+          brush: { type: "interval", encodings: ["x"] },
         },
-        {
-          params: [
-            {
-              name: "index",
-              select: {
-                type: "point",
-                fields: ["DATE"],
-                on: "mousemove",
-                nearest: true,
-              },
-            },
-          ],
-          mark: { type: "point" },
-          encoding: {
-            y: { field: "PERCENT_VALUE", type: "quantitative" },
-            opacity: { value: 0 },
+        encoding: {
+          x: { field: "DATE", type: "temporal", title: "Date" },
+          y: {
+            field: "COUNT_VALUE",
+            type: "quantitative",
+            axis: null,
           },
-        },
-        {
-          transform: [
-            {
-              filter: {
-                and: ["index.DATE", { param: "index" }],
-              },
-            },
-          ],
-          mark: "rule",
-          encoding: {
-            y: {
-              height: 1,
-            },
-            color: {
-              value: "black",
-            },
-          },
-        },
-      ],
-    },
-    {
-      width: "container",
-      height: 50,
-      mark: "line",
-      selection: {
-        brush: { type: "interval", encodings: ["x"] },
-      },
-      encoding: {
-        x: { field: "DATE", type: "temporal", title: "Date" },
-        y: {
-          field: "COUNT_VALUE",
-          type: "quantitative",
-          axis: null,
         },
       },
-    },
-  ],
-};
+    ],
+  };
+}
