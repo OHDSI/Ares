@@ -11,14 +11,15 @@ export const defRecordsPerPerson = {
           type: "temporal",
           axis: { title: "Date" },
           scale: { domain: { selection: "brush" } },
+          timeUnit: "yearmonth"
         },
         y: {
           field: "records",
           type: "quantitative",
           title: "Records",
-          format: ",",
+          format: ","
         },
-        color: { field: "domain", type: "nominal" },
+        color: { field: "domain", type: "nominal" }
       },
       layer: [
         {
@@ -27,15 +28,15 @@ export const defRecordsPerPerson = {
             {
               name: "source",
               select: { type: "point", fields: ["domain"] },
-              bind: "legend",
-            },
+              bind: "legend"
+            }
           ],
           encoding: {
             opacity: {
               condition: { param: "source", value: 1 },
-              value: 0.2,
-            },
-          },
+              value: 0.2
+            }
+          }
         },
         {
           transform: [{ filter: { param: "source" } }],
@@ -44,8 +45,8 @@ export const defRecordsPerPerson = {
               type: "single",
               on: "mousemove",
               encodings: ["x"],
-              nearest: true,
-            },
+              nearest: true
+            }
           },
           mark: { type: "point", tooltip: true },
           encoding: {
@@ -54,44 +55,44 @@ export const defRecordsPerPerson = {
                 field: "records",
                 type: "quantitative",
                 title: "Records per person",
-                format: ",",
+                format: ","
               },
               {
                 field: "date",
                 type: "temporal",
-                title: "Date",
+                title: "Date"
               },
               {
                 field: "domain",
                 type: "nominal",
-                title: "Domain",
-              },
-            ],
-          },
+                title: "Domain"
+              }
+            ]
+          }
         },
         {
           transform: [
             {
               filter: {
-                and: ["x.date", { selection: "x" }],
-              },
-            },
+                and: ["x.date", { selection: "x" }]
+              }
+            }
           ],
           layer: [
             {
               mark: "rule",
               encoding: {
                 y: {
-                  height: 1,
+                  height: 1
                 },
                 color: {
-                  value: "black",
-                },
-              },
-            },
-          ],
-        },
-      ],
+                  value: "black"
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
 
     {
@@ -102,35 +103,35 @@ export const defRecordsPerPerson = {
         y: {
           field: "records",
           type: "quantitative",
-          axis: { title: "" },
+          axis: { title: "" }
         },
-        color: { field: "domain", type: "nominal", title: "Domain" },
+        color: { field: "domain", type: "nominal", title: "Domain" }
       },
       layer: [
         {
           mark: { type: "line", interpolate: "linear" },
           selection: {
-            brush: { type: "interval", encodings: ["x"] },
+            brush: { type: "interval", encodings: ["x"] }
           },
           params: [
             {
               name: "source",
               select: { type: "point", fields: ["domain"] },
-              bind: "legend",
-            },
+              bind: "legend"
+            }
           ],
           encoding: {
             opacity: {
               condition: { param: "source", value: 1 },
-              value: 0.2,
-            },
-          },
+              value: 0.2
+            }
+          }
         },
         {
           transform: [{ filter: { param: "source" } }],
-          mark: { type: "point", tooltip: true },
-        },
-      ],
-    },
-  ],
+          mark: { type: "point", tooltip: true }
+        }
+      ]
+    }
+  ]
 };
