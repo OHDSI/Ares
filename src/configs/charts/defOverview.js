@@ -6,7 +6,7 @@ export const defOverview = {
       width: "container",
       description: "Domain Data Density",
       selection: {
-        domain: { type: "multi", fields: ["domain"], bind: "legend" },
+        domain: { type: "multi", fields: ["domain"], bind: "legend" }
       },
       encoding: {
         x: {
@@ -14,13 +14,14 @@ export const defOverview = {
           type: "temporal",
           scale: { domain: { selection: "brush" } },
           title: "Date",
+          timeUnit: "yearmonth"
         },
         y: {
           field: "records",
           type: "quantitative",
-          title: "Records",
+          title: "Records"
         },
-        color: { field: "domain", type: "nominal" },
+        color: { field: "domain", type: "nominal" }
       },
       layer: [
         {
@@ -29,15 +30,15 @@ export const defOverview = {
             {
               name: "source",
               select: { type: "point", fields: ["domain"] },
-              bind: "legend",
-            },
+              bind: "legend"
+            }
           ],
           encoding: {
             opacity: {
               condition: { param: "source", value: 1 },
-              value: 0.2,
-            },
-          },
+              value: 0.2
+            }
+          }
         },
         {
           transform: [{ filter: { param: "source" } }],
@@ -46,8 +47,8 @@ export const defOverview = {
               type: "single",
               on: "mousemove",
               encodings: ["x"],
-              nearest: true,
-            },
+              nearest: true
+            }
           },
           mark: { type: "point", tooltip: true },
           encoding: {
@@ -56,82 +57,87 @@ export const defOverview = {
                 field: "records",
                 type: "quantitative",
                 title: "# Records",
-                format: ",",
+                format: ","
               },
               {
                 field: "date",
                 type: "temporal",
-                title: "Date",
+                title: "Date"
               },
-              { field: "domain", type: "nominal", title: "Domain" },
-            ],
-          },
+              { field: "domain", type: "nominal", title: "Domain" }
+            ]
+          }
         },
         {
           transform: [
             {
               filter: {
-                and: ["x.date", { selection: "x" }],
-              },
-            },
+                and: ["x.date", { selection: "x" }]
+              }
+            }
           ],
           layer: [
             {
               mark: "rule",
               encoding: {
                 y: {
-                  height: 1,
+                  height: 1
                 },
                 color: {
-                  value: "black",
-                },
-              },
-            },
-          ],
-        },
-      ],
+                  value: "black"
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       width: "container",
       height: 50,
       mark: "line",
       selection: {
-        brush: { type: "interval", encodings: ["x"] },
+        brush: { type: "interval", encodings: ["x"] }
       },
       encoding: {
-        x: { field: "date", type: "temporal", title: "Date" },
+        x: {
+          field: "date",
+          type: "temporal",
+          title: "Date",
+          timeUnit: "yearmonth"
+        },
         y: {
           field: "records",
           type: "quantitative",
-          axis: { title: "" },
+          axis: { title: "" }
         },
-        color: { field: "domain", type: "nominal" },
+        color: { field: "domain", type: "nominal" }
       },
       layer: [
         {
           mark: { type: "line", interpolate: "linear" },
           selection: {
-            brush: { type: "interval", encodings: ["x"] },
+            brush: { type: "interval", encodings: ["x"] }
           },
           params: [
             {
               name: "source",
               select: { type: "point", fields: ["domain"] },
-              bind: "legend",
-            },
+              bind: "legend"
+            }
           ],
           encoding: {
             opacity: {
               condition: { param: "source", value: 1 },
-              value: 0.2,
-            },
-          },
+              value: 0.2
+            }
+          }
         },
         {
           transform: [{ filter: { param: "source" } }],
-          mark: { type: "point", tooltip: true },
-        },
-      ],
-    },
-  ],
+          mark: { type: "point", tooltip: true }
+        }
+      ]
+    }
+  ]
 };
