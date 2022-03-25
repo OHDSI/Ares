@@ -99,7 +99,12 @@ export const defRecordsPerPerson = {
       width: "container",
       height: 50,
       encoding: {
-        x: { field: "date", type: "temporal", title: "Date" },
+        x: {
+          field: "date",
+          type: "temporal",
+          title: "Date",
+          timeUnit: "yearmonth"
+        },
         y: {
           field: "records",
           type: "quantitative",
