@@ -16,6 +16,17 @@
           </v-expansion-panel>
           <v-expansion-panel elevation="10" class="ma-4">
             <v-expansion-panel-header class="text-lg-h6"
+              >Desired Domains</v-expansion-panel-header
+            >
+            <v-expansion-panel-content>
+              <DesiredDomains
+                :data="sources"
+                @desiredDomainsDataChanged="changeDesiredDomainsData"
+              />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel elevation="10" class="ma-4">
+            <v-expansion-panel-header class="text-lg-h6"
               >Range requirements</v-expansion-panel-header
             >
             <v-expansion-panel-content>
@@ -77,10 +88,12 @@ import Range from "@/interface/views/network/NetworkDataFeasibilityReport/Range"
 import VisitTypes from "@/interface/views/network/NetworkDataFeasibilityReport/VisitTypes";
 import RequiredConcepts from "@/interface/views/network/NetworkDataFeasibilityReport/RequiredConcepts";
 import FinalEstimation from "@/interface/views/network/NetworkDataFeasibilityReport/FinalEstimation";
+import DesiredDomains from "@/interface/views/network/NetworkDataFeasibilityReport/DesiredDomains";
 
 export default {
   name: "NetworkDataFeasibility",
   components: {
+    DesiredDomains,
     FinalEstimation,
     RequiredConcepts,
     VisitTypes,
@@ -93,6 +106,7 @@ export default {
       switchDomains: [],
       chosenDomains: [],
       rangeData: [],
+      desiredDomains: [],
       panel: [0],
       requiredConcepts: [],
       visitTypes: [],
@@ -112,6 +126,7 @@ export default {
         requiredConcepts: this.requiredConcepts,
         visitTypes: this.visitTypes,
         sourcePopulation: this.person,
+        desiredDomains: this.desiredDomains,
       };
     },
   },
@@ -154,6 +169,9 @@ export default {
     },
     changeVisitTypesData(value) {
       this.visitTypes = value;
+    },
+    changeDesiredDomainsData(value) {
+      this.desiredDomains = value;
     },
   },
 };

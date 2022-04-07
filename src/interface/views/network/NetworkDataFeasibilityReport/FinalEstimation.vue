@@ -46,6 +46,9 @@
           ? (item.population_age_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
+      <template v-slot:item.desired_domain_value.data="{ item }">{{
+        item.desired_domain_value.data ? "Present" : "No data"
+      }}</template>
     </v-data-table>
     <v-divider></v-divider>
     <v-alert color="grey darken-3" dark dense icon="mdi-help-rhombus" prominent>
@@ -89,10 +92,16 @@ export default {
           show: true,
         },
         {
-          text: "% Domains",
+          text: "% Required Domains",
           align: "end",
           value: "domain_percent.data",
           show: this.getEstimations[0].domain_percent.isIncluded,
+        },
+        {
+          text: "% Desired Domains",
+          align: "end",
+          value: "desired_domain_value.data",
+          show: this.getEstimations[0].desired_domain_value.isIncluded,
         },
         {
           text: "% Cumulative Observation",
@@ -158,6 +167,10 @@ export default {
             (value) => value.cdm_name === obj.cdm_name
           );
 
+          const desiredDomains = this.data.desiredDomains.filter(
+            (value) => value.cdm_name === obj.cdm_name
+          );
+
           return {
             ...obj,
             domain_percent: {
@@ -193,6 +206,10 @@ export default {
                 .sort((a, b) => a - b)[0],
               isIncluded: this.data.requiredConcepts.length,
             },
+            desired_domain_value: {
+              data: desiredDomains[0]?.allDomainsPresent ? 1 : 0,
+              isIncluded: this.data.desiredDomains.length,
+            },
           };
         })
         .map((obj) => ({
@@ -214,6 +231,9 @@ export default {
               : 1) *
             (obj.concepts_percent.isIncluded
               ? obj.concepts_percent.data || 0
+              : 1) *
+            (obj.desired_domain_value.isIncluded
+              ? obj.desired_domain_value.data || 0
               : 1),
         }));
     },
