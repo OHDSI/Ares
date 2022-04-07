@@ -19,6 +19,27 @@
           hide-selected
         ></v-select>
       </template>
+      <template v-slot:item.condition_occurrence.data="{ item }">{{
+        item.condition_occurrence.data ? "Yes" : "No"
+      }}</template>
+      <template v-slot:item.drug_exposure.data="{ item }">{{
+        item.drug_exposure.data ? "Yes" : "No"
+      }}</template
+      ><template v-slot:item.device_exposure.data="{ item }">{{
+        item.device_exposure.data ? "Yes" : "No"
+      }}</template>
+      <template v-slot:item.measurement.data="{ item }">{{
+        item.measurement.data ? "Yes" : "No"
+      }}</template>
+      <template v-slot:item.death.data="{ item }">{{
+        item.death.data ? "Yes" : "No"
+      }}</template>
+      <template v-slot:item.procedure_occurrence.data="{ item }">{{
+        item.procedure_occurrence.data ? "Yes" : "No"
+      }}</template>
+      <template v-slot:item.observation_period.data="{ item }">{{
+        item.observation_period.data ? "Yes" : "No"
+      }}</template>
     </v-data-table>
     <v-divider></v-divider>
     <v-alert color="grey darken-3" dark dense icon="mdi-help-rhombus" prominent>
@@ -47,7 +68,6 @@ export default {
         { value: "procedure_occurrence", text: "Procedure occurrence" },
         { value: "observation_period", text: "Observation period" },
       ],
-      domainBits: "0000000",
       domainMap: {
         condition_occurrence: "1000000",
         drug_exposure: "0100000",
@@ -60,66 +80,75 @@ export default {
     };
   },
   computed: {
+    getDesiredDomainsOverview: function () {
+      if (this.switchDomains.length && this.getDomainsData.length) {
+        return this.getDomainsData.map((value) => ({
+          cdm_name: value.cdm_name,
+          allDomainsPresent:
+            Object.values(value).filter((domain) => domain.data && domain.show)
+              .length === this.switchDomains.length,
+        }));
+      } else {
+        return [];
+      }
+    },
     getDomainsData: function () {
-      return this.data.map((value) => ({
-        cdm_name: value.source,
-        condition_occurrence: {
-          data: value.data.filter(
-            (bits) => this.domainMap.condition_occurrence === bits.DOMAIN_BITS
-          )[0]?.COUNT_VALUE
-            ? "Yes"
-            : "No",
-          show: this.switchDomains.includes("condition_occurrence"),
-        },
-        drug_exposure: {
-          data: value.data.filter(
-            (bits) => this.domainMap.drug_exposure === bits.DOMAIN_BITS
-          )[0]?.COUNT_VALUE
-            ? "Yes"
-            : "No",
-          show: this.switchDomains.includes("drug_exposure"),
-        },
-        device_exposure: {
-          data: value.data.filter(
-            (bits) => this.domainMap.device_exposure === bits.DOMAIN_BITS
-          )[0]?.COUNT_VALUE
-            ? "Yes"
-            : "No",
-          show: this.switchDomains.includes("device_exposure"),
-        },
-        measurement: {
-          data: value.data.filter(
-            (bits) => this.domainMap.measurement === bits.DOMAIN_BITS
-          )[0]?.COUNT_VALUE
-            ? "Yes"
-            : "No",
-          show: this.switchDomains.includes("measurement"),
-        },
-        death: {
-          data: value.data.filter(
-            (bits) => this.domainMap.death === bits.DOMAIN_BITS
-          )[0]?.COUNT_VALUE
-            ? "Yes"
-            : "No",
-          show: this.switchDomains.includes("death"),
-        },
-        procedure_occurrence: {
-          data: value.data.filter(
-            (bits) => this.domainMap.procedure_occurrence === bits.DOMAIN_BITS
-          )[0]?.COUNT_VALUE
-            ? "Yes"
-            : "No",
-          show: this.switchDomains.includes("procedure_occurrence"),
-        },
-        observation_period: {
-          data: value.data.filter(
-            (bits) => this.domainMap.observation_period === bits.DOMAIN_BITS
-          )[0]?.COUNT_VALUE
-            ? "Yes"
-            : "No",
-          show: this.switchDomains.includes("observation_period"),
-        },
-      }));
+      if (this.switchDomains.length) {
+        return this.data.map((value) => ({
+          cdm_name: value.source,
+          condition_occurrence: {
+            data: value.data.filter(
+              (bits) => this.domainMap.condition_occurrence === bits.DOMAIN_BITS
+            )[0]?.COUNT_VALUE,
+
+            show: this.switchDomains.includes("condition_occurrence"),
+          },
+          drug_exposure: {
+            data: value.data.filter(
+              (bits) => this.domainMap.drug_exposure === bits.DOMAIN_BITS
+            )[0]?.COUNT_VALUE,
+
+            show: this.switchDomains.includes("drug_exposure"),
+          },
+          device_exposure: {
+            data: value.data.filter(
+              (bits) => this.domainMap.device_exposure === bits.DOMAIN_BITS
+            )[0]?.COUNT_VALUE,
+
+            show: this.switchDomains.includes("device_exposure"),
+          },
+          measurement: {
+            data: value.data.filter(
+              (bits) => this.domainMap.measurement === bits.DOMAIN_BITS
+            )[0]?.COUNT_VALUE,
+
+            show: this.switchDomains.includes("measurement"),
+          },
+          death: {
+            data: value.data.filter(
+              (bits) => this.domainMap.death === bits.DOMAIN_BITS
+            )[0]?.COUNT_VALUE,
+
+            show: this.switchDomains.includes("death"),
+          },
+          procedure_occurrence: {
+            data: value.data.filter(
+              (bits) => this.domainMap.procedure_occurrence === bits.DOMAIN_BITS
+            )[0]?.COUNT_VALUE,
+
+            show: this.switchDomains.includes("procedure_occurrence"),
+          },
+          observation_period: {
+            data: value.data.filter(
+              (bits) => this.domainMap.observation_period === bits.DOMAIN_BITS
+            )[0]?.COUNT_VALUE,
+
+            show: this.switchDomains.includes("observation_period"),
+          },
+        }));
+      } else {
+        return [];
+      }
     },
     getDomainHeaders: function () {
       return [
@@ -135,56 +164,56 @@ export default {
           align: "start",
           sortable: false,
           value: "condition_occurrence.data",
-          show: this.getDomainsData[0].condition_occurrence.show,
+          show: this.getDomainsData[0]?.condition_occurrence.show,
         },
         {
           text: "Drug Exposure",
           align: "start",
           sortable: false,
           value: "drug_exposure.data",
-          show: this.getDomainsData[0].drug_exposure.show,
+          show: this.getDomainsData[0]?.drug_exposure.show,
         },
         {
           text: "Device Exposure",
           align: "start",
           sortable: false,
           value: "device_exposure.data",
-          show: this.getDomainsData[0].device_exposure.show,
+          show: this.getDomainsData[0]?.device_exposure.show,
         },
         {
           text: "Measurement",
           align: "start",
           sortable: false,
           value: "measurement.data",
-          show: this.getDomainsData[0].measurement.show,
+          show: this.getDomainsData[0]?.measurement.show,
         },
         {
           text: "Death",
           align: "start",
           sortable: false,
           value: "death.data",
-          show: this.getDomainsData[0].death.show,
+          show: this.getDomainsData[0]?.death.show,
         },
         {
           text: "Procedure Occurrence",
           align: "start",
           sortable: false,
           value: "procedure_occurrence.data",
-          show: this.getDomainsData[0].procedure_occurrence.show,
+          show: this.getDomainsData[0]?.procedure_occurrence.show,
         },
         {
           text: "Observation Period",
           align: "start",
           sortable: false,
           value: "observation_period.data",
-          show: this.getDomainsData[0].observation_period.show,
+          show: this.getDomainsData[0]?.observation_period.show,
         },
       ].filter((x) => x.show);
     },
   },
   watch: {
-    getDomainsData: function () {
-      this.$emit("desiredDomainsDataChanged", this.getDomainsData);
+    getDesiredDomainsOverview: function () {
+      this.$emit("desiredDomainsDataChanged", this.getDesiredDomainsOverview);
     },
   },
   methods: {

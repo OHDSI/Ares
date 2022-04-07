@@ -21,7 +21,7 @@
             <v-expansion-panel-content>
               <DesiredDomains
                 :data="sources"
-                @domainsDataChanged="changeDomainData"
+                @desiredDomainsDataChanged="changeDesiredDomainsData"
               />
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -106,6 +106,7 @@ export default {
       switchDomains: [],
       chosenDomains: [],
       rangeData: [],
+      desiredDomains: [],
       panel: [0],
       requiredConcepts: [],
       visitTypes: [],
@@ -125,6 +126,7 @@ export default {
         requiredConcepts: this.requiredConcepts,
         visitTypes: this.visitTypes,
         sourcePopulation: this.person,
+        desiredDomains: this.desiredDomains,
       };
     },
   },
@@ -167,6 +169,9 @@ export default {
     },
     changeVisitTypesData(value) {
       this.visitTypes = value;
+    },
+    changeDesiredDomainsData(value) {
+      this.desiredDomains = value;
     },
   },
 };
