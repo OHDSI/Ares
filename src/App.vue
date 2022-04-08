@@ -1,8 +1,9 @@
 <template>
   <v-app>
-    <v-container class="pt-4 pl-2 pr-2 mb-16">
+    <v-container dark class="pt-4 pl-2 pr-2 mb-16">
       <router-view name="main"></router-view>
     </v-container>
+    <Settings />
     <v-bottom-navigation fixed dark dense>
       <v-layout justify-end>
         <v-btn to="/help">
@@ -16,6 +17,9 @@
             max-width="20"
           ></v-img
         ></v-btn>
+        <v-btn @click="toggleSettings"
+          ><v-icon dark>mdi-cog-outline</v-icon></v-btn
+        >
       </v-layout>
     </v-bottom-navigation>
   </v-app>
@@ -23,9 +27,13 @@
 
 <script>
 import { RESET_ERRORS } from "@/data/store/modules/errors/actions.type";
+import Settings from "@/interface/components/Settings";
+import { mapGetters } from "vuex";
+import { SET_VISIBILITY } from "@/data/store/modules/settings/mutations.type";
 
 export default {
   name: "ARES",
+  components: { Settings },
   data() {
     return {
       dialog: false
@@ -34,6 +42,23 @@ export default {
   watch: {
     $route() {
       this.$store.dispatch(RESET_ERRORS);
+    },
+    darkMode() {
+      this.$vuetify.theme.dark = this.getSettings.darkMode;
+    }
+  },
+  created() {
+    this.$vuetify.theme.dark = this.getSettings.darkMode;
+  },
+  methods: {
+    toggleSettings: function() {
+      this.$store.commit(SET_VISIBILITY, !this.$store.getters.getVisibility);
+    }
+  },
+  computed: {
+    ...mapGetters(["getSettings"]),
+    darkMode: function() {
+      return this.getSettings.darkMode;
     }
   }
 };

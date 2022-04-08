@@ -12,6 +12,12 @@ export const reports = [
     routeName: "person"
   },
   {
+    folder: "Data Network",
+    icon: "mdi-database-search",
+    name: "Data Source Feasibility",
+    routeName: "feasibility"
+  },
+  {
     folder: "Data Source Release",
     icon: "mdi-chart-line",
     name: "Data Density",
@@ -27,6 +33,11 @@ export const reports = [
     folder: "Data Source",
     name: "Data Quality History",
     routeName: "dataQualityHistory"
+  },
+  {
+    folder: "Data Source",
+    name: "Data Source Overview",
+    routeName: "dataSourceOverview"
   },
   {
     folder: "Data Source",

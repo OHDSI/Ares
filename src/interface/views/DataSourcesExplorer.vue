@@ -8,18 +8,18 @@
 
 <script>
 import Explorer from "../components/Explorer";
-import ErrorAlert from "@/interface/components/ErrorAlert";
+import ErrorAlert from "@/interface/components/CriticalError";
 import { mapGetters } from "vuex";
 
 export default {
   name: "DataSourcesExplorer",
   components: {
     ErrorAlert,
-    Explorer,
+    Explorer
   },
   computed: {
-    ...mapGetters(["explorerLoaded"]),
-  },
+    ...mapGetters(["explorerLoaded"])
+  }
 };
 </script>
 

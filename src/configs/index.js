@@ -39,6 +39,8 @@ import { specDrugTypeStratification } from "@/configs/charts/specDrugTypeStratif
 import { specCumulativeObservation } from "@/configs/charts/specCumulativeObservation";
 import { specAgeAtFirstObservation } from "@/configs/charts/specAgeAtFirstObservation";
 import { specRecordProportionByMonth } from "@/configs/charts/specRecordProportionByMonth";
+import { specPopulationByRelease } from "@/configs/charts/specPopulationByRelease";
+import { specIssuesByRelease } from "@/configs/charts/specIssuesByRelease";
 import { folders } from "@/configs/explorer/folders";
 import { reports } from "@/configs/explorer/reports";
 
@@ -84,9 +86,11 @@ export const charts = {
   specDataQualityResultsByDomain,
   specDataQualityResultsByCategory,
   specCumulativeObservation,
+  specPopulationByRelease,
+  specIssuesByRelease
 };
 
 export const explorerConfigs = {
   folders,
-  reports,
+  reports
 };

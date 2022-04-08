@@ -56,41 +56,27 @@
           <v-card-text>
             <v-data-table
               dense
-              :items="dataSourceRecords"
+              :items="sourceData"
               :headers="dataSourceColumns"
               :items-per-page="-1"
               hide-default-footer
             >
-              <template v-slot:item="{ item }">
-                <tr>
-                  <td>
-                    <router-link
-                      :to="getDataSourceRoute(item)"
-                      :title="item.cdm_source_name"
-                      >{{ item.cdm_source_abbreviation }}
-                    </router-link>
-                  </td>
-                  <td class="text-end">
-                    {{ formatComma(item.releases[0].count_person) }}
-                  </td>
-                  <td class="text-start">
-                    {{ item.releases[0].obs_period_start }}
-                  </td>
-                  <td class="text-start">
-                    {{ item.releases[0].obs_period_end }}
-                  </td>
-                  <td class="text-end">{{ item.releases[0].release_name }}</td>
-                  <td class="text-end">
-                    {{ item.releases[0].count_data_quality_issues }}
-                  </td>
-                  <td class="text-end">{{ item.count_releases }}</td>
-                  <td class="text-end">
-                    {{ item.releases[0].vocabulary_version }}
-                  </td>
-                  <td class="text-end">
-                    {{ item.average_update_interval_days }}
-                  </td>
-                </tr>
+              <template v-slot:item.releases[0].count_person="{ item }">
+                {{ formatComma(item.releases[0].count_person) }}
+              </template>
+              <template v-slot:item.cdm_source_name="{ item }">
+                <router-link
+                  :to="getDataSourceRoute(item)"
+                  :title="item.cdm_source_name"
+                  >{{ item.cdm_source_abbreviation }}
+                </router-link>
+              </template>
+              <template v-slot:item.datesObserved="{ item }">
+                {{ item.releases[0].obs_period_start }} to
+                {{ item.releases[0].obs_period_end }}
+              </template>
+              <template v-slot:item.averageDaysBetweenReleases="{ item }">
+                {{ item.averageDaysBetweenReleases.toFixed() }}
               </template>
             </v-data-table>
           </v-card-text>
@@ -160,6 +146,12 @@ export default {
           value: "count_releases"
         },
         {
+          text: "Average days between releases",
+          align: "end",
+          sortable: true,
+          value: "averageDaysBetweenReleases"
+        },
+        {
           text: "Vocabulary Version",
           align: "end",
           sortable: true,
@@ -175,7 +167,6 @@ export default {
     };
   },
   created() {
-    console.log("Overview");
     const sources = this.getSources;
     this.countDataSources = sources.length;
     sources.forEach(source => {
@@ -183,7 +174,6 @@ export default {
       this.countDataQualityIssues +=
         source.releases[0].count_data_quality_issues;
       this.countDataSourceReleases += source.releases.length;
-      this.dataSourceRecords.push(source);
     });
 
     /*   .catch((error) => {
@@ -230,7 +220,30 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["getSources"])
+    ...mapGetters(["getSources"]),
+    sourceData: function() {
+      const sources = this.getSources.map(source => ({
+        ...source,
+        averageDaysBetweenReleases: source.releases
+          .map(release => new Date(release.release_name))
+          .map((date, index, array) => {
+            if (array[index + 1]) {
+              return (date - array[index + 1]) / (1000 * 60 * 60 * 24);
+            }
+          })
+          .filter(value => value)
+      }));
+      return sources.map(source => ({
+        ...source,
+        averageDaysBetweenReleases:
+          source.averageDaysBetweenReleases.length > 0
+            ? source.averageDaysBetweenReleases.reduce(
+                (prevValue, current) => prevValue + current,
+                0
+              ) / source.averageDaysBetweenReleases.length
+            : 0
+      }));
+    }
   }
 };
 </script>

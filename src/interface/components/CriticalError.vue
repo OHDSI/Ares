@@ -18,8 +18,8 @@ import { mapGetters } from "vuex";
 export default {
   name: "ErrorAlert",
   computed: {
-    ...mapGetters(["getErrors"]),
-  },
+    ...mapGetters(["getErrors"])
+  }
 };
 </script>
 <style scoped></style>

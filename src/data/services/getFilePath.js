@@ -21,6 +21,7 @@ export const NETWORK_UNMAPPED_SOURCE_CODES = "networkUnmappedSourceCodes";
 export const DOMAIN_ISSUES = "domainIssues";
 export const DOMAIN_VISIT_STRATIFICATION = "domainVisitStratification";
 export const DOMAIN_DRUG_STRATIFICATION = "domainDrugStratification";
+export const DENSITY_DOMAIN_PERSON = "densityDomainPerson";
 
 export default function getFilePath(params = "") {
   return {
@@ -46,6 +47,7 @@ export default function getFilePath(params = "") {
     [NETWORK_UNMAPPED_SOURCE_CODES]: `data/network-unmapped-source-codes.csv`,
     [DOMAIN_ISSUES]: `data/${params.cdm}/${params.release}/domain-issues.csv`,
     [DOMAIN_VISIT_STRATIFICATION]: `data/${params.cdm}/${params.release}/domain-visit-stratification.csv`,
-    [DOMAIN_DRUG_STRATIFICATION]: `data/${params.cdm}/${params.release}/domain-drug-stratification.csv`
+    [DOMAIN_DRUG_STRATIFICATION]: `data/${params.cdm}/${params.release}/domain-drug-stratification.csv`,
+    [DENSITY_DOMAIN_PERSON]: `data/${params.cdm}/${params.release}/datadensity-domains-per-person.csv`
   };
 }

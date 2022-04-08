@@ -39,6 +39,17 @@
             >Measurement Value Distributions by Database and Unit</v-card-title
           >
           <v-layout class="pa-4" justify-end>
+            <v-select
+              v-model="selectedMeasurementUnits"
+              class="mr-13"
+              :items="getMeasurementUnits"
+              attach
+              hide-selected
+              deletable-chips
+              chips
+              label="Filter units"
+              multiple
+            ></v-select>
             <v-btn color="primary" @click="toggleMeasurementValueChart()"
               ><v-icon dark left>mdi-toggle-switch</v-icon
               >{{ toggleMode }}</v-btn
@@ -49,7 +60,7 @@
             id="viz-measurementvaluedistribution"
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
-            :data="measurementValueDistribution"
+            :data="getSelectedMeasurementUnits"
           />
           <v-card-text>
             <router-link to="/help">
@@ -75,7 +86,7 @@ import VegaChart from "@/interface/components/VegaChart";
 export default {
   components: {
     VegaChart,
-    ReturnButton,
+    ReturnButton
   },
   data() {
     return {
@@ -84,6 +95,7 @@ export default {
       hasMeasurementValueDistribution: false,
       hasAgeAtFirstDiagnosis: false,
       hasAgeAtFirstOccurrence: false,
+      selectedMeasurementUnits: [],
       hasAgeAtFirstExposure: false,
       hasConditionsByType: false,
       hasVisitDurationByType: false,
@@ -98,21 +110,30 @@ export default {
       dataLoaded: false,
       historyRecords: [],
       cdmSourceName: "",
-      specMeasurementValueDistribution:
-        charts.specMeasurementValueDistribution1,
+      specMeasurementValueDistribution: charts.specMeasurementValueDistribution1
     };
   },
   computed: {
     ...mapGetters(["getData", "getSources", "getErrors"]),
+    getSelectedMeasurementUnits: function() {
+      return this.selectedMeasurementUnits.length
+        ? this.measurementValueDistribution.filter(value =>
+            this.selectedMeasurementUnits.includes(value.CATEGORY)
+          )
+        : this.measurementValueDistribution;
+    },
+    getMeasurementUnits: function() {
+      return this.measurementValueDistribution.map(value => value.CATEGORY);
+    }
   },
   created() {
     this.load();
   },
   methods: {
-    formatPercent: function (value) {
+    formatPercent: function(value) {
       return d3Format.format("0.0%")(value);
     },
-    triggerResize: function () {
+    triggerResize: function() {
       window.dispatchEvent(new Event("resize"));
     },
     toggleMeasurementValueChart() {
@@ -137,14 +158,14 @@ export default {
           "/" +
           this.$route.params.release +
           "/data_quality?tab=results&conceptFailFilter=" +
-          this.$route.params.concept,
+          this.$route.params.concept
       });
     },
-    load: function () {
+    load: function() {
       this.dataLoaded = false;
       this.$store
         .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [CONCEPT],
+          files: [CONCEPT]
         })
         .then(() => {
           if (!this.getErrors) {
@@ -152,7 +173,7 @@ export default {
             this.conceptId = this.getData[CONCEPT][0].data.CONCEPT_ID[0];
             this.numPersons = _.sumBy(
               this.getData[CONCEPT],
-              (r) => r.data.NUM_PERSONS[0]
+              r => r.data.NUM_PERSONS[0]
             );
 
             if (
@@ -162,12 +183,10 @@ export default {
               this.measurementValueDistribution = this.getData[CONCEPT].reduce(
                 (prevValue, current) => [
                   ...prevValue,
-                  ...current.data.MEASUREMENT_VALUE_DISTRIBUTION.map(
-                    (value) => ({
-                      ...value,
-                      SOURCE_UNIT_KEY: `${current.source.cdm_source_key} - ${value.CATEGORY}`,
-                    })
-                  ),
+                  ...current.data.MEASUREMENT_VALUE_DISTRIBUTION.map(value => ({
+                    ...value,
+                    SOURCE_UNIT_KEY: `${current.source.cdm_source_key} - ${value.CATEGORY}`
+                  }))
                 ],
                 []
               );
@@ -176,8 +195,8 @@ export default {
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

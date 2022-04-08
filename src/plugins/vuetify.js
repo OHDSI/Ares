@@ -1,10 +1,21 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
-import '@mdi/font/css/materialdesignicons.css'
+import Vue from "vue";
+import Vuetify from "vuetify";
+import "vuetify/dist/vuetify.min.css";
+import "@mdi/font/css/materialdesignicons.css";
 
-Vue.use(Vuetify)
+Vue.use(Vuetify);
 
-const opts = {}
+export default new Vuetify({
+  theme: {
+    options: { customProperties: true },
 
-export default new Vuetify(opts)
+    themes: {
+      light: {
+        accent: "#E0E0E0"
+      },
+      dark: {
+        accent: "#424242"
+      }
+    }
+  }
+});

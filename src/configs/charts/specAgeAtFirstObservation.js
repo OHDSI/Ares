@@ -1,32 +1,58 @@
-export const specAgeAtFirstObservation = {
-  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-  height: 150,
-  width: "container",
-  mark: { type: "bar", tooltip: {}, width: 10 },
-  data: null,
-  encoding: {
-    x: {
-      field: "INTERVAL_INDEX",
-      type: "quantitative",
-      title: "Age",
-      scale: { domainMin: 0 },
-    },
-    y: {
-      field: "COUNT_VALUE",
-      type: "quantitative",
-      title: "Count People",
-    },
-    tooltip: [
-      {
+export function specAgeAtFirstObservation(zeroBaseline = false) {
+  return {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    height: 200,
+    width: "container",
+    encoding: {
+      x: {
         field: "INTERVAL_INDEX",
-        title: "Age",
+        type: "quantitative",
+        title: "Age"
+      },
+      y: {
+        field: "PERCENT_VALUE",
+        type: "quantitative",
+        axis: { format: "0.0%" },
+        title: "% of Population",
+        scale: {
+          zero: zeroBaseline
+        }
+      }
+    },
+    layer: [
+      {
+        mark: { type: "line", interpolate: "linear" }
       },
       {
-        field: "COUNT_VALUE",
-        title: "Number of People",
-        format: ",",
+        selection: {
+          x: {
+            type: "single",
+            on: "mousemove",
+            encodings: ["x"],
+            nearest: true
+          }
+        },
+        mark: { type: "point", tooltip: true }
       },
-      { field: "PERCENT_VALUE", title: "% of People", format: "0.1%" },
-    ],
-  },
-};
+      {
+        transform: [
+          {
+            filter: {
+              and: ["x.INTERVAL_INDEX", { selection: "x" }]
+            }
+          }
+        ],
+        layer: [
+          {
+            mark: "rule",
+            encoding: {
+              y: {
+                height: 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  };
+}
