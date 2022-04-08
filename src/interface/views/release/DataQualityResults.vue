@@ -346,6 +346,7 @@
                         ref="myCm"
                         :value="item.QUERY_TEXT"
                         :options="cmOptions"
+                        :events="['optionChange']"
                       ></codemirror>
                     </v-col>
                   </v-row>
@@ -393,6 +394,7 @@ import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
 import "codemirror/theme/neat.css";
+import "codemirror/theme/base16-dark.css";
 import infopanel from "../../components/InfoPanel.vue";
 import * as d3 from "d3-format";
 import { debounce } from "lodash";
@@ -458,14 +460,6 @@ export default {
         CHECK_LEVEL: [],
       },
       search: "",
-      cmOptions: {
-        theme: "neat",
-        lineWrapping: true,
-        tabSize: 2,
-        mode: "text/x-sql",
-        viewportMargin: Infinity,
-        lineNumbers: true,
-      },
       selectedHeaders: [],
       selectedFilter: null,
       startingSelectedHeaderValues: ["FAIL"],
@@ -674,7 +668,18 @@ export default {
     this.load();
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "getSettings"]),
+    cmOptions: function () {
+      return {
+        theme: this.getSettings.darkMode ? "base16-dark" : "neat",
+        lineWrapping: true,
+        tabSize: 2,
+        mode: "text/x-sql",
+        viewportMargin: Infinity,
+        lineNumbers: true,
+        autoRefresh: true,
+      };
+    },
 
     tab: {
       set(tab) {
@@ -750,11 +755,11 @@ table#results {
 }
 table#results tr td.header {
   text-transform: uppercase;
-  background-color: #ccc;
+  background-color: var(--v-accent-base);
 }
 table#results .subheader {
   text-transform: uppercase;
-  background-color: #eee;
+  background-color: var(--v-accent-base);
 }
 table#results {
   border-spacing: 2px;

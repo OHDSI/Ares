@@ -2,7 +2,6 @@ export const specDatastrand = {
   $schema: "https://vega.github.io/schema/vega/v5.json",
   description: "Data Strand Visualization",
   autosize: { type: "fit-x", contains: "padding" },
-  background: "white",
   padding: 5,
   data: [
     {
@@ -87,7 +86,6 @@ export const specDatastrand = {
       from: { data: "data_0" },
       encode: {
         enter: {
-          stroke: { value: "#ffffff" },
           strokeWidth: { value: 7 },
         },
         update: {

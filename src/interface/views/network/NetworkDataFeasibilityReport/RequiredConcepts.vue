@@ -106,7 +106,7 @@
             dense
             :headers="conceptHeaders"
             :items="item.concepts"
-            class="elevation-1 grey lighten-3"
+            class="elevation-1 accent"
           >
             <template v-slot:item.time_series="{ item }">{{
               item.time_series

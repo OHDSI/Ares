@@ -1,56 +1,58 @@
-export const specAgeAtFirstObservation = {
-  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-  height: 200,
-  width: "container",
-  encoding: {
-    x: {
-      field: "INTERVAL_INDEX",
-      type: "quantitative",
-      title: "Age",
-    },
-    y: {
-      field: "PERCENT_VALUE",
-      type: "quantitative",
-      axis: { format: "0.0%" },
-      title: "% of Population",
-    },
-  },
-  layer: [
-    {
-      mark: { type: "line", interpolate: "linear" },
-    },
-    {
-      selection: {
-        x: {
-          type: "single",
-          on: "mousemove",
-          encodings: ["x"],
-          nearest: true,
+export function specAgeAtFirstObservation(zeroBaseline = false) {
+  return {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    height: 200,
+    width: "container",
+    encoding: {
+      x: {
+        field: "INTERVAL_INDEX",
+        type: "quantitative",
+        title: "Age",
+      },
+      y: {
+        field: "PERCENT_VALUE",
+        type: "quantitative",
+        axis: { format: "0.0%" },
+        title: "% of Population",
+        scale: {
+          zero: zeroBaseline,
         },
       },
-      mark: { type: "point", tooltip: true },
     },
-    {
-      transform: [
-        {
-          filter: {
-            and: ["x.INTERVAL_INDEX", { selection: "x" }],
+    layer: [
+      {
+        mark: { type: "line", interpolate: "linear" },
+      },
+      {
+        selection: {
+          x: {
+            type: "single",
+            on: "mousemove",
+            encodings: ["x"],
+            nearest: true,
           },
         },
-      ],
-      layer: [
-        {
-          mark: "rule",
-          encoding: {
-            y: {
-              height: 1,
-            },
-            color: {
-              value: "black",
+        mark: { type: "point", tooltip: true },
+      },
+      {
+        transform: [
+          {
+            filter: {
+              and: ["x.INTERVAL_INDEX", { selection: "x" }],
             },
           },
-        },
-      ],
-    },
-  ],
-};
+        ],
+        layer: [
+          {
+            mark: "rule",
+            encoding: {
+              y: {
+                height: 1,
+              },
+            },
+          },
+        ],
+      },
+    ],
+  };
+}

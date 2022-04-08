@@ -35,6 +35,12 @@ export default {
       domainData: [],
     };
   },
+  watch: {
+    darkMode() {
+      console.log("heeefdasd");
+      this.renderChart();
+    },
+  },
   created() {
     this.load();
   },
@@ -43,6 +49,24 @@ export default {
       this.$router.push(route);
       // hide tooltip otherwise it persists on navigation
       document.getElementById("vg-tooltip-element").style.display = "none";
+    },
+    renderChart: function () {
+      embed("#viz-datastrand", this.specDatastrand, {
+        theme: this.getSettings.darkMode ? "dark" : "",
+      }).then((result) => {
+        result.view.addSignalListener("selectDomain", (name, value) => {
+          const domainKey = value.domain.toLowerCase().replace(" ", "_");
+          const routeUrl =
+            "/cdm/" +
+            value.cdm_source_key +
+            "/" +
+            value.cdm_release_key +
+            "/" +
+            domainKey;
+
+          this.navigate(routeUrl);
+        });
+      });
     },
     load: function () {
       this.$store
@@ -65,31 +89,18 @@ export default {
               []
             );
             this.specDatastrand.data[0].values = this.domainData;
-
+            this.renderChart();
             //todo switch to using the VChart component
-
-            embed("#viz-datastrand", this.specDatastrand).then((result) => {
-              result.view.addSignalListener("selectDomain", (name, value) => {
-                const domainKey = value.domain.toLowerCase().replace(" ", "_");
-                const routeUrl =
-                  "/cdm/" +
-                  value.cdm_source_key +
-                  "/" +
-                  value.cdm_release_key +
-                  "/" +
-                  domainKey;
-
-                this.navigate(routeUrl);
-              });
-            });
-
             this.dataLoaded = true;
           }
         });
     },
   },
   computed: {
-    ...mapGetters(["getData", "getSources", "getErrors"]),
+    ...mapGetters(["getData", "getSources", "getErrors", "getSettings"]),
+    darkMode: function () {
+      return this.getSettings.darkMode;
+    },
   },
 };
 </script>

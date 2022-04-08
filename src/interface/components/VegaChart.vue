@@ -7,13 +7,14 @@
 
 <script>
 import embed from "vega-embed";
+import { mapGetters } from "vuex";
 
 export default {
   name: "VegaChart",
   props: {
     title: { type: String, required: false, default: null },
     data: { type: Array, required: true, default: null },
-    config: { type: Object, required: true, default: null },
+    config: { type: Function, required: true, default: null },
     id: { type: String, required: true, default: null },
     listener: { type: Function, required: false, default: null },
     width: { type: String, required: false, default: "90" },
@@ -21,6 +22,13 @@ export default {
   computed: {
     style: function () {
       return "width: " + this.width + "%";
+    },
+    ...mapGetters(["getSettings"]),
+    darkMode: function () {
+      return this.getSettings.darkMode;
+    },
+    zeroBaseline: function () {
+      return this.getSettings.zeroBaseline;
     },
   },
   watch: {
@@ -30,11 +38,11 @@ export default {
         this.load();
       },
     },
-    config: {
-      deep: true,
-      handler() {
-        this.load();
-      },
+    darkMode() {
+      this.load();
+    },
+    zeroBaseline() {
+      this.load();
     },
   },
   created() {
@@ -42,10 +50,14 @@ export default {
   },
   methods: {
     load: function () {
-      embed(`#${this.id}`, {
-        ...this.config,
-        data: { values: this.data },
-      }).then((result) => {
+      embed(
+        `#${this.id}`,
+        {
+          ...this.config(this.getSettings.zeroBaseline),
+          data: { values: this.data },
+        },
+        { theme: this.getSettings.darkMode ? "dark" : "" }
+      ).then((result) => {
         if (this.listener) {
           this.listener(result);
         }
