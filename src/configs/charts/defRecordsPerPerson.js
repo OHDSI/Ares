@@ -12,6 +12,7 @@ export function defRecordsPerPerson(zeroBaseline = false) {
             type: "temporal",
             axis: { title: "Date" },
             scale: { domain: { selection: "brush" } },
+            timeUnit: "yearmonth",
           },
           y: {
             field: "records",
@@ -102,7 +103,12 @@ export function defRecordsPerPerson(zeroBaseline = false) {
         width: "container",
         height: 50,
         encoding: {
-          x: { field: "date", type: "temporal", title: "Date" },
+          x: {
+            field: "date",
+            type: "temporal",
+            title: "Date",
+            timeUnit: "yearmonth",
+          },
           y: {
             field: "records",
             type: "quantitative",

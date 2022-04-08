@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-card elevation="10" class="mx-auto pb-6" outlined>
-          <v-card-title>Source overview</v-card-title>
+          <v-card-title>Source Overview</v-card-title>
           <v-card-text>
             <v-container fluid>
               <v-row justify="space-around"
@@ -18,10 +18,10 @@
                 </v-col>
                 <v-col class="mx-4" cols="auto">
                   <h3 class="mb-4 text-center">
-                    Average days between releases
+                    Average Days Between Releases
                   </h3>
                   <h1 class="text-center">
-                    {{ getDaysBetweenReleases.toFixed(2)
+                    {{ getDaysBetweenReleases.toFixed(0)
                     }}<v-icon large color="info" class="mx-2"
                       >mdi-clock-outline</v-icon
                     >

@@ -15,6 +15,7 @@ export function defOverview(zeroBaseline = false) {
             type: "temporal",
             scale: { domain: { selection: "brush" } },
             title: "Date",
+            timeUnit: "yearmonth",
           },
           y: {
             field: "records",
@@ -103,7 +104,12 @@ export function defOverview(zeroBaseline = false) {
           brush: { type: "interval", encodings: ["x"] },
         },
         encoding: {
-          x: { field: "date", type: "temporal", title: "Date" },
+          x: {
+            field: "date",
+            type: "temporal",
+            title: "Date",
+            timeUnit: "yearmonth",
+          },
           y: {
             field: "records",
             type: "quantitative",
