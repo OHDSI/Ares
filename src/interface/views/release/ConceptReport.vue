@@ -407,7 +407,7 @@ export default {
   components: {
     VegaChart,
     ReturnButton,
-    InfoPanel,
+    InfoPanel
   },
   data() {
     return {
@@ -450,43 +450,43 @@ export default {
       specLengthOfEra: charts.specLengthOfEra,
       specAgeAtFirstExposure: charts.specAgeAtFirstExposure,
       specAgeAtFirstDiagnosis: charts.specAgeAtFirstDiagnosis,
-      specRecordProportionByMonth: charts.specRecordProportionByMonth,
+      specRecordProportionByMonth: charts.specRecordProportionByMonth
     };
   },
   computed: {
     ...mapGetters(["getData", "getErrors"]),
-    getPercentWithValues: function () {
+    getPercentWithValues: function() {
       const missingData = csvParse(this.getData[DOMAIN_SUMMARY]).filter(
-        (data) => data.CONCEPT_ID === this.$route.params.concept
+        data => data.CONCEPT_ID === this.$route.params.concept
       )[0].PERCENT_MISSING_VALUES;
       return missingData
         ? `${(1 - missingData) * (100).toFixed(2)}%`
         : "No data";
     },
 
-    getMeasurementUnits: function () {
+    getMeasurementUnits: function() {
       return this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.map(
-        (value) => value.CATEGORY
+        value => value.CATEGORY
       );
     },
-    getSelectedMeasurementUnits: function () {
+    getSelectedMeasurementUnits: function() {
       return this.selectedMeasurementUnits.length
-        ? this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.filter((value) =>
+        ? this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.filter(value =>
             this.selectedMeasurementUnits.includes(value.CATEGORY)
           )
         : this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION;
-    },
+    }
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   created() {
     this.load();
   },
   methods: {
-    getSourceConceptReportLink: function () {
+    getSourceConceptReportLink: function() {
       return (
         "/datasource/" +
         this.$route.params.cdm +
@@ -512,13 +512,13 @@ export default {
       this.$refs.measurementvalue.load();
     },
 
-    formatPercent: function (value) {
+    formatPercent: function(value) {
       return d3Format.format("0.0%")(value);
     },
-    formatComma: function (value) {
+    formatComma: function(value) {
       return d3Format.format(",")(value);
     },
-    triggerResize: function () {
+    triggerResize: function() {
       window.dispatchEvent(new Event("resize"));
     },
     getNetworkConceptRoute() {
@@ -538,10 +538,10 @@ export default {
           "/" +
           this.$route.params.release +
           "/data_quality?tab=results&conceptFailFilter=" +
-          this.$route.params.concept,
+          this.$route.params.concept
       });
     },
-    load: function () {
+    load: function() {
       this.dataLoaded = false;
       const files = [{ name: CONCEPT, required: true }];
       if (this.$route.params.domain === "measurement") {
@@ -550,7 +550,7 @@ export default {
 
       this.$store
         .dispatch(FETCH_FILES, {
-          files,
+          files
         })
         .then(() => {
           if (!this.getErrors) {
@@ -630,7 +630,7 @@ export default {
             );
 
             this.specRecordProportionByMonth.data = {
-              values: this.conceptData.PREVALENCE_BY_MONTH,
+              values: this.conceptData.PREVALENCE_BY_MONTH
             };
 
             if (
@@ -649,8 +649,8 @@ export default {
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

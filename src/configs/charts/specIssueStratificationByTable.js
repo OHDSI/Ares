@@ -11,13 +11,13 @@ export function specIssueStratificationByTable(zeroBaseline = false) {
         type: "ordinal",
         title: null,
         scale: {
-          zero: zeroBaseline,
-        },
+          zero: zeroBaseline
+        }
       },
       x: {
         field: "CHECK_NAME",
         aggregate: "count",
-        title: "Number of Issues",
+        title: "Number of Issues"
       },
       color: {
         field: "CDM_SOURCE_ABBREVIATION",
@@ -26,9 +26,9 @@ export function specIssueStratificationByTable(zeroBaseline = false) {
         legend: {
           orient: "right",
           title: null,
-          columns: 2,
-        },
-      },
-    },
+          columns: 2
+        }
+      }
+    }
   };
 }

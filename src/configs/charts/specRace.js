@@ -10,21 +10,21 @@ export function specRace(zeroBaseline = false) {
           {
             op: "sum",
             field: "COUNT_VALUE",
-            as: "TOTAL_VALUE",
-          },
+            as: "TOTAL_VALUE"
+          }
         ],
-        frame: [null, null],
+        frame: [null, null]
       },
       {
         calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
-        as: "PERCENT",
-      },
+        as: "PERCENT"
+      }
     ],
     encoding: {
       tooltip: [
         { field: "CONCEPT_NAME", title: "Race" },
         { field: "PERCENT", title: "Percent", format: "0.2%" },
-        { field: "COUNT_VALUE", title: "Number of People" },
+        { field: "COUNT_VALUE", title: "Number of People" }
       ],
       x: {
         field: "PERCENT",
@@ -32,22 +32,22 @@ export function specRace(zeroBaseline = false) {
         aggregate: "sum",
         title: "% of People",
         axis: {
-          format: "0%",
-        },
+          format: "0%"
+        }
       },
       color: {
         field: "CONCEPT_NAME",
         type: "nominal",
         legend: {
           orient: "right",
-          title: null,
-        },
+          title: null
+        }
       },
       order: {
         aggregate: "sum",
         field: "COUNT_VALUE",
-        sort: "descending",
-      },
-    },
+        sort: "descending"
+      }
+    }
   };
 }

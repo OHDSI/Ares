@@ -39,6 +39,7 @@
               </router-link>
             </td>
             <td class="text-right">{{ records.item.count_total }}</td>
+            <td class="text-right">{{ records.item.vocabulary_version }}</td>
           </tr>
         </template>
       </v-data-table>
@@ -83,49 +84,55 @@ export default {
           text: "CDM Release Date",
           align: "start",
           sortable: true,
-          value: "cdm_release_date",
+          value: "cdm_release_date"
         },
         {
           text: "DQ Execution Date",
           align: "start",
           sortable: true,
-          value: "end_timestamp",
+          value: "end_timestamp"
         },
         {
           text: "# Passed",
           align: "end",
           sortable: true,
-          value: "count_passed",
+          value: "count_passed"
         },
         {
           text: "# Failed",
           align: "end",
           sortable: true,
-          value: "count_failed",
+          value: "count_failed"
         },
         {
           text: "# Total",
           align: "end",
           sortable: true,
-          value: "count_total",
+          value: "count_total"
         },
+        {
+          text: "Vocabulary",
+          align: "end",
+          sortable: false,
+          value: "vocabulary_version"
+        }
       ],
       specDataQualityResultsByDomain: charts.specDataQualityResultsByDomain,
       specDataQualityResultsByCategory: charts.specDataQualityResultsByCategory,
-      specDataQualityResults: charts.specDataQualityResults,
+      specDataQualityResults: charts.specDataQualityResults
     };
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   created() {
     this.load();
   },
 
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors"])
   },
 
   methods: {
@@ -133,7 +140,7 @@ export default {
       this.dataLoaded = false;
       this.$store
         .dispatch(FETCH_FILES, {
-          files: [{ name: QUALITY_INDEX, required: true }],
+          files: [{ name: QUALITY_INDEX, required: true }]
         })
         .then(() => {
           if (!this.getErrors) {
@@ -141,7 +148,7 @@ export default {
           }
         });
     },
-    displayDetails: function (resultFileName) {
+    displayDetails: function(resultFileName) {
       this.$router.push({ path: "/dq-results/" + resultFileName });
     },
     getDataQualityOverviewRoute(item) {
@@ -161,8 +168,8 @@ export default {
         item.cdm_release_date.replaceAll("-", "") +
         "/data_quality?tab=results&failFilter=enabled"
       );
-    },
-  },
+    }
+  }
 };
 </script>
 

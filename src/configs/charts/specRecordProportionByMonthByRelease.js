@@ -8,7 +8,7 @@ export function specRecordProportionByMonthByRelease(zeroBaseline = false) {
         description: "Domain Data Density",
         mark: { type: "circle", opacity: 0.5 },
         selection: {
-          release: { type: "multi", fields: ["release"], bind: "legend" },
+          release: { type: "multi", fields: ["release"], bind: "legend" }
         },
         encoding: {
           x: {
@@ -16,64 +16,64 @@ export function specRecordProportionByMonthByRelease(zeroBaseline = false) {
             type: "temporal",
             timeUnit: "yearmonth",
             scale: { domain: { selection: "brush" } },
-            axis: { title: "" },
+            axis: { title: "" }
           },
           y: {
             field: "Y_PREVALENCE_1000PP",
             type: "quantitative",
             title: "Record Proportion per 1000",
             scale: {
-              zero: zeroBaseline,
-            },
+              zero: zeroBaseline
+            }
           },
           color: {
             title: "Release",
-            field: "release",
+            field: "release"
           },
           opacity: {
             condition: { selection: "release", value: 1 },
-            value: 0.2,
+            value: 0.2
           },
           tooltip: [
             { field: "release", title: "Release" },
             {
               field: "Y_PREVALENCE_1000PP",
               title: "RPP1000",
-              type: "quantitative",
+              type: "quantitative"
             },
             {
               field: "date",
               title: "Date",
               type: "temporal",
-              timeUnit: "yearmonth",
-            },
-          ],
-        },
+              timeUnit: "yearmonth"
+            }
+          ]
+        }
       },
       {
         width: "container",
         height: 25,
         mark: { type: "line", opacity: 0.5 },
         selection: {
-          brush: { type: "interval", encodings: ["x"] },
+          brush: { type: "interval", encodings: ["x"] }
         },
         encoding: {
           x: {
             field: "date",
             type: "temporal",
             title: "Date",
-            timeUnit: "yearmonth",
+            timeUnit: "yearmonth"
           },
           y: {
             field: "Y_PREVALENCE_1000PP",
             type: "quantitative",
-            title: "",
+            title: ""
           },
           color: {
-            field: "release",
-          },
-        },
-      },
-    ],
+            field: "release"
+          }
+        }
+      }
+    ]
   };
 }

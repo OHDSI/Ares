@@ -13,6 +13,6 @@ export default new Vuex.Store({
     explorer,
     view,
     errors,
-    settings,
-  },
+    settings
+  }
 });

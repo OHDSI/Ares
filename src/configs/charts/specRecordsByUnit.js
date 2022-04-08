@@ -11,21 +11,21 @@ export function specRecordsByUnit(zeroBaseline = false) {
           {
             op: "sum",
             field: "COUNT_VALUE",
-            as: "TOTAL_VALUE",
-          },
+            as: "TOTAL_VALUE"
+          }
         ],
-        frame: [null, null],
+        frame: [null, null]
       },
       {
         calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
-        as: "PERCENT",
-      },
+        as: "PERCENT"
+      }
     ],
     encoding: {
       tooltip: [
         { field: "CONCEPT_NAME", title: "Unit Type" },
         { field: "COUNT_VALUE", title: "Number of Records", format: "," },
-        { field: "PERCENT", title: "% of Records", format: "0.2%" },
+        { field: "PERCENT", title: "% of Records", format: "0.2%" }
       ],
       x: {
         field: "PERCENT",
@@ -33,8 +33,8 @@ export function specRecordsByUnit(zeroBaseline = false) {
         title: "% of Records",
         format: "0%",
         axis: {
-          format: "0%",
-        },
+          format: "0%"
+        }
       },
       color: {
         field: "CONCEPT_NAME",
@@ -42,14 +42,14 @@ export function specRecordsByUnit(zeroBaseline = false) {
         legend: {
           orient: "right",
           title: null,
-          columns: 2,
-        },
+          columns: 2
+        }
       },
       order: {
         aggregate: "sum",
         field: "COUNT_VALUE",
-        sort: "descending",
-      },
-    },
+        sort: "descending"
+      }
+    }
   };
 }

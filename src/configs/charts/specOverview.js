@@ -11,12 +11,12 @@ export function specOverview(zeroBaseline = false) {
           labelAnchor: "start",
           labelFontSize: 12,
           labelPadding: 2,
-          labelFontWeight: "bold",
-        },
-      },
+          labelFontWeight: "bold"
+        }
+      }
     },
     config: {
-      facet: { spacing: 5 },
+      facet: { spacing: 5 }
     },
     spec: {
       height: 75,
@@ -27,7 +27,7 @@ export function specOverview(zeroBaseline = false) {
           field: "release_date",
           type: "temporal",
           axis: { title: null },
-          timeUnit: "yearmonthdate",
+          timeUnit: "yearmonthdate"
         },
         y: {
           field: "count_records",
@@ -36,20 +36,20 @@ export function specOverview(zeroBaseline = false) {
           header: { title: null },
           axis: { tickCount: 4 },
           scale: {
-            zero: zeroBaseline,
-          },
+            zero: zeroBaseline
+          }
         },
         tooltip: [
-          { field: "count_records", title: "# of Records", format: "," },
+          { field: "count_records", title: "# of Records", format: "," }
         ],
-        color: { field: "domain", type: "nominal", legend: null },
+        color: { field: "domain", type: "nominal", legend: null }
       },
       layer: [
         {
           mark: {
             type: "line",
-            point: true,
-          },
+            point: true
+          }
         },
         {
           selection: {
@@ -57,35 +57,35 @@ export function specOverview(zeroBaseline = false) {
               type: "single",
               on: "mousemove",
               fields: ["release_date"],
-              nearest: true,
-            },
+              nearest: true
+            }
           },
-          mark: { type: "point", tooltip: true },
+          mark: { type: "point", tooltip: true }
         },
         {
           transform: [
             {
               filter: {
-                and: ["x.release_date", { selection: "x" }],
-              },
-            },
+                and: ["x.release_date", { selection: "x" }]
+              }
+            }
           ],
           layer: [
             {
               mark: "rule",
               encoding: {
                 y: {
-                  height: 1,
+                  height: 1
                 },
                 color: {
-                  value: "black",
-                },
-              },
-            },
-          ],
-        },
-      ],
+                  value: "black"
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
-    resolve: { scale: { y: "independent" } },
+    resolve: { scale: { y: "independent" } }
   };
 }

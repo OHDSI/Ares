@@ -11,14 +11,14 @@ export function specDrugTypeStratification(zeroBaseline = false) {
         type: "ordinal",
         title: null,
         scale: {
-          zero: zeroBaseline,
-        },
+          zero: zeroBaseline
+        }
       },
       x: {
         field: "RECORD_COUNT",
         aggregate: "sum",
-        title: "Number of Records",
-      },
-    },
+        title: "Number of Records"
+      }
+    }
   };
 }

@@ -125,7 +125,7 @@ export default {
   name: "RangeBased",
   props: {
     observationPeriod: Array,
-    person: Array,
+    person: Array
   },
   data() {
     return {
@@ -141,49 +141,49 @@ export default {
           text: "Data source",
           align: "start",
           sortable: false,
-          value: "cdm_name",
+          value: "cdm_name"
         },
         {
           text: "Population in the Age range",
           value: "population_age",
-          align: "end",
+          align: "end"
         },
         {
           text: "% in the Age range",
           value: "population_age_percent",
-          align: "end",
+          align: "end"
         },
         {
           text: "Cumulative observation %",
           value: "cumulative_duration",
-          align: "end",
+          align: "end"
         },
         {
           text: "Average observed population per month",
           value: "population_observed",
-          align: "end",
+          align: "end"
         },
         {
           text: "Average observed % population per month",
           value: "average_population_percentage",
-          align: "end",
+          align: "end"
         },
         {
           text: "Years observed",
           value: "years_observed",
-          align: "end",
-        },
-      ],
+          align: "end"
+        }
+      ]
     };
   },
   computed: {
-    getRangeData: function () {
+    getRangeData: function() {
       const person = this.person;
       const timeparse = timeParse("%Y%m");
       const observationData = this.observationPeriod
-        .map((value) => ({
+        .map(value => ({
           cdm_name: value.source.cdm_source_abbreviation,
-          data: value.data.OBSERVED_BY_MONTH.filter((filtered) => {
+          data: value.data.OBSERVED_BY_MONTH.filter(filtered => {
             const parsedYear = parseInt(
               timeparse(filtered.MONTH_YEAR).getFullYear()
             );
@@ -202,15 +202,15 @@ export default {
                   : 0 + current.COUNT_VALUE,
                 percent: prevObj[parsedYear]?.percent
                   ? prevObj[parsedYear].percent + current.PERCENT_VALUE
-                  : 0 + current.PERCENT_VALUE,
-              },
+                  : 0 + current.PERCENT_VALUE
+              }
             };
           }, {}),
           filtered_duration: value.data.CUMULATIVE_DURATION.filter(
-            (data) => data.YEARS <= this.cumulativeObservation[0]
-          ),
+            data => data.YEARS <= this.cumulativeObservation[0]
+          )
         }))
-        .map((value) => ({
+        .map(value => ({
           cdm_name: value.cdm_name,
           population_observed: (
             Object.values(value.data).reduce(
@@ -225,71 +225,71 @@ export default {
             ) / Object.keys(value.data).length,
           years_observed: Object.keys(value.data).length,
           cumulative_duration: Math.min(
-            ...value.filtered_duration.map((value) => value.PERCENT_PEOPLE)
-          ),
+            ...value.filtered_duration.map(value => value.PERCENT_PEOPLE)
+          )
         }));
-      const personData = person.map((value) => {
+      const personData = person.map(value => {
         const filteredPopulationCount = value.data.AGE_GENDER_DATA.filter(
-          (data) => data.AGE >= this.rangeAge[0] && data.AGE <= this.rangeAge[1]
+          data => data.AGE >= this.rangeAge[0] && data.AGE <= this.rangeAge[1]
         ).reduce((prevValue, current) => prevValue + current.COUNT_VALUE, 0);
         return {
           cdm_name: value.source.cdm_source_abbreviation,
           population_age: filteredPopulationCount,
           population_age_percent:
-            filteredPopulationCount / value.data.SUMMARY[1].ATTRIBUTE_VALUE,
+            filteredPopulationCount / value.data.SUMMARY[1].ATTRIBUTE_VALUE
         };
       });
-      return observationData.map((value) => ({
+      return observationData.map(value => ({
         ...value,
-        ...personData.filter((data) => data.cdm_name === value.cdm_name)[0],
+        ...personData.filter(data => data.cdm_name === value.cdm_name)[0]
       }));
     },
-    getAgeMinMax: function () {
+    getAgeMinMax: function() {
       const data = this.person.reduce(
         (prevValue, current) => [
           ...prevValue,
-          ...current.data.AGE_GENDER_DATA.map((age) => age.AGE),
+          ...current.data.AGE_GENDER_DATA.map(age => age.AGE)
         ],
         []
       );
       return [Math.ceil(Math.min(...data)), Math.ceil(Math.max(...data))];
     },
-    getYearsMinMax: function () {
+    getYearsMinMax: function() {
       const timeparse = timeParse("%Y%m");
       const data = this.observationPeriod.reduce(
         (prevValue, current) => [
           ...prevValue,
-          ...current.data.OBSERVED_BY_MONTH.map((year) =>
+          ...current.data.OBSERVED_BY_MONTH.map(year =>
             timeparse(year.MONTH_YEAR).getFullYear()
-          ),
+          )
         ],
         []
       );
       return [Math.ceil(Math.min(...data)), Math.ceil(Math.max(...data))];
     },
 
-    getDurationMinMax: function () {
+    getDurationMinMax: function() {
       const data = this.observationPeriod.reduce(
         (prevValue, current) => [
           ...prevValue,
-          ...current.data.CUMULATIVE_DURATION.map((value) => value.YEARS),
+          ...current.data.CUMULATIVE_DURATION.map(value => value.YEARS)
         ],
         []
       );
 
       return [Math.ceil(Math.min(...data)), Math.ceil(Math.max(...data))];
-    },
+    }
   },
   watch: {
-    getRangeData: function () {
+    getRangeData: function() {
       this.$emit("rangeDataChanged", this.getRangeData);
-    },
+    }
   },
   methods: {
-    formatComma: function (value) {
+    formatComma: function(value) {
       return d3Format.format(",")(value);
-    },
-  },
+    }
+  }
 };
 </script>
 

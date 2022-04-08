@@ -4,24 +4,24 @@ import {
   SET_BASELINE,
   SET_DARK_MODE,
   SET_SETTINGS,
-  SET_VISIBILITY,
+  SET_VISIBILITY
 } from "@/data/store/modules/settings/mutations.type";
 
 const state = {
   settings: {
     darkMode: false,
-    zeroBaseline: true,
+    zeroBaseline: true
   },
-  visible: false,
+  visible: false
 };
 
 const getters = {
-  getSettings: function (state) {
+  getSettings: function(state) {
     return state.settings;
   },
-  getVisibility: function (state) {
+  getVisibility: function(state) {
     return state.visible;
-  },
+  }
 };
 
 const actions = {
@@ -29,7 +29,7 @@ const actions = {
     if (localStorageService.get("settings")) {
       commit(SET_SETTINGS, localStorageService.get("settings"));
     }
-  },
+  }
 };
 
 const mutations = {
@@ -46,12 +46,12 @@ const mutations = {
   },
   [SET_VISIBILITY](state, payload) {
     state.visible = payload;
-  },
+  }
 };
 
 export default {
   state,
   getters,
   actions,
-  mutations,
+  mutations
 };

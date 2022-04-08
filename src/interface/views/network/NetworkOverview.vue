@@ -52,7 +52,7 @@
     <v-row>
       <v-col>
         <v-card elevation="10" class="mx-auto pb-6" outlined>
-          <v-card-title>Data Source Listing</v-card-title>
+          <v-card-title>Data Sources</v-card-title>
           <v-card-text>
             <v-data-table
               dense
@@ -107,57 +107,69 @@ export default {
           text: "Data Source",
           align: "start",
           sortable: true,
-          value: "cdm_source_name",
+          value: "cdm_source_name"
         },
         {
           text: "Person Count",
           align: "end",
           sortable: true,
-          value: "releases[0].count_person",
+          value: "releases[0].count_person"
         },
         {
-          text: "Dates Observed",
+          text: "Start Observed",
           align: "start",
-          sortable: false,
-          value: "datesObserved",
+          value: "obs_period_end",
+          sortable: false
+        },
+        {
+          text: "End Observed",
+          align: "start",
+          value: "obs_period_end",
+          sortable: false
         },
         {
           text: "Latest Release",
           align: "end",
-          sortable: true,
-          value: "releases[0].release_name",
+          sortable: false,
+          value: "releases[0].release_name"
         },
         {
           text: "Data Quality Issues",
           align: "end",
           sortable: true,
-          value: "releases[0].count_data_quality_issues",
+          value: "releases[0].count_data_quality_issues"
         },
         {
           text: "Data Source Releases",
           align: "end",
           sortable: true,
-          value: "count_releases",
+          value: "count_releases"
         },
         {
           text: "Average days between releases",
           align: "end",
           sortable: true,
-          value: "averageDaysBetweenReleases",
+          value: "averageDaysBetweenReleases"
         },
         {
           text: "Vocabulary Version",
           align: "end",
           sortable: true,
-          value: "releases[0].vocabulary_version",
+          value: "releases[0].vocabulary_version"
         },
-      ],
+        {
+          text: "Update Frequency (days)",
+          align: "end",
+          sortable: true,
+          value: "average_update_interval_days"
+        }
+      ]
     };
   },
   created() {
     const sources = this.getSources;
     this.countDataSources = sources.length;
-    sources.forEach((source) => {
+    sources.forEach(source => {
       this.countPeople += source.releases[0].count_person;
       this.countDataQualityIssues +=
         source.releases[0].count_data_quality_issues;
@@ -174,54 +186,54 @@ export default {
     getDataSourceRoute(item) {
       return "/datasource/" + item.cdm_source_key;
     },
-    personCountFormatter: function (count) {
+    personCountFormatter: function(count) {
       return d3.format(".3s")(count);
     },
-    formatComma: function (value) {
+    formatComma: function(value) {
       return d3.format(",")(value);
     },
-    displayPersonReport: function (source) {
+    displayPersonReport: function(source) {
       this.$router.push({
         path:
           "/cdm/" +
           source.cdm_source_key +
           "/" +
           source.releases[0].release_id +
-          "/person",
+          "/person"
       });
     },
     navigateToDataSourceHistory(datasource) {
       this.$router.push({
         path:
-          "/datasource/" + datasource.cdm_source_key + "/data_quality_history",
+          "/datasource/" + datasource.cdm_source_key + "/data_quality_history"
       });
     },
-    displayDetails: function (source) {
+    displayDetails: function(source) {
       this.$router.push({
         path:
           "/cdm/" +
           source.cdm_source_key +
           "/" +
           source.releases[0].release_id +
-          "/data_quality",
+          "/data_quality"
       });
-    },
+    }
   },
   computed: {
     ...mapGetters(["getSources"]),
-    sourceData: function () {
-      const sources = this.getSources.map((source) => ({
+    sourceData: function() {
+      const sources = this.getSources.map(source => ({
         ...source,
         averageDaysBetweenReleases: source.releases
-          .map((release) => new Date(release.release_name))
+          .map(release => new Date(release.release_name))
           .map((date, index, array) => {
             if (array[index + 1]) {
               return (date - array[index + 1]) / (1000 * 60 * 60 * 24);
             }
           })
-          .filter((value) => value),
+          .filter(value => value)
       }));
-      return sources.map((source) => ({
+      return sources.map(source => ({
         ...source,
         averageDaysBetweenReleases:
           source.averageDaysBetweenReleases.length > 0
@@ -229,10 +241,10 @@ export default {
                 (prevValue, current) => prevValue + current,
                 0
               ) / source.averageDaysBetweenReleases.length
-            : 0,
+            : 0
       }));
-    },
-  },
+    }
+  }
 };
 </script>
 

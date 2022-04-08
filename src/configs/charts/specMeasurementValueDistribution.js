@@ -9,9 +9,9 @@ export function specMeasurementValueDistribution(zeroBaseline = false) {
         type: "nominal",
         title: null,
         scale: {
-          zero: zeroBaseline,
-        },
-      },
+          zero: zeroBaseline
+        }
+      }
     },
     layer: [
       {
@@ -21,30 +21,30 @@ export function specMeasurementValueDistribution(zeroBaseline = false) {
             field: "P10_VALUE",
             type: "quantitative",
             scale: { zero: false },
-            title: null,
+            title: null
           },
-          x2: { field: "P90_VALUE" },
-        },
+          x2: { field: "P90_VALUE" }
+        }
       },
       {
         mark: { type: "bar", size: 14, tooltip: {} },
         encoding: {
           x: { field: "P25_VALUE", type: "quantitative" },
           x2: { field: "P75_VALUE" },
-          color: { field: "CATEGORY", type: "nominal", legend: null },
-        },
+          color: { field: "CATEGORY", type: "nominal", legend: null }
+        }
       },
       {
         mark: { type: "tick", color: "white", size: 14 },
         encoding: {
-          x: { field: "MEDIAN_VALUE", type: "quantitative" },
-        },
-      },
+          x: { field: "MEDIAN_VALUE", type: "quantitative" }
+        }
+      }
     ],
     row: {
       field: "CATEGORY",
       type: "nominal",
-      title: "Measurement",
-    },
+      title: "Measurement"
+    }
   };
 }

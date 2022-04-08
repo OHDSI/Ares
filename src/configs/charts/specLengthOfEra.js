@@ -11,24 +11,24 @@ export function specLengthOfEra(zeroBaseline = false) {
             field: "MIN_VALUE",
             type: "quantitative",
             scale: { zero: false },
-            title: "Number of Days",
+            title: "Number of Days"
           },
-          x2: { field: "MAX_VALUE" },
-        },
+          x2: { field: "MAX_VALUE" }
+        }
       },
       {
         mark: { type: "bar", size: 28, tooltip: {} },
         encoding: {
           x: { field: "P25_VALUE", type: "quantitative" },
-          x2: { field: "P75_VALUE" },
-        },
+          x2: { field: "P75_VALUE" }
+        }
       },
       {
         mark: { type: "tick", color: "white", size: 28 },
         encoding: {
-          x: { field: "MEDIAN_VALUE", type: "quantitative" },
-        },
-      },
-    ],
+          x: { field: "MEDIAN_VALUE", type: "quantitative" }
+        }
+      }
+    ]
   };
 }

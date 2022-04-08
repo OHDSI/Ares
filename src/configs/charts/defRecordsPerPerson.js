@@ -12,7 +12,7 @@ export function defRecordsPerPerson(zeroBaseline = false) {
             type: "temporal",
             axis: { title: "Date" },
             scale: { domain: { selection: "brush" } },
-            timeUnit: "yearmonth",
+            timeUnit: "yearmonth"
           },
           y: {
             field: "records",
@@ -20,10 +20,10 @@ export function defRecordsPerPerson(zeroBaseline = false) {
             title: "Records",
             format: ",",
             scale: {
-              zero: zeroBaseline,
-            },
+              zero: zeroBaseline
+            }
           },
-          color: { field: "domain", type: "nominal" },
+          color: { field: "domain", type: "nominal" }
         },
         layer: [
           {
@@ -32,15 +32,15 @@ export function defRecordsPerPerson(zeroBaseline = false) {
               {
                 name: "source",
                 select: { type: "point", fields: ["domain"] },
-                bind: "legend",
-              },
+                bind: "legend"
+              }
             ],
             encoding: {
               opacity: {
                 condition: { param: "source", value: 1 },
-                value: 0.2,
-              },
-            },
+                value: 0.2
+              }
+            }
           },
           {
             transform: [{ filter: { param: "source" } }],
@@ -49,8 +49,8 @@ export function defRecordsPerPerson(zeroBaseline = false) {
                 type: "single",
                 on: "mousemove",
                 encodings: ["x"],
-                nearest: true,
-              },
+                nearest: true
+              }
             },
             mark: { type: "point", tooltip: true },
             encoding: {
@@ -59,44 +59,44 @@ export function defRecordsPerPerson(zeroBaseline = false) {
                   field: "records",
                   type: "quantitative",
                   title: "Records per person",
-                  format: ",",
+                  format: ","
                 },
                 {
                   field: "date",
                   type: "temporal",
-                  title: "Date",
+                  title: "Date"
                 },
                 {
                   field: "domain",
                   type: "nominal",
-                  title: "Domain",
-                },
-              ],
-            },
+                  title: "Domain"
+                }
+              ]
+            }
           },
           {
             transform: [
               {
                 filter: {
-                  and: ["x.date", { selection: "x" }],
-                },
-              },
+                  and: ["x.date", { selection: "x" }]
+                }
+              }
             ],
             layer: [
               {
                 mark: "rule",
                 encoding: {
                   y: {
-                    height: 1,
+                    height: 1
                   },
                   color: {
-                    value: "black",
-                  },
-                },
-              },
-            ],
-          },
-        ],
+                    value: "black"
+                  }
+                }
+              }
+            ]
+          }
+        ]
       },
 
       {
@@ -107,44 +107,44 @@ export function defRecordsPerPerson(zeroBaseline = false) {
             field: "date",
             type: "temporal",
             title: "Date",
-            timeUnit: "yearmonth",
+            timeUnit: "yearmonth"
           },
           y: {
             field: "records",
             type: "quantitative",
             axis: { title: "" },
             scale: {
-              zero: zeroBaseline,
-            },
+              zero: zeroBaseline
+            }
           },
-          color: { field: "domain", type: "nominal", title: "Domain" },
+          color: { field: "domain", type: "nominal", title: "Domain" }
         },
         layer: [
           {
             mark: { type: "line", interpolate: "linear" },
             selection: {
-              brush: { type: "interval", encodings: ["x"] },
+              brush: { type: "interval", encodings: ["x"] }
             },
             params: [
               {
                 name: "source",
                 select: { type: "point", fields: ["domain"] },
-                bind: "legend",
-              },
+                bind: "legend"
+              }
             ],
             encoding: {
               opacity: {
                 condition: { param: "source", value: 1 },
-                value: 0.2,
-              },
-            },
+                value: 0.2
+              }
+            }
           },
           {
             transform: [{ filter: { param: "source" } }],
-            mark: { type: "point", tooltip: true },
-          },
-        ],
-      },
-    ],
+            mark: { type: "point", tooltip: true }
+          }
+        ]
+      }
+    ]
   };
 }

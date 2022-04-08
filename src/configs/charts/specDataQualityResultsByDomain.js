@@ -10,26 +10,26 @@ export function specDataQualityResultsByDomain(zeroBaseline = false) {
         type: "temporal",
         timeUnit: "yearmonthdate",
         axis: {
-          title: "CDM Release Date",
+          title: "CDM Release Date"
         },
         scale: {
-          type: "utc",
-        },
+          type: "utc"
+        }
       },
       y: {
         field: "count_value",
         aggregate: "sum",
         type: "quantitative",
         axis: {
-          title: "Checks Failed",
+          title: "Checks Failed"
         },
         scale: {
-          zero: zeroBaseline,
-        },
+          zero: zeroBaseline
+        }
       },
       color: {
         field: "cdm_table_name",
-        title: "Check Domain",
+        title: "Check Domain"
       },
       tooltip: [
         {
@@ -38,17 +38,17 @@ export function specDataQualityResultsByDomain(zeroBaseline = false) {
           type: "temporal",
           format: "%Y-%m-%d",
           scale: {
-            type: "utc",
-          },
+            type: "utc"
+          }
         },
         { field: "cdm_table_name", title: "Check Domain" },
         {
           field: "count_value",
           aggregate: "sum",
           type: "quantitative",
-          title: "Checks Failed",
-        },
-      ],
+          title: "Checks Failed"
+        }
+      ]
     },
     layer: [
       {
@@ -57,57 +57,57 @@ export function specDataQualityResultsByDomain(zeroBaseline = false) {
           {
             name: "source",
             select: { type: "point", fields: ["cdm_table_name"] },
-            bind: "legend",
-          },
+            bind: "legend"
+          }
         ],
         encoding: {
           opacity: {
             condition: { param: "source", value: 1 },
-            value: 0.2,
-          },
-        },
+            value: 0.2
+          }
+        }
       },
       {
         selection: {
           dataSource: {
             type: "multi",
             fields: ["cdm_table_name"],
-            bind: "legend",
+            bind: "legend"
           },
           x: {
             type: "single",
             on: "mousemove",
             fields: ["cdm_release_date"],
-            nearest: true,
-          },
+            nearest: true
+          }
         },
         transform: [
           {
-            filter: { selection: "dataSource" },
-          },
+            filter: { selection: "dataSource" }
+          }
         ],
-        mark: { type: "point", tooltip: true },
+        mark: { type: "point", tooltip: true }
       },
       {
         transform: [
           {
             filter: {
-              and: ["x.cdm_release_date", { selection: "x" }],
-            },
+              and: ["x.cdm_release_date", { selection: "x" }]
+            }
           },
-          { filter: { selection: "dataSource" } },
+          { filter: { selection: "dataSource" } }
         ],
         layer: [
           {
             mark: "rule",
             encoding: {
               y: {
-                height: 1,
-              },
-            },
-          },
-        ],
-      },
-    ],
+                height: 1
+              }
+            }
+          }
+        ]
+      }
+    ]
   };
 }

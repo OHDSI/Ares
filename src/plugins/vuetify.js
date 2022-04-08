@@ -11,11 +11,11 @@ export default new Vuetify({
 
     themes: {
       light: {
-        accent: "#E0E0E0",
+        accent: "#E0E0E0"
       },
       dark: {
-        accent: "#424242",
-      },
-    },
-  },
+        accent: "#424242"
+      }
+    }
+  }
 });

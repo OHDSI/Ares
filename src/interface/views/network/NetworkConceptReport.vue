@@ -86,7 +86,7 @@ import VegaChart from "@/interface/components/VegaChart";
 export default {
   components: {
     VegaChart,
-    ReturnButton,
+    ReturnButton
   },
   data() {
     return {
@@ -110,31 +110,30 @@ export default {
       dataLoaded: false,
       historyRecords: [],
       cdmSourceName: "",
-      specMeasurementValueDistribution:
-        charts.specMeasurementValueDistribution1,
+      specMeasurementValueDistribution: charts.specMeasurementValueDistribution1
     };
   },
   computed: {
     ...mapGetters(["getData", "getSources", "getErrors"]),
-    getSelectedMeasurementUnits: function () {
+    getSelectedMeasurementUnits: function() {
       return this.selectedMeasurementUnits.length
-        ? this.measurementValueDistribution.filter((value) =>
+        ? this.measurementValueDistribution.filter(value =>
             this.selectedMeasurementUnits.includes(value.CATEGORY)
           )
         : this.measurementValueDistribution;
     },
-    getMeasurementUnits: function () {
-      return this.measurementValueDistribution.map((value) => value.CATEGORY);
-    },
+    getMeasurementUnits: function() {
+      return this.measurementValueDistribution.map(value => value.CATEGORY);
+    }
   },
   created() {
     this.load();
   },
   methods: {
-    formatPercent: function (value) {
+    formatPercent: function(value) {
       return d3Format.format("0.0%")(value);
     },
-    triggerResize: function () {
+    triggerResize: function() {
       window.dispatchEvent(new Event("resize"));
     },
     toggleMeasurementValueChart() {
@@ -159,14 +158,14 @@ export default {
           "/" +
           this.$route.params.release +
           "/data_quality?tab=results&conceptFailFilter=" +
-          this.$route.params.concept,
+          this.$route.params.concept
       });
     },
-    load: function () {
+    load: function() {
       this.dataLoaded = false;
       this.$store
         .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [CONCEPT],
+          files: [CONCEPT]
         })
         .then(() => {
           if (!this.getErrors) {
@@ -174,7 +173,7 @@ export default {
             this.conceptId = this.getData[CONCEPT][0].data.CONCEPT_ID[0];
             this.numPersons = _.sumBy(
               this.getData[CONCEPT],
-              (r) => r.data.NUM_PERSONS[0]
+              r => r.data.NUM_PERSONS[0]
             );
 
             if (
@@ -184,12 +183,10 @@ export default {
               this.measurementValueDistribution = this.getData[CONCEPT].reduce(
                 (prevValue, current) => [
                   ...prevValue,
-                  ...current.data.MEASUREMENT_VALUE_DISTRIBUTION.map(
-                    (value) => ({
-                      ...value,
-                      SOURCE_UNIT_KEY: `${current.source.cdm_source_key} - ${value.CATEGORY}`,
-                    })
-                  ),
+                  ...current.data.MEASUREMENT_VALUE_DISTRIBUTION.map(value => ({
+                    ...value,
+                    SOURCE_UNIT_KEY: `${current.source.cdm_source_key} - ${value.CATEGORY}`
+                  }))
                 ],
                 []
               );
@@ -198,8 +195,8 @@ export default {
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

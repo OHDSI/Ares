@@ -7,8 +7,8 @@ export function specIssuesByRelease(zeroBaseline = false) {
       {
         timeUnit: "yearmonthdate",
         field: "release_name",
-        as: "date",
-      },
+        as: "date"
+      }
     ],
     encoding: {
       tooltip: [
@@ -16,32 +16,32 @@ export function specIssuesByRelease(zeroBaseline = false) {
           field: "date",
           title: "Release",
           type: "temporal",
-          format: "%Y-%m-%d",
+          format: "%Y-%m-%d"
         },
-        { field: "count_data_quality_issues", title: "Issues", format: "," },
+        { field: "count_data_quality_issues", title: "Issues", format: "," }
       ],
       x: {
         field: "date",
         type: "temporal",
         timeUnit: "yearmonthdate",
         axis: {
-          title: "Release",
-        },
+          title: "Release"
+        }
       },
       y: {
         field: "count_data_quality_issues",
         type: "quantitative",
         axis: {
-          title: "Issues",
+          title: "Issues"
         },
         scale: {
-          zero: zeroBaseline,
-        },
-      },
+          zero: zeroBaseline
+        }
+      }
     },
     layer: [
       {
-        mark: { type: "line", interpolate: "linear", point: true },
+        mark: { type: "line", interpolate: "linear", point: true }
       },
       {
         selection: {
@@ -49,30 +49,30 @@ export function specIssuesByRelease(zeroBaseline = false) {
             type: "single",
             on: "mousemove",
             fields: ["release_name"],
-            nearest: true,
-          },
+            nearest: true
+          }
         },
-        mark: { type: "point", tooltip: true },
+        mark: { type: "point", tooltip: true }
       },
       {
         transform: [
           {
             filter: {
-              and: ["x.release_name", { selection: "x" }],
-            },
-          },
+              and: ["x.release_name", { selection: "x" }]
+            }
+          }
         ],
         layer: [
           {
             mark: "rule",
             encoding: {
               y: {
-                height: 1,
-              },
-            },
-          },
-        ],
-      },
-    ],
+                height: 1
+              }
+            }
+          }
+        ]
+      }
+    ]
   };
 }

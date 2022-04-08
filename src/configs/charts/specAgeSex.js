@@ -6,8 +6,8 @@ export function specAgeSex(zeroBaseline = false) {
     params: [
       {
         name: "paintbrush",
-        select: { type: "point", on: "mouseover", nearest: true },
-      },
+        select: { type: "point", on: "mouseover", nearest: true }
+      }
     ],
     mark: "bar",
     transform: [{ filter: "datum.AGE >= 0" }],
@@ -15,16 +15,16 @@ export function specAgeSex(zeroBaseline = false) {
       tooltip: [
         { field: "CONCEPT_NAME", title: "Sex" },
         { field: "AGE", title: "Age" },
-        { field: "COUNT_VALUE", title: "# of People", format: "," },
+        { field: "COUNT_VALUE", title: "# of People", format: "," }
       ],
       color: {
         condition: {
           param: "paintbrush",
           field: "CONCEPT_NAME",
           type: "ordinal",
-          legend: null,
+          legend: null
         },
-        value: "grey",
+        value: "grey"
       },
       /* color: {
         field: "CONCEPT_NAME",
@@ -39,23 +39,23 @@ export function specAgeSex(zeroBaseline = false) {
           labelAnchor: "start",
           labelFontSize: 12,
           labelPadding: 2,
-          labelFontWeight: "bold",
-        },
+          labelFontWeight: "bold"
+        }
       },
       x: {
         field: "AGE",
         title: "Age at First Observation",
         type: "quantitative",
-        scale: { domain: [0, 100] },
+        scale: { domain: [0, 100] }
       },
       y: {
         aggregate: "sum",
         field: "COUNT_VALUE",
         title: null,
         scale: {
-          zero: zeroBaseline,
-        },
-      },
-    },
+          zero: zeroBaseline
+        }
+      }
+    }
   };
 }

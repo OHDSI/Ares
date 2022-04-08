@@ -51,42 +51,42 @@ import { SET_VISIBILITY } from "@/data/store/modules/settings/mutations.type";
 export default {
   name: "Settings",
   props: {
-    show: { type: Boolean, default: false },
+    show: { type: Boolean, default: false }
   },
   data() {
     return {
       notifications: false,
       sound: true,
-      widgets: false,
+      widgets: false
     };
   },
   computed: {
     ...mapGetters(["getSettings", "getVisibility"]),
     darkMode: {
-      get: function () {
+      get: function() {
         return this.getSettings.darkMode;
       },
-      set: function (value) {
+      set: function(value) {
         this.$store.commit("setDarkMode", value);
-      },
+      }
     },
     zeroBaseline: {
-      get: function () {
+      get: function() {
         return this.getSettings.zeroBaseline;
       },
-      set: function (value) {
+      set: function(value) {
         this.$store.commit("setBaseline", value);
-      },
+      }
     },
     showMenu: {
-      get: function () {
+      get: function() {
         return this.getVisibility;
       },
-      set: function (value) {
+      set: function(value) {
         this.$store.commit(SET_VISIBILITY, value);
-      },
-    },
-  },
+      }
+    }
+  }
 };
 </script>
 

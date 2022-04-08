@@ -11,7 +11,7 @@ export function specObservationByMonth(zeroBaseline = false) {
             type: "temporal",
             scale: { domain: { selection: "brush" } },
             axis: { title: "" },
-            timeUnit: "yearmonth",
+            timeUnit: "yearmonth"
           },
           y: {
             field: "PERCENT_VALUE",
@@ -19,37 +19,37 @@ export function specObservationByMonth(zeroBaseline = false) {
             title: "% of People",
             axis: { format: "%" },
             scale: {
-              zero: zeroBaseline,
-            },
+              zero: zeroBaseline
+            }
           },
           tooltip: [
             {
               field: "DATE",
               title: "Date",
-              timeUnit: "yearmonth",
+              timeUnit: "yearmonth"
             },
             {
               field: "COUNT_VALUE",
               title: "# of People",
-              format: ",",
+              format: ","
             },
             {
               field: "PERCENT_VALUE",
               title: "% of People",
-              format: "0.2%",
-            },
-          ],
+              format: "0.2%"
+            }
+          ]
         },
         layer: [
           {
             mark: {
               type: "line",
               point: true,
-              strokeWidth: 1,
+              strokeWidth: 1
             },
             encoding: {
-              y: { field: "PERCENT_VALUE", type: "quantitative" },
-            },
+              y: { field: "PERCENT_VALUE", type: "quantitative" }
+            }
           },
           {
             params: [
@@ -59,49 +59,49 @@ export function specObservationByMonth(zeroBaseline = false) {
                   type: "point",
                   fields: ["DATE"],
                   on: "mousemove",
-                  nearest: true,
-                },
-              },
+                  nearest: true
+                }
+              }
             ],
             mark: { type: "point" },
             encoding: {
               y: { field: "PERCENT_VALUE", type: "quantitative" },
-              opacity: { value: 0 },
-            },
+              opacity: { value: 0 }
+            }
           },
           {
             transform: [
               {
                 filter: {
-                  and: ["index.DATE", { param: "index" }],
-                },
-              },
+                  and: ["index.DATE", { param: "index" }]
+                }
+              }
             ],
             mark: "rule",
             encoding: {
               y: {
-                height: 1,
-              },
-            },
-          },
-        ],
+                height: 1
+              }
+            }
+          }
+        ]
       },
       {
         width: "container",
         height: 50,
         mark: "line",
         selection: {
-          brush: { type: "interval", encodings: ["x"] },
+          brush: { type: "interval", encodings: ["x"] }
         },
         encoding: {
           x: { field: "DATE", type: "temporal", title: "Date" },
           y: {
             field: "COUNT_VALUE",
             type: "quantitative",
-            axis: null,
-          },
-        },
-      },
-    ],
+            axis: null
+          }
+        }
+      }
+    ]
   };
 }

@@ -87,10 +87,10 @@ export const charts = {
   specDataQualityResultsByCategory,
   specCumulativeObservation,
   specPopulationByRelease,
-  specIssuesByRelease,
+  specIssuesByRelease
 };
 
 export const explorerConfigs = {
   folders,
-  reports,
+  reports
 };

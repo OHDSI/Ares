@@ -11,36 +11,36 @@ export function specDataQualityResults(zeroBaseline = false) {
           type: "temporal",
           format: "%Y-%m-%d",
           scale: {
-            type: "utc",
-          },
+            type: "utc"
+          }
         },
-        { field: "count_failed", title: "Checks Failed" },
+        { field: "count_failed", title: "Checks Failed" }
       ],
       x: {
         field: "cdm_release_date",
         type: "temporal",
         timeUnit: "yearmonthdate",
         axis: {
-          title: "CDM Release Date",
+          title: "CDM Release Date"
         },
         scale: {
-          type: "utc",
-        },
+          type: "utc"
+        }
       },
       y: {
         field: "count_failed",
         type: "quantitative",
         axis: {
-          title: "Checks Failed",
+          title: "Checks Failed"
         },
         scale: {
-          zero: zeroBaseline,
-        },
-      },
+          zero: zeroBaseline
+        }
+      }
     },
     layer: [
       {
-        mark: { type: "line", interpolate: "linear" },
+        mark: { type: "line", interpolate: "linear" }
       },
       {
         selection: {
@@ -48,30 +48,30 @@ export function specDataQualityResults(zeroBaseline = false) {
             type: "single",
             on: "mousemove",
             fields: ["cdm_release_date"],
-            nearest: true,
-          },
+            nearest: true
+          }
         },
-        mark: { type: "point", tooltip: true },
+        mark: { type: "point", tooltip: true }
       },
       {
         transform: [
           {
             filter: {
-              and: ["x.cdm_release_date", { selection: "x" }],
-            },
-          },
+              and: ["x.cdm_release_date", { selection: "x" }]
+            }
+          }
         ],
         layer: [
           {
             mark: "rule",
             encoding: {
               y: {
-                height: 1,
-              },
-            },
-          },
-        ],
-      },
-    ],
+                height: 1
+              }
+            }
+          }
+        ]
+      }
+    ]
   };
 }

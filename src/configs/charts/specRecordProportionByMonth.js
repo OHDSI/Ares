@@ -14,10 +14,10 @@ export function specRecordProportionByMonth(zeroBaseline = false) {
                 field: "Y_PREVALENCE_1000PP",
                 type: "quantitative",
                 scale: {
-                  zero: zeroBaseline,
-                },
-              },
-            },
+                  zero: zeroBaseline
+                }
+              }
+            }
           },
           {
             params: [
@@ -27,9 +27,9 @@ export function specRecordProportionByMonth(zeroBaseline = false) {
                   type: "point",
                   fields: ["date"],
                   on: "mousemove",
-                  nearest: true,
-                },
-              },
+                  nearest: true
+                }
+              }
             ],
             mark: { type: "point" },
             encoding: {
@@ -37,27 +37,27 @@ export function specRecordProportionByMonth(zeroBaseline = false) {
                 field: "Y_PREVALENCE_1000PP",
                 type: "quantitative",
                 scale: {
-                  zero: zeroBaseline,
-                },
+                  zero: zeroBaseline
+                }
               },
-              opacity: { value: 0 },
-            },
+              opacity: { value: 0 }
+            }
           },
           {
             transform: [
               {
                 filter: {
-                  and: ["index.date", { param: "index" }],
-                },
-              },
+                  and: ["index.date", { param: "index" }]
+                }
+              }
             ],
             mark: "rule",
             encoding: {
               y: {
-                height: 1,
-              },
-            },
-          },
+                height: 1
+              }
+            }
+          }
         ],
         encoding: {
           x: {
@@ -65,52 +65,52 @@ export function specRecordProportionByMonth(zeroBaseline = false) {
             type: "temporal",
             timeUnit: "yearmonth",
             scale: { domain: { selection: "brush" } },
-            axis: { title: "" },
+            axis: { title: "" }
           },
           y: {
             field: "Y_PREVALENCE_1000PP",
             type: "quantitative",
             title: "Record Proportion per 1000",
             scale: {
-              zero: zeroBaseline,
-            },
+              zero: zeroBaseline
+            }
           },
           tooltip: [
             {
               field: "Y_PREVALENCE_1000PP",
               title: "RPP1000",
-              type: "quantitative",
+              type: "quantitative"
             },
             {
               field: "date",
               title: "Date",
               type: "temporal",
-              timeUnit: "yearmonth",
-            },
-          ],
-        },
+              timeUnit: "yearmonth"
+            }
+          ]
+        }
       },
       {
         width: "container",
         height: 25,
         mark: "line",
         selection: {
-          brush: { type: "interval", encodings: ["x"] },
+          brush: { type: "interval", encodings: ["x"] }
         },
         encoding: {
           x: {
             field: "date",
             type: "temporal",
             title: "Date",
-            timeUnit: "yearmonth",
+            timeUnit: "yearmonth"
           },
           y: {
             field: "Y_PREVALENCE_1000PP",
             type: "quantitative",
-            title: "",
-          },
-        },
-      },
-    ],
+            title: ""
+          }
+        }
+      }
+    ]
   };
 }

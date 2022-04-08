@@ -7,8 +7,8 @@ export function specPopulationByRelease(zeroBaseline = false) {
       {
         timeUnit: "yearmonthdate",
         field: "release_name",
-        as: "date",
-      },
+        as: "date"
+      }
     ],
     encoding: {
       tooltip: [
@@ -16,32 +16,32 @@ export function specPopulationByRelease(zeroBaseline = false) {
           field: "date",
           title: "Release date",
           type: "temporal",
-          format: "%Y-%m-%d",
+          format: "%Y-%m-%d"
         },
-        { field: "count_person", title: "Population", format: "," },
+        { field: "count_person", title: "Population", format: "," }
       ],
       x: {
         field: "date",
         type: "temporal",
         timeUnit: "yearmonthdate",
         axis: {
-          title: "Release",
-        },
+          title: "Release"
+        }
       },
       y: {
         field: "count_person",
         type: "quantitative",
         axis: {
-          title: "People",
+          title: "People"
         },
         scale: {
-          zero: zeroBaseline,
-        },
-      },
+          zero: zeroBaseline
+        }
+      }
     },
     layer: [
       {
-        mark: { type: "line", interpolate: "linear", point: true },
+        mark: { type: "line", interpolate: "linear", point: true }
       },
       {
         selection: {
@@ -49,30 +49,30 @@ export function specPopulationByRelease(zeroBaseline = false) {
             type: "single",
             on: "mousemove",
             fields: ["release_name"],
-            nearest: true,
-          },
+            nearest: true
+          }
         },
-        mark: { type: "point", tooltip: true },
+        mark: { type: "point", tooltip: true }
       },
       {
         transform: [
           {
             filter: {
-              and: ["x.release_name", { selection: "x" }],
-            },
-          },
+              and: ["x.release_name", { selection: "x" }]
+            }
+          }
         ],
         layer: [
           {
             mark: "rule",
             encoding: {
               y: {
-                height: 1,
-              },
-            },
-          },
-        ],
-      },
-    ],
+                height: 1
+              }
+            }
+          }
+        ]
+      }
+    ]
   };
 }

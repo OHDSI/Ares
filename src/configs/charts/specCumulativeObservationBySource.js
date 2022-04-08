@@ -7,7 +7,7 @@ export function specCumulativeObservationBySource(zeroBaseline = false) {
       x: {
         field: "YEARS",
         type: "quantitative",
-        title: "Years of Observation",
+        title: "Years of Observation"
       },
       y: {
         field: "PERCENT_PEOPLE",
@@ -15,14 +15,14 @@ export function specCumulativeObservationBySource(zeroBaseline = false) {
         title: "% of People",
         axis: { format: "0.0%" },
         scale: {
-          zero: zeroBaseline,
-        },
+          zero: zeroBaseline
+        }
       },
       color: {
         field: "DATA_SOURCE_KEY",
         title: "Data Source",
-        legend: { orient: "right", columns: 2 },
-      },
+        legend: { orient: "right", columns: 2 }
+      }
     },
 
     layer: [
@@ -32,57 +32,57 @@ export function specCumulativeObservationBySource(zeroBaseline = false) {
           {
             name: "source",
             select: { type: "point", fields: ["DATA_SOURCE_KEY"] },
-            bind: "legend",
-          },
+            bind: "legend"
+          }
         ],
         encoding: {
           opacity: {
             condition: { param: "source", value: 1 },
-            value: 0.2,
-          },
-        },
+            value: 0.2
+          }
+        }
       },
       {
         selection: {
           dataSource: {
             type: "multi",
             fields: ["DATA_SOURCE_KEY"],
-            bind: "legend",
+            bind: "legend"
           },
           x: {
             type: "single",
             on: "mousemove",
             encodings: ["x"],
-            nearest: true,
-          },
+            nearest: true
+          }
         },
         transform: [
           {
-            filter: { selection: "dataSource" },
-          },
+            filter: { selection: "dataSource" }
+          }
         ],
-        mark: { type: "point", tooltip: true },
+        mark: { type: "point", tooltip: true }
       },
       {
         transform: [
           {
             filter: {
-              and: ["x.YEARS", { selection: "x" }],
-            },
+              and: ["x.YEARS", { selection: "x" }]
+            }
           },
-          { filter: { selection: "dataSource" } },
+          { filter: { selection: "dataSource" } }
         ],
         layer: [
           {
             mark: "rule",
             encoding: {
               y: {
-                height: 1,
-              },
-            },
-          },
-        ],
-      },
-    ],
+                height: 1
+              }
+            }
+          }
+        ]
+      }
+    ]
   };
 }

@@ -10,13 +10,13 @@ export function specVisitStratification(zeroBaseline = false) {
         type: "ordinal",
         title: null,
         scale: {
-          zero: zeroBaseline,
-        },
+          zero: zeroBaseline
+        }
       },
       x: {
         field: "RECORD_COUNT",
         aggregate: "sum",
-        title: "Number of Records",
+        title: "Number of Records"
       },
       color: {
         field: "CDM_TABLE_NAME",
@@ -24,9 +24,9 @@ export function specVisitStratification(zeroBaseline = false) {
         title: "Event Domain Table",
         legend: {
           orient: "bottom",
-          title: null,
-        },
-      },
-    },
+          title: null
+        }
+      }
+    }
   };
 }

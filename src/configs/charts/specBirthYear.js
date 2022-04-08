@@ -6,8 +6,8 @@ export function specBirthYear(zeroBaseline = false) {
     params: [
       {
         name: "paintbrush",
-        select: { type: "point", on: "mouseover", nearest: true },
-      },
+        select: { type: "point", on: "mouseover", nearest: true }
+      }
     ],
     mark: { type: "bar" },
     encoding: {
@@ -15,25 +15,25 @@ export function specBirthYear(zeroBaseline = false) {
       x: {
         field: "YEAR",
         type: "temporal",
-        title: "Year of Birth",
+        title: "Year of Birth"
       },
       y: {
         field: "COUNT_PERSON",
         aggregate: "sum",
         title: "Number of People",
         scale: {
-          zero: zeroBaseline,
-        },
+          zero: zeroBaseline
+        }
       },
       color: {
         condition: {
           param: "paintbrush",
           field: "YEAR",
           type: "ordinal",
-          legend: null,
+          legend: null
         },
-        value: "grey",
-      },
-    },
+        value: "grey"
+      }
+    }
   };
 }

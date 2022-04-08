@@ -8,16 +8,16 @@ export function specEthnicity(zeroBaseline = false) {
       x: {
         field: "COUNT_VALUE",
         aggregate: "sum",
-        title: "Number of People",
+        title: "Number of People"
       },
       color: {
         field: "CONCEPT_NAME",
         legend: {
           orient: "right",
           columns: 2,
-          title: "Ethnicity",
-        },
-      },
-    },
+          title: "Ethnicity"
+        }
+      }
+    }
   };
 }
