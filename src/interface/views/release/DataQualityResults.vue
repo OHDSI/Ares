@@ -6,6 +6,7 @@
           <v-tab href="#overview">Overview</v-tab>
           <v-tab href="#metadata">Metadata</v-tab>
           <v-tab href="#results">Results</v-tab>
+          <v-tab href="#pivot">Pivot table</v-tab>
         </v-tabs>
         <v-tabs-items :value="tab">
           <v-tab-item v-if="dataLoaded" value="overview">
@@ -239,7 +240,7 @@
               :headers="showHeaders"
               :items="filteredChecks"
               :footer-props="{
-                'items-per-page-options': [5, 10, 25]
+                'items-per-page-options': [5, 10, 25],
               }"
               item-key="checkId"
               :items-per-page="10"
@@ -383,6 +384,16 @@
               </template>
             </v-data-table>
           </v-tab-item>
+          <v-tab-item v-if="dataLoaded" value="pivot">
+            <v-container>
+              <Pivot
+                :data="rawData.CheckResults"
+                :rows="['CDM_TABLE_NAME']"
+                :cols="['CATEGORY']"
+              >
+              </Pivot>
+            </v-container>
+          </v-tab-item>
         </v-tabs-items>
       </v-card>
     </div>
@@ -391,6 +402,7 @@
 
 <script>
 import { codemirror } from "vue-codemirror";
+import Pivot from "../../components/Pivot/Pivot";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
 import "codemirror/theme/neat.css";
@@ -406,15 +418,20 @@ import deriveResults from "@/services/derive-results";
 export default {
   components: {
     codemirror,
-    infopanel
+    infopanel,
+    Pivot,
   },
-  data: function() {
+  data: function () {
     return {
       chooseHeaderMenu: false,
       chooseFilter: false,
       versions: [],
+      currentTag: "",
       dataLoaded: false,
       dqResults: null,
+      selection: [],
+      rawData: [],
+      pivotTableHeaders: [],
       derivedResults: {},
       helpfulFilters: [
         {
@@ -429,8 +446,8 @@ export default {
             CATEGORY: [],
             SUBCATEGORY: [],
             CONTEXT: [],
-            CHECK_LEVEL: []
-          }
+            CHECK_LEVEL: [],
+          },
         },
         {
           text: "No Filters",
@@ -444,9 +461,9 @@ export default {
             CATEGORY: [],
             SUBCATEGORY: [],
             CONTEXT: [],
-            CHECK_LEVEL: []
-          }
-        }
+            CHECK_LEVEL: [],
+          },
+        },
       ],
       filters: {
         FAILED: [],
@@ -457,7 +474,7 @@ export default {
         CATEGORY: [],
         SUBCATEGORY: [],
         CONTEXT: [],
-        CHECK_LEVEL: []
+        CHECK_LEVEL: [],
       },
       search: "",
       selectedHeaders: [],
@@ -468,96 +485,96 @@ export default {
         FAILED: {
           text: "Status",
           sortable: true,
-          value: "FAILED"
+          value: "FAILED",
         },
         CDM_TABLE_NAME: {
           text: "Table",
           sortable: true,
-          value: "CDM_TABLE_NAME"
+          value: "CDM_TABLE_NAME",
         },
         CDM_FIELD_NAME: {
           text: "Field",
           sortable: true,
-          value: "CDM_FIELD_NAME"
+          value: "CDM_FIELD_NAME",
         },
         CHECK_NAME: {
           text: "Check",
           sortable: true,
-          value: "CHECK_NAME"
+          value: "CHECK_NAME",
         },
         CATEGORY: {
           text: "Category",
           sortable: true,
-          value: "CATEGORY"
+          value: "CATEGORY",
         },
         SUBCATEGORY: {
           text: "Subcategory",
           sortable: true,
-          value: "SUBCATEGORY"
+          value: "SUBCATEGORY",
         },
         CONTEXT: {
           text: "Context",
           sortable: true,
-          value: "CONTEXT"
+          value: "CONTEXT",
         },
         CHECK_LEVEL: {
           text: "Level",
           sortable: true,
-          value: "CHECK_LEVEL"
+          value: "CHECK_LEVEL",
         },
         NOTES_EXIST: {
           text: "Notes",
           sortable: true,
-          value: "NOTES_EXIST"
+          value: "NOTES_EXIST",
         },
         CHECK_DESCRIPTION: {
           text: "Description",
           sortable: true,
-          value: "CHECK_DESCRIPTION"
+          value: "CHECK_DESCRIPTION",
         },
         PCT_VIOLATED_ROWS: {
           text: "% Records Failed",
           sortable: true,
-          value: "PCT_VIOLATED_ROWS"
+          value: "PCT_VIOLATED_ROWS",
         },
         NUM_VIOLATED_ROWS: {
           text: "# Records Failed",
           sortable: true,
-          value: "NUM_VIOLATED_ROWS"
+          value: "NUM_VIOLATED_ROWS",
         },
         NUM_DENOMINATOR_ROWS: {
           text: "# Total Records",
           sortable: true,
-          value: "NUM_DENOMINATOR_ROWS"
+          value: "NUM_DENOMINATOR_ROWS",
         },
         EXECTUION_TIME: {
           text: "Execution Duration",
           sortable: true,
-          value: "EXECUTION_TIME"
-        }
-      }
+          value: "EXECUTION_TIME",
+        },
+      },
     };
   },
   watch: {
     $route() {
       this.load();
-    }
+    },
   },
   methods: {
-    delayedSearch: debounce(function(data) {
+    delayedSearch: debounce(function (data) {
       this.search = data;
     }, 300),
-    formatThousands: function(value) {
+    formatThousands: function (value) {
       return d3.format(",")(value);
     },
-    helpfulFilterUpdate: function(filter) {
+    helpfulFilterUpdate: function (filter) {
       this.filters = filter;
     },
-    getMenuOffset: function() {
+    getMenuOffset: function () {
       return true;
     },
     //     path: "/_cdm/:cdm/:release/concept/:domain/:concept/summary",
-    getConceptDrilldown: function(item) {
+    getConceptDrilldown: function (item) {
       return (
         "/cdm/" +
         this.$route.params.cdm +
@@ -570,16 +587,17 @@ export default {
         "/summary"
       );
     },
-    getDocumentationLink: function(table) {
+    getDocumentationLink: function (table) {
       return "https://ohdsi.github.io/CommonDataModel/cdm531.html#" + table;
     },
-    load: function() {
+    load: function () {
       this.$store
         .dispatch(FETCH_FILES, {
-          files: [{ name: QUALITY_RESULTS, required: true }]
+          files: [{ name: QUALITY_RESULTS, required: true }],
         })
         .then(() => {
           if (!this.getErrors) {
+            this.rawData = this.getData[QUALITY_RESULTS];
             this.derivedResults = deriveResults(this.getData[QUALITY_RESULTS]);
             if (this.$route.query.conceptFailFilter) {
               this.helpfulFilterUpdate({
@@ -591,7 +609,7 @@ export default {
                 CATEGORY: [],
                 SUBCATEGORY: [],
                 CONTEXT: [],
-                CHECK_LEVEL: []
+                CHECK_LEVEL: [],
               });
               this.search = this.$route.query.conceptFailFilter;
             }
@@ -599,7 +617,7 @@ export default {
               this.helpfulFilterUpdate({
                 FAILED: ["FAIL"],
                 CDM_TABLE_NAME: [
-                  this.$route.query.domainFailFilter.toUpperCase()
+                  this.$route.query.domainFailFilter.toUpperCase(),
                 ],
                 CDM_FIELD_NAME: [],
                 CHECK_NAME: [],
@@ -607,7 +625,7 @@ export default {
                 CATEGORY: [],
                 SUBCATEGORY: [],
                 CONTEXT: [],
-                CHECK_LEVEL: []
+                CHECK_LEVEL: [],
               });
             }
             if (this.$route.query.categoryFailFilter) {
@@ -620,7 +638,7 @@ export default {
                 CATEGORY: [this.$route.query.categoryFailFilter.toUpperCase()],
                 SUBCATEGORY: [],
                 CONTEXT: [],
-                CHECK_LEVEL: []
+                CHECK_LEVEL: [],
               });
             }
             if (this.$route.query.failFilter) {
@@ -633,7 +651,7 @@ export default {
                 CATEGORY: [],
                 SUBCATEGORY: [],
                 CONTEXT: [],
-                CHECK_LEVEL: []
+                CHECK_LEVEL: [],
               });
             }
             this.dataLoaded = true;
@@ -641,35 +659,58 @@ export default {
         });
     },
     columnValueList(val) {
-      return this.checkResults.map(d => d[val]);
+      return this.checkResults.map((d) => d[val]);
     },
-    renderDescription: function(d) {
+    getHeaders() {
+      if (this.rawData.CheckResults) {
+        return [
+          ...new Set(
+            ...this.rawData.CheckResults?.map((value) => Object.keys(value))
+          ),
+        ];
+      } else {
+        return [];
+      }
+    },
+    renderDescription: function (d) {
       let thresholdMessage = "";
       if (d.THRESHOLD_VALUE != undefined) {
         thresholdMessage = " (Threshold=" + d.THRESHOLD_VALUE + "%).";
       }
       return d.CHECK_DESCRIPTION + thresholdMessage;
     },
-    renderPercentPassed: function(d) {
+    renderPercentPassed: function (d) {
       return d.PCT_VIOLATED_ROWS ? (d.PCT_VIOLATED_ROWS * 100).toFixed(2) : 0;
-    }
+    },
   },
   created() {
     this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers.filter(h =>
+    this.selectedHeaders = this.headers.filter((h) =>
       [
         "FAILED",
         "PCT_VIOLATED_ROWS",
         "NUM_VIOLATED_ROWS",
         "CHECK_DESCRIPTION",
-        "CDM_TABLE_NAME"
+        "CDM_TABLE_NAME",
       ].includes(h.value)
     );
+    this.pivotTableHeaders = this.getHeaders;
     this.load();
   },
   computed: {
     ...mapGetters(["getData", "getErrors", "getSettings"]),
-    cmOptions: function() {
+    getDataSetKeys: function () {
+      if (this.rawData.CheckResults) {
+        return [
+          ...new Set(
+            ...this.rawData.CheckResults?.map((value) => Object.keys(value))
+          ),
+        ];
+      } else {
+        return [];
+      }
+    },
+    cmOptions: function () {
       return {
         theme: this.getSettings.darkMode ? "base16-dark" : "neat",
         lineWrapping: true,
@@ -677,7 +718,7 @@ export default {
         mode: "text/x-sql",
         viewportMargin: Infinity,
         lineNumbers: true,
-        autoRefresh: true
+        autoRefresh: true,
       };
     },
 
@@ -687,11 +728,11 @@ export default {
       },
       get() {
         return this.$route.query.tab;
-      }
+      },
     },
     filteredChecks() {
-      return this.checkResults.filter(d => {
-        return Object.keys(this.filters).every(f => {
+      return this.checkResults.filter((d) => {
+        return Object.keys(this.filters).every((f) => {
           return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
         });
       });
@@ -700,7 +741,7 @@ export default {
       return this.$refs.myCm.codemirror;
     },
     showHeaders() {
-      return this.headers.filter(s => this.selectedHeaders.includes(s));
+      return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
     cdmSourceName() {
       return this.getData[QUALITY_RESULTS].Metadata[0].CDM_SOURCE_NAME;
@@ -732,8 +773,8 @@ export default {
     },
     checkResults() {
       return this.getData[QUALITY_RESULTS].CheckResults;
-    }
-  }
+    },
+  },
 };
 </script>
 
