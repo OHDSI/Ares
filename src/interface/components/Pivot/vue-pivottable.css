@@ -99,6 +99,7 @@ table.pvtTable tbody tr td {
 
 .pvtDropdown {
     border: 1px solid #a2b1c6;
+    color: inherit;
     align-items: center;
     display: block;
     background-color: transparent;
@@ -159,7 +160,8 @@ table.pvtTable tbody tr td {
 
 .pvtAxisContainer li span.pvtAttr {
     -webkit-text-size-adjust: 50%;
-    border: 2px dashed #c8d4e3;
+    border: 2px solid #c8d4e3;
+    background: inherit;
     padding: 4px 7px;
     white-space: nowrap;
     -webkit-border-radius: 5px;
@@ -239,6 +241,7 @@ table.pvtTable tbody tr td {
     border-radius: 5px;
     padding: 0 3px;
     font-size: 14px;
+    color: inherit;
 }
 
 .pvtFilterBox input:focus {
@@ -251,8 +254,7 @@ table.pvtTable tbody tr td {
     border: 1px solid #506784;
     max-width: 600px;
     min-width: 210px;
-    background-color: #fff;
-
+    background-color: var(--v-accent-lighten1);
     position: absolute;
     padding: 6px;
     user-select: none;
@@ -293,7 +295,8 @@ table.pvtTable tbody tr td {
 }
 
 .pvtCheckContainer p.selected {
-    background: #ebf0f8;
+    color: inherit;
+    background: var(--v-accent-base);
     min-width: 100%;
     width: max-content;
 }
