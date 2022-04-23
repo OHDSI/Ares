@@ -388,8 +388,16 @@
             <v-container>
               <Pivot
                 :data="rawData.CheckResults"
-                :rows="['CDM_TABLE_NAME']"
-                :cols="['CATEGORY']"
+                :attributes="[
+                  'CATEGORY',
+                  'CDM_FIELD_NAME',
+                  'CHECK_LEVEL',
+                  'CHECK_NAME',
+                  'CONTEXT',
+                  'NOTES_EXIST',
+                  'SUBCATEGORY',
+                  'CDM_TABLE_NAME',
+                ]"
               >
               </Pivot>
             </v-container>
@@ -431,7 +439,6 @@ export default {
       dqResults: null,
       selection: [],
       rawData: [],
-      pivotTableHeaders: [],
       derivedResults: {},
       helpfulFilters: [
         {
@@ -661,17 +668,6 @@ export default {
     columnValueList(val) {
       return this.checkResults.map((d) => d[val]);
     },
-    getHeaders() {
-      if (this.rawData.CheckResults) {
-        return [
-          ...new Set(
-            ...this.rawData.CheckResults?.map((value) => Object.keys(value))
-          ),
-        ];
-      } else {
-        return [];
-      }
-    },
     renderDescription: function (d) {
       let thresholdMessage = "";
       if (d.THRESHOLD_VALUE != undefined) {
@@ -694,22 +690,10 @@ export default {
         "CDM_TABLE_NAME",
       ].includes(h.value)
     );
-    this.pivotTableHeaders = this.getHeaders;
     this.load();
   },
   computed: {
     ...mapGetters(["getData", "getErrors", "getSettings"]),
-    getDataSetKeys: function () {
-      if (this.rawData.CheckResults) {
-        return [
-          ...new Set(
-            ...this.rawData.CheckResults?.map((value) => Object.keys(value))
-          ),
-        ];
-      } else {
-        return [];
-      }
-    },
     cmOptions: function () {
       return {
         theme: this.getSettings.darkMode ? "base16-dark" : "neat",

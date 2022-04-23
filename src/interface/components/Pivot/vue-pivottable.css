@@ -1,12 +1,13 @@
 
 * {
-    box-sizing: border-box
+    box-sizing: border-box;
+    font-family: inherit;
+    font-weight: normal;
 }
 
 .pvtUi {
     table-layout: fixed;
     width: 100%;
-    font-family: Verdana;
     border-collapse: collapse;
 }
 .pvtUi select {
@@ -19,6 +20,7 @@
 .pvtUi td {
     overflow-x: auto;
 }
+
 .pvtUi td.pvtOutput {
     padding: 6px;
     vertical-align: top;
@@ -27,17 +29,15 @@
 }
 
 table.pvtTable {
-    font-size: 8pt;
     text-align: left;
     border-spacing: 2px;
-    font-family: Verdana;
     width: 100%;
+
 }
 
 table.pvtTable thead tr th,
 table.pvtTable tbody tr th {
     background-color: var(--v-accent-base);
-    font-size: 8pt;
     padding: 5px;
 }
 
@@ -58,7 +58,7 @@ table.pvtTable tbody tr td {
 
 .pvtTotal,
 .pvtGrandTotal {
-    font-weight: bold;
+    font-weight: inherit;
 }
 
 .pvtRowOrder,
@@ -75,6 +75,14 @@ table.pvtTable tbody tr td {
     -ms-user-select: none;
 }
 
+.pvtRowLabel {
+    font-weight: inherit;
+}
+
+.pvtAxisLabel {
+    font-weight: inherit;
+}
+
 .pvtAxisContainer,
 .pvtVals {
     border: 1px solid #a2b1c6;
@@ -84,8 +92,7 @@ table.pvtTable tbody tr td {
 }
 .pvtVals.pvtText {
     vertical-align: middle;
-    font-size: 15px;
-    font-weight: bold;
+    font-weight: inherit;
     user-select: none;
     padding-left: 16px;
     text-align: start;
@@ -107,8 +114,9 @@ table.pvtTable tbody tr td {
     border-radius: 0px;
     padding: 0px 0px 0px 3px;
     height: 40px;
-    font-size: 15px;
-    font-weight: bold;
+    width: 80%;
+    font-family: inherit;
+    font-weight: inherit;
     outline: none;
     line-height: 1 !important;
     margin: 3px;
@@ -129,6 +137,7 @@ table.pvtTable tbody tr td {
 .pvtDropdown:last-child {
     margin-bottom: 0px;
 }
+
 
 .pvtVals {
     white-space: nowrap;
@@ -203,7 +212,6 @@ table.pvtTable tbody tr td {
     position: absolute;
     right: 5px;
     top: 5px;
-    font-size: 18px;
     cursor: pointer;
     text-decoration: none !important;
 }
@@ -223,7 +231,6 @@ table.pvtTable tbody tr td {
     padding: 3px 6px;
     border: 1px solid;
     border-color: #c8d4e3;
-    font-size: 14px;
     margin: 3px 3px 6px 0px;
     transition: 0.34s all cubic-bezier(0.19, 1, 0.22, 1);
     text-decoration: none !important;
@@ -240,7 +247,6 @@ table.pvtTable tbody tr td {
     border: 1px solid #c8d4e3;
     border-radius: 5px;
     padding: 0 3px;
-    font-size: 14px;
     color: inherit;
 }
 
@@ -279,7 +285,6 @@ table.pvtTable tbody tr td {
 
 .pvtCheckContainer {
     text-align: left;
-    font-size: 14px;
     white-space: nowrap;
     overflow-y: scroll;
     width: 100%;
@@ -305,7 +310,6 @@ table.pvtTable tbody tr td {
     display: none;
     width: 35px;
     float: right;
-    font-size: 12px;
     padding-left: 5px;
     cursor: pointer;
 }
