@@ -148,5 +148,6 @@ export default {
   margin: 2px 8px;
   border-radius: 10px;
   height: 20px;
+  cursor: move;
 }
 </style>
