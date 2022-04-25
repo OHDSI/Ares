@@ -5,7 +5,6 @@
         <v-list class="pa-3">
           <v-select
             v-model="selectedRows"
-            flat
             solo
             background-color="primary"
             prefix="Row attributes"
@@ -41,7 +40,6 @@
         <v-list class="pa-3">
           <v-select
             v-model="selectedCols"
-            flat
             solo
             background-color="primary"
             prefix="Column attributes"
@@ -156,13 +154,13 @@ export default {
 .list-item {
   background-color: var(--v-accent-base);
   margin: 0px 8px;
-  border-radius: 10px;
+  border-radius: 5px;
   height: 20px;
   cursor: move;
 }
 
 .list-item + .list-item {
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 >>> .v-text-field__prefix {
