@@ -397,6 +397,7 @@
                   'NOTES_EXIST',
                   'SUBCATEGORY',
                   'CDM_TABLE_NAME',
+                  'FAILED',
                 ]"
               >
               </Pivot>
