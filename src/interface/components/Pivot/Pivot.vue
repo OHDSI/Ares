@@ -5,13 +5,18 @@
         <v-list class="pa-3">
           <v-select
             v-model="selectedRows"
+            flat
+            solo
+            background-color="primary"
             prefix="Row attributes"
-            append-icon="mdi-plus-box"
             hide-selected
             multiple
             :items="attributes"
           >
             <template v-slot:selection="{}"></template>
+            <template v-slot:append>
+              <v-icon color="white">mdi-plus-box</v-icon>
+            </template>
           </v-select>
           <draggable v-if="selectedRows.length" v-model="selectedRows">
             <template v-for="(item, i) in selectedRows">
@@ -36,13 +41,18 @@
         <v-list class="pa-3">
           <v-select
             v-model="selectedCols"
+            flat
+            solo
+            background-color="primary"
             prefix="Column attributes"
-            append-icon="mdi-plus-box"
             hide-selected
             multiple
             :items="attributes"
           >
             <template v-slot:selection="{}"> </template>
+            <template v-slot:append>
+              <v-icon color="white">mdi-plus-box</v-icon>
+            </template>
           </v-select>
           <draggable v-if="selectedCols.length" v-model="selectedCols">
             <template v-for="(item, i) in selectedCols">
@@ -117,7 +127,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .attr-box {
   min-height: 300px;
   min-width: 200px;
@@ -145,9 +155,22 @@ export default {
 
 .list-item {
   background-color: var(--v-accent-base);
-  margin: 2px 8px;
+  margin: 0px 8px;
   border-radius: 10px;
   height: 20px;
   cursor: move;
+}
+
+.list-item + .list-item {
+  margin-top: 4px;
+}
+
+>>> .v-text-field__prefix {
+  font-size: 0.875rem !important;
+  color: white;
+}
+
+>>> .v-list-item__title {
+  font-size: 0.875rem !important;
 }
 </style>
