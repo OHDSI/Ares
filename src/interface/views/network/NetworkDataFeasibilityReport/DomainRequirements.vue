@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-data-table
       class="mb-4"
       dense
@@ -40,7 +40,7 @@ import * as d3Format from "d3-format";
 export default {
   name: "DomainRequirements",
   props: {
-    data: Array
+    data: Array,
   },
   data() {
     return {
@@ -52,7 +52,7 @@ export default {
         { value: "measurement", text: "Measurement" },
         { value: "death", text: "Death" },
         { value: "procedure_occurrence", text: "Procedure occurrence" },
-        { value: "observation_period", text: "Observation period" }
+        { value: "observation_period", text: "Observation period" },
       ],
       domainBits: "0000000",
       domainHeaders: [
@@ -60,49 +60,49 @@ export default {
           text: "Data Source",
           align: "start",
           sortable: false,
-          value: "cdm_name"
+          value: "cdm_name",
         },
         {
           text: "Person Count",
           value: "population",
-          align: "end"
+          align: "end",
         },
         {
           text: "%",
           value: "percentage",
-          align: "end"
-        }
-      ]
+          align: "end",
+        },
+      ],
     };
   },
   computed: {
-    getDomainsData: function() {
+    getDomainsData: function () {
       if (this.domainBits === "0000000") {
         return [];
       } else {
-        return this.data.map(value => {
+        return this.data.map((value) => {
           const data = value.data.filter(
-            d => d.DOMAIN_BITS === this.domainBits
+            (d) => d.DOMAIN_BITS === this.domainBits
           );
           return {
             cdm_name: value.source,
             percentage: data[0]?.PERCENT_VALUE,
-            population: data[0]?.COUNT_VALUE
+            population: data[0]?.COUNT_VALUE,
           };
         });
       }
-    }
+    },
   },
   watch: {
-    getDomainsData: function() {
+    getDomainsData: function () {
       this.$emit("domainsDataChanged", this.getDomainsData);
-    }
+    },
   },
   methods: {
-    formatComma: function(value) {
+    formatComma: function (value) {
       return d3Format.format(",")(value);
     },
-    updateBits: function() {
+    updateBits: function () {
       this.domainBits = "";
       this.domainBits = this.domainBits.concat(
         this.switchDomains.includes("condition_occurrence") ? "1" : "0",
@@ -113,8 +113,8 @@ export default {
         this.switchDomains.includes("procedure_occurrence") ? "1" : "0",
         this.switchDomains.includes("observation_period") ? "1" : "0"
       );
-    }
-  }
+    },
+  },
 };
 </script>
 
