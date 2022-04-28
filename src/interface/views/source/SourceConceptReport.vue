@@ -1,6 +1,6 @@
 <template>
   <div v-if="!getErrors">
-    <v-container>
+    <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-1 text-uppercase text-h6"
           >Data Source Release Comparison

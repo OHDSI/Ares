@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container v-if="dataLoaded && !getErrors" class="pa-1">
+    <v-container v-if="dataLoaded && !getErrors" fluid class="pa-1">
       <v-card elevation="10" class="ma-4 pa-2">
         <v-card-title>Performance</v-card-title>
         <v-row>

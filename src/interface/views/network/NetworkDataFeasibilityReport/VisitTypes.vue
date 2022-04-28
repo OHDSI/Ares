@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row class="mb-4">
       <v-col>
         <v-data-table
@@ -54,7 +54,7 @@
 export default {
   name: "VisitTypes",
   props: {
-    data: Array
+    data: Array,
   },
   data() {
     return {
@@ -66,67 +66,69 @@ export default {
           text: "Concept ID",
           align: "start",
           sortable: false,
-          value: "concept_id"
+          value: "concept_id",
         },
-        { text: "Concept Name", value: "concept_name" }
+        { text: "Concept Name", value: "concept_name" },
       ],
       domainTypesResults: [
         {
           text: "Data source",
           align: "start",
           sortable: false,
-          value: "cdm_name"
+          value: "cdm_name",
         },
-        { text: "%", value: "percentage" }
-      ]
+        { text: "%", value: "percentage" },
+      ],
     };
   },
   computed: {
-    getVisitTypes: function() {
+    getVisitTypes: function () {
       const data = this.data.reduce(
         (prev, current) => [...prev, ...current.data],
         []
       );
       return [
         ...new Set(
-          data.map(object =>
+          data.map((object) =>
             JSON.stringify({
               concept_id: object.CONCEPT_ID,
-              concept_name: object.CONCEPT_NAME
+              concept_name: object.CONCEPT_NAME,
             })
           )
-        )
-      ].map(string => JSON.parse(string));
+        ),
+      ].map((string) => JSON.parse(string));
     },
 
-    filterSelectedVisitTypes: function() {
-      const visitTypes = this.visitTypesSelected.map(obj => obj.concept_id);
-      const filtered = this.data.map(source => ({
-        data: source.data.filter(value =>
+    filterSelectedVisitTypes: function () {
+      const visitTypes = this.visitTypesSelected.map((obj) => obj.concept_id);
+      const filtered = this.data.map((source) => ({
+        data: source.data.filter((value) =>
           visitTypes.includes(value.CONCEPT_ID)
         ),
-        source: source.source
+        source: source.source,
       }));
 
-      return filtered.filter(value => value.data.length === visitTypes.length);
+      return filtered.filter(
+        (value) => value.data.length === visitTypes.length
+      );
     },
 
-    getSmallestVisitTypeValue: function() {
+    getSmallestVisitTypeValue: function () {
       return this.filterSelectedVisitTypes
-        .map(value => ({
+        .map((value) => ({
           cdm_name: value.source,
           percentage: value.data
-            .map(data => data.PERCENT_PERSONS)
-            .sort((a, b) => a - b)[0]
+            .map((data) => data.PERCENT_PERSONS)
+            .sort((a, b) => a - b)[0],
         }))
-        .filter(value => value.percentage);
-    }
+        .filter((value) => value.percentage);
+    },
   },
   watch: {
-    getSmallestVisitTypeValue: function() {
+    getSmallestVisitTypeValue: function () {
       this.$emit("visitTypesChanged", this.getSmallestVisitTypeValue);
-    }
-  }
+    },
+  },
 };
 </script>
 

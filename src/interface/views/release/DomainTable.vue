@@ -1,6 +1,6 @@
 <template>
   <div v-if="!getErrors">
-    <v-container class="pa-1">
+    <v-container fluid class="pa-1">
       <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
         <v-row
           ><v-col cols="8">
@@ -38,7 +38,7 @@
             </v-layout>
           </v-col>
         </v-row>
-        <v-container>
+        <v-container fluid>
           <v-row>
             <v-col>
               <v-text-field

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-data-table
       class="mb-4"
       show-expand
@@ -31,7 +31,7 @@
                 </v-card-title>
 
                 <v-card-text>
-                  <v-container>
+                  <v-container fluid>
                     <v-row>
                       <v-col cols="auto">
                         <v-text-field
@@ -158,37 +158,37 @@ export default {
     selectedDomain: [],
     selectedConcepts: [],
     rules: {
-      required: value => !!value || "Required field",
-      concept: value => {
+      required: (value) => !!value || "Required field",
+      concept: (value) => {
         const pattern = /^\d+$/;
         return pattern.test(value) || "The field is digits only";
-      }
+      },
     },
     headers: [
       {
         text: "Source",
         align: "start",
         sortable: false,
-        value: "cdm_name"
+        value: "cdm_name",
       },
       { text: "Issues", value: "issues" },
       { text: "Time-series issues", value: "time_series_issues" },
       { text: "Available concepts", value: "concepts.length" },
       { text: "Min population", value: "min_population" },
-      { text: "Max population", value: "max_population" }
+      { text: "Max population", value: "max_population" },
     ],
     conceptHeaders: [
       {
         text: "Concept ID",
         align: "start",
         sortable: false,
-        value: "concept_id"
+        value: "concept_id",
       },
       { text: "Concept Name", value: "concept_name" },
       { text: "Population", value: "population" },
       { text: "%", value: "percentage" },
       { text: "Time series", value: "time_series" },
-      { text: "Issues", value: "issues" }
+      { text: "Issues", value: "issues" },
     ],
     concepts: [],
     expanded: [],
@@ -203,25 +203,25 @@ export default {
 
       { text: "Procedure Occurrence", value: "procedure_occurrence" },
 
-      { text: "Observation Period", value: "observation_period" }
+      { text: "Observation Period", value: "observation_period" },
     ],
     editedItem: {
       conceptID: "",
-      domain: ""
+      domain: "",
     },
     defaultItem: {
       conceptID: "",
-      domain: ""
-    }
+      domain: "",
+    },
   }),
 
   computed: {
     ...mapGetters(["getData", "getSources"]),
-    filterSourcesWithData: function() {
-      return this.sources.filter(data => data.concepts.length);
+    filterSourcesWithData: function () {
+      return this.sources.filter((data) => data.concepts.length);
     },
-    getSourcesOverview: function() {
-      return this.filterSourcesWithData.map(value => ({
+    getSourcesOverview: function () {
+      return this.filterSourcesWithData.map((value) => ({
         ...value,
         min_population: Math.min(
           ...value.concepts.reduce(
@@ -235,12 +235,12 @@ export default {
             []
           )
         ),
-        issues: value.concepts.filter(value => value.issues === false).length,
-        time_series_issues: value.concepts.filter(value =>
+        issues: value.concepts.filter((value) => value.issues === false).length,
+        time_series_issues: value.concepts.filter((value) =>
           value.time_series ? value.time_series[0] === false : false
-        ).length
+        ).length,
       }));
-    }
+    },
   },
   watch: {
     dialog(val) {
@@ -252,25 +252,25 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
-    filterSourcesWithData: function() {
+    filterSourcesWithData: function () {
       this.$emit("overlappingDataChanged", this.filterSourcesWithData);
     },
     editedItem: {
       handler() {
         this.errors = "";
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   created() {
-    this.sources = this.getSources.map(value => ({
+    this.sources = this.getSources.map((value) => ({
       cdm_name: value.cdm_source_abbreviation,
-      concepts: []
+      concepts: [],
     }));
   },
 
   methods: {
-    formatComma: function(value) {
+    formatComma: function (value) {
       return d3Format.format(",")(value);
     },
     deleteItem(item) {
@@ -309,11 +309,11 @@ export default {
           (prevValue, value) => [
             ...prevValue,
             ...value.concepts.filter(
-              concept => concept.concept_id === this.editedItem.conceptID
-            )
+              (concept) => concept.concept_id === this.editedItem.conceptID
+            ),
           ],
           []
-        )
+        ),
       ].length;
       if (inTheList) {
         this.errors = "Entered concept is already on the list";
@@ -325,13 +325,13 @@ export default {
           files: [CONCEPT],
           params: {
             concept: this.editedItem.conceptID,
-            domain: this.editedItem.domain.value
+            domain: this.editedItem.domain.value,
           },
-          criticalError: false
+          criticalError: false,
         })
         .then(() => {
           const conceptsData = this.getData[CONCEPT];
-          const concepts = conceptsData.map(value => ({
+          const concepts = conceptsData.map((value) => ({
             concept_id: value?.data.CONCEPT_ID[0],
             concept_name: value?.data.CONCEPT_NAME[0],
             domain: value?.data.CDM_TABLE_NAME[0],
@@ -339,14 +339,14 @@ export default {
             percentage: value?.data.PERCENT_PERSONS[0],
             cdm_name: value?.source.cdm_source_abbreviation,
             time_series: value?.data.IS_STATIONARY,
-            issues: value?.data.COUNT_FAILED
+            issues: value?.data.COUNT_FAILED,
           }));
 
           if (concepts[0]?.concept_id && !inTheList) {
             this.conceptsCount += 1;
-            this.sources.forEach(source => {
+            this.sources.forEach((source) => {
               const sourceConcept = concepts.filter(
-                concept => source.cdm_name === concept.cdm_name
+                (concept) => source.cdm_name === concept.cdm_name
               )[0];
 
               if (sourceConcept) {
@@ -358,8 +358,8 @@ export default {
             this.errors = "Entered concept is not found across data sources";
           }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

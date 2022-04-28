@@ -2,7 +2,7 @@
   <div v-if="!getErrors">
     <v-card :loading="!cdmsourceDataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>CDM Source Details</v-card-title>
-      <v-container v-if="cdmsourceDataLoaded">
+      <v-container v-if="cdmsourceDataLoaded" fluid>
         <v-layout v-for="(d, i) in cdmsourceData.columns" :key="i" class="pl-8">
           {{ d }}: {{ cdmsourceData[0][d] }}
         </v-layout>
@@ -15,7 +15,7 @@
 
     <v-card :loading="!metadataDataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Metadata</v-card-title>
-      <v-container v-if="metadataDataLoaded">
+      <v-container v-if="metadataDataLoaded" fluid>
         <v-data-table
           v-if="dataLoaded"
           class="mt-4"
