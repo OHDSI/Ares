@@ -385,7 +385,7 @@
             </v-data-table>
           </v-tab-item>
           <v-tab-item v-if="dataLoaded" value="pivot">
-            <v-container>
+            <v-container fluid>
               <Pivot
                 :data="rawData.CheckResults"
                 :attributes="[
