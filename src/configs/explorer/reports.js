@@ -117,13 +117,6 @@ export const reports = [
   {
     folder: "Data Source Release",
     icon: "mdi-table",
-    name: "Providers",
-    routeName: "domainTable",
-    domain: "provider"
-  },
-  {
-    folder: "Data Source Release",
-    icon: "mdi-table",
     name: "Death",
     routeName: "death"
   },

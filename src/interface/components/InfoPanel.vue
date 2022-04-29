@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-1">
+  <v-container fluid class="mt-1">
     <v-divider v-if="divider" inset class="pa-1"></v-divider>
     <v-row
       ><v-col cols="1" class="pa-2">
@@ -48,12 +48,12 @@ export default {
     routeLink: { type: String },
     icon: { type: String, default: "mdi-help-circle" },
     divider: { type: Boolean, default: true },
-    linkDetails: { type: Boolean, default: false },
+    linkDetails: { type: Boolean, default: false }
   },
   data() {
     return {};
   },
-  created() {},
+  created() {}
 };
 </script>
 

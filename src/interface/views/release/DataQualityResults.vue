@@ -6,10 +6,11 @@
           <v-tab href="#overview">Overview</v-tab>
           <v-tab href="#metadata">Metadata</v-tab>
           <v-tab href="#results">Results</v-tab>
+          <v-tab href="#pivot">Pivot table</v-tab>
         </v-tabs>
         <v-tabs-items :value="tab">
           <v-tab-item v-if="dataLoaded" value="overview">
-            <v-container class="ma-2 pa-4">
+            <v-container fluid class="ma-2 pa-4">
               <table id="results">
                 <thead>
                   <tr>
@@ -119,7 +120,7 @@
             </v-container>
           </v-tab-item>
           <v-tab-item v-if="dataLoaded" value="metadata">
-            <v-container ma-2 pa-4>
+            <v-container fluid ma-2 pa-4>
               <v-row>
                 <v-col cols="2">CDM Source Name</v-col>
                 <v-col>{{ cdmSourceName }}</v-col>
@@ -169,7 +170,7 @@
             </v-container>
           </v-tab-item>
           <v-tab-item v-if="dataLoaded" value="results">
-            <v-container class="ma-2 pa-4">
+            <v-container fluid class="ma-2 pa-4">
               <v-row>
                 <v-col cols="3">
                   <v-text-field
@@ -383,6 +384,25 @@
               </template>
             </v-data-table>
           </v-tab-item>
+          <v-tab-item v-if="dataLoaded" value="pivot">
+            <v-container fluid>
+              <Pivot
+                :data="rawData.CheckResults"
+                :attributes="[
+                  'CATEGORY',
+                  'CDM_FIELD_NAME',
+                  'CHECK_LEVEL',
+                  'CHECK_NAME',
+                  'CONTEXT',
+                  'NOTES_EXIST',
+                  'SUBCATEGORY',
+                  'CDM_TABLE_NAME',
+                  'FAILED'
+                ]"
+              >
+              </Pivot>
+            </v-container>
+          </v-tab-item>
         </v-tabs-items>
       </v-card>
     </div>
@@ -391,6 +411,7 @@
 
 <script>
 import { codemirror } from "vue-codemirror";
+import Pivot from "../../components/Pivot/Pivot";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
 import "codemirror/theme/neat.css";
@@ -406,15 +427,19 @@ import deriveResults from "@/services/derive-results";
 export default {
   components: {
     codemirror,
-    infopanel
+    infopanel,
+    Pivot
   },
   data: function() {
     return {
       chooseHeaderMenu: false,
       chooseFilter: false,
       versions: [],
+      currentTag: "",
       dataLoaded: false,
       dqResults: null,
+      selection: [],
+      rawData: [],
       derivedResults: {},
       helpfulFilters: [
         {
@@ -580,6 +605,7 @@ export default {
         })
         .then(() => {
           if (!this.getErrors) {
+            this.rawData = this.getData[QUALITY_RESULTS];
             this.derivedResults = deriveResults(this.getData[QUALITY_RESULTS]);
             if (this.$route.query.conceptFailFilter) {
               this.helpfulFilterUpdate({

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container dark class="pt-4 pl-2 pr-2 mb-16">
+    <v-container main fluid class="pt-4 pl-2 pr-2 mb-16 main">
       <router-view name="main"></router-view>
     </v-container>
     <Settings />
@@ -64,4 +64,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.main {
+  width: 95%;
+}
+</style>

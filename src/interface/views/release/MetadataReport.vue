@@ -2,7 +2,7 @@
   <div v-if="!getErrors">
     <v-card :loading="!cdmsourceDataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>CDM Source Details</v-card-title>
-      <v-container v-if="cdmsourceDataLoaded">
+      <v-container v-if="cdmsourceDataLoaded" fluid>
         <v-layout v-for="(d, i) in cdmsourceData.columns" :key="i" class="pl-8">
           {{ d }}: {{ cdmsourceData[0][d] }}
         </v-layout>
@@ -15,7 +15,7 @@
 
     <v-card :loading="!metadataDataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Metadata</v-card-title>
-      <v-container v-if="metadataDataLoaded">
+      <v-container v-if="metadataDataLoaded" fluid>
         <v-data-table
           v-if="dataLoaded"
           class="mt-4"
@@ -42,9 +42,9 @@ import { mapGetters } from "vuex";
 export default {
   components: {},
   props: {
-    resultFile: String,
+    resultFile: String
   },
-  data: function () {
+  data: function() {
     return {
       cdmsourceData: null,
       metadataData: null,
@@ -58,59 +58,59 @@ export default {
           text: "METADATA_CONCEPT_ID",
           sortable: true,
           value: "METADATA_CONCEPT_ID",
-          align: "start",
+          align: "start"
         },
         NAME: {
           text: "NAME",
           sortable: true,
           value: "NAME",
-          align: "start",
+          align: "start"
         },
         VALUE_AS_STRING: {
           text: "VALUE_AS_STRING",
           sortable: true,
           value: "VALUE_AS_STRING",
-          align: "start",
+          align: "start"
         },
         VALUE_AS_CONCEPT_ID: {
           text: "VALUE_AS_CONCEPT_ID",
           sortable: true,
           value: "VALUE_AS_CONCEPT_ID",
-          align: "start",
+          align: "start"
         },
         METADATA_DATE: {
           text: "METADATA_DATE",
           sortable: true,
           value: "METADATA_DATE",
-          align: "start",
+          align: "start"
         },
         METADATA_DATETIME: {
           text: "METADATA_DATETIME",
           sortable: true,
           value: "METADATA_DATETIME",
-          align: "start",
-        },
+          align: "start"
+        }
       },
-      headers: [],
+      headers: []
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors"])
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   created() {
     this.load();
   },
   methods: {
-    getMenuOffset: function () {
+    getMenuOffset: function() {
       return true;
     },
     columnValueList(val) {
-      return this.domainTable.map((d) => d[val]);
+      return this.domainTable.map(d => d[val]);
     },
     load() {
       this.dataLoaded = false;
@@ -120,8 +120,8 @@ export default {
         .dispatch(FETCH_FILES, {
           files: [
             { name: METADATA, required: true },
-            { name: CDM_SOURCE, required: true },
-          ],
+            { name: CDM_SOURCE, required: true }
+          ]
         })
         .then(() => {
           if (!this.getErrors) {
@@ -137,8 +137,8 @@ export default {
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

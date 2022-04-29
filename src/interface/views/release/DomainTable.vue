@@ -1,6 +1,6 @@
 <template>
   <div v-if="!getErrors">
-    <v-container class="pa-1">
+    <v-container fluid class="pa-1">
       <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
         <v-row
           ><v-col cols="8">
@@ -38,7 +38,7 @@
             </v-layout>
           </v-col>
         </v-row>
-        <v-container>
+        <v-container fluid>
           <v-row>
             <v-col>
               <v-text-field
@@ -82,7 +82,7 @@
           :headers="showHeaders"
           :items="domainTable"
           :footer-props="{
-            'items-per-page-options': [10, 25, 50],
+            'items-per-page-options': [10, 25, 50]
           }"
           item-key="CONCEPT_ID"
           :items-per-page="10"
@@ -220,12 +220,12 @@ import {
   DOMAIN_DRUG_STRATIFICATION,
   DOMAIN_ISSUES,
   DOMAIN_SUMMARY,
-  DOMAIN_VISIT_STRATIFICATION,
+  DOMAIN_VISIT_STRATIFICATION
 } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
 export default {
-  data: function () {
+  data: function() {
     return {
       chooseHeaderMenu: false,
       dataLoaded: false,
@@ -247,59 +247,59 @@ export default {
           text: "Concept Id",
           sortable: true,
           value: "CONCEPT_ID",
-          align: "start",
+          align: "start"
         },
         CONCEPT_NAME: {
           text: "Concept Name",
           sortable: true,
           value: "CONCEPT_NAME",
-          align: "start",
+          align: "start"
         },
         NUM_PERSONS: {
           text: "# People",
           sortable: true,
           value: "NUM_PERSONS",
-          align: "end",
+          align: "end"
         },
         PERCENT_PERSONS: {
           text: "% People",
           sortable: true,
           value: "PERCENT_PERSONS",
-          align: "end",
+          align: "end"
         },
         RECORDS_PER_PERSON: {
           text: "Records per Person",
           sortable: true,
           value: "RECORDS_PER_PERSON",
-          align: "end",
+          align: "end"
         },
         AVERAGE_DURATION: {
           text: "Avg Duration",
           sortable: true,
           value: "AVERAGE_DURATION",
-          align: "end",
+          align: "end"
         },
         PERCENT_WITH_VALUE: {
           text: "% with Values",
           sortable: true,
           value: "PERCENT_MISSING_VALUES",
-          align: "end",
-        },
+          align: "end"
+        }
       },
       specVisitStratification: charts.specVisitStratification,
-      specDrugTypeStratification: charts.specDrugTypeStratification,
+      specDrugTypeStratification: charts.specDrugTypeStratification
     };
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   methods: {
-    delayedSearch: debounce(function (data) {
+    delayedSearch: debounce(function(data) {
       this.search = data;
     }, 300),
-    getWeight: function (decile) {
+    getWeight: function(decile) {
       if (decile == 1) {
         return "font-weight-black";
       } else if (decile == 2) {
@@ -312,10 +312,10 @@ export default {
         return "font-weight-regular";
       }
     },
-    formatThousands: function (value) {
+    formatThousands: function(value) {
       return d3Format.format(",")(value);
     },
-    navigateToDataQuality: function () {
+    navigateToDataQuality: function() {
       const qualitypath =
         "/cdm/" +
         this.$route.params.cdm +
@@ -327,15 +327,15 @@ export default {
         path: qualitypath,
         query: {
           tab: "results",
-          domainFailFilter: this.$route.params.domain,
-        },
+          domainFailFilter: this.$route.params.domain
+        }
       });
     },
-    getMenuOffset: function () {
+    getMenuOffset: function() {
       return true;
     },
     columnValueList(val) {
-      return this.checkResults.map((d) => d[val]);
+      return this.checkResults.map(d => d[val]);
     },
     getReportRoute(item) {
       return (
@@ -364,7 +364,7 @@ export default {
           text: "Avg Duration",
           sortable: true,
           value: "AVERAGE_DURATION",
-          align: "end",
+          align: "end"
         };
       } else {
         this.isVisit = false;
@@ -377,7 +377,7 @@ export default {
           text: "% with Values",
           sortable: true,
           value: "PERCENT_MISSING_VALUES",
-          align: "end",
+          align: "end"
         };
       } else {
         this.isMeasurement = false;
@@ -390,17 +390,17 @@ export default {
           text: "Median Era Length (Days)",
           sortable: true,
           value: "MEDIAN_VALUE",
-          align: "end",
+          align: "end"
         };
         this.headersMap.P25_VALUE = {
           text: "25th % Era Length (Days)",
           sortable: true,
-          value: "P25_VALUE",
+          value: "P25_VALUE"
         };
         this.headersMap.P75_VALUE = {
           text: "75th % Era Length (Days)",
           sortable: true,
-          value: "P75_VALUE",
+          value: "P75_VALUE"
         };
       } else {
         this.isEra = false;
@@ -411,7 +411,7 @@ export default {
 
       const files = [
         { name: DOMAIN_SUMMARY, required: true },
-        { name: DOMAIN_ISSUES, required: true },
+        { name: DOMAIN_ISSUES, required: true }
       ];
       if (this.$route.params.domain.toUpperCase() === "DRUG_EXPOSURE") {
         files.push({ name: DOMAIN_DRUG_STRATIFICATION, required: false });
@@ -422,55 +422,55 @@ export default {
 
       this.$store
         .dispatch(FETCH_FILES, {
-          files: files,
+          files: files
         })
         .then(() => {
           if (!this.getErrors) {
             this.headers = Object.values(this.headersMap);
             if (this.isVisit) {
-              this.selectedHeaders = this.headers.filter((h) =>
+              this.selectedHeaders = this.headers.filter(h =>
                 [
                   "CONCEPT_ID",
                   "CONCEPT_NAME",
                   "PERCENT_PERSONS",
                   "RECORDS_PER_PERSON",
-                  "AVERAGE_DURATION",
+                  "AVERAGE_DURATION"
                 ].includes(h.value)
               );
             } else if (this.isEra) {
-              this.selectedHeaders = this.headers.filter((h) =>
+              this.selectedHeaders = this.headers.filter(h =>
                 [
                   "CONCEPT_ID",
                   "CONCEPT_NAME",
                   "PERCENT_PERSONS",
                   "RECORDS_PER_PERSON",
-                  "MEDIAN_VALUE",
+                  "MEDIAN_VALUE"
                 ].includes(h.value)
               );
             } else if (this.isMeasurement) {
-              this.selectedHeaders = this.headers.filter((h) =>
+              this.selectedHeaders = this.headers.filter(h =>
                 [
                   "CONCEPT_ID",
                   "CONCEPT_NAME",
                   "PERCENT_PERSONS",
                   "RECORDS_PER_PERSON",
-                  "PERCENT_MISSING_VALUES",
+                  "PERCENT_MISSING_VALUES"
                 ].includes(h.value)
               );
             } else {
-              this.selectedHeaders = this.headers.filter((h) =>
+              this.selectedHeaders = this.headers.filter(h =>
                 [
                   "CONCEPT_ID",
                   "CONCEPT_NAME",
                   "PERCENT_PERSONS",
-                  "RECORDS_PER_PERSON",
+                  "RECORDS_PER_PERSON"
                 ].includes(h.value)
               );
             }
             this.domainTable = d3Import.csvParse(this.getData[DOMAIN_SUMMARY]);
             this.domainIssues = d3Import.csvParse(this.getData[DOMAIN_ISSUES]);
             const domainIssue = this.domainIssues.find(
-              (di) => di.cdm_table_name === this.$route.params.domain
+              di => di.cdm_table_name === this.$route.params.domain
             );
             this.issueCount = domainIssue?.count_failed || 0;
 
@@ -490,24 +490,24 @@ export default {
             this.issueDataLoaded = true;
           }
         });
-    },
+    }
   },
   created() {
     this.load();
   },
   components: {
     VegaChart,
-    InfoPanel,
+    InfoPanel
   },
   computed: {
     showHeaders() {
-      return this.headers.filter((s) => this.selectedHeaders.includes(s));
+      return this.headers.filter(s => this.selectedHeaders.includes(s));
     },
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors"])
   },
   props: {
-    resultFile: String,
-  },
+    resultFile: String
+  }
 };
 </script>
 

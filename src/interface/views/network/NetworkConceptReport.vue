@@ -1,6 +1,6 @@
 <template>
   <div v-if="!getErrors">
-    <v-container>
+    <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
           <h2 class="text-uppercase">{{ conceptName }} NETWORK REPORT</h2>

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-data-table
       class="mb-4"
       show-expand
@@ -31,7 +31,7 @@
                 </v-card-title>
 
                 <v-card-text>
-                  <v-container>
+                  <v-container fluid>
                     <v-row>
                       <v-col cols="auto">
                         <v-text-field
@@ -168,24 +168,24 @@ export default {
     domainSummary: [],
     selectedConcepts: [],
     rules: {
-      required: (value) => !!value || "Required field",
-      concept: (value) => {
+      required: value => !!value || "Required field",
+      concept: value => {
         const pattern = /^\d+$/;
         return pattern.test(value) || "The field is digits only";
-      },
+      }
     },
     headers: [
       {
         text: "Source",
         align: "start",
         sortable: false,
-        value: "cdm_name",
+        value: "cdm_name"
       },
       { text: "Issues", value: "issues" },
       { text: "Time-series issues", value: "time_series_issues" },
       { text: "Available concepts", value: "concepts.length" },
       { text: "Min population", value: "min_population" },
-      { text: "Max population", value: "max_population" },
+      { text: "Max population", value: "max_population" }
     ],
     concepts: [],
     expanded: [],
@@ -200,25 +200,25 @@ export default {
 
       { text: "Procedure Occurrence", value: "procedure_occurrence" },
 
-      { text: "Observation Period", value: "observation_period" },
+      { text: "Observation Period", value: "observation_period" }
     ],
     editedItem: {
       conceptID: "",
-      domain: "",
+      domain: ""
     },
     defaultItem: {
       conceptID: "",
-      domain: "",
-    },
+      domain: ""
+    }
   }),
 
   computed: {
     ...mapGetters(["getData", "getSources"]),
-    filterSourcesWithData: function () {
-      return this.sources.filter((data) => data.concepts.length);
+    filterSourcesWithData: function() {
+      return this.sources.filter(data => data.concepts.length);
     },
-    getSourcesOverview: function () {
-      return this.filterSourcesWithData.map((value) => ({
+    getSourcesOverview: function() {
+      return this.filterSourcesWithData.map(value => ({
         ...value,
         min_population: Math.min(
           ...value.concepts.reduce(
@@ -232,20 +232,20 @@ export default {
             []
           )
         ),
-        issues: value.concepts.filter((value) => value.issues === false).length,
-        time_series_issues: value.concepts.filter((value) =>
+        issues: value.concepts.filter(value => value.issues === false).length,
+        time_series_issues: value.concepts.filter(value =>
           value.time_series ? value.time_series[0] === false : false
-        ).length,
+        ).length
       }));
     },
-    conceptHeaders: function () {
+    conceptHeaders: function() {
       return [
         {
           text: "Concept ID",
           align: "start",
           sortable: false,
           value: "concept_id",
-          show: true,
+          show: true
         },
         { text: "Concept Name", value: "concept_name", show: true },
         { text: "Domain", value: "domain", show: true },
@@ -257,15 +257,13 @@ export default {
           text: "% with values",
           value: "measurement",
           show: [
-            ...this.getSourcesOverview.map((value) =>
-              value.concepts.filter(
-                (concept) => concept.domain === "MEASUREMENT"
-              )
-            ),
-          ].filter((value) => value.length).length,
-        },
-      ].filter((header) => header.show);
-    },
+            ...this.getSourcesOverview.map(value =>
+              value.concepts.filter(concept => concept.domain === "MEASUREMENT")
+            )
+          ].filter(value => value.length).length
+        }
+      ].filter(header => header.show);
+    }
   },
   watch: {
     dialog(val) {
@@ -277,48 +275,48 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
-    filterSourcesWithData: function () {
+    filterSourcesWithData: function() {
       this.$emit("overlappingDataChanged", this.filterSourcesWithData);
     },
     editedItem: {
       handler() {
         this.errors = "";
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   created() {
-    this.sources = this.getSources.map((value) => ({
+    this.sources = this.getSources.map(value => ({
       cdm_name: value.cdm_source_abbreviation,
-      concepts: [],
+      concepts: []
     }));
   },
 
   methods: {
-    getDomainSummary: function () {
+    getDomainSummary: function() {
       return this.$store
         .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
           files: [DOMAIN_SUMMARY],
           params: {
             concept: this.conceptsData[0].data.CONCEPT_ID[0],
-            domain: "measurement",
+            domain: "measurement"
           },
-          criticalError: false,
+          criticalError: false
         })
         .then(() => {
-          return this.getData[DOMAIN_SUMMARY].map((value) => ({
+          return this.getData[DOMAIN_SUMMARY].map(value => ({
             parsedData: d3Import.csvParse(value.data),
-            source: value.source.cdm_source_abbreviation,
+            source: value.source.cdm_source_abbreviation
           }));
         });
     },
 
-    addConceptToList: function (concepts) {
+    addConceptToList: function(concepts) {
       if (concepts[0]?.concept_id && !this.isLoaded()) {
         this.conceptsCount += 1;
-        this.sources.forEach((source) => {
+        this.sources.forEach(source => {
           const sourceConcept = concepts.filter(
-            (concept) => source.cdm_name === concept.cdm_name
+            concept => source.cdm_name === concept.cdm_name
           )[0];
 
           if (sourceConcept) {
@@ -330,16 +328,16 @@ export default {
         this.errors = "Entered concept is not found across data sources";
       }
     },
-    getConceptsForRequest: function (measurement = []) {
-      return this.conceptsData.map((value) => {
+    getConceptsForRequest: function(measurement = []) {
+      return this.conceptsData.map(value => {
         const missingData = measurement.length
           ? measurement
               .filter(
-                (source) =>
+                source =>
                   source.source === value.source?.cdm_source_abbreviation
               )[0]
               ?.parsedData.filter(
-                (summaryReport) =>
+                summaryReport =>
                   summaryReport.CONCEPT_ID == value?.data.CONCEPT_ID[0]
               )[0].PERCENT_MISSING_VALUES
           : [];
@@ -354,24 +352,24 @@ export default {
           issues: value?.data.COUNT_FAILED,
           measurement: measurement.length
             ? (1 - missingData) * (100).toFixed(2)
-            : null,
+            : null
         };
       });
     },
-    isLoaded: function () {
+    isLoaded: function() {
       return [
         ...this.sources.reduce(
           (prevValue, value) => [
             ...prevValue,
             ...value.concepts.filter(
-              (concept) => concept.concept_id === this.editedItem.conceptID
-            ),
+              concept => concept.concept_id === this.editedItem.conceptID
+            )
           ],
           []
-        ),
+        )
       ].length;
     },
-    formatComma: function (value) {
+    formatComma: function(value) {
       return d3Format.format(",")(value);
     },
     deleteItem(item) {
@@ -415,22 +413,22 @@ export default {
           files: [CONCEPT],
           params: {
             concept: this.editedItem.conceptID,
-            domain: this.editedItem.domain.value,
+            domain: this.editedItem.domain.value
           },
-          criticalError: false,
+          criticalError: false
         })
         .then(() => {
           this.conceptsData = this.getData[CONCEPT];
           if (this.conceptsData[0]?.data?.CDM_TABLE_NAME[0] === "MEASUREMENT") {
-            this.getDomainSummary().then((value) => {
+            this.getDomainSummary().then(value => {
               this.addConceptToList(this.getConceptsForRequest(value));
             });
           } else {
             this.addConceptToList(this.getConceptsForRequest());
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

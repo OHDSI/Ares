@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <v-container fluid>
     <Explorer />
     <ErrorAlert />
     <router-view v-if="explorerLoaded" name="DataSourcesExplorer" />
-  </div>
+  </v-container>
 </template>
 
 <script>

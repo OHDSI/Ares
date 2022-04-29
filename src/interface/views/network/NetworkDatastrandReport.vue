@@ -1,5 +1,5 @@
 <template>
-  <v-responsive v-if="!getErrors" min-width="900">
+  <v-container v-if="!getErrors" fluid min-width="900">
     <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
       <v-card-title>Data Strands</v-card-title>
       <div v-if="dataLoaded" id="viz-datastrand" class="viz-container"></div>
@@ -11,7 +11,7 @@
         compared and contrasted."
       ></infopanel>
     </v-card>
-  </v-responsive>
+  </v-container>
 </template>
 
 <script>

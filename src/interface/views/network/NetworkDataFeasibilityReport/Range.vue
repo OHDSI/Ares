@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-container class="mb-4">
+  <v-container fluid>
+    <v-container fluid class="mb-4">
       <v-subheader>Age range</v-subheader>
       <v-range-slider
         v-model="rangeAge"

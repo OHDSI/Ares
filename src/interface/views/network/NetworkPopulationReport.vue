@@ -1,6 +1,6 @@
 <template>
   <div v-if="!getErrors">
-    <v-container>
+    <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-6 text-uppercase text-h6"
           >{{ conceptName }} NETWORK POPULATION OVERVIEW</v-layout
@@ -37,7 +37,7 @@ import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
 export default {
   components: {
-    VegaChart,
+    VegaChart
   },
   data() {
     return {
@@ -51,20 +51,20 @@ export default {
       historyRecords: [],
       cdmSourceName: "",
       specAgeAtFirstObservation: charts.specAgeAtFirstObservationBySource,
-      specCumulativeObservation: charts.specCumulativeObservationBySource,
+      specCumulativeObservation: charts.specCumulativeObservationBySource
     };
   },
   computed: {
-    ...mapGetters(["getData", "getSources", "getErrors"]),
+    ...mapGetters(["getData", "getSources", "getErrors"])
   },
   created() {
     this.load();
   },
   methods: {
-    formatPercent: function (value) {
+    formatPercent: function(value) {
       return d3Format.format("0.0%")(value);
     },
-    triggerResize: function () {
+    triggerResize: function() {
       window.dispatchEvent(new Event("resize"));
     },
     navigateToDataQuality() {
@@ -75,14 +75,14 @@ export default {
           "/" +
           this.$route.params.release +
           "/data_quality?tab=results&conceptFailFilter=" +
-          this.$route.params.concept,
+          this.$route.params.concept
       });
     },
-    load: function () {
+    load: function() {
       this.dataLoaded = false;
       this.$store
         .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [OBSERVATION_PERIOD],
+          files: [OBSERVATION_PERIOD]
         })
         .then(() => {
           if (!this.getErrors) {
@@ -91,10 +91,10 @@ export default {
             ].reduce(
               (prevValue, current) => [
                 ...prevValue,
-                ...current.data.CUMULATIVE_DURATION.map((value) => ({
+                ...current.data.CUMULATIVE_DURATION.map(value => ({
                   ...value,
-                  DATA_SOURCE_KEY: current.source.cdm_source_key,
-                })),
+                  DATA_SOURCE_KEY: current.source.cdm_source_key
+                }))
               ],
               []
             );
@@ -104,18 +104,18 @@ export default {
             ].reduce(
               (prevValue, current) => [
                 ...prevValue,
-                ...current.data.AGE_AT_FIRST_OBSERVATION.map((value) => ({
+                ...current.data.AGE_AT_FIRST_OBSERVATION.map(value => ({
                   ...value,
-                  DATA_SOURCE_KEY: current.source.cdm_source_key,
-                })),
+                  DATA_SOURCE_KEY: current.source.cdm_source_key
+                }))
               ],
               []
             );
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

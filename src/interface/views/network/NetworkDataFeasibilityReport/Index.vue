@@ -1,7 +1,7 @@
 <template>
-  <v-responsive min-width="900">
+  <v-container fluid min-width="900">
     <v-card elevation="10" class="ma-4" pa-2>
-      <v-container>
+      <v-responsive>
         <v-expansion-panels v-model="panel" multiple>
           <v-expansion-panel elevation="10" class="ma-4">
             <v-expansion-panel-header class="text-lg-h6"
@@ -67,9 +67,9 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
-      </v-container>
+      </v-responsive>
     </v-card>
-  </v-responsive>
+  </v-container>
 </template>
 
 <script>
