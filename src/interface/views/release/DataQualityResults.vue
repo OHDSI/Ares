@@ -10,7 +10,7 @@
         </v-tabs>
         <v-tabs-items :value="tab">
           <v-tab-item v-if="dataLoaded" value="overview">
-            <v-container class="ma-2 pa-4">
+            <v-container fluid class="ma-2 pa-4">
               <table id="results">
                 <thead>
                   <tr>
@@ -120,7 +120,7 @@
             </v-container>
           </v-tab-item>
           <v-tab-item v-if="dataLoaded" value="metadata">
-            <v-container ma-2 pa-4>
+            <v-container fluid ma-2 pa-4>
               <v-row>
                 <v-col cols="2">CDM Source Name</v-col>
                 <v-col>{{ cdmSourceName }}</v-col>
@@ -170,7 +170,7 @@
             </v-container>
           </v-tab-item>
           <v-tab-item v-if="dataLoaded" value="results">
-            <v-container class="ma-2 pa-4">
+            <v-container fluid class="ma-2 pa-4">
               <v-row>
                 <v-col cols="3">
                   <v-text-field
@@ -385,7 +385,7 @@
             </v-data-table>
           </v-tab-item>
           <v-tab-item v-if="dataLoaded" value="pivot">
-            <v-container>
+            <v-container fluid>
               <Pivot
                 :data="rawData.CheckResults"
                 :attributes="[

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container v-if="!getErrors">
+    <v-container v-if="!getErrors" fluid>
       <v-responsive min-width="900">
         <div class="text-uppercase text-h6">Death Report</div>
         <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">

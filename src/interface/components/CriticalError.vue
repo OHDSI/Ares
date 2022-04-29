@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="getErrors">
+  <v-container v-if="getErrors" fluid>
     <v-alert elevation="4" text prominent type="error" icon="mdi-cloud-alert">
       <v-card-title>An error has occurred</v-card-title>
       <ul>
@@ -18,8 +18,8 @@ import { mapGetters } from "vuex";
 export default {
   name: "ErrorAlert",
   computed: {
-    ...mapGetters(["getErrors"])
-  }
+    ...mapGetters(["getErrors"]),
+  },
 };
 </script>
 <style scoped></style>

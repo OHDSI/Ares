@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <v-container fluid>
     <Explorer />
     <ErrorAlert />
     <router-view v-if="explorerLoaded" name="DataSourcesExplorer" />
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -15,11 +15,11 @@ export default {
   name: "DataSourcesExplorer",
   components: {
     ErrorAlert,
-    Explorer
+    Explorer,
   },
   computed: {
-    ...mapGetters(["explorerLoaded"])
-  }
+    ...mapGetters(["explorerLoaded"]),
+  },
 };
 </script>
 

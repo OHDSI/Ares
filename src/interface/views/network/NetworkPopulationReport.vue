@@ -1,6 +1,6 @@
 <template>
   <div v-if="!getErrors">
-    <v-container>
+    <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-6 text-uppercase text-h6"
           >{{ conceptName }} NETWORK POPULATION OVERVIEW</v-layout

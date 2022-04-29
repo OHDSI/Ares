@@ -1,7 +1,7 @@
 <template>
-  <v-responsive min-width="900">
+  <v-container fluid min-width="900">
     <v-card elevation="10" class="ma-4" pa-2>
-      <v-container>
+      <v-responsive>
         <v-expansion-panels v-model="panel" multiple>
           <v-expansion-panel elevation="10" class="ma-4">
             <v-expansion-panel-header class="text-lg-h6"
@@ -67,9 +67,9 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
-      </v-container>
+      </v-responsive>
     </v-card>
-  </v-responsive>
+  </v-container>
 </template>
 
 <script>
@@ -79,7 +79,7 @@ import {
   DENSITY_DOMAIN_PERSON,
   DOMAIN_SUMMARY,
   OBSERVATION_PERIOD,
-  PERSON
+  PERSON,
 } from "@/data/services/getFilePath";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/data/store/modules/view/actions.type";
 import { mapGetters } from "vuex";
@@ -98,7 +98,7 @@ export default {
     RequiredConcepts,
     VisitTypes,
     Range,
-    DomainRequirements
+    DomainRequirements,
   },
   data() {
     return {
@@ -114,47 +114,47 @@ export default {
       observationPeriod: [],
       person: [],
       domainSummary: [],
-      dataLoaded: false
+      dataLoaded: false,
     };
   },
   computed: {
     ...mapGetters(["getData"]),
-    finalEstimation: function() {
+    finalEstimation: function () {
       return {
         domainData: this.chosenDomains,
         rangeData: this.rangeData,
         requiredConcepts: this.requiredConcepts,
         visitTypes: this.visitTypes,
         sourcePopulation: this.person,
-        desiredDomains: this.desiredDomains
+        desiredDomains: this.desiredDomains,
       };
-    }
+    },
   },
   created() {
     this.load();
   },
   methods: {
-    load: function() {
+    load: function () {
       this.$store
         .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
           files: [
             OBSERVATION_PERIOD,
             PERSON,
             DENSITY_DOMAIN_PERSON,
-            DOMAIN_SUMMARY
+            DOMAIN_SUMMARY,
           ],
-          params: { domain: "visit_occurrence" }
+          params: { domain: "visit_occurrence" },
         })
         .then(() => {
           this.observationPeriod = this.getData[OBSERVATION_PERIOD];
           this.person = this.getData[PERSON];
-          this.sources = this.getData[DENSITY_DOMAIN_PERSON].map(file => ({
+          this.sources = this.getData[DENSITY_DOMAIN_PERSON].map((file) => ({
             data: csvParse(file.data),
-            source: file.source.cdm_source_abbreviation
+            source: file.source.cdm_source_abbreviation,
           }));
-          this.domainSummary = this.getData[DOMAIN_SUMMARY].map(file => ({
+          this.domainSummary = this.getData[DOMAIN_SUMMARY].map((file) => ({
             data: csvParse(file.data),
-            source: file.source.cdm_source_abbreviation
+            source: file.source.cdm_source_abbreviation,
           }));
         });
     },
@@ -172,8 +172,8 @@ export default {
     },
     changeDesiredDomainsData(value) {
       this.desiredDomains = value;
-    }
-  }
+    },
+  },
 };
 </script>
 
