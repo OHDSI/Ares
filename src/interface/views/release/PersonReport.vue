@@ -27,10 +27,10 @@
               color="info"
               :content="
                 'Male: ' +
-                formatComma(genderMaleCount) +
-                ' (' +
-                formatPercent(genderMalePct) +
-                ')'
+                  formatComma(genderMaleCount) +
+                  ' (' +
+                  formatPercent(genderMalePct) +
+                  ')'
               "
             ></v-badge>
             <v-badge
@@ -40,10 +40,10 @@
               color="info"
               :content="
                 'Female: ' +
-                formatComma(genderFemaleCount) +
-                ' (' +
-                formatPercent(genderFemalePct) +
-                ')'
+                  formatComma(genderFemaleCount) +
+                  ' (' +
+                  formatPercent(genderFemalePct) +
+                  ')'
               "
             ></v-badge>
             <p class="text-caption">Gender Proportions</p>
@@ -100,7 +100,7 @@ import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
 export default {
   components: {
-    VegaChart,
+    VegaChart
   },
   data() {
     return {
@@ -122,38 +122,38 @@ export default {
       specBirthYear: charts.specBirthYear,
       specRace: charts.specRace,
       specEthnicity: charts.specEthnicity,
-      specAgeSex: charts.specAgeSex,
+      specAgeSex: charts.specAgeSex
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors"])
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   created() {
     this.load();
   },
   methods: {
-    triggerResize: function () {
+    triggerResize: function() {
       window.dispatchEvent(new Event("resize"));
     },
     // Formats values passed as percentages
-    formatPercent: function (value) {
+    formatPercent: function(value) {
       return d3Format.format("0.0%")(value);
     },
     // Formats values passed with commas added
-    formatComma: function (value) {
+    formatComma: function(value) {
       return d3Format.format(",")(value);
     },
 
-    load: function () {
+    load: function() {
       this.dataLoaded = false;
       this.$store
         .dispatch(FETCH_FILES, {
-          files: [{ name: PERSON, required: true }],
+          files: [{ name: PERSON, required: true }]
         })
         .then(() => {
           if (!this.getErrors) {
@@ -162,12 +162,10 @@ export default {
             this.numPersons = this.personData.SUMMARY[1].ATTRIBUTE_VALUE;
             if (this.personData.GENDER_DATA[0].CONCEPT_NAME === "MALE") {
               this.genderMaleCount = this.personData.GENDER_DATA[0].COUNT_VALUE;
-              this.genderFemaleCount =
-                this.personData.GENDER_DATA[1].COUNT_VALUE;
+              this.genderFemaleCount = this.personData.GENDER_DATA[1].COUNT_VALUE;
             } else {
               this.genderMaleCount = this.personData.GENDER_DATA[1].COUNT_VALUE;
-              this.genderFemaleCount =
-                this.personData.GENDER_DATA[0].COUNT_VALUE;
+              this.genderFemaleCount = this.personData.GENDER_DATA[0].COUNT_VALUE;
             }
             // Gender breakdown (percentage)
             this.genderMalePct = this.genderMaleCount / this.numPersons;
@@ -179,8 +177,8 @@ export default {
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

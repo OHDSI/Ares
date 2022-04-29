@@ -60,7 +60,7 @@ import { mapGetters } from "vuex";
 import sortByRange from "@/services/range-sort";
 export default {
   components: {
-    VegaChart,
+    VegaChart
   },
   data() {
     return {
@@ -69,26 +69,26 @@ export default {
       specDeathByType: charts.specDeathByType,
       specAgeAtDeath: charts.specAgeAtDeath,
       specRecordProportionByAgeSexYear: charts.specRecordProportionByAgeSexYear,
-      specRecordProportionByMonth: charts.specRecordProportionByMonth,
+      specRecordProportionByMonth: charts.specRecordProportionByMonth
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors"])
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   created() {
     this.load();
   },
   methods: {
-    load: function () {
+    load: function() {
       this.dataLoaded = false;
       this.$store
         .dispatch(FETCH_FILES, {
-          files: [{ name: DEATH, required: true }],
+          files: [{ name: DEATH, required: true }]
         })
         .then(() => {
           if (!this.getErrors) {
@@ -108,8 +108,8 @@ export default {
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

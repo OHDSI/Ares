@@ -48,12 +48,12 @@ export default {
     routeLink: { type: String },
     icon: { type: String, default: "mdi-help-circle" },
     divider: { type: Boolean, default: true },
-    linkDetails: { type: Boolean, default: false },
+    linkDetails: { type: Boolean, default: false }
   },
   data() {
     return {};
   },
-  created() {},
+  created() {}
 };
 </script>
 

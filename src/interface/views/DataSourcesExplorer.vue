@@ -15,11 +15,11 @@ export default {
   name: "DataSourcesExplorer",
   components: {
     ErrorAlert,
-    Explorer,
+    Explorer
   },
   computed: {
-    ...mapGetters(["explorerLoaded"]),
-  },
+    ...mapGetters(["explorerLoaded"])
+  }
 };
 </script>
 

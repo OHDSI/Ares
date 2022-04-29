@@ -36,7 +36,7 @@ export default {
   components: { Settings },
   data() {
     return {
-      dialog: false,
+      dialog: false
     };
   },
   watch: {
@@ -45,22 +45,22 @@ export default {
     },
     darkMode() {
       this.$vuetify.theme.dark = this.getSettings.darkMode;
-    },
+    }
   },
   created() {
     this.$vuetify.theme.dark = this.getSettings.darkMode;
   },
   methods: {
-    toggleSettings: function () {
+    toggleSettings: function() {
       this.$store.commit(SET_VISIBILITY, !this.$store.getters.getVisibility);
-    },
+    }
   },
   computed: {
     ...mapGetters(["getSettings"]),
-    darkMode: function () {
+    darkMode: function() {
       return this.getSettings.darkMode;
-    },
-  },
+    }
+  }
 };
 </script>
 

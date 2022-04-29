@@ -59,7 +59,7 @@ import VegaChart from "@/interface/components/VegaChart";
 export default {
   components: {
     VegaChart,
-    ReturnButton,
+    ReturnButton
   },
   data() {
     return {
@@ -69,32 +69,32 @@ export default {
       conceptId: 0,
       dataLoaded: false,
       cdmSourceName: "",
-      specRecordProportionByMonth: charts.specRecordProportionByMonthByRelease,
+      specRecordProportionByMonth: charts.specRecordProportionByMonthByRelease
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors"])
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   created() {
     this.load();
   },
   methods: {
-    formatPercent: function (value) {
+    formatPercent: function(value) {
       return d3Format.format("0.0%")(value);
     },
-    triggerResize: function () {
+    triggerResize: function() {
       window.dispatchEvent(new Event("resize"));
     },
     load() {
       this.dataLoaded = false;
       this.$store
         .dispatch(FETCH_MULTIPLE_FILES_BY_RELEASE, {
-          files: [SOURCE_CONCEPT],
+          files: [SOURCE_CONCEPT]
         })
         .then(() => {
           if (!this.getErrors) {
@@ -107,15 +107,15 @@ export default {
             this.conceptId = parsedResponses[0].data.CONCEPT_ID[0];
             this.numPersons = sumBy(
               parsedResponses,
-              (item) => item.data.NUM_PERSONS[0]
+              item => item.data.NUM_PERSONS[0]
             );
 
-            const prevalence = parsedResponses.map((response) =>
-              response.data.PREVALENCE_BY_MONTH.map((prevalence) => {
+            const prevalence = parsedResponses.map(response =>
+              response.data.PREVALENCE_BY_MONTH.map(prevalence => {
                 return {
                   ...prevalence,
                   date: dateParse(prevalence.X_CALENDAR_MONTH),
-                  release: response.release,
+                  release: response.release
                 };
               })
             );
@@ -124,8 +124,8 @@ export default {
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

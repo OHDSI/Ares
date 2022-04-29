@@ -26,7 +26,7 @@
             :headers="headers"
             :items="personPeriods"
             :footer-props="{
-              'items-per-page-options': [5, 10, 25, 50],
+              'items-per-page-options': [5, 10, 25, 50]
             }"
             :items-per-page="5"
             :sort-by="['PERCENT_PEOPLE']"
@@ -102,7 +102,7 @@ import getPercentage from "@/services/get-percentage";
 import sortByRange from "@/services/range-sort";
 export default {
   components: {
-    VegaChart,
+    VegaChart
   },
   data() {
     return {
@@ -115,78 +115,78 @@ export default {
           text: "Number of Observation Periods",
           sortable: true,
           value: "CONCEPT_ID",
-          align: "start",
+          align: "start"
         },
         COUNT_VALUE: {
           text: "Number of People",
           sortable: true,
           value: "COUNT_VALUE",
-          align: "start",
+          align: "start"
         },
         PERCENT_PEOPLE: {
           text: "% of People",
           sortable: true,
           value: "PERCENT_PEOPLE",
-          align: "end",
-        },
+          align: "end"
+        }
       },
       specAgeAtFirstObservation: charts.specAgeAtFirstObservation,
       specAgeBySex: charts.specAgeBySex,
       specCumulativeObservation: charts.specCumulativeObservation,
       specObservationByAge: charts.specObservationByAge,
       specObservationBySex: charts.specAgeBySex,
-      specObservationByMonth: charts.specObservationByMonth,
+      specObservationByMonth: charts.specObservationByMonth
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors"])
   },
   watch: {
     $route() {
       this.load();
-    },
+    }
   },
   created() {
     this.load();
   },
   methods: {
-    formatComma: function (value) {
+    formatComma: function(value) {
       return d3Format.format(",")(value);
     },
-    load: function () {
+    load: function() {
       this.dataLoaded = false;
       this.$store
         .dispatch(FETCH_FILES, {
-          files: [{ name: OBSERVATION_PERIOD, required: true }],
+          files: [{ name: OBSERVATION_PERIOD, required: true }]
         })
         .then(() => {
           if (!this.getErrors) {
             const dateParse = d3.timeParse("%Y%m");
             this.observationPeriodData = this.getData[OBSERVATION_PERIOD];
             this.headers = Object.values(this.headersMap);
-            this.personPeriods =
-              this.observationPeriodData.PERSON_PERIODS_DATA.map((item) => ({
+            this.personPeriods = this.observationPeriodData.PERSON_PERIODS_DATA.map(
+              item => ({
                 ...item,
                 PERCENT_PEOPLE: getPercentage(
                   item.COUNT_VALUE,
                   this.observationPeriodData.PERSON_PERIODS_DATA
-                ),
-              }));
-            this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE =
-              sortByRange(
-                this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
-                "ascending",
-                "CATEGORY",
-                "categoryOrder"
-              );
-            this.observationPeriodData.OBSERVED_BY_MONTH.forEach((v) => {
+                )
+              })
+            );
+            this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE = sortByRange(
+              this.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
+              "ascending",
+              "CATEGORY",
+              "categoryOrder"
+            );
+            this.observationPeriodData.OBSERVED_BY_MONTH.forEach(v => {
               v.DATE = dateParse(v.MONTH_YEAR);
             });
             this.dataLoaded = true;
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 

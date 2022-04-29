@@ -42,7 +42,7 @@ import axios from "axios";
 import * as d3Import from "d3-dsv";
 export default {
   components: { GChart },
-  data: function () {
+  data: function() {
     return {
       chartOptions: {
         width: 1000,
@@ -51,25 +51,25 @@ export default {
           isHtml: false,
           textStyle: {
             fontName: "Georgia",
-            fontSize: 12,
-          },
+            fontSize: 12
+          }
         },
         sankey: {
           node: {
-            width: 20,
+            width: 20
           },
           interactivity: true,
-          link: {},
-        },
+          link: {}
+        }
       },
-      chartData: [],
+      chartData: []
     };
   },
   created() {
     const vm = this;
     const dataUrl = "sankeyData.csv";
-    axios.get(dataUrl).then((response) => {
-      const data = d3Import.tsvParseRows(response.data, function (d, i) {
+    axios.get(dataUrl).then(response => {
+      const data = d3Import.tsvParseRows(response.data, function(d, i) {
         if (i == 0) {
           return [d[0], d[1], d[2]];
         } else {
@@ -80,8 +80,8 @@ export default {
     });
   },
   methods: {
-    onChartReady() {},
-  },
+    onChartReady() {}
+  }
 };
 </script>
 

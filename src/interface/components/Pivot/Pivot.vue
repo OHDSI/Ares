@@ -100,16 +100,16 @@ export default {
   name: "Pivot",
   components: {
     VuePivottable,
-    draggable,
+    draggable
   },
   props: {
     data: { type: Array, required: true, default: () => [] },
-    attributes: { type: Array, required: false, default: () => [] },
+    attributes: { type: Array, required: false, default: () => [] }
   },
   data() {
     return {
       selectedRows: [],
-      selectedCols: [],
+      selectedCols: []
     };
   },
 
@@ -120,8 +120,8 @@ export default {
     },
     removeCols(i) {
       this.$delete(this.selectedCols, i);
-    },
-  },
+    }
+  }
 };
 </script>
 

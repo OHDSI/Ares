@@ -65,137 +65,137 @@ import * as d3Format from "d3-format";
 export default {
   name: "FinalEstimation",
   props: {
-    data: Object,
+    data: Object
   },
   data() {
     return {};
   },
   methods: {
-    formatComma: function (value) {
+    formatComma: function(value) {
       return d3Format.format(",")(value);
-    },
+    }
   },
   computed: {
-    headers: function () {
+    headers: function() {
       return [
         {
           text: "Data Source",
           align: "start",
           sortable: false,
           value: "cdm_name",
-          show: true,
+          show: true
         },
         {
           text: "Source population",
           align: "end",
           value: "population.data",
-          show: true,
+          show: true
         },
         {
           text: "% Required Domains",
           align: "end",
           value: "domain_percent.data",
-          show: this.getEstimations[0].domain_percent.isIncluded,
+          show: this.getEstimations[0].domain_percent.isIncluded
         },
         {
           text: "% Desired Domains",
           align: "end",
           value: "desired_domain_value.data",
-          show: this.getEstimations[0].desired_domain_value.isIncluded,
+          show: this.getEstimations[0].desired_domain_value.isIncluded
         },
         {
           text: "% Cumulative Observation",
           align: "end",
           value: "cumulative_duration_percent.data",
-          show: this.getEstimations[0].cumulative_duration_percent.isIncluded,
+          show: this.getEstimations[0].cumulative_duration_percent.isIncluded
         },
         {
           text: "% Population by age",
           align: "end",
           value: "population_age_percent.data",
-          show: this.getEstimations[0].population_age_percent.isIncluded,
+          show: this.getEstimations[0].population_age_percent.isIncluded
         },
         {
           text: "% Observed",
           align: "end",
           value: "observation_percent.data",
-          show: this.getEstimations[0].observation_percent.isIncluded,
+          show: this.getEstimations[0].observation_percent.isIncluded
         },
         {
           text: "% Visit types",
           align: "end",
           value: "visit_types_percent.data",
-          show: this.getEstimations[0].visit_types_percent.isIncluded,
+          show: this.getEstimations[0].visit_types_percent.isIncluded
         },
         {
           text: "% Concepts",
           align: "end",
           value: "concepts_percent.data",
-          show: this.getEstimations[0].concepts_percent.isIncluded,
+          show: this.getEstimations[0].concepts_percent.isIncluded
         },
         {
           text: "Estimated population",
           align: "end",
           value: "estimation",
-          show: true,
-        },
-      ].filter((x) => x.show);
+          show: true
+        }
+      ].filter(x => x.show);
     },
-    getEstimations: function () {
-      const estimations = this.getSources.map((data) => ({
-        cdm_name: data.cdm_source_abbreviation,
+    getEstimations: function() {
+      const estimations = this.getSources.map(data => ({
+        cdm_name: data.cdm_source_abbreviation
       }));
 
       return estimations
-        .map((obj) => {
+        .map(obj => {
           const domainData = this.data.domainData.filter(
-            (value) => obj.cdm_name === value.cdm_name
+            value => obj.cdm_name === value.cdm_name
           );
           const rangeData = this.data.rangeData.filter(
-            (value) => value.cdm_name === obj.cdm_name
+            value => value.cdm_name === obj.cdm_name
           );
 
           const visitTypesData = this.data.visitTypes.filter(
-            (value) => obj.cdm_name === value.cdm_name
+            value => obj.cdm_name === value.cdm_name
           );
 
           const sourcePopulation = this.data.sourcePopulation.filter(
-            (value) => obj.cdm_name === value.source.cdm_source_abbreviation
+            value => obj.cdm_name === value.source.cdm_source_abbreviation
           );
 
           const requiredConcepts = this.data.requiredConcepts.filter(
-            (value) => value.cdm_name === obj.cdm_name
+            value => value.cdm_name === obj.cdm_name
           );
 
           const desiredDomains = this.data.desiredDomains.filter(
-            (value) => value.cdm_name === obj.cdm_name
+            value => value.cdm_name === obj.cdm_name
           );
 
           return {
             ...obj,
             domain_percent: {
               data: domainData[0]?.percentage,
-              isIncluded: this.data.domainData.length,
+              isIncluded: this.data.domainData.length
             },
             cumulative_duration_percent: {
               data: rangeData[0]?.cumulative_duration,
-              isIncluded: this.data.rangeData.length,
+              isIncluded: this.data.rangeData.length
             },
             population_age_percent: {
               data: rangeData[0]?.population_age_percent,
-              isIncluded: this.data.rangeData.length,
+              isIncluded: this.data.rangeData.length
             },
             observation_percent: {
               data: rangeData[0]?.average_population_percentage,
-              isIncluded: this.data.rangeData.length,
+              isIncluded: this.data.rangeData.length
             },
             visit_types_percent: {
               data: visitTypesData[0]?.percentage,
-              isIncluded: this.data.visitTypes.length,
+              isIncluded: this.data.visitTypes.length
             },
             population: {
               data: sourcePopulation[0]?.data.SUMMARY[1].ATTRIBUTE_VALUE,
-              isIncluded: this.data.sourcePopulation.length,
+              isIncluded: this.data.sourcePopulation.length
             },
             concepts_percent: {
               data: requiredConcepts[0]?.concepts
@@ -204,15 +204,15 @@ export default {
                   []
                 )
                 .sort((a, b) => a - b)[0],
-              isIncluded: this.data.requiredConcepts.length,
+              isIncluded: this.data.requiredConcepts.length
             },
             desired_domain_value: {
               data: desiredDomains[0]?.allDomainsPresent ? 1 : 0,
-              isIncluded: this.data.desiredDomains.length,
-            },
+              isIncluded: this.data.desiredDomains.length
+            }
           };
         })
-        .map((obj) => ({
+        .map(obj => ({
           ...obj,
           estimation:
             obj.population.data *
@@ -234,11 +234,11 @@ export default {
               : 1) *
             (obj.desired_domain_value.isIncluded
               ? obj.desired_domain_value.data || 0
-              : 1),
+              : 1)
         }));
     },
-    ...mapGetters(["getSources"]),
-  },
+    ...mapGetters(["getSources"])
+  }
 };
 </script>
 
