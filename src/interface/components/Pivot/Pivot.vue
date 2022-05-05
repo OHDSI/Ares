@@ -73,16 +73,72 @@
       </v-card>
     </v-col>
     <v-col class="overflow-hidden">
-      <v-card class="elevation-10 pa-3 table-container">
-        <vue-pivottable
+      <v-card class="elevation-10 pa-3 table-card">
+        <div
           v-if="selectedCols.length || selectedRows.length"
-          class="align-self-start"
-          :data="data"
-          :rows="selectedRows"
-          :cols="selectedCols"
-          :attributes="attributes"
+          class="table-container"
         >
-        </vue-pivottable>
+          <v-row>
+            <v-select
+              v-model="selectedFilters"
+              :items="attributes"
+              chips
+              multiple
+              placeholder="Filters"
+            >
+              <template v-slot:selection="{ attrs, item, select, selected }">
+                <v-menu
+                  allow-overflow
+                  max-height="500"
+                  :close-on-content-click="false"
+                  top
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-chip
+                      :input-value="selected"
+                      close
+                      v-bind="attrs"
+                      @click="select"
+                      v-on="on"
+                      @click:close="removeFilterAttributes(item)"
+                    >
+                      {{ item }}
+                    </v-chip>
+                  </template>
+
+                  <v-list>
+                    <v-list-item
+                      v-for="value in getUniqueAttributeValues[item]"
+                      :key="value"
+                    >
+                      <v-checkbox
+                        :input-value="
+                          valuesToFilter[item]
+                            ? !!valuesToFilter[item][value]
+                            : false
+                        "
+                        :label="value"
+                        @change="changeFilterValues(item, value, $event)"
+                      ></v-checkbox>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </template>
+            </v-select>
+          </v-row>
+          <v-row>
+            <vue-pivottable
+              v-if="selectedCols.length || selectedRows.length"
+              class="align-self-start"
+              :data="data"
+              :rows="selectedRows"
+              :cols="selectedCols"
+              :attributes="attributes"
+              :value-filter="valuesToFilter"
+            >
+            </vue-pivottable
+          ></v-row>
+        </div>
         <v-card-text v-else class="placeholder table-placeholder"
           >Choose at least one attribute to display the results</v-card-text
         >
@@ -100,28 +156,78 @@ export default {
   name: "Pivot",
   components: {
     VuePivottable,
-    draggable
+    draggable,
   },
   props: {
     data: { type: Array, required: true, default: () => [] },
-    attributes: { type: Array, required: false, default: () => [] }
+    attributes: { type: Array, required: false, default: () => [] },
   },
   data() {
     return {
       selectedRows: [],
-      selectedCols: []
+      selectedFilters: [],
+      selectedCols: [],
+      valuesToFilter: {},
+      valuesToFilter1: [],
     };
   },
 
-  computed: {},
+  computed: {
+    getUniqueAttributeValues: function () {
+      return this.attributes.reduce(
+        (prevState, currAttribute) => ({
+          ...prevState,
+          [currAttribute]: [
+            ...new Set(this.data.map((datum) => datum[currAttribute])),
+          ],
+        }),
+        {}
+      );
+    },
+  },
   methods: {
     removeRows(i) {
       this.$delete(this.selectedRows, i);
     },
     removeCols(i) {
       this.$delete(this.selectedCols, i);
-    }
-  }
+    },
+
+    removeFilterAttributes: function (attribute) {
+      this.selectedFilters = this.selectedFilters.filter(
+        (value) => attribute !== value
+      );
+      this.valuesToFilter = Object.keys(this.valuesToFilter)
+        .filter((value) => value !== attribute)
+        .reduce(
+          (acc, key) => ({ ...acc, [key]: this.valuesToFilter[key] }),
+          {}
+        );
+    },
+    changeFilterValues: function (attribute, attrValue, value) {
+      if (value) {
+        this.valuesToFilter = {
+          ...this.valuesToFilter,
+          [attribute]: {
+            ...this.valuesToFilter[attribute],
+            [attrValue]: value,
+          },
+        };
+      } else {
+        this.valuesToFilter[attribute] = Object.keys(
+          this.valuesToFilter[attribute]
+        )
+          .filter((attr) => attr !== attrValue)
+          .reduce(
+            (acc, key) => ({
+              ...acc,
+              [key]: true,
+            }),
+            {}
+          );
+      }
+    },
+  },
 };
 </script>
 
@@ -135,7 +241,8 @@ export default {
   margin-top: 10px;
 }
 
-.table-container {
+.table-card {
+  padding: 10px;
   width: 100%;
   height: 100%;
   display: flex !important;
@@ -161,6 +268,12 @@ export default {
 
 .list-item + .list-item {
   margin-top: 8px;
+}
+
+.table-container {
+  padding: 10px;
+  width: 100%;
+  height: 100%;
 }
 
 >>> .v-text-field__prefix {
