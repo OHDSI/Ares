@@ -126,8 +126,8 @@
                       <v-checkbox
                         :input-value="
                           valuesToFilter[item]
-                            ? !!valuesToFilter[item][value]
-                            : false
+                            ? !valuesToFilter[item][value]
+                            : true
                         "
                         :label="value"
                         @change="changeFilterValues(item, value, $event)"
@@ -221,12 +221,12 @@ export default {
       }
     },
     changeFilterValues: function (attribute, attrValue, value) {
-      if (value) {
+      if (!value) {
         this.valuesToFilter = {
           ...this.valuesToFilter,
           [attribute]: {
             ...this.valuesToFilter[attribute],
-            [attrValue]: value,
+            [attrValue]: true,
           },
         };
       } else {
