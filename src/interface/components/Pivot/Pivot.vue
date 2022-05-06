@@ -81,6 +81,7 @@
           <v-row>
             <v-select
               v-model="selectedFilters"
+              hide-selected
               :items="attributes"
               chips
               multiple
@@ -95,6 +96,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-chip
+                      color="primary"
                       :input-value="selected"
                       close
                       v-bind="attrs"
@@ -102,7 +104,11 @@
                       v-on="on"
                       @click:close="removeFilterAttributes(item)"
                     >
-                      {{ item }}
+                      {{ item }}({{
+                        valuesToFilter[item]
+                          ? Object.keys(valuesToFilter[item]).length
+                          : 0
+                      }})
                     </v-chip>
                   </template>
 
