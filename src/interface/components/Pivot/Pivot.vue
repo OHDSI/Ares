@@ -6,6 +6,7 @@
           <v-select
             v-model="selectedRows"
             solo
+            :menu-props="{ bottom: true, offsetY: true }"
             background-color="primary"
             prefix="Row attributes"
             hide-selected
@@ -41,6 +42,7 @@
           <v-select
             v-model="selectedCols"
             solo
+            :menu-props="{ bottom: true, offsetY: true }"
             background-color="primary"
             prefix="Column attributes"
             hide-selected
@@ -81,18 +83,22 @@
           <v-row>
             <v-select
               v-model="selectedFilters"
+              :menu-props="{ bottom: true, offsetY: true }"
               hide-selected
+              clearable
               :items="attributes"
               chips
               multiple
               placeholder="Filters"
+              @click:clear="removeFilterAttributes()"
             >
               <template v-slot:selection="{ attrs, item, select, selected }">
                 <v-menu
                   allow-overflow
+                  offset-y
+                  bottom
                   max-height="500"
                   :close-on-content-click="false"
-                  top
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-chip
@@ -104,7 +110,7 @@
                       v-on="on"
                       @click:close="removeFilterAttributes(item)"
                     >
-                      {{ item }}({{
+                      {{ item }} ({{
                         valuesToFilter[item]
                           ? Object.keys(valuesToFilter[item]).length
                           : 0
@@ -174,7 +180,6 @@ export default {
       selectedFilters: [],
       selectedCols: [],
       valuesToFilter: {},
-      valuesToFilter1: [],
     };
   },
 
@@ -199,16 +204,21 @@ export default {
       this.$delete(this.selectedCols, i);
     },
 
-    removeFilterAttributes: function (attribute) {
-      this.selectedFilters = this.selectedFilters.filter(
-        (value) => attribute !== value
-      );
-      this.valuesToFilter = Object.keys(this.valuesToFilter)
-        .filter((value) => value !== attribute)
-        .reduce(
-          (acc, key) => ({ ...acc, [key]: this.valuesToFilter[key] }),
-          {}
+    removeFilterAttributes: function (attribute = null) {
+      if (attribute) {
+        this.selectedFilters = this.selectedFilters.filter(
+          (value) => attribute !== value
         );
+        this.valuesToFilter = Object.keys(this.valuesToFilter)
+          .filter((value) => value !== attribute)
+          .reduce(
+            (acc, key) => ({ ...acc, [key]: this.valuesToFilter[key] }),
+            {}
+          );
+      } else {
+        this.selectedFilters = [];
+        this.valuesToFilter = {};
+      }
     },
     changeFilterValues: function (attribute, attrValue, value) {
       if (value) {
