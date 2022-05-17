@@ -597,9 +597,12 @@ export default {
                     ? axisAttributes[key]
                     : Object.values(self.getUniqueAttributeValues[key]).filter(
                         (attrValue) =>
-                          !Object.keys(
-                            pivotData.props.valueFilter[key]
-                          ).includes(attrValue)
+                          pivotData.props.valueFilter[key]
+                            ? !Object.keys(
+                                pivotData.props.valueFilter[key]
+                              ).includes(attrValue)
+                            : //empty strings are possible values, as such need additional checks for them, otherwise Object.keys returns an error
+                              attrValue === ""
                       ),
                 }),
                 {}
