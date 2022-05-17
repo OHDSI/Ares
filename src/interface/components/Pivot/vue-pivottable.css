@@ -54,6 +54,8 @@ table.pvtTable tbody tr td {
     border: 1px solid var(--v-accent-base);
     vertical-align: top;
     text-align: right;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .pvtTotal,

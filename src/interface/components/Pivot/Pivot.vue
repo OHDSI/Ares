@@ -147,6 +147,7 @@
               :cols="selectedCols"
               :attributes="attributes"
               :value-filter="valuesToFilter"
+              :table-options="eventListener(this)"
             >
             </vue-pivottable
           ></v-row>
@@ -173,6 +174,7 @@ export default {
   props: {
     data: { type: Array, required: true, default: () => [] },
     attributes: { type: Array, required: false, default: () => [] },
+    eventListener: { type: Function, required: false, default: function () {} },
   },
   data() {
     return {
@@ -203,7 +205,6 @@ export default {
     removeCols(i) {
       this.$delete(this.selectedCols, i);
     },
-
     removeFilterAttributes: function (attribute = null) {
       if (attribute) {
         this.selectedFilters = this.selectedFilters.filter(
