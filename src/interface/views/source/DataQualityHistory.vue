@@ -166,7 +166,7 @@ export default {
         this.$route.params.cdm +
         "/" +
         item.cdm_release_date.replaceAll("-", "") +
-        "/data_quality?tab=results&failFilter=FAIL"
+        "/data_quality?tab=results&FAILED=FAIL"
       );
     },
   },
