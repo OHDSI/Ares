@@ -2,7 +2,7 @@
   <div>
     <v-card
       v-if="!getErrors"
-      :loading="!dataLoaded"
+      :loading="!dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
@@ -26,7 +26,7 @@
         :headers="showHeaders"
         :items="filteredRecords"
         :footer-props="{
-          'items-per-page-options': [10, 50, 100]
+          'items-per-page-options': [10, 50, 100],
         }"
         item-key="CDM_TABLE"
         :items-per-page="10"
@@ -74,125 +74,96 @@
 </template>
 
 <script>
-import { csvParse } from "d3-dsv";
 import { format } from "d3-format";
 import { debounce } from "lodash";
-import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import { NETWORK_UNMAPPED_SOURCE_CODES } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 
 export default {
   components: {},
   props: {
-    resultFile: String
+    resultFile: String,
   },
-  data: function() {
+  data: function () {
     return {
-      chooseHeaderMenu: false,
-      dataLoaded: false,
-      domainTable: [],
       search: "",
       selectedHeaders: [],
       headers: [],
       filters: {
         CDM_TABLE_NAME: [],
-        CDM_FIELD_NAME: []
+        CDM_FIELD_NAME: [],
       },
       headersMap: {
         CDM_TABLE: {
           text: "CDM Table",
           sortable: true,
-          value: "CDM_TABLE_NAME"
+          value: "CDM_TABLE_NAME",
         },
         CDM_FIELD: {
           text: "CDM Field",
           sortable: true,
-          value: "CDM_FIELD_NAME"
+          value: "CDM_FIELD_NAME",
         },
         SOURCE_VALUE: {
           text: "Source Value",
           sortable: true,
-          value: "SOURCE_VALUE"
+          value: "SOURCE_VALUE",
         },
         RECORD_COUNT: {
           text: "# Records",
           sortable: true,
-          value: "RECORD_COUNT"
+          value: "RECORD_COUNT",
         },
         DATA_SOURCE_COUNT: {
           text: "# Data Sources",
           sortable: true,
-          value: "DATA_SOURCE_COUNT"
+          value: "DATA_SOURCE_COUNT",
         },
         DATA_SOURCES: {
           text: "Data Sources",
           sortable: true,
-          value: "DATA_SOURCES"
-        }
-      }
+          value: "DATA_SOURCES",
+        },
+      },
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore"]),
     showHeaders() {
-      return this.headers.filter(s => this.selectedHeaders.includes(s));
+      return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
     filteredRecords() {
-      return this.domainTable.filter(d => {
-        return Object.keys(this.filters).every(f => {
+      return this.getData.domainTable.filter((d) => {
+        return Object.keys(this.filters).every((f) => {
           return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
         });
       });
-    }
-  },
-  watch: {
-    $route() {
-      this.load();
-    }
+    },
   },
   created() {
-    this.load();
     this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers.filter(h =>
+    this.selectedHeaders = this.headers.filter((h) =>
       [
         "CDM_TABLE_NAME",
         "CDM_FIELD_NAME",
         "SOURCE_VALUE",
         "RECORD_COUNT",
         "DATA_SOURCE_COUNT",
-        "DATA_SOURCES"
+        "DATA_SOURCES",
       ].includes(h.value)
     );
   },
 
   methods: {
-    formatComma: function(value) {
+    formatComma: function (value) {
       return format(",")(value);
     },
-    delayedSearch: debounce(function(data) {
+    delayedSearch: debounce(function (data) {
       this.search = data;
     }, 300),
-    getMenuOffset: function() {
-      return true;
-    },
     columnValueList(val) {
-      return this.filteredRecords.map(d => d[val]);
+      return this.filteredRecords.map((d) => d[val]);
     },
-    load() {
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files: [{ name: NETWORK_UNMAPPED_SOURCE_CODES, required: true }]
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.domainTable = csvParse(
-              this.getData[NETWORK_UNMAPPED_SOURCE_CODES]
-            );
-            this.dataLoaded = true;
-          }
-        });
-    }
-  }
+  },
 };
 </script>
 

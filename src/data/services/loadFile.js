@@ -20,7 +20,9 @@ const loadFile = (path, payload) => {
   return new Promise((resolve, reject) => {
     instance
       .get(path)
-      .then((response) => resolve({ response, payload }))
+      .then((response) => {
+        resolve({ response, payload });
+      })
       .catch((error) => reject({ error, payload }));
   });
 };

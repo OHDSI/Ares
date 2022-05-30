@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container v-if="dataLoaded && !getErrors" fluid class="pa-1">
+    <v-container v-if="dataInStore && !getErrors" fluid class="pa-1">
       <v-card elevation="10" class="ma-4 pa-2">
         <v-card-title>Performance</v-card-title>
         <v-row>
@@ -22,7 +22,7 @@
           :headers="showHeaders"
           :items="filteredRecords"
           :footer-props="{
-            'items-per-page-options': [10, 50, 100]
+            'items-per-page-options': [10, 50, 100],
           }"
           item-key="CONCEPT_ID"
           :items-per-page="10"
@@ -76,79 +76,68 @@ import { mapGetters } from "vuex";
 export default {
   components: {},
   props: {
-    resultFile: String
+    resultFile: String,
   },
-  data: function() {
+  data: function () {
     return {
       chooseHeaderMenu: false,
-      dataLoaded: false,
-      domainTable: [],
       search: "",
       selectedHeaders: [],
       headers: [],
-      filters: {
-        /*
-        CDM_TABLE_NAME: [],
-        CDM_FIELD_NAME: [],
-        */
-      },
+      filters: {},
       headersMap: {
         analysis_id: {
           text: "Analysis Id",
           sortable: true,
-          value: "analysis_id"
+          value: "analysis_id",
         },
         CONCEPT_NAME: {
           text: "Analysis Name",
           sortable: true,
-          value: "analysis_name"
+          value: "analysis_name",
         },
         NUM_PERSONS: {
           text: "Duration (seconds)",
           sortable: true,
-          value: "elapsed_seconds"
-        }
-      }
+          value: "elapsed_seconds",
+        },
+      },
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore"]),
     showHeaders() {
-      return this.headers.filter(s => this.selectedHeaders.includes(s));
+      return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
     filteredRecords() {
-      return this.domainTable.filter(d => {
-        return Object.keys(this.filters).every(f => {
+      return this.getData.domainTable.filter((d) => {
+        return Object.keys(this.filters).every((f) => {
           return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
         });
       });
-    }
+    },
   },
   watch: {
     $route() {
       this.load();
-    }
+    },
   },
   created() {
-    this.load();
     this.headers = Object.values(this.headersMap);
-    this.selectedHeaders = this.headers.filter(h =>
+    this.selectedHeaders = this.headers.filter((h) =>
       ["analysis_id", "analysis_name", "elapsed_seconds"].includes(h.value)
     );
   },
   methods: {
-    getAnalysisLink: function(id) {
+    getAnalysisLink: function (id) {
       return (
         "https://github.com/OHDSI/Achilles/blob/master/inst/sql/sql_server/analyses/" +
         id +
         ".sql"
       );
     },
-    getMenuOffset: function() {
-      return true;
-    },
     columnValueList(val) {
-      return this.domainTable.map(d => d[val]);
+      return this.getData.domainTable.map((d) => d[val]);
     },
     getReportRoute(id) {
       return (
@@ -161,20 +150,7 @@ export default {
         "/summary"
       );
     },
-    load() {
-      this.dataLoaded = false;
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files: [{ name: ACHILLES_PERFORMANCE, required: true }]
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.domainTable = d3.csvParse(this.getData[ACHILLES_PERFORMANCE]);
-            this.dataLoaded = true;
-          }
-        });
-    }
-  }
+  },
 };
 </script>
 

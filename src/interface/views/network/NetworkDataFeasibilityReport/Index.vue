@@ -73,15 +73,6 @@
 </template>
 
 <script>
-import { csvParse } from "d3-dsv";
-
-import {
-  DENSITY_DOMAIN_PERSON,
-  DOMAIN_SUMMARY,
-  OBSERVATION_PERIOD,
-  PERSON
-} from "@/data/services/getFilePath";
-import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/data/store/modules/view/actions.type";
 import { mapGetters } from "vuex";
 import DomainRequirements from "@/interface/views/network/NetworkDataFeasibilityReport/DomainRequirements";
 import Range from "@/interface/views/network/NetworkDataFeasibilityReport/Range";
@@ -98,11 +89,15 @@ export default {
     RequiredConcepts,
     VisitTypes,
     Range,
-    DomainRequirements
+    DomainRequirements,
   },
   data() {
     return {
       sources: [],
+      domainSummary: [],
+      observationPeriod: [],
+      person: [],
+      data: {},
       switchDomains: [],
       chosenDomains: [],
       rangeData: [],
@@ -111,53 +106,35 @@ export default {
       requiredConcepts: [],
       visitTypes: [],
       domainData: [],
-      observationPeriod: [],
-      person: [],
-      domainSummary: [],
-      dataLoaded: false
+      dataLoaded: false,
     };
   },
   computed: {
-    ...mapGetters(["getData"]),
-    finalEstimation: function() {
+    ...mapGetters(["getData", "explorerLoaded"]),
+    finalEstimation: function () {
       return {
         domainData: this.chosenDomains,
         rangeData: this.rangeData,
         requiredConcepts: this.requiredConcepts,
         visitTypes: this.visitTypes,
-        sourcePopulation: this.person,
-        desiredDomains: this.desiredDomains
+        sourcePopulation: this.getData.person,
+        desiredDomains: this.desiredDomains,
       };
-    }
-  },
-  created() {
-    this.load();
-  },
-  methods: {
-    load: function() {
-      this.$store
-        .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [
-            OBSERVATION_PERIOD,
-            PERSON,
-            DENSITY_DOMAIN_PERSON,
-            DOMAIN_SUMMARY
-          ],
-          params: { domain: "visit_occurrence" }
-        })
-        .then(() => {
-          this.observationPeriod = this.getData[OBSERVATION_PERIOD];
-          this.person = this.getData[PERSON];
-          this.sources = this.getData[DENSITY_DOMAIN_PERSON].map(file => ({
-            data: csvParse(file.data),
-            source: file.source.cdm_source_abbreviation
-          }));
-          this.domainSummary = this.getData[DOMAIN_SUMMARY].map(file => ({
-            data: csvParse(file.data),
-            source: file.source.cdm_source_abbreviation
-          }));
-        });
     },
+  },
+
+  watch: {
+    getData: function () {
+      if (Object.keys(this.getData).length) {
+        this.sources = this.getData.sources;
+        this.person = this.getData.person;
+        this.domainSummary = this.getData.domainSummary;
+        this.observationPeriod = this.getData.observationPeriod;
+      }
+    },
+  },
+  created() {},
+  methods: {
     changeDomainData(value) {
       this.chosenDomains = value;
     },
@@ -172,8 +149,8 @@ export default {
     },
     changeDesiredDomainsData(value) {
       this.desiredDomains = value;
-    }
-  }
+    },
+  },
 };
 </script>
 

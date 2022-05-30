@@ -3,10 +3,12 @@
     <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
-          <h2 class="text-uppercase">{{ conceptName }} NETWORK REPORT</h2>
+          <h2 class="text-uppercase">
+            {{ getData.conceptName }} NETWORK REPORT
+          </h2>
           <ReturnButton />
         </v-layout>
-        <v-row v-if="dataLoaded" justify="start"
+        <v-row v-if="getData" justify="start"
           ><v-col cols="2" align="center">
             <v-icon left color="info">mdi-identifier</v-icon>
             <v-badge
@@ -14,7 +16,7 @@
               inline
               dark
               color="info"
-              :content="conceptId"
+              :content="getData.conceptId"
             ></v-badge>
             <p class="text-caption">Concept Identifier</p></v-col
           ><v-col cols="2" align="center">
@@ -24,14 +26,14 @@
               inline
               dark
               color="info"
-              :content="numPersons"
+              :content="getData.numPersons"
             ></v-badge>
             <p class="text-caption">Number of People in Network</p></v-col
           ></v-row
         >
         <v-card
-          v-if="hasMeasurementValueDistribution"
-          :loading="!dataLoaded"
+          v-if="getData.measurementValueDistribution"
+          :loading="!getData"
           elevation="10"
           class="ma-4 pa-2"
         >
@@ -56,7 +58,7 @@
             >
           </v-layout>
           <VegaChart
-            v-if="dataLoaded"
+            v-if="getData"
             id="viz-measurementvaluedistribution"
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
@@ -75,8 +77,6 @@
 </template>
 
 <script>
-import _ from "lodash";
-import * as d3Format from "d3-format";
 import ReturnButton from "@/interface/components/ReturnButton";
 import { charts } from "@/configs";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/data/store/modules/view/actions.type";
@@ -90,26 +90,8 @@ export default {
   },
   data() {
     return {
-      sources: [],
       toggleMode: "MIN/MAX",
-      hasMeasurementValueDistribution: false,
-      hasAgeAtFirstDiagnosis: false,
-      hasAgeAtFirstOccurrence: false,
       selectedMeasurementUnits: [],
-      hasAgeAtFirstExposure: false,
-      hasConditionsByType: false,
-      hasVisitDurationByType: false,
-      measurementValueDistribution: [],
-      hasLengthOfEra: false,
-      hasCountFailed: false,
-      countFailed: 0,
-      conceptData: null,
-      numPersons: 0,
-      conceptName: "",
-      conceptId: 0,
-      dataLoaded: false,
-      historyRecords: [],
-      cdmSourceName: "",
       specMeasurementValueDistribution:
         charts.specMeasurementValueDistribution1,
     };
@@ -118,25 +100,21 @@ export default {
     ...mapGetters(["getData", "getSources", "getErrors"]),
     getSelectedMeasurementUnits: function () {
       return this.selectedMeasurementUnits.length
-        ? this.measurementValueDistribution.filter((value) =>
+        ? this.getData.measurementValueDistribution.filter((value) =>
             this.selectedMeasurementUnits.includes(value.CATEGORY)
           )
-        : this.measurementValueDistribution;
+        : this.getData.measurementValueDistribution;
     },
     getMeasurementUnits: function () {
-      return this.measurementValueDistribution.map((value) => value.CATEGORY);
+      return this.getData.measurementValueDistribution.map(
+        (value) => value.CATEGORY
+      );
     },
   },
   created() {
     this.load();
   },
   methods: {
-    formatPercent: function (value) {
-      return d3Format.format("0.0%")(value);
-    },
-    triggerResize: function () {
-      window.dispatchEvent(new Event("resize"));
-    },
     toggleMeasurementValueChart() {
       const encoding = this.specMeasurementValueDistribution.layer[0].encoding;
 
@@ -162,43 +140,7 @@ export default {
           this.$route.params.concept,
       });
     },
-    load: function () {
-      this.dataLoaded = false;
-      this.$store
-        .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [CONCEPT],
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.conceptName = this.getData[CONCEPT][0].data.CONCEPT_NAME[0];
-            this.conceptId = this.getData[CONCEPT][0].data.CONCEPT_ID[0];
-            this.numPersons = _.sumBy(
-              this.getData[CONCEPT],
-              (r) => r.data.NUM_PERSONS[0]
-            );
-
-            if (
-              this.getData[CONCEPT][0].data.MEASUREMENT_VALUE_DISTRIBUTION
-                ?.length > 0
-            ) {
-              this.measurementValueDistribution = this.getData[CONCEPT].reduce(
-                (prevValue, current) => [
-                  ...prevValue,
-                  ...current.data.MEASUREMENT_VALUE_DISTRIBUTION.map(
-                    (value) => ({
-                      ...value,
-                      SOURCE_UNIT_KEY: `${current.source.cdm_source_key} - ${value.CATEGORY}`,
-                    })
-                  ),
-                ],
-                []
-              );
-              this.hasMeasurementValueDistribution = true;
-            }
-            this.dataLoaded = true;
-          }
-        });
-    },
+    load: function () {},
   },
 };
 </script>

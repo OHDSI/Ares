@@ -177,12 +177,6 @@ export default {
         source.releases[0].count_data_quality_issues;
       this.countDataSourceReleases += source.releases.length;
     });
-
-    /*   .catch((error) => {
-        this.indexAvailable = false;
-        this.errorText = "data network index not found";
-        this.errorDetails = error;
-      });*/
   },
   methods: {
     getDataSourceRoute(item) {
@@ -193,32 +187,6 @@ export default {
     },
     formatComma: function (value) {
       return d3.format(",")(value);
-    },
-    displayPersonReport: function (source) {
-      this.$router.push({
-        path:
-          "/cdm/" +
-          source.cdm_source_key +
-          "/" +
-          source.releases[0].release_id +
-          "/person",
-      });
-    },
-    navigateToDataSourceHistory(datasource) {
-      this.$router.push({
-        path:
-          "/datasource/" + datasource.cdm_source_key + "/data_quality_history",
-      });
-    },
-    displayDetails: function (source) {
-      this.$router.push({
-        path:
-          "/cdm/" +
-          source.cdm_source_key +
-          "/" +
-          source.releases[0].release_id +
-          "/data_quality",
-      });
     },
   },
   computed: {

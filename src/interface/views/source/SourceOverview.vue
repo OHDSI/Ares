@@ -105,45 +105,45 @@ export default {
           text: "Release date",
           align: "start",
           sortable: true,
-          value: "release_name"
+          value: "release_name",
         },
         {
           text: "Number of people",
           align: "end",
           sortable: true,
-          value: "count_person"
+          value: "count_person",
         },
         {
           text: "Data quality issues",
           align: "end",
           sortable: true,
-          value: "count_data_quality_issues"
-        }
-      ]
+          value: "count_data_quality_issues",
+        },
+      ],
     };
   },
   methods: {
-    formatComma: function(value) {
+    formatComma: function (value) {
       return d3Format.format(",")(value);
     },
-    getQualityLink: function(item) {
+    getQualityLink: function (item) {
       return `/cdm/${this.getSelectedSource.cdm_source_key}/${item.release_id}/data_quality?tab=overview`;
     },
-    getPersonLink: function(item) {
+    getPersonLink: function (item) {
       return `/cdm/${this.getSelectedSource.cdm_source_key}/${item.release_id}`;
-    }
+    },
   },
   computed: {
     ...mapGetters(["getErrors", "getSelectedSource"]),
-    getReleasesCount: function() {
+    getReleasesCount: function () {
       return this.getSelectedSource.count_releases;
     },
 
-    getDaysBetweenReleases: function() {
+    getDaysBetweenReleases: function () {
       const dates = this.getSelectedSource.releases.map(
-        value => new Date(value.release_name)
+        (value) => new Date(value.release_name)
       );
-
+      //todo rewrite using array functional methods
       const numbers = [];
 
       for (let i = 0; i < dates.length - 1; i++) {
@@ -156,10 +156,10 @@ export default {
         : 0;
     },
 
-    getTable: function() {
+    getTable: function () {
       return this.getSelectedSource.releases;
-    }
-  }
+    },
+  },
 };
 </script>
 

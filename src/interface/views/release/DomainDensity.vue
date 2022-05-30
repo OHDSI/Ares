@@ -1,24 +1,24 @@
 <template>
   <div v-if="!getErrors">
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
       <VegaChart
-        v-if="dataLoaded"
+        v-if="dataInStore"
         id="viz-overview"
         width="80"
         title="Domain
       Density"
         :config="defOverview"
-        :data="domainDensity"
+        :data="getData.domainDensity"
       />
     </v-card>
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
       <VegaChart
-        v-if="dataLoaded"
+        v-if="dataInStore"
         id="viz-recordsperperson"
         width="80"
         title="Domain Records per Person"
         :config="defRecordsPerPerson"
-        :data="domainRecords"
+        :data="getData.domainRecords"
       />
     </v-card>
   </div>
@@ -38,50 +38,14 @@ export default {
   components: { VegaChart },
   data() {
     return {
-      dataLoaded: false,
-      domainRecords: null,
-      domainDensity: null,
-      parsedData: [],
-      cdmSourceName: "",
       defRecordsPerPerson: charts.defRecordsPerPerson,
       defOverview: charts.defOverview,
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore"]),
   },
-  watch: {
-    $route() {
-      this.load();
-    },
-  },
-  created() {
-    this.load();
-  },
-  methods: {
-    triggerResize: function () {
-      window.dispatchEvent(new Event("resize"));
-    },
-    load: function () {
-      this.dataLoaded = false;
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files: [
-            { name: DENSITY_TOTAL, required: true },
-            { name: DENSITY_RECORDS_PERSON, required: true },
-          ],
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.domainDensity = d3Import.csvParse(
-              this.getData[DENSITY_RECORDS_PERSON]
-            );
-            this.domainRecords = d3Import.csvParse(this.getData[DENSITY_TOTAL]);
-            this.dataLoaded = true;
-          }
-        });
-    },
-  },
+  methods: {},
 };
 </script>
 

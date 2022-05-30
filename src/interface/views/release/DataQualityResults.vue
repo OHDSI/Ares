@@ -1,7 +1,7 @@
 <template>
   <v-responsive>
     <div v-if="!getErrors">
-      <v-card :loading="!dataLoaded" elevation="10" class="ma-4">
+      <v-card :loading="!dataInStore" elevation="10" class="ma-4">
         <v-tabs v-model="tab" dark>
           <v-tab href="#overview">Overview</v-tab>
           <v-tab href="#metadata">Metadata</v-tab>
@@ -9,7 +9,7 @@
           <v-tab href="#pivot">Pivot table</v-tab>
         </v-tabs>
         <v-tabs-items :value="tab">
-          <v-tab-item v-if="dataLoaded" value="overview">
+          <v-tab-item v-if="dataInStore" value="overview">
             <v-container fluid class="ma-2 pa-4">
               <table id="results">
                 <thead>
@@ -35,79 +35,127 @@
                 <tbody>
                   <tr>
                     <td class="text-left header">Plausibility</td>
-                    <td>{{ derivedResults.Verification.Plausibility.Pass }}</td>
                     <td>
-                      {{ derivedResults.Verification.Plausibility.Fail }}
+                      {{
+                        getData.derivedResults.Verification.Plausibility.Pass
+                      }}
                     </td>
                     <td>
-                      {{ derivedResults.Verification.Plausibility.Total }}
+                      {{
+                        getData.derivedResults.Verification.Plausibility.Fail
+                      }}
                     </td>
-                    <td>{{ derivedResults.Validation.Plausibility.Pass }}</td>
                     <td>
-                      {{ derivedResults.Validation.Plausibility.Fail }}
+                      {{
+                        getData.derivedResults.Verification.Plausibility.Total
+                      }}
                     </td>
-                    <td>{{ derivedResults.Validation.Plausibility.Total }}</td>
-                    <td>{{ derivedResults.Total.Plausibility.Pass }}</td>
                     <td>
-                      {{ derivedResults.Total.Plausibility.Fail }}
+                      {{ getData.derivedResults.Validation.Plausibility.Pass }}
                     </td>
-                    <td>{{ derivedResults.Total.Plausibility.Total }}</td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Plausibility.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Plausibility.Total }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Plausibility.Pass }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Plausibility.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Plausibility.Total }}
+                    </td>
                   </tr>
                   <tr>
                     <td class="text-left header">Conformance</td>
-                    <td>{{ derivedResults.Verification.Conformance.Pass }}</td>
                     <td>
-                      {{ derivedResults.Verification.Conformance.Fail }}
+                      {{ getData.derivedResults.Verification.Conformance.Pass }}
                     </td>
-                    <td>{{ derivedResults.Verification.Conformance.Total }}</td>
-                    <td>{{ derivedResults.Validation.Conformance.Pass }}</td>
                     <td>
-                      {{ derivedResults.Validation.Conformance.Fail }}
+                      {{ getData.derivedResults.Verification.Conformance.Fail }}
                     </td>
-                    <td>{{ derivedResults.Validation.Conformance.Total }}</td>
-                    <td>{{ derivedResults.Total.Conformance.Pass }}</td>
                     <td>
-                      {{ derivedResults.Total.Conformance.Fail }}
+                      {{
+                        getData.derivedResults.Verification.Conformance.Total
+                      }}
                     </td>
-                    <td>{{ derivedResults.Total.Conformance.Total }}</td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Conformance.Pass }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Conformance.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Conformance.Total }}
+                    </td>
+                    <td>{{ getData.derivedResults.Total.Conformance.Pass }}</td>
+                    <td>
+                      {{ getData.derivedResults.Total.Conformance.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Conformance.Total }}
+                    </td>
                   </tr>
                   <tr>
                     <td class="text-left header">Completeness</td>
-                    <td>{{ derivedResults.Verification.Completeness.Pass }}</td>
                     <td>
-                      {{ derivedResults.Verification.Completeness.Fail }}
+                      {{
+                        getData.derivedResults.Verification.Completeness.Pass
+                      }}
                     </td>
                     <td>
-                      {{ derivedResults.Verification.Completeness.Total }}
+                      {{
+                        getData.derivedResults.Verification.Completeness.Fail
+                      }}
                     </td>
-                    <td>{{ derivedResults.Validation.Completeness.Pass }}</td>
                     <td>
-                      {{ derivedResults.Validation.Completeness.Fail }}
+                      {{
+                        getData.derivedResults.Verification.Completeness.Total
+                      }}
                     </td>
-                    <td>{{ derivedResults.Validation.Completeness.Total }}</td>
-                    <td>{{ derivedResults.Total.Completeness.Pass }}</td>
                     <td>
-                      {{ derivedResults.Total.Completeness.Fail }}
+                      {{ getData.derivedResults.Validation.Completeness.Pass }}
                     </td>
-                    <td>{{ derivedResults.Total.Completeness.Total }}</td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Completeness.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Completeness.Total }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Completeness.Pass }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Completeness.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Completeness.Total }}
+                    </td>
                   </tr>
                   <tr>
                     <td class="text-left header">Total</td>
-                    <td>{{ derivedResults.Verification.Total.Pass }}</td>
                     <td>
-                      {{ derivedResults.Verification.Total.Fail }}
+                      {{ getData.derivedResults.Verification.Total.Pass }}
                     </td>
-                    <td>{{ derivedResults.Verification.Total.Total }}</td>
-                    <td>{{ derivedResults.Validation.Total.Pass }}</td>
                     <td>
-                      {{ derivedResults.Validation.Total.Fail }}
+                      {{ getData.derivedResults.Verification.Total.Fail }}
                     </td>
-                    <td>{{ derivedResults.Validation.Total.Total }}</td>
-                    <td>{{ derivedResults.Total.Total.Pass }}</td>
                     <td>
-                      {{ derivedResults.Total.Total.Fail }}
+                      {{ getData.derivedResults.Verification.Total.Total }}
                     </td>
-                    <td>{{ derivedResults.Total.Total.Total }}</td>
+                    <td>{{ getData.derivedResults.Validation.Total.Pass }}</td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Total.Fail }}
+                    </td>
+                    <td>{{ getData.derivedResults.Validation.Total.Total }}</td>
+                    <td>{{ getData.derivedResults.Total.Total.Pass }}</td>
+                    <td>
+                      {{ getData.derivedResults.Total.Total.Fail }}
+                    </td>
+                    <td>{{ getData.derivedResults.Total.Total.Total }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -119,7 +167,7 @@
               ></infopanel>
             </v-container>
           </v-tab-item>
-          <v-tab-item v-if="dataLoaded" value="metadata">
+          <v-tab-item v-if="dataInStore" value="metadata">
             <v-container fluid ma-2 pa-4>
               <v-row>
                 <v-col cols="2">CDM Source Name</v-col>
@@ -169,7 +217,7 @@
               </v-row>
             </v-container>
           </v-tab-item>
-          <v-tab-item v-if="dataLoaded" value="results">
+          <v-tab-item v-if="dataInStore" value="results">
             <v-container fluid class="ma-2 pa-4">
               <v-row>
                 <v-col cols="3">
@@ -384,10 +432,10 @@
               </template>
             </v-data-table>
           </v-tab-item>
-          <v-tab-item v-if="dataLoaded" value="pivot">
+          <v-tab-item v-if="dataInStore" value="pivot">
             <v-container fluid>
               <Pivot
-                :data="rawData.CheckResults"
+                :data="getData.rawData.CheckResults"
                 :event-listener="pivotRedirectToResultsTab"
                 :attributes="[
                   'CATEGORY',
@@ -437,7 +485,6 @@ export default {
       chooseFilter: false,
       versions: [],
       currentTag: "",
-      dataLoaded: false,
       dqResults: null,
       selection: [],
       rawData: [],
@@ -570,9 +617,6 @@ export default {
     };
   },
   watch: {
-    cdmParams() {
-      this.load();
-    },
     filterParams() {
       this.updateFiltersFromUrl();
       this.updateColumnsList();
@@ -678,22 +722,6 @@ export default {
     getDocumentationLink: function (table) {
       return "https://ohdsi.github.io/CommonDataModel/cdm531.html#" + table;
     },
-    load: function () {
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files: [{ name: QUALITY_RESULTS, required: true }],
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.rawData = this.getData[QUALITY_RESULTS];
-            this.derivedResults = deriveResults(this.getData[QUALITY_RESULTS]);
-            if (this.$route.query.search) {
-              this.search = this.$route.query.search;
-            }
-            this.dataLoaded = true;
-          }
-        });
-    },
     columnValueList(val) {
       return this.checkResults.map((d) => d[val]);
     },
@@ -714,10 +742,9 @@ export default {
     );
     this.updateFiltersFromUrl();
     this.updateColumnsList();
-    this.load();
   },
   computed: {
-    ...mapGetters(["getData", "getErrors", "getSettings"]),
+    ...mapGetters(["getData", "getErrors", "getSettings", "dataInStore"]),
     cmOptions: function () {
       return {
         theme: this.getSettings.darkMode ? "base16-dark" : "neat",
@@ -767,35 +794,34 @@ export default {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
     cdmSourceName() {
-      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_SOURCE_NAME;
+      return this.getData.rawData.Metadata[0].CDM_SOURCE_NAME;
     },
     sourceDescription() {
-      return this.getData[QUALITY_RESULTS].Metadata[0].SOURCE_DESCRIPTION;
+      return this.getData.rawData.Metadata[0].SOURCE_DESCRIPTION;
     },
     cdmHolder() {
-      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_HOLDER;
+      return this.getData.rawData.Metadata[0].CDM_HOLDER;
     },
     cdmEtlReference() {
-      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_ETL_REFERENCE;
+      return this.getData.rawData.Metadata[0].CDM_ETL_REFERENCE;
     },
     sourceDocumentationReference() {
-      return this.getData[QUALITY_RESULTS].Metadata[0]
-        .SOURCE_DOCUMENTATION_REFERENCE;
+      return this.getData.rawData.Metadata[0].SOURCE_DOCUMENTATION_REFERENCE;
     },
     cdmVersion() {
-      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_VERSION;
+      return this.getData.rawData.Metadata[0].CDM_VERSION;
     },
     vocabularyVersion() {
-      return this.getData[QUALITY_RESULTS].Metadata[0].VOCABULARY_VERSION;
+      return this.getData.rawData.Metadata[0].VOCABULARY_VERSION;
     },
     sourceReleaseDate() {
-      return this.getData[QUALITY_RESULTS].Metadata[0].SOURCE_RELEASE_DATE;
+      return this.getData.rawData.Metadata[0].SOURCE_RELEASE_DATE;
     },
     cdmReleaseDate() {
-      return this.getData[QUALITY_RESULTS].Metadata[0].CDM_RELEASE_DATE;
+      return this.getData.rawData.Metadata[0].CDM_RELEASE_DATE;
     },
     checkResults() {
-      return this.getData[QUALITY_RESULTS].CheckResults;
+      return this.getData.rawData.CheckResults;
     },
   },
 };
