@@ -170,7 +170,6 @@
             </router-link>
           </v-card-text>
         </v-card>
-
         <v-card
           v-if="getData.conceptData.LENGTH_OF_ERA"
           :loading="!dataInStore"
@@ -185,7 +184,6 @@
             title="Length of Era"
           />
         </v-card>
-
         <v-card
           v-if="getData.conceptData.CONDITIONS_BY_TYPE"
           :loading="!dataInStore"
@@ -209,7 +207,6 @@
             </a>
           </v-card-text>
         </v-card>
-
         <v-card
           v-if="getData.conceptData.DRUGS_BY_TYPE"
           :loading="!dataInStore"
@@ -233,7 +230,6 @@
             </a>
           </v-card-text>
         </v-card>
-
         <v-card
           v-if="getData.conceptData.RECORDS_BY_UNIT"
           :loading="!dataInStore"
@@ -248,7 +244,6 @@
             title="Records by Unit"
           />
         </v-card>
-
         <v-card
           v-if="getData.conceptData.MEASUREMENTS_BY_TYPE"
           :loading="!dataInStore"
@@ -272,7 +267,6 @@
             </a>
           </v-card-text>
         </v-card>
-
         <v-card
           v-if="getData.conceptData.AGE_AT_FIRST_OCCURRENCE"
           :loading="!dataInStore"
@@ -291,7 +285,6 @@
             route-link="/help"
           ></info-panel>
         </v-card>
-
         <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
             v-if="dataInStore"
@@ -324,7 +317,6 @@
             details="Review this Time-Series across data source releases."
           ></info-panel>
         </v-card>
-
         <v-card
           v-if="getData.conceptData.DAYS_SUPPLY_DISTRIBUTION"
           :loading="!dataInStore"
@@ -343,7 +335,6 @@
             route-link="/help"
           ></info-panel>
         </v-card>
-
         <v-card
           v-if="getData.conceptData.QUANTITY_DISTRIBUTION"
           :loading="!dataInStore"
@@ -362,7 +353,6 @@
             route-link="/help"
           ></info-panel>
         </v-card>
-
         <v-card
           v-if="getData.conceptData.VISIT_DURATION_BY_TYPE"
           :loading="!dataInStore"
@@ -377,7 +367,6 @@
             title="Visit Duration By Type"
           />
         </v-card>
-
         <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
             v-if="getData"

@@ -9,7 +9,7 @@
             >
             <v-expansion-panel-content>
               <DomainRequirements
-                :data="sources"
+                :data="loadedData.sources"
                 @domainsDataChanged="changeDomainData"
               />
             </v-expansion-panel-content>
@@ -20,7 +20,7 @@
             >
             <v-expansion-panel-content>
               <DesiredDomains
-                :data="sources"
+                :data="loadedData.sources"
                 @desiredDomainsDataChanged="changeDesiredDomainsData"
               />
             </v-expansion-panel-content>
@@ -32,7 +32,7 @@
             <v-expansion-panel-content>
               <Range
                 :observation-period="observationPeriod"
-                :person="person"
+                :person="loadedData.person"
                 @rangeDataChanged="changeRangeData"
               />
             </v-expansion-panel-content>
@@ -43,7 +43,7 @@
             >
             <v-expansion-panel-content>
               <VisitTypes
-                :data="domainSummary"
+                :data="loadedData.domainSummary"
                 @visitTypesChanged="changeVisitTypesData"
               />
             </v-expansion-panel-content>
@@ -96,8 +96,9 @@ export default {
       sources: [],
       domainSummary: [],
       observationPeriod: [],
+      sourcePopulation: [],
       person: [],
-      data: {},
+      loadedData: {},
       switchDomains: [],
       chosenDomains: [],
       rangeData: [],
@@ -117,7 +118,7 @@ export default {
         rangeData: this.rangeData,
         requiredConcepts: this.requiredConcepts,
         visitTypes: this.visitTypes,
-        sourcePopulation: this.getData.person,
+        sourcePopulation: this.loadedData.person,
         desiredDomains: this.desiredDomains,
       };
     },
@@ -126,10 +127,14 @@ export default {
   watch: {
     getData: function () {
       if (Object.keys(this.getData).length) {
-        this.sources = this.getData.sources;
-        this.person = this.getData.person;
-        this.domainSummary = this.getData.domainSummary;
-        this.observationPeriod = this.getData.observationPeriod;
+        if (!Object.keys(this.loadedData).length) {
+          this.loadedData = {
+            sources: this.getData.sources,
+            person: this.getData.person,
+            domainSummary: this.getData.domainSummary,
+            observationPeriod: this.getData.observationPeriod,
+          };
+        }
       }
     },
   },

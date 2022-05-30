@@ -27,4 +27,3 @@ export default function person(data) {
     genderFemalePct: genderFemaleCount / numPersons,
   };
 }
-// Gender breakdown (percentage)

@@ -14,6 +14,7 @@ import domainContinuity from "@/data/store/modules/view/postprocessing/domainCon
 import concept from "@/data/store/modules/view/postprocessing/conceptReport";
 import domainTable from "@/data/store/modules/view/postprocessing/domainTable";
 import feasibility from "@/data/store/modules/view/postprocessing/feasibility";
+import networkUnmappedSourceCodes from "@/data/store/modules/view/postprocessing/networkUnmappedSourceCodes";
 
 export default {
   dataStrandReport,
@@ -32,4 +33,5 @@ export default {
   concept,
   domainTable,
   feasibility,
+  networkUnmappedSourceCodes,
 };

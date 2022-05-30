@@ -37,7 +37,7 @@ const routes = [
     meta: { showModules: true },
   },
   { path: "/home", components: { main: home } },
-  { path: "/help", components: { main: help } },
+  { path: "/help", name: "help", components: { main: help } },
 
   {
     path: "/network",

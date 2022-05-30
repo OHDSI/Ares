@@ -171,37 +171,40 @@
             <v-container fluid ma-2 pa-4>
               <v-row>
                 <v-col cols="2">CDM Source Name</v-col>
-                <v-col>{{ cdmSourceName }}</v-col>
+                <v-col>{{ getData.cdmSourceName }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="2">Description</v-col>
-                <v-col>{{ sourceDescription }}</v-col>
+                <v-col>{{ getData.sourceDescription }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="2">Licensee</v-col>
-                <v-col>{{ cdmHolder }}</v-col>
+                <v-col>{{ getData.cdmHolder }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="2">Source Released</v-col>
-                <v-col>{{ sourceReleaseDate }}</v-col>
+                <v-col>{{ getData.sourceReleaseDate }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="2">CDM Released</v-col>
-                <v-col>{{ cdmReleaseDate }}</v-col>
+                <v-col>{{ getData.cdmReleaseDate }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="2">CDM Version</v-col>
-                <v-col>{{ cdmVersion }}</v-col>
+                <v-col>{{ getData.cdmVersion }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="2">Vocabulary Version</v-col>
-                <v-col>{{ vocabularyVersion }}</v-col>
+                <v-col>{{ getData.vocabularyVersion }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="2">Source Documentation</v-col>
                 <v-col>
-                  {{ sourceDocumentationReference }}
-                  <a :href="sourceDocumentationReference" target="_blank">
+                  {{ getData.sourceDocumentationReference }}
+                  <a
+                    :href="getData.sourceDocumentationReference"
+                    target="_blank"
+                  >
                     <v-icon right small color="primary">mdi-open-in-new</v-icon>
                   </a>
                 </v-col>
@@ -209,8 +212,8 @@
               <v-row>
                 <v-col cols="2">ETL Reference</v-col>
                 <v-col>
-                  {{ cdmEtlReference }}
-                  <a :href="cdmEtlReference" target="_blank">
+                  {{ getData.cdmEtlReference }}
+                  <a :href="getData.cdmEtlReference" target="_blank">
                     <v-icon right small color="primary">mdi-open-in-new</v-icon>
                   </a>
                 </v-col>
@@ -723,7 +726,7 @@ export default {
       return "https://ohdsi.github.io/CommonDataModel/cdm531.html#" + table;
     },
     columnValueList(val) {
-      return this.checkResults.map((d) => d[val]);
+      return this.getData.checkResults.map((d) => d[val]);
     },
     renderDescription: function (d) {
       let thresholdMessage = "";
@@ -781,7 +784,7 @@ export default {
       },
     },
     filteredChecks() {
-      return this.checkResults.filter((d) => {
+      return this.getData.checkResults.filter((d) => {
         return Object.keys(this.filters).every((f) => {
           return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
         });
@@ -792,36 +795,6 @@ export default {
     },
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
-    },
-    cdmSourceName() {
-      return this.getData.rawData.Metadata[0].CDM_SOURCE_NAME;
-    },
-    sourceDescription() {
-      return this.getData.rawData.Metadata[0].SOURCE_DESCRIPTION;
-    },
-    cdmHolder() {
-      return this.getData.rawData.Metadata[0].CDM_HOLDER;
-    },
-    cdmEtlReference() {
-      return this.getData.rawData.Metadata[0].CDM_ETL_REFERENCE;
-    },
-    sourceDocumentationReference() {
-      return this.getData.rawData.Metadata[0].SOURCE_DOCUMENTATION_REFERENCE;
-    },
-    cdmVersion() {
-      return this.getData.rawData.Metadata[0].CDM_VERSION;
-    },
-    vocabularyVersion() {
-      return this.getData.rawData.Metadata[0].VOCABULARY_VERSION;
-    },
-    sourceReleaseDate() {
-      return this.getData.rawData.Metadata[0].SOURCE_RELEASE_DATE;
-    },
-    cdmReleaseDate() {
-      return this.getData.rawData.Metadata[0].CDM_RELEASE_DATE;
-    },
-    checkResults() {
-      return this.getData.rawData.CheckResults;
     },
   },
 };

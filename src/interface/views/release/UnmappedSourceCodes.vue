@@ -153,9 +153,6 @@ export default {
     delayedSearch: debounce(function (data) {
       this.search = data;
     }, 300),
-    getMenuOffset: function () {
-      return true;
-    },
     columnValueList(val) {
       return this.filteredRecords.map((d) => d[val]);
     },
