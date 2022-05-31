@@ -52,7 +52,7 @@ export default {
         { value: "measurement", text: "Measurement" },
         { value: "death", text: "Death" },
         { value: "procedure_occurrence", text: "Procedure occurrence" },
-        { value: "observation_period", text: "Observation period" }
+        { value: "observation", text: "Observation" }
       ],
       domainBits: "0000000",
       domainHeaders: [
@@ -111,7 +111,7 @@ export default {
         this.switchDomains.includes("measurement") ? "1" : "0",
         this.switchDomains.includes("death") ? "1" : "0",
         this.switchDomains.includes("procedure_occurrence") ? "1" : "0",
-        this.switchDomains.includes("observation_period") ? "1" : "0"
+        this.switchDomains.includes("observation") ? "1" : "0"
       );
     }
   }

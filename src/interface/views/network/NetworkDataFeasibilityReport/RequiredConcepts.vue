@@ -200,7 +200,7 @@ export default {
 
       { text: "Procedure Occurrence", value: "procedure_occurrence" },
 
-      { text: "Observation Period", value: "observation_period" }
+      { text: "Observation", value: "observation" }
     ],
     editedItem: {
       conceptID: "",
