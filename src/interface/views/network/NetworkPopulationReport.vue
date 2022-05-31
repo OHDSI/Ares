@@ -3,23 +3,23 @@
     <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-6 text-uppercase text-h6"
-          >{{ conceptName }} NETWORK POPULATION OVERVIEW</v-layout
+          >NETWORK POPULATION OVERVIEW</v-layout
         >
-        <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-ageatfirstobservation"
             :config="specAgeAtFirstObservation"
-            :data="allAgeAtFirstObservationData"
+            :data="getData.allAgeAtFirstObservationData"
             title="Age at First Observation"
           />
         </v-card>
-        <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-cumulativeobservation"
             :config="specCumulativeObservation"
-            :data="allCumulativeDurationData"
+            :data="getData.allCumulativeDurationData"
             title="Cumulative Observation"
           />
         </v-card>
@@ -41,32 +41,14 @@ export default {
   },
   data() {
     return {
-      sources: [],
-      conceptData: null,
-      conceptName: "",
-      conceptId: 0,
-      allAgeAtFirstObservationData: [],
-      allCumulativeDurationData: [],
-      dataLoaded: false,
-      historyRecords: [],
-      cdmSourceName: "",
       specAgeAtFirstObservation: charts.specAgeAtFirstObservationBySource,
       specCumulativeObservation: charts.specCumulativeObservationBySource,
     };
   },
   computed: {
-    ...mapGetters(["getData", "getSources", "getErrors"]),
-  },
-  created() {
-    this.load();
+    ...mapGetters(["getData", "getSources", "getErrors", "dataInStore"]),
   },
   methods: {
-    formatPercent: function (value) {
-      return d3Format.format("0.0%")(value);
-    },
-    triggerResize: function () {
-      window.dispatchEvent(new Event("resize"));
-    },
     navigateToDataQuality() {
       this.$router.push({
         path:
@@ -77,43 +59,6 @@ export default {
           "/data_quality?tab=results&search=" +
           this.$route.params.concept,
       });
-    },
-    load: function () {
-      this.dataLoaded = false;
-      this.$store
-        .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [OBSERVATION_PERIOD],
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.allCumulativeDurationData = this.getData[
-              OBSERVATION_PERIOD
-            ].reduce(
-              (prevValue, current) => [
-                ...prevValue,
-                ...current.data.CUMULATIVE_DURATION.map((value) => ({
-                  ...value,
-                  DATA_SOURCE_KEY: current.source.cdm_source_key,
-                })),
-              ],
-              []
-            );
-
-            this.allAgeAtFirstObservationData = this.getData[
-              OBSERVATION_PERIOD
-            ].reduce(
-              (prevValue, current) => [
-                ...prevValue,
-                ...current.data.AGE_AT_FIRST_OBSERVATION.map((value) => ({
-                  ...value,
-                  DATA_SOURCE_KEY: current.source.cdm_source_key,
-                })),
-              ],
-              []
-            );
-            this.dataLoaded = true;
-          }
-        });
     },
   },
 };

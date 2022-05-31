@@ -1,17 +1,17 @@
 <template>
   <div v-if="!getErrors" id="network-data-quality-summary" class="pa-2">
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
       <VegaChart
-        v-if="dataLoaded"
+        v-if="dataInStore"
         id="viz-category"
         title="Network Data Quality Issues By Category"
         :data="getData.networkQualitySummary"
         :config="specIssueStratificationByCategory"
       />
     </v-card>
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
       <VegaChart
-        v-if="dataLoaded"
+        v-if="dataInStore"
         id="viz-table"
         title="Network Data Quality Issues by CDM Table"
         :data="getData.networkQualitySummary"
@@ -35,33 +35,15 @@ export default {
   props: {},
   data() {
     return {
-      dataLoaded: false,
       specIssueStratificationByCategory:
         charts.specIssueStratificationByCategory,
       specIssueStratificationByTable: charts.specIssueStratificationByTable,
     };
   },
-  created() {
-    this.dataLoaded = false;
-    this.$store
-      .dispatch(FETCH_FILES, {
-        files: [{ name: NETWORK_QUALITY_SUMMARY, required: true }],
-      })
-      .then(() => {
-        if (!this.getErrors) {
-          this.dataLoaded = true;
-        }
-      });
-  },
-  methods: {
-    navigate: function (route) {
-      this.$router.push(route);
-      // hide tooltip otherwise it persists on navigation
-      document.getElementById("vg-tooltip-element").style.display = "none";
-    },
-  },
+  created() {},
+  methods: {},
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore"]),
   },
 };
 </script>

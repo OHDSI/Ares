@@ -1,8 +1,8 @@
 <template>
   <v-container v-if="!getErrors" fluid min-width="900">
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
       <v-card-title>Data Strands</v-card-title>
-      <div v-if="dataLoaded" id="viz-datastrand" class="viz-container"></div>
+      <div v-if="getData" id="viz-datastrand" class="viz-container"></div>
       <infopanel
         details="Data strands are simple visualizations that describe the composition of
         a data source across the various CDM domain tables. Each individual
@@ -24,36 +24,34 @@ import { RECORDS_DOMAIN } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 export default {
   components: {
-    infopanel
+    infopanel,
   },
   data() {
     return {
-      dataLoaded: false,
-      sources: [],
-      cdmSourceName: "",
       specDatastrand: charts.specDatastrand,
-      domainData: []
     };
   },
   watch: {
     darkMode() {
-      console.log("heeefdasd");
       this.renderChart();
-    }
-  },
-  created() {
-    this.load();
+    },
+    getData() {
+      if (this.getData) {
+        this.specDatastrand.data[0].values = this.getData;
+        this.renderChart();
+      }
+    },
   },
   methods: {
-    navigate: function(route) {
+    navigate: function (route) {
       this.$router.push(route);
       // hide tooltip otherwise it persists on navigation
       document.getElementById("vg-tooltip-element").style.display = "none";
     },
-    renderChart: function() {
+    renderChart: function () {
       embed("#viz-datastrand", this.specDatastrand, {
-        theme: this.getSettings.darkMode ? "dark" : ""
-      }).then(result => {
+        theme: this.getSettings.darkMode ? "dark" : "",
+      }).then((result) => {
         result.view.addSignalListener("selectDomain", (name, value) => {
           const domainKey = value.domain.toLowerCase().replace(" ", "_");
           const routeUrl =
@@ -68,40 +66,19 @@ export default {
         });
       });
     },
-    load: function() {
-      this.$store
-        .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [RECORDS_DOMAIN]
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.domainData = this.getData[RECORDS_DOMAIN].reduce(
-              (prevValue, current) => [
-                ...prevValue,
-                ...d3.csvParse(current.data).map(value => ({
-                  ...value,
-                  cdm_source_key: current.source.cdm_source_key,
-                  cdm_release_key: current.source.releases[0].release_id,
-                  cdm_source_abbreviation:
-                    current.source.cdm_source_abbreviation
-                }))
-              ],
-              []
-            );
-            this.specDatastrand.data[0].values = this.domainData;
-            this.renderChart();
-            //todo switch to using the VChart component
-            this.dataLoaded = true;
-          }
-        });
-    }
   },
   computed: {
-    ...mapGetters(["getData", "getSources", "getErrors", "getSettings"]),
-    darkMode: function() {
+    ...mapGetters([
+      "getData",
+      "getSources",
+      "getErrors",
+      "getSettings",
+      "dataInStore",
+    ]),
+    darkMode: function () {
       return this.getSettings.darkMode;
-    }
-  }
+    },
+  },
 };
 </script>
 

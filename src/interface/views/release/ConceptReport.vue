@@ -4,11 +4,11 @@
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-6 d-flex justify-md-space-between">
           <h2 class="text-uppercase">
-            {{ conceptName }}
+            {{ getData.conceptName }}
           </h2>
           <ReturnButton />
         </v-layout>
-        <v-row v-if="dataLoaded" justify="start"
+        <v-row v-if="dataInStore" justify="start"
           ><v-col cols="2" align="center">
             <v-icon left color="info">mdi-identifier</v-icon>
             <v-badge
@@ -16,7 +16,7 @@
               inline
               dark
               color="info"
-              :content="conceptId"
+              :content="getData.conceptId"
             ></v-badge>
             <p class="text-caption">Concept Identifier</p></v-col
           ><v-col cols="2" align="center">
@@ -26,7 +26,7 @@
               inline
               dark
               color="info"
-              :content="numPersons"
+              :content="getData.numPersons"
             ></v-badge>
             <p class="text-caption">Number of People</p></v-col
           ><v-col cols="2" align="center">
@@ -36,7 +36,7 @@
               inline
               dark
               color="info"
-              :content="formatPercent(percentPersons)"
+              :content="formatPercent(getData.percentPersons)"
             ></v-badge>
             <p class="text-caption">% of People</p></v-col
           ><v-col cols="2" align="center">
@@ -46,7 +46,7 @@
               inline
               dark
               color="info"
-              :content="recordsPerPerson"
+              :content="getData.recordsPerPerson"
             ></v-badge>
             <p class="text-caption">Records per Person</p></v-col
           >
@@ -65,7 +65,11 @@
             ></v-badge>
             <p class="text-caption">% with Values</p></v-col
           >
-          <v-col v-if="hasCountFailed" cols="2" align="center">
+          <v-col
+            v-if="getData.conceptData.COUNT_FAILED"
+            cols="2"
+            align="center"
+          >
             <v-icon left color="error" @click="navigateToDataQuality()"
               >mdi-database-alert</v-icon
             >
@@ -74,17 +78,17 @@
               inline
               dark
               color="error"
-              :content="countFailed"
+              :content="getData.countFailed"
             ></v-badge>
             <p class="text-caption">Data Quality Issues</p></v-col
-          ><v-col v-if="isNotStationary" cols="2" align="center">
+          ><v-col v-if="getData.isNotStationary" cols="2" align="center">
             <v-icon left color="error">mdi-clock-alert</v-icon>
             <p class="text-caption">Non-Stationary Time Series</p></v-col
           ></v-row
         >
         <v-card
-          v-if="hasMeasurementValueDistribution"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
@@ -107,7 +111,7 @@
             >
           </v-layout>
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-measurementvaluedistribution"
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
@@ -127,16 +131,16 @@
           </v-card-text>
         </v-card>
         <v-card
-          v-if="hasAgeAtFirstDiagnosis"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.AGE_AT_FIRST_DIAGNOSIS"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-ageatfirstdiagnosis"
             :config="specAgeAtFirstDiagnosis"
-            :data="conceptData.AGE_AT_FIRST_DIAGNOSIS"
+            :data="getData.conceptData.AGE_AT_FIRST_DIAGNOSIS"
             title="Age at First Diagnosis"
           />
           <v-card-text>
@@ -147,16 +151,16 @@
           </v-card-text>
         </v-card>
         <v-card
-          v-if="hasAgeAtFirstExposure"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.AGE_AT_FIRST_EXPOSURE"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-ageatfirstexposure"
             :config="specAgeAtFirstExposure"
-            :data="conceptData.AGE_AT_FIRST_EXPOSURE"
+            :data="getData.conceptData.AGE_AT_FIRST_EXPOSURE"
             title="Age At First Exposure"
           />
           <v-card-text>
@@ -166,33 +170,31 @@
             </router-link>
           </v-card-text>
         </v-card>
-
         <v-card
-          v-if="hasLengthOfEra"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.LENGTH_OF_ERA"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-lengthofera"
             :config="specLengthOfEra"
-            :data="conceptData.LENGTH_OF_ERA"
+            :data="getData.conceptData.LENGTH_OF_ERA"
             title="Length of Era"
           />
         </v-card>
-
         <v-card
-          v-if="hasConditionsByType"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.CONDITIONS_BY_TYPE"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-conditionsbytype"
             :config="specConditionsByType"
-            :data="conceptData.CONDITIONS_BY_TYPE"
+            :data="getData.conceptData.CONDITIONS_BY_TYPE"
             title="Conditions by Type"
           />
           <v-card-text>
@@ -205,18 +207,17 @@
             </a>
           </v-card-text>
         </v-card>
-
         <v-card
-          v-if="hasDrugsByType"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.DRUGS_BY_TYPE"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-drugsbytype"
             :config="specDrugsByType"
-            :data="conceptData.DRUGS_BY_TYPE"
+            :data="getData.conceptData.DRUGS_BY_TYPE"
             title="Drugs by Type"
           />
           <v-card-text>
@@ -229,33 +230,31 @@
             </a>
           </v-card-text>
         </v-card>
-
         <v-card
-          v-if="hasRecordsByUnit"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.RECORDS_BY_UNIT"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-recordsbyunit"
             :config="specRecordsByUnit"
-            :data="conceptData.RECORDS_BY_UNIT"
+            :data="getData.conceptData.RECORDS_BY_UNIT"
             title="Records by Unit"
           />
         </v-card>
-
         <v-card
-          v-if="hasMeasurementsByType"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.MEASUREMENTS_BY_TYPE"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-measurementsbytype"
             :config="specMeasurementsByType"
-            :data="conceptData.MEASUREMENTS_BY_TYPE"
+            :data="getData.conceptData.MEASUREMENTS_BY_TYPE"
             title="Measurements by Type"
           />
           <v-card-text>
@@ -268,18 +267,17 @@
             </a>
           </v-card-text>
         </v-card>
-
         <v-card
-          v-if="hasAgeAtFirstOccurrence"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.AGE_AT_FIRST_OCCURRENCE"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-ageatfirstoccurrence"
             :config="specAgeAtFirstOccurrence"
-            :data="conceptData.AGE_AT_FIRST_OCCURRENCE"
+            :data="getData.conceptData.AGE_AT_FIRST_OCCURRENCE"
             title="Age at First Occurrence"
           />
           <info-panel
@@ -287,28 +285,27 @@
             route-link="/help"
           ></info-panel>
         </v-card>
-
-        <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-recordproportionbymonth"
             :config="specRecordProportionByMonth"
-            :data="conceptData.PREVALENCE_BY_MONTH"
+            :data="getData.conceptData.PREVALENCE_BY_MONTH"
             title="Record Count Proportion by Month"
           />
           <info-panel
             details="Proportion of people with at least one record per 1000 people."
           ></info-panel>
           <info-panel
-            v-if="isNotStationary"
+            v-if="getData.isNotStationary"
             icon="mdi-clock-alert"
             details="This time series has been deemed non-stationary by temporal characterization."
             :divider="false"
           ></info-panel>
           <info-panel
-            v-if="hasSeasonalityScore"
+            v-if="getData.seasonalityScore"
             icon="mdi-clock-alert"
-            :details="seasonalityComment"
+            :details="getData.seasonalityComment"
             :divider="false"
             link="http://www.github.com/ohdsi/castor"
           ></info-panel>
@@ -320,18 +317,17 @@
             details="Review this Time-Series across data source releases."
           ></info-panel>
         </v-card>
-
         <v-card
-          v-if="hasDaysSupply"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.DAYS_SUPPLY_DISTRIBUTION"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-dayssupply"
             :config="specDaysSupply"
-            :data="conceptData.DAYS_SUPPLY_DISTRIBUTION"
+            :data="getData.conceptData.DAYS_SUPPLY_DISTRIBUTION"
             title="Days Supply"
           />
           <info-panel
@@ -339,18 +335,17 @@
             route-link="/help"
           ></info-panel>
         </v-card>
-
         <v-card
-          v-if="hasQuantity"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.QUANTITY_DISTRIBUTION"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-quantity"
             :config="specQuantity"
-            :data="conceptData.QUANTITY_DISTRIBUTION"
+            :data="getData.conceptData.QUANTITY_DISTRIBUTION"
             title="Quantity"
           />
           <info-panel
@@ -358,28 +353,26 @@
             route-link="/help"
           ></info-panel>
         </v-card>
-
         <v-card
-          v-if="hasVisitDurationByType"
-          :loading="!dataLoaded"
+          v-if="getData.conceptData.VISIT_DURATION_BY_TYPE"
+          :loading="!dataInStore"
           elevation="10"
           class="ma-4 pa-2"
         >
           <VegaChart
-            v-if="dataLoaded"
+            v-if="dataInStore"
             id="viz-visitdurationbytype"
             :config="specVisitDurationByType"
-            :data="conceptData.VISIT_DURATION_BY_TYPE"
+            :data="getData.conceptData.VISIT_DURATION_BY_TYPE"
             title="Visit Duration By Type"
           />
         </v-card>
-
-        <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
-            v-if="dataLoaded"
+            v-if="getData"
             id="viz-recordproportionbyagesexyear"
             :config="specRecordProportionByAgeSexYear"
-            :data="conceptData.PREVALENCE_BY_GENDER_AGE_YEAR"
+            :data="getData.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR"
             title="Record Count Proportion by Age, Sex, and Year"
           />
           <info-panel
@@ -412,31 +405,8 @@ export default {
   data() {
     return {
       toggleMode: "P10/P90",
-      hasMeasurementValueDistribution: false,
       selectedMeasurementUnits: [],
-      hasAgeAtFirstDiagnosis: false,
-      hasAgeAtFirstOccurrence: false,
-      hasAgeAtFirstExposure: false,
-      hasRecordsByUnit: false,
-      hasConditionsByType: false,
-      hasMeasurementsByType: false,
-      hasDrugsByType: false,
-      hasVisitDurationByType: false,
-      hasDaysSupply: false,
-      hasQuantity: false,
-      hasLengthOfEra: false,
       hasCountFailed: false,
-      isNotStationary: false,
-      hasSeasonalityScore: false,
-      seasonalityScore: 0,
-      seasonalityComment: "",
-      countFailed: 0,
-      conceptData: {},
-      conceptName: "",
-      conceptId: 0,
-      dataLoaded: false,
-      historyRecords: [],
-      cdmSourceName: "",
       specConditionsByType: charts.specConditionsByType,
       specDrugsByType: charts.specDrugsByType,
       specRecordsByUnit: charts.specRecordsByUnit,
@@ -454,9 +424,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore"]),
     getPercentWithValues: function () {
-      const missingData = csvParse(this.getData[DOMAIN_SUMMARY]).filter(
+      const missingData = this.getData.domainSummary.filter(
         (data) => data.CONCEPT_ID === this.$route.params.concept
       )[0].PERCENT_MISSING_VALUES;
       return missingData
@@ -465,25 +435,17 @@ export default {
     },
 
     getMeasurementUnits: function () {
-      return this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.map(
+      return this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.map(
         (value) => value.CATEGORY
       );
     },
     getSelectedMeasurementUnits: function () {
       return this.selectedMeasurementUnits.length
-        ? this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION.filter((value) =>
-            this.selectedMeasurementUnits.includes(value.CATEGORY)
+        ? this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.filter(
+            (value) => this.selectedMeasurementUnits.includes(value.CATEGORY)
           )
-        : this.getData[CONCEPT].MEASUREMENT_VALUE_DISTRIBUTION;
+        : this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION;
     },
-  },
-  watch: {
-    $route() {
-      this.load();
-    },
-  },
-  created() {
-    this.load();
   },
   methods: {
     getSourceConceptReportLink: function () {
@@ -518,9 +480,6 @@ export default {
     formatComma: function (value) {
       return d3Format.format(",")(value);
     },
-    triggerResize: function () {
-      window.dispatchEvent(new Event("resize"));
-    },
     getNetworkConceptRoute() {
       return (
         "/network/concept/" +
@@ -540,115 +499,6 @@ export default {
           "/data_quality?tab=results&search=" +
           this.$route.params.concept,
       });
-    },
-    load: function () {
-      this.dataLoaded = false;
-      const files = [{ name: CONCEPT, required: true }];
-      if (this.$route.params.domain === "measurement") {
-        files.push({ name: DOMAIN_SUMMARY, required: true });
-      }
-
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files,
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            const dateParse = d3.timeParse("%Y%m");
-            this.conceptData = this.getData[CONCEPT];
-            this.conceptName = this.conceptData.CONCEPT_NAME[0];
-            this.conceptId = this.conceptData.CONCEPT_ID[0];
-            this.numPersons = this.formatComma(this.conceptData.NUM_PERSONS[0]);
-            this.percentPersons = this.conceptData.PERCENT_PERSONS[0];
-            this.recordsPerPerson = this.conceptData.RECORDS_PER_PERSON[0];
-
-            if (this.conceptData.COUNT_FAILED) {
-              this.hasCountFailed = true;
-              this.countFailed = this.conceptData.COUNT_FAILED[0];
-            }
-
-            if (this.conceptData.IS_STATIONARY) {
-              this.isNotStationary = !this.conceptData.IS_STATIONARY[0];
-            }
-
-            if (this.conceptData.SEASONALITY_SCORE) {
-              this.hasSeasonalityScore = true;
-              this.seasonalityScore = this.conceptData.SEASONALITY_SCORE[0];
-              this.seasonalityComment =
-                "Seasonality score of " + this.seasonalityScore + ".";
-            }
-
-            if (this.conceptData.LENGTH_OF_ERA) {
-              this.hasLengthOfEra = true;
-            }
-
-            if (this.conceptData.DAYS_SUPPLY_DISTRIBUTION) {
-              this.hasDaysSupply = true;
-            }
-
-            if (this.conceptData.QUANTITY_DISTRIBUTION) {
-              this.hasQuantity = true;
-            }
-
-            if (this.conceptData.AGE_AT_FIRST_OCCURRENCE) {
-              this.hasAgeAtFirstOccurrence = true;
-            }
-
-            if (this.conceptData.VISIT_DURATION_BY_TYPE) {
-              this.hasVisitDurationByType = true;
-            }
-
-            if (this.conceptData.CONDITIONS_BY_TYPE) {
-              this.hasConditionsByType = true;
-            }
-
-            if (this.conceptData.DRUGS_BY_TYPE) {
-              this.hasDrugsByType = true;
-            }
-
-            if (this.conceptData.RECORDS_BY_UNIT) {
-              this.hasRecordsByUnit = true;
-            }
-
-            if (this.conceptData.MEASUREMENTS_BY_TYPE) {
-              this.hasMeasurementsByType = true;
-            }
-
-            if (this.conceptData.AGE_AT_FIRST_EXPOSURE) {
-              this.hasAgeAtFirstExposure = true;
-            }
-
-            if (this.conceptData.AGE_AT_FIRST_DIAGNOSIS) {
-              this.hasAgeAtFirstDiagnosis = true;
-            }
-
-            this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR = sortByRange(
-              this.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,
-              "ascending",
-              "TRELLIS_NAME",
-              "trellisOrder"
-            );
-
-            this.specRecordProportionByMonth.data = {
-              values: this.conceptData.PREVALENCE_BY_MONTH,
-            };
-
-            if (
-              this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION &&
-              this.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.length > 0
-            ) {
-              this.hasMeasurementValueDistribution = true;
-            }
-
-            this.conceptData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-              this.conceptData.PREVALENCE_BY_MONTH[i].date = dateParse(
-                v.X_CALENDAR_MONTH
-              );
-            });
-
-            this.dataLoaded = true;
-          }
-        });
     },
   },
 };

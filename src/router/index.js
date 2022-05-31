@@ -34,10 +34,10 @@ const routes = [
     path: "/",
     components: [App],
     redirect: "/home",
-    meta: { showModules: true }
+    meta: { showModules: true },
   },
   { path: "/home", components: { main: home } },
-  { path: "/help", components: { main: help } },
+  { path: "/help", name: "help", components: { main: help } },
 
   {
     path: "/network",
@@ -48,39 +48,39 @@ const routes = [
       {
         path: "network_data_quality",
         name: "networkDataQuality",
-        components: { DataSourcesExplorer: networkDataQualitySummary }
+        components: { DataSourcesExplorer: networkDataQualitySummary },
       },
       {
         path: "network_unmapped_source_codes",
         name: "networkUnmappedSourceCodes",
-        components: { DataSourcesExplorer: networkUnmappedSourceCodes }
+        components: { DataSourcesExplorer: networkUnmappedSourceCodes },
       },
       {
         path: "feasibility",
         name: "feasibility",
-        components: { DataSourcesExplorer: NetworkDataFeasibilityReport }
+        components: { DataSourcesExplorer: NetworkDataFeasibilityReport },
       },
       {
         path: "data_strand_report",
         name: "dataStrandReport",
-        components: { DataSourcesExplorer: networkDatastrandReport }
+        components: { DataSourcesExplorer: networkDatastrandReport },
       },
       {
         path: "population",
         name: "population",
-        components: { DataSourcesExplorer: networkPopulationReport }
+        components: { DataSourcesExplorer: networkPopulationReport },
       },
       {
         path: "overview",
         name: "overview",
-        components: { DataSourcesExplorer: networkOverview }
+        components: { DataSourcesExplorer: networkOverview },
       },
       {
         path: "concept/:domain/:concept/summary",
-        name: "concept",
-        components: { DataSourcesExplorer: networkConceptReport }
-      }
-    ]
+        name: "networkConcept",
+        components: { DataSourcesExplorer: networkConceptReport },
+      },
+    ],
   },
 
   {
@@ -92,53 +92,54 @@ const routes = [
       {
         path: "observation_period",
         name: "observationPeriod",
-        components: { DataSourcesExplorer: observationPeriodReport }
+        components: { DataSourcesExplorer: observationPeriodReport },
       },
       {
         path: "metadata",
         name: "metadata",
-        components: { DataSourcesExplorer: metadataReport }
+        components: { DataSourcesExplorer: metadataReport },
       },
       {
         path: "death",
         name: "death",
-        components: { DataSourcesExplorer: deathReport }
+        components: { DataSourcesExplorer: deathReport },
       },
       {
         path: "data_quality",
         name: "dataQuality",
-        components: { DataSourcesExplorer: dataQualityResults }
+        components: { DataSourcesExplorer: dataQualityResults },
       },
       {
         path: "data_density",
         name: "dataDensity",
-        components: { DataSourcesExplorer: domainDensity }
+        components: { DataSourcesExplorer: domainDensity },
       },
       {
         path: "unmapped_source_codes",
         name: "unmappedSourceCodes",
-        components: { DataSourcesExplorer: unmappedSourceCodes }
+        components: { DataSourcesExplorer: unmappedSourceCodes },
       },
       {
         path: "performance",
         name: "performance",
-        components: { DataSourcesExplorer: performanceReport }
+        components: { DataSourcesExplorer: performanceReport },
       },
       {
         path: "person",
         name: "person",
-        components: { DataSourcesExplorer: personReport }
+        components: { DataSourcesExplorer: personReport },
       },
       {
         path: ":domain",
         components: { DataSourcesExplorer: domainTable },
-        name: "domainTable"
+        name: "domainTable",
       },
       {
         path: ":domain/:concept/",
-        components: { DataSourcesExplorer: conceptReport }
-      }
-    ]
+        components: { DataSourcesExplorer: conceptReport },
+        name: "concept",
+      },
+    ],
   },
   {
     path: "/datasource/:cdm",
@@ -149,33 +150,33 @@ const routes = [
       {
         path: "data_quality_history",
         name: "dataQualityHistory",
-        components: { DataSourcesExplorer: dataQualityHistory }
+        components: { DataSourcesExplorer: dataQualityHistory },
       },
       {
         path: "data_source_overview",
         name: "dataSourceOverview",
-        components: { DataSourcesExplorer: SourceOverview }
+        components: { DataSourcesExplorer: SourceOverview },
       },
       {
         path: "domain_continuity",
         name: "domainContinuity",
-        components: { DataSourcesExplorer: domainContinuity }
+        components: { DataSourcesExplorer: domainContinuity },
       },
       {
         path: ":domain/:concept/overlay",
         name: "sourceConceptOverlay",
-        components: { DataSourcesExplorer: sourceConceptReport }
-      }
-    ]
+        components: { DataSourcesExplorer: sourceConceptReport },
+      },
+    ],
   },
 
   {
     path: "/publication/article",
-    components: { main: article }
-  }
+    components: { main: article },
+  },
 ];
 
 export default new VueRouter({
   base: "/ares/",
-  routes
+  routes,
 });

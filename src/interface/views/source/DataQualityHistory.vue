@@ -2,25 +2,25 @@
   <div>
     <v-card
       v-if="!getErrors"
-      :loading="!dataLoaded"
+      :loading="!dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
       <VegaChart
-        v-if="dataLoaded"
+        v-if="dataInStore"
         id="viz-dataqualityresults"
         title="Historical Data Quality"
         :data="getData.qualityIndex.dataQualityRecords"
         :config="specDataQualityResults"
       />
       <v-data-table
-        v-if="dataLoaded"
+        v-if="dataInStore"
         class="viz-container"
         dense
         :items="getData.qualityIndex.dataQualityRecords"
         :headers="historyColumns"
       >
-        <template v-if="dataLoaded" v-slot:item="records">
+        <template v-if="dataInStore" v-slot:item="records">
           <tr>
             <td>
               <router-link
@@ -45,9 +45,9 @@
       </v-data-table>
     </v-card>
 
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
       <VegaChart
-        v-if="dataLoaded"
+        v-if="dataInStore"
         id="viz-dataqualityresultsbycategory"
         title="Historical Data Quality by Category"
         :data="getData.qualityIndex.dataQualityRecordsStratified"
@@ -55,9 +55,9 @@
       />
     </v-card>
 
-    <v-card :loading="!dataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
       <VegaChart
-        v-if="dataLoaded"
+        v-if="dataInStore"
         id="viz-dataqualityresultsbydomain"
         title="Historical Data Quality by Domain"
         :config="specDataQualityResultsByDomain"
@@ -78,7 +78,6 @@ export default {
   components: { VegaChart },
   data() {
     return {
-      dataLoaded: false,
       historyColumns: [
         {
           text: "CDM Release Date",
@@ -122,35 +121,12 @@ export default {
       specDataQualityResults: charts.specDataQualityResults,
     };
   },
-  watch: {
-    $route() {
-      this.load();
-    },
-  },
-  created() {
-    this.load();
-  },
 
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore"]),
   },
 
   methods: {
-    load() {
-      this.dataLoaded = false;
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files: [{ name: QUALITY_INDEX, required: true }],
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.dataLoaded = true;
-          }
-        });
-    },
-    displayDetails: function (resultFileName) {
-      this.$router.push({ path: "/dq-results/" + resultFileName });
-    },
     getDataQualityOverviewRoute(item) {
       return (
         "/cdm/" +

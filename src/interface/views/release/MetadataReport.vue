@@ -1,10 +1,14 @@
 <template>
   <div v-if="!getErrors">
-    <v-card :loading="!cdmsourceDataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!getData.cdmsourceData" elevation="10" class="ma-4 pa-2">
       <v-card-title>CDM Source Details</v-card-title>
-      <v-container v-if="cdmsourceDataLoaded" fluid>
-        <v-layout v-for="(d, i) in cdmsourceData.columns" :key="i" class="pl-8">
-          {{ d }}: {{ cdmsourceData[0][d] }}
+      <v-container v-if="getData.cdmsourceData" fluid>
+        <v-layout
+          v-for="(d, i) in getData.cdmsourceData.columns"
+          :key="i"
+          class="pl-8"
+        >
+          {{ d }}: {{ getData.cdmsourceData[0][d] }}
         </v-layout>
       </v-container>
       <v-card-text>
@@ -12,16 +16,15 @@
         Details are derived from the CDM_SOURCE table.
       </v-card-text>
     </v-card>
-
-    <v-card :loading="!metadataDataLoaded" elevation="10" class="ma-4 pa-2">
+    <v-card :loading="!getData.metadataData" elevation="10" class="ma-4 pa-2">
       <v-card-title>Metadata</v-card-title>
-      <v-container v-if="metadataDataLoaded" fluid>
+      <v-container v-if="getData.metadataData" fluid>
         <v-data-table
-          v-if="dataLoaded"
+          v-if="getData"
           class="mt-4"
           dense
           :headers="headers"
-          :items="metadataData"
+          :items="getData.metadataData"
         >
         </v-data-table>
       </v-container>
@@ -42,103 +45,64 @@ import { mapGetters } from "vuex";
 export default {
   components: {},
   props: {
-    resultFile: String
+    resultFile: String,
   },
-  data: function() {
+  data: function () {
     return {
       cdmsourceData: null,
       metadataData: null,
-      cdmsourceDataLoaded: false,
-      metadataDataLoaded: false,
-      dataLoaded: false,
+      cdmsourcegetData: false,
+      metadatagetData: false,
       domainTable: [],
       search: "",
-      headersMap: {
-        METADATA_CONCEPT_ID: {
+      headers: [
+        {
           text: "METADATA_CONCEPT_ID",
           sortable: true,
           value: "METADATA_CONCEPT_ID",
-          align: "start"
+          align: "start",
         },
-        NAME: {
+        {
           text: "NAME",
           sortable: true,
           value: "NAME",
-          align: "start"
+          align: "start",
         },
-        VALUE_AS_STRING: {
+        {
           text: "VALUE_AS_STRING",
           sortable: true,
           value: "VALUE_AS_STRING",
-          align: "start"
+          align: "start",
         },
-        VALUE_AS_CONCEPT_ID: {
+        {
           text: "VALUE_AS_CONCEPT_ID",
           sortable: true,
           value: "VALUE_AS_CONCEPT_ID",
-          align: "start"
+          align: "start",
         },
-        METADATA_DATE: {
+        {
           text: "METADATA_DATE",
           sortable: true,
           value: "METADATA_DATE",
-          align: "start"
+          align: "start",
         },
-        METADATA_DATETIME: {
+        {
           text: "METADATA_DATETIME",
           sortable: true,
           value: "METADATA_DATETIME",
-          align: "start"
-        }
-      },
-      headers: []
+          align: "start",
+        },
+      ],
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"])
-  },
-  watch: {
-    $route() {
-      this.load();
-    }
-  },
-  created() {
-    this.load();
+    ...mapGetters(["getData", "getErrors"]),
   },
   methods: {
-    getMenuOffset: function() {
-      return true;
-    },
     columnValueList(val) {
-      return this.domainTable.map(d => d[val]);
+      return this.domainTable.map((d) => d[val]);
     },
-    load() {
-      this.dataLoaded = false;
-      this.cdmsourceDataLoaded = false;
-      this.metadataDataLoaded = false;
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files: [
-            { name: METADATA, required: true },
-            { name: CDM_SOURCE, required: true }
-          ]
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            if (this.getData[METADATA]) {
-              this.metadataData = d3.csvParse(this.getData[METADATA]);
-              this.headers = Object.values(this.headersMap);
-              this.metadataDataLoaded = true;
-            }
-            if (this.getData[CDM_SOURCE]) {
-              this.cdmsourceData = d3.csvParse(this.getData[CDM_SOURCE]);
-              this.cdmsourceDataLoaded = true;
-            }
-            this.dataLoaded = true;
-          }
-        });
-    }
-  }
+  },
 };
 </script>
 

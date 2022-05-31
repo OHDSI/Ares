@@ -2,16 +2,16 @@
   <v-responsive min-width="900">
     <v-card
       v-if="!getErrors"
-      :loading="!dataLoaded"
+      :loading="!dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
-      <div v-if="dataLoaded">
+      <div v-if="dataInStore">
         <VegaChart
           id="viz-continuity"
           title="Domain Continuity"
           :config="specOverview"
-          :data="getData.sourceHistoryIndex.domainRecords"
+          :data="getData.domainRecords"
         />
         <info-panel
           details="Domain continuity shows the number of records in each domain table for multiple releases of data from a specific vendor or data source. This is NOT the number of records that occur at specific times within a CDM, but a count of the number of records in a release of a data source, graphed over time. This visualization allows one to see how the data is changing across updates for a single data source."
@@ -36,34 +36,11 @@ export default {
   },
   data() {
     return {
-      dataLoaded: false,
       specOverview: charts.specOverview,
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
-  },
-  watch: {
-    $route() {
-      this.load();
-    },
-  },
-  created() {
-    this.load();
-  },
-  methods: {
-    load: function () {
-      this.dataLoaded = false;
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files: [{ name: SOURCE_HISTORY_INDEX, required: true }],
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.dataLoaded = true;
-          }
-        });
-    },
+    ...mapGetters(["getData", "getErrors", "dataInStore"]),
   },
 };
 </script>

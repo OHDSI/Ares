@@ -11,7 +11,7 @@ import getFilePath from "@/data/services/getFilePath";
 
 const state = {
   folders: explorerConfigs.folders,
-  sources: [],
+  sources: null,
   reports: explorerConfigs.reports,
   dataLoaded: false,
 };

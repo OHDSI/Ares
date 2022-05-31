@@ -2,7 +2,7 @@
   <v-container fluid>
     <Explorer />
     <ErrorAlert />
-    <router-view v-if="explorerLoaded" name="DataSourcesExplorer" />
+    <ReportsView v-if="explorerLoaded" />
   </v-container>
 </template>
 
@@ -10,16 +10,18 @@
 import Explorer from "../components/Explorer";
 import ErrorAlert from "@/interface/components/CriticalError";
 import { mapGetters } from "vuex";
+import ReportsView from "@/interface/views/ReportsView";
 
 export default {
   name: "DataSourcesExplorer",
   components: {
+    ReportsView,
     ErrorAlert,
-    Explorer
+    Explorer,
   },
   computed: {
-    ...mapGetters(["explorerLoaded"])
-  }
+    ...mapGetters(["explorerLoaded", "getSources"]),
+  },
 };
 </script>
 

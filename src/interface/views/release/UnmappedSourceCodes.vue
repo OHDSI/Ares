@@ -2,7 +2,7 @@
   <div>
     <v-card
       v-if="!getErrors"
-      :loading="!dataLoaded"
+      :loading="!dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
@@ -21,6 +21,7 @@
       </v-row>
 
       <v-data-table
+        v-if="dataInStore"
         class="mt-4"
         dense
         :headers="showHeaders"
@@ -89,8 +90,6 @@ export default {
   data: function () {
     return {
       chooseHeaderMenu: false,
-      dataLoaded: false,
-      domainTable: [],
       search: "",
       selectedHeaders: [],
       headers: [],
@@ -123,25 +122,19 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore"]),
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
     filteredRecords() {
-      return this.domainTable.filter((d) => {
+      return this.getData.domainTable.filter((d) => {
         return Object.keys(this.filters).every((f) => {
           return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
         });
       });
     },
   },
-  watch: {
-    $route() {
-      this.load();
-    },
-  },
   created() {
-    this.load();
     this.headers = Object.values(this.headersMap);
     this.selectedHeaders = this.headers.filter((h) =>
       [
@@ -160,9 +153,6 @@ export default {
     delayedSearch: debounce(function (data) {
       this.search = data;
     }, 300),
-    getMenuOffset: function () {
-      return true;
-    },
     columnValueList(val) {
       return this.filteredRecords.map((d) => d[val]);
     },
@@ -176,18 +166,6 @@ export default {
         id +
         "/summary"
       );
-    },
-    load() {
-      this.$store
-        .dispatch(FETCH_FILES, {
-          files: [{ name: QUALITY_COMPLETENESS, required: true }],
-        })
-        .then(() => {
-          if (!this.getErrors) {
-            this.domainTable = csvParse(this.getData[QUALITY_COMPLETENESS]);
-            this.dataLoaded = true;
-          }
-        });
     },
   },
 };
