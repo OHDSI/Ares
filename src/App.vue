@@ -9,17 +9,19 @@
         <v-btn to="/help">
           <v-icon dark>mdi-help-circle-outline</v-icon>
         </v-btn>
-        <v-btn to="/network/overview"><v-icon dark>mdi-database</v-icon></v-btn>
-        <v-btn to="/"
-          ><v-img
+        <v-btn to="/network/overview">
+          <v-icon dark>mdi-database</v-icon>
+        </v-btn>
+        <v-btn to="/">
+          <v-img
             :src="require('./assets/icon.png')"
             max-height="20"
             max-width="20"
-          ></v-img
-        ></v-btn>
-        <v-btn @click="toggleSettings"
-          ><v-icon dark>mdi-cog-outline</v-icon></v-btn
-        >
+          ></v-img>
+        </v-btn>
+        <v-btn @click="toggleSettings">
+          <v-icon dark>mdi-cog-outline</v-icon>
+        </v-btn>
       </v-layout>
     </v-bottom-navigation>
   </v-app>
@@ -29,6 +31,7 @@
 import Settings from "@/interface/components/Settings";
 import { mapGetters } from "vuex";
 import { SET_VISIBILITY } from "@/data/store/modules/settings/mutations.type";
+import { RESET_ERRORS } from "@/data/store/modules/errors/actions.type";
 
 export default {
   name: "ARES",
@@ -41,6 +44,9 @@ export default {
   watch: {
     darkMode() {
       this.$vuetify.theme.dark = this.getSettings.darkMode;
+    },
+    path() {
+      this.$store.dispatch(RESET_ERRORS);
     },
   },
   created() {
@@ -55,6 +61,9 @@ export default {
     ...mapGetters(["getSettings", "getSources"]),
     darkMode: function () {
       return this.getSettings.darkMode;
+    },
+    path: function () {
+      return this.$route.path;
     },
   },
 };

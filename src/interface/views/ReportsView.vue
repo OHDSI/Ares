@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import { RESET_ERRORS } from "@/data/store/modules/errors/actions.type";
 import { CLEAR_DATA } from "@/data/store/modules/view/mutations.type";
 import getFilesByView from "@/configs/views/dataLoadConfig";
 
@@ -16,13 +15,11 @@ export default {
   },
   watch: {
     path() {
-      this.$store.dispatch(RESET_ERRORS);
       this.$store.dispatch(CLEAR_DATA);
       this.loadViewData();
     },
   },
   created() {
-    this.$store.dispatch(RESET_ERRORS);
     this.$store.dispatch(CLEAR_DATA);
     this.loadViewData();
   },
