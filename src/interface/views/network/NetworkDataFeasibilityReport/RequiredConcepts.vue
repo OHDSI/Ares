@@ -195,12 +195,9 @@ export default {
       { text: "Drug Exposure", value: "drug_exposure" },
       { text: "Device Exposure", value: "device_exposure" },
       { text: "Measurement", value: "measurement" },
-
       { text: "Death", value: "death" },
-
       { text: "Procedure Occurrence", value: "procedure_occurrence" },
-
-      { text: "Observation Period", value: "observation_period" },
+      { text: "Observation", value: "observation" }
     ],
     editedItem: {
       conceptID: "",
