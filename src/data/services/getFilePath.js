@@ -34,7 +34,7 @@ export default function getFilePath(params = "") {
     [DENSITY_RECORDS_PERSON]: `data/${params.cdm}/${params.release}/datadensity-records-per-person.csv`,
     [DENSITY_TOTAL]: `data/${params.cdm}/${params.release}/datadensity-total.csv`,
     [DOMAIN_SUMMARY]: `data/${params.cdm}/${params.release}/domain-summary-${params.domain}.csv`,
-    [HELP]: "doc/DefaultHelp.md",
+    [HELP]: "doc/index.md",
     [METADATA]: `data/${params.cdm}/${params.release}/metadata.csv`,
     [CDM_SOURCE]: `data/${params.cdm}/${params.release}/cdmsource.csv`,
     [NETWORK_QUALITY_SUMMARY]: "data/network-data-quality-summary.csv",
