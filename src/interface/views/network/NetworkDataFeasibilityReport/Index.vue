@@ -31,7 +31,7 @@
             >
             <v-expansion-panel-content>
               <Range
-                :observation-period="observationPeriod"
+                :observation-period="loadedData.observationPeriod"
                 :person="loadedData.person"
                 @rangeDataChanged="changeRangeData"
               />
