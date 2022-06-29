@@ -10,8 +10,8 @@ import {
   DOMAIN_ISSUES,
   DOMAIN_SUMMARY,
   DOMAIN_VISIT_STRATIFICATION,
-  HELP,
   METADATA,
+  NETWORK_PERFORMANCE,
   NETWORK_QUALITY_SUMMARY,
   NETWORK_UNMAPPED_SOURCE_CODES,
   OBSERVATION_PERIOD,
@@ -42,6 +42,10 @@ export default function getFilesByView() {
         ],
         params: { domain: "visit_occurrence" },
       },
+    },
+    networkPerformance: {
+      loadMethod: FETCH_FILES,
+      payload: { files: [{ name: NETWORK_PERFORMANCE, required: true }] },
     },
     networkUnmappedSourceCodes: {
       loadMethod: FETCH_FILES,

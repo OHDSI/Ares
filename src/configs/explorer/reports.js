@@ -3,169 +3,175 @@ export const reports = [
     folder: "Data Source Release",
     icon: "mdi-sigma-lower",
     name: "Data Quality",
-    routeName: "dataQuality"
+    routeName: "dataQuality",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-chart-line",
     name: "Person",
-    routeName: "person"
+    routeName: "person",
   },
   {
     folder: "Data Network",
     icon: "mdi-database-search",
     name: "Data Source Feasibility",
-    routeName: "feasibility"
+    routeName: "feasibility",
+  },
+  {
+    folder: "Data Network",
+    icon: "mdi-speedometer",
+    name: "Network Performance",
+    routeName: "networkPerformance",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-chart-line",
     name: "Data Density",
-    routeName: "dataDensity"
+    routeName: "dataDensity",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-chart-line",
     name: "Observation Period",
-    routeName: "observationPeriod"
+    routeName: "observationPeriod",
   },
   {
     folder: "Data Source",
     name: "Data Quality History",
-    routeName: "dataQualityHistory"
+    routeName: "dataQualityHistory",
   },
   {
     folder: "Data Source",
     name: "Data Source Overview",
-    routeName: "dataSourceOverview"
+    routeName: "dataSourceOverview",
   },
   {
     folder: "Data Source",
     name: "Domain Continuity",
-    routeName: "domainContinuity"
+    routeName: "domainContinuity",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Conditions",
     routeName: "domainTable",
-    domain: "condition_occurrence"
+    domain: "condition_occurrence",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Condition Eras",
     routeName: "domainTable",
-    domain: "condition_era"
+    domain: "condition_era",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Drugs",
     routeName: "domainTable",
-    domain: "drug_exposure"
+    domain: "drug_exposure",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Drug Eras",
     routeName: "domainTable",
-    domain: "drug_era"
+    domain: "drug_era",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Visit Occurrence",
     routeName: "domainTable",
-    domain: "visit_occurrence"
+    domain: "visit_occurrence",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Visit Detail",
     routeName: "domainTable",
-    domain: "visit_detail"
+    domain: "visit_detail",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Measurements",
     routeName: "domainTable",
-    domain: "measurement"
+    domain: "measurement",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Observations",
     routeName: "domainTable",
-    domain: "observation"
+    domain: "observation",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Procedures",
     routeName: "domainTable",
-    domain: "procedure_occurrence"
+    domain: "procedure_occurrence",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Device Exposures",
     routeName: "domainTable",
-    domain: "device_exposure"
+    domain: "device_exposure",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Death",
-    routeName: "death"
+    routeName: "death",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-table",
     name: "Unmapped Source Codes",
-    routeName: "unmappedSourceCodes"
+    routeName: "unmappedSourceCodes",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-speedometer",
     name: "Performance",
-    routeName: "performance"
+    routeName: "performance",
   },
   {
     folder: "Data Source Release",
     icon: "mdi-alpha-m-circle-outline",
     name: "Metadata",
-    routeName: "metadata"
+    routeName: "metadata",
   },
   {
     folder: "Data Network",
     icon: "mdi-table",
     name: "Overview",
-    routeName: "overview"
+    routeName: "overview",
   },
   {
     folder: "Data Network",
     icon: "mdi-sigma-lower",
     name: "Quality Assessment",
-    routeName: "networkDataQuality"
+    routeName: "networkDataQuality",
   },
   {
     folder: "Data Network",
     icon: "mdi-chart-line",
     name: "Population Overview",
-    routeName: "population"
+    routeName: "population",
   },
   {
     folder: "Data Network",
     icon: "mdi-dna",
     name: "Data Strand Report",
-    routeName: "dataStrandReport"
+    routeName: "dataStrandReport",
   },
   {
     folder: "Data Network",
     icon: "mdi-table",
     name: "Unmapped Source Codes",
-    routeName: "networkUnmappedSourceCodes"
-  }
+    routeName: "networkUnmappedSourceCodes",
+  },
 ];
