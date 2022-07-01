@@ -1,4 +1,3 @@
-\\\
 <template>
   <v-row>
     <v-col cols="3">
@@ -331,6 +330,7 @@ export default {
 }
 .tab-group {
   min-height: 70vh;
+  background-color: inherit;
 }
 .list-item {
   background-color: var(--v-accent-base);

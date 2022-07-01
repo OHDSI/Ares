@@ -1,7 +1,9 @@
 <template>
-  <v-container fluid
-    ><Pivot :data="getData['networkPerformance']"
-  /></v-container>
+  <v-container fluid>
+    <v-card>
+      <Pivot :data="getData['networkPerformance']" />
+    </v-card>
+  </v-container>
 </template>
 
 <script>
