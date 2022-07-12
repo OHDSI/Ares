@@ -1,5 +1,5 @@
 <template>
-  <v-btn :block="block" color="blue" dark small @click="back">
+  <v-btn :block="block" color="primary" small @click="back">
     <v-icon>mdi-arrow-left</v-icon>
     Back
   </v-btn>

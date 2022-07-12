@@ -62,7 +62,6 @@ export default {
   },
   data() {
     return {
-      deathData: null,
       specDeathByType: charts.specDeathByType,
       specAgeAtDeath: charts.specAgeAtDeath,
       specRecordProportionByAgeSexYear: charts.specRecordProportionByAgeSexYear,
@@ -72,11 +71,7 @@ export default {
   computed: {
     ...mapGetters(["getData", "getErrors", "dataInStore"]),
   },
-  watch: {
-    $route() {
-      this.load();
-    },
-  },
+  watch: {},
   methods: {},
 };
 </script>

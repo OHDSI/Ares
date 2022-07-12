@@ -27,6 +27,7 @@ import unmappedSourceCodes from "../interface/views/release/UnmappedSourceCodes.
 import DataSourcesExplorer from "../interface/views/DataSourcesExplorer";
 import NetworkDataFeasibilityReport from "../interface/views/network/NetworkDataFeasibilityReport/Index";
 import SourceOverview from "../interface/views/source/SourceOverview";
+import networkPerformance from "@/interface/views/network/NetworkPerformance";
 Vue.use(VueRouter);
 
 const routes = [
@@ -49,6 +50,11 @@ const routes = [
         path: "network_data_quality",
         name: "networkDataQuality",
         components: { DataSourcesExplorer: networkDataQualitySummary },
+      },
+      {
+        path: "network_performance",
+        name: "networkPerformance",
+        components: { DataSourcesExplorer: networkPerformance },
       },
       {
         path: "network_unmapped_source_codes",

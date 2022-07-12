@@ -471,10 +471,7 @@ import "codemirror/theme/base16-dark.css";
 import infopanel from "../../components/InfoPanel.vue";
 import * as d3 from "d3-format";
 import { debounce } from "lodash";
-import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import { QUALITY_RESULTS } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
-import deriveResults from "@/services/derive-results";
 
 export default {
   components: {
