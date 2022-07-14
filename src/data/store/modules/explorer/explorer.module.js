@@ -1,10 +1,14 @@
 import {
   SOURCES,
   EXPLORER_LOADED,
+  LOAD_QUERY_INDEX,
 } from "@/data/store/modules/explorer/mutations.type";
 
-import { FETCH_INDEX } from "@/data/store/modules/explorer/actions.type";
-import { INDEX } from "@/data/services/getFilePath";
+import {
+  FETCH_INDEX,
+  FETCH_QUERY_INDEX,
+} from "@/data/store/modules/explorer/actions.type";
+import { EXPORT_QUERY_INDEX, INDEX } from "@/data/services/getFilePath";
 import { explorerConfigs } from "@/configs";
 import loadFile from "@/data/services/loadFile";
 import getFilePath from "@/data/services/getFilePath";
@@ -13,10 +17,14 @@ const state = {
   folders: explorerConfigs.folders,
   sources: null,
   reports: explorerConfigs.reports,
+  queryIndex: null,
   dataLoaded: false,
 };
 
 const getters = {
+  getQueryIndex: function (state) {
+    return state.queryIndex;
+  },
   getSources: function (state) {
     return state.sources;
   },
@@ -68,6 +76,13 @@ const actions = {
       }
     );
   },
+  [FETCH_QUERY_INDEX]({ commit, dispatch }, params) {
+    loadFile(getFilePath(params)[EXPORT_QUERY_INDEX], { required: false }).then(
+      (response) => {
+        commit(LOAD_QUERY_INDEX, response.response.data);
+      }
+    );
+  },
 };
 
 const mutations = {
@@ -76,6 +91,9 @@ const mutations = {
   },
   [EXPLORER_LOADED](state) {
     state.dataLoaded = true;
+  },
+  [LOAD_QUERY_INDEX](state, payload) {
+    state.queryIndex = payload;
   },
 };
 

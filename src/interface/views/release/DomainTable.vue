@@ -159,6 +159,18 @@
             link="https://policyviz.com/2018/08/07/dataviz-cheatsheet/"
             icon="mdi-eye"
           ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.DOMAIN_SUMMARY[$route.params.domain.toUpperCase()]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </div>
       </v-card>
     </v-container>
@@ -175,11 +187,21 @@
         :data="getData.domainStratification"
         title="Domain Data Stratification by Visit"
       />
-      <v-card-text>
-        <v-icon color="info" small left>mdi-help-circle</v-icon>
-        Any domain data categorized as a Visit of 'No matching concept' implies
-        that this data had no associated Visit on the Domain record.
-      </v-card-text>
+      <info-panel
+        details="Any domain data categorized as a Visit of 'No matching concept' implies
+        that this data had no associated Visit on the Domain record."
+        :divider="true"
+      ></info-panel>
+      <info-panel
+        v-if="getQueryIndex"
+        icon="mdi-code-braces"
+        details="View export query."
+        :link-details="true"
+        :link="
+          getQueryLink(getQueryIndex.DOMAIN_SUMMARY.DOMAIN_VISIT_STRATIFICATION)
+        "
+        :divider="false"
+      ></info-panel>
     </v-card>
     <v-card
       v-if="getData.drugStratification"
@@ -194,6 +216,16 @@
         :data="getData.drugStratification"
         title="Drug Domain Stratification by Drug Type"
       />
+      <info-panel
+        v-if="getQueryIndex"
+        icon="mdi-code-braces"
+        details="View export query."
+        :link-details="true"
+        :link="
+          getQueryLink(getQueryIndex.DOMAIN_SUMMARY.DOMAIN_DRUG_STRATIFICATION)
+        "
+        :divider="false"
+      ></info-panel>
     </v-card>
   </div>
 </template>
@@ -266,6 +298,9 @@ export default {
     };
   },
   methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
     delayedSearch: debounce(function (data) {
       this.search = data;
     }, 300),
@@ -438,7 +473,7 @@ export default {
     issueCount: function () {
       return this.domainIssue?.count_failed || 0;
     },
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
   },
   props: {
     resultFile: String,

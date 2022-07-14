@@ -11,6 +11,18 @@
             :config="specAgeAtDeath"
             :data="getData.AGE_AT_DEATH"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.name.toUpperCase()].AGE_AT_DEATH[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -20,6 +32,18 @@
             :config="specDeathByType"
             :data="getData.DEATH_BY_TYPE"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.name.toUpperCase()].DEATH_BY_TYPE[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -29,6 +53,19 @@
             :data="getData.PREVALENCE_BY_GENDER_AGE_YEAR"
             title="Record Count Proportion by Age, Sex, and Year"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.name.toUpperCase()]
+                  .PREVALENCE_BY_GENDER_AGE_YEAR[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -38,12 +75,22 @@
             :data="getData.PREVALENCE_BY_MONTH"
             title="Record Count Proportion by Month"
           />
-          <v-card-text>
-            <v-layout align-baseline>
-              <v-icon small color="info" left> mdi-help-circle</v-icon>
-              Proportion of people with at least one record per 1000 people.
-            </v-layout>
-          </v-card-text>
+          <info-panel
+            details="Proportion of people with at least one record per 1000 people."
+            :divider="true"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.name.toUpperCase()].PREVALENCE_BY_MONTH[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
       </v-responsive>
     </v-container>
@@ -52,13 +99,13 @@
 
 <script>
 import { charts } from "@/configs";
-import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import { DEATH } from "@/data/services/getFilePath";
+import infoPanel from "@/interface/components/InfoPanel";
 import VegaChart from "@/interface/components/VegaChart";
 import { mapGetters } from "vuex";
 export default {
   components: {
     VegaChart,
+    infoPanel,
   },
   data() {
     return {
@@ -69,10 +116,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
   },
   watch: {},
-  methods: {},
+  methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
+  },
 };
 </script>
 

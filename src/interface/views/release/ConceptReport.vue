@@ -117,18 +117,34 @@
             :config="specMeasurementValueDistribution"
             :data="getSelectedMeasurementUnits"
           />
-          <v-card-text>
-            <v-layout>
-              <router-link :to="getNetworkConceptRoute()">
-                <v-icon small color="primary" left>mdi-check-network</v-icon
-                >Check measurement value distributions across the network
-              </router-link>
-            </v-layout>
-            <router-link to="/help">
-              <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
-              to interpret this plot.
-            </router-link>
-          </v-card-text>
+          <info-panel
+            details="Check measurement value distributions across the network"
+            icon="mdi-check-network"
+            :link-details="true"
+            :route-link="getNetworkConceptRoute()"
+            :divider="true"
+          ></info-panel>
+          <info-panel
+            details="Learn how
+              to interpret this plot."
+            icon="mdi-help-circle"
+            :link-details="true"
+            route-link="/help"
+            :divider="false"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            details="View export query."
+            icon="mdi-code-braces"
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .MEASUREMENT_VALUE_DISTRIBUTION[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.AGE_AT_FIRST_DIAGNOSIS"
@@ -143,12 +159,27 @@
             :data="getData.conceptData.AGE_AT_FIRST_DIAGNOSIS"
             title="Age at First Diagnosis"
           />
-          <v-card-text>
-            <router-link to="/help">
-              <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
-              to interpret this plot.
-            </router-link>
-          </v-card-text>
+          <info-panel
+            details="Learn how
+              to interpret this plot."
+            icon="mdi-help-circle"
+            :link-details="true"
+            route-link="/help"
+            :divider="false"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .AGE_AT_FIRST_DIAGNOSIS[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.AGE_AT_FIRST_EXPOSURE"
@@ -163,12 +194,27 @@
             :data="getData.conceptData.AGE_AT_FIRST_EXPOSURE"
             title="Age At First Exposure"
           />
-          <v-card-text>
-            <router-link to="/help">
-              <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
-              to interpret this plot.
-            </router-link>
-          </v-card-text>
+          <info-panel
+            details="Learn how
+              to interpret this plot."
+            icon="mdi-help-circle"
+            :link-details="true"
+            route-link="/help"
+            :divider="true"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .AGE_AT_FIRST_EXPOSURE[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.LENGTH_OF_ERA"
@@ -183,6 +229,19 @@
             :data="getData.conceptData.LENGTH_OF_ERA"
             title="Length of Era"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .LENGTH_OF_ERA[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.CONDITIONS_BY_TYPE"
@@ -197,15 +256,26 @@
             :data="getData.conceptData.CONDITIONS_BY_TYPE"
             title="Conditions by Type"
           />
-          <v-card-text>
-            <a
-              href="https://ohdsi.github.io/CommonDataModel/cdm531.html#CONDITION_OCCURRENCE"
-              target="_blank"
-            >
-              <v-icon small color="info" left> mdi-help-circle</v-icon>
-              Learn about Condition types.
-            </a>
-          </v-card-text>
+          <info-panel
+            details="Learn about Condition types."
+            icon="mdi-help-circle"
+            :link-details="true"
+            link="https://ohdsi.github.io/CommonDataModel/cdm531.html#CONDITION_OCCURRENCE"
+            :divider="true"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .CONDITIONS_BY_TYPE[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.DRUGS_BY_TYPE"
@@ -220,15 +290,26 @@
             :data="getData.conceptData.DRUGS_BY_TYPE"
             title="Drugs by Type"
           />
-          <v-card-text>
-            <a
-              href="https://ohdsi.github.io/CommonDataModel/cdm531.html#DRUG_EXPOSURE"
-              target="_blank"
-            >
-              <v-icon small color="info" left> mdi-help-circle</v-icon>
-              Learn about Drug types.
-            </a>
-          </v-card-text>
+          <info-panel
+            details="Learn about Drug types."
+            icon="mdi-help-circle"
+            :link-details="true"
+            link="https://ohdsi.github.io/CommonDataModel/cdm531.html#DRUG_EXPOSURE"
+            :divider="true"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .DRUGS_BY_TYPE[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.RECORDS_BY_UNIT"
@@ -243,6 +324,19 @@
             :data="getData.conceptData.RECORDS_BY_UNIT"
             title="Records by Unit"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .RECORDS_BY_UNIT[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.MEASUREMENTS_BY_TYPE"
@@ -257,15 +351,26 @@
             :data="getData.conceptData.MEASUREMENTS_BY_TYPE"
             title="Measurements by Type"
           />
-          <v-card-text>
-            <a
-              href="https://ohdsi.github.io/CommonDataModel/cdm531.html#MEASUREMENT"
-              target="_blank"
-            >
-              <v-icon small color="info" left> mdi-help-circle</v-icon>
-              Learn about Measurement types.
-            </a>
-          </v-card-text>
+          <info-panel
+            details="Learn about Measurement types."
+            icon="mdi-help-circle"
+            :link-details="true"
+            link="https://ohdsi.github.io/CommonDataModel/cdm531.html#MEASUREMENT"
+            :divider="true"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .MEASUREMENTS_BY_TYPE[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.AGE_AT_FIRST_OCCURRENCE"
@@ -283,6 +388,18 @@
           <info-panel
             details="Learn how to interpret this plot"
             route-link="/help"
+          ></info-panel>
+          <info-panel
+            details="View export query."
+            icon="mdi-code-braces"
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .AGE_AT_FIRST_OCCURRENCE[0]
+              )
+            "
+            :divider="false"
           ></info-panel>
         </v-card>
         <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
@@ -316,6 +433,19 @@
             :route-link="getSourceConceptReportLink()"
             details="Review this Time-Series across data source releases."
           ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .PREVALENCE_BY_MONTH[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.DAYS_SUPPLY_DISTRIBUTION"
@@ -333,6 +463,19 @@
           <info-panel
             details="Learn how to interpret this plot"
             route-link="/help"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .DAYS_SUPPLY_DISTRIBUTION[0]
+              )
+            "
+            :divider="false"
           ></info-panel>
         </v-card>
         <v-card
@@ -352,6 +495,19 @@
             details="Learn how to interpret this plot"
             route-link="/help"
           ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .QUANTITY_DISTRIBUTION[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="getData.conceptData.VISIT_DURATION_BY_TYPE"
@@ -366,6 +522,19 @@
             :data="getData.conceptData.VISIT_DURATION_BY_TYPE"
             title="Visit Duration By Type"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .VISIT_DURATION_BY_TYPE[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
         <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -378,6 +547,19 @@
           <info-panel
             details="Proportion of people with at least one record per 1000 people."
           ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .PREVALENCE_BY_GENDER_AGE_YEAR[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
       </v-responsive>
     </v-container>
@@ -385,17 +567,12 @@
 </template>
 
 <script>
-import * as d3 from "d3-time-format";
-import { csvParse } from "d3-dsv";
 import * as d3Format from "d3-format";
 import InfoPanel from "../../components/InfoPanel.vue";
 import ReturnButton from "@/interface/components/ReturnButton";
 import { charts } from "@/configs";
-import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import { CONCEPT, DOMAIN_SUMMARY } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
-import sortByRange from "@/services/range-sort";
 export default {
   components: {
     VegaChart,
@@ -424,7 +601,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
     getPercentWithValues: function () {
       const missingData = this.getData.domainSummary.filter(
         (data) => data.CONCEPT_ID === this.$route.params.concept
@@ -458,6 +635,9 @@ export default {
         this.$route.params.concept +
         "/overlay"
       );
+    },
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
     },
     toggleMeasurementValueChart() {
       const encoding = this.specMeasurementValueDistribution.layer[0].encoding;

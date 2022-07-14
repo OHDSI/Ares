@@ -10,6 +10,18 @@
         :config="defOverview"
         :data="getData.domainDensity"
       />
+      <info-panel
+        v-if="getQueryIndex"
+        icon="mdi-code-braces"
+        details="View export query."
+        :link-details="true"
+        :link="
+          getQueryLink(
+            getQueryIndex.DATA_DENSITY.DATADENSITY_RECORDS_PER_PERSON[0]
+          )
+        "
+        :divider="true"
+      ></info-panel>
     </v-card>
     <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
       <VegaChart
@@ -20,22 +32,25 @@
         :config="defRecordsPerPerson"
         :data="getData.domainRecords"
       />
+      <info-panel
+        v-if="getQueryIndex"
+        icon="mdi-code-braces"
+        details="View export query."
+        :link-details="true"
+        :link="getQueryLink(getQueryIndex.DATA_DENSITY.DATADENSITY_TOTAL[0])"
+        :divider="true"
+      ></info-panel>
     </v-card>
   </div>
 </template>
 
 <script>
 import VegaChart from "@/interface/components/VegaChart";
-import * as d3Import from "d3-dsv";
 import { charts } from "@/configs";
-import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import {
-  DENSITY_RECORDS_PERSON,
-  DENSITY_TOTAL,
-} from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
+import infoPanel from "@/interface/components/InfoPanel";
 export default {
-  components: { VegaChart },
+  components: { VegaChart, infoPanel },
   data() {
     return {
       defRecordsPerPerson: charts.defRecordsPerPerson,
@@ -43,9 +58,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
   },
-  methods: {},
+  methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
+  },
 };
 </script>
 

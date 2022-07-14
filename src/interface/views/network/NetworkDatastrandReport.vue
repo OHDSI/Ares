@@ -10,6 +10,14 @@
         particular domain table. Across the network, the strands can be visually
         compared and contrasted."
       ></infopanel>
+      <infopanel
+        v-if="getQueryIndex"
+        icon="mdi-code-braces"
+        details="View export query."
+        :link-details="true"
+        :link="getQueryLink(getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0])"
+        :divider="false"
+      ></infopanel>
     </v-card>
   </v-container>
 </template>
@@ -17,10 +25,7 @@
 <script>
 import embed from "vega-embed";
 import infopanel from "../../components/InfoPanel.vue";
-import * as d3 from "d3-dsv";
 import { charts } from "@/configs";
-import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/data/store/modules/view/actions.type";
-import { RECORDS_DOMAIN } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 export default {
   components: {
@@ -43,6 +48,9 @@ export default {
     },
   },
   methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
     navigate: function (route) {
       this.$router.push(route);
       // hide tooltip otherwise it persists on navigation
@@ -74,6 +82,7 @@ export default {
       "getErrors",
       "getSettings",
       "dataInStore",
+      "getQueryIndex",
     ]),
     darkMode: function () {
       return this.getSettings.darkMode;
