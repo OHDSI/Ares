@@ -1,7 +1,17 @@
 <template>
   <v-container fluid>
     <v-card>
-      <Pivot :data="getData['networkPerformance']" />
+      <Pivot
+        :data="getData['networkPerformance']"
+        :attributes="[
+          'TASK',
+          'TIMING',
+          'PACKAGE',
+          'CATEGORY',
+          'SOURCE',
+          'RELEASE',
+        ]"
+      />
     </v-card>
   </v-container>
 </template>
