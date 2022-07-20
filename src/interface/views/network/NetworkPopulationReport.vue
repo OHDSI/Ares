@@ -13,6 +13,18 @@
             :data="getData.allAgeAtFirstObservationData"
             title="Age at First Observation"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.OBSERVATION_PERIOD.AGE_AT_FIRST_OBSERVATION[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -22,6 +34,18 @@
             :data="getData.allCumulativeDurationData"
             title="Cumulative Observation"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.OBSERVATION_PERIOD.CUMULATIVE_DURATION[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
       </v-responsive>
     </v-container>
@@ -29,15 +53,14 @@
 </template>
 
 <script>
-import * as d3Format from "d3-format";
 import { charts } from "@/configs";
-import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/data/store/modules/view/actions.type";
-import { OBSERVATION_PERIOD } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
+import infoPanel from "@/interface/components/InfoPanel";
 export default {
   components: {
     VegaChart,
+    infoPanel,
   },
   data() {
     return {
@@ -46,9 +69,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getSources", "getErrors", "dataInStore"]),
+    ...mapGetters([
+      "getData",
+      "getSources",
+      "getErrors",
+      "dataInStore",
+      "getQueryIndex",
+    ]),
   },
   methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
     navigateToDataQuality() {
       this.$router.push({
         path:

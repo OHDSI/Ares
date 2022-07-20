@@ -64,12 +64,25 @@
             :config="specMeasurementValueDistribution"
             :data="getSelectedMeasurementUnits"
           />
-          <v-card-text>
-            <router-link to="/help">
-              <v-icon small color="info" left> mdi-help-circle</v-icon>Learn how
-              to interpret this plot.
-            </router-link>
-          </v-card-text>
+          <info-panel
+            details="Learn how
+              to interpret this plot."
+            route-link="/help"
+            :divider="true"
+            :link-details="true"
+          ></info-panel>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.MEASUREMENT.MEASUREMENT_VALUE_DISTRIBUTION[0]
+              )
+            "
+            :divider="false"
+          ></info-panel>
         </v-card>
       </v-responsive>
     </v-container>
@@ -79,14 +92,14 @@
 <script>
 import ReturnButton from "@/interface/components/ReturnButton";
 import { charts } from "@/configs";
-import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/data/store/modules/view/actions.type";
-import { CONCEPT } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
+import infoPanel from "@/interface/components/InfoPanel";
 export default {
   components: {
     VegaChart,
     ReturnButton,
+    infoPanel,
   },
   data() {
     return {
@@ -97,7 +110,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getSources", "getErrors"]),
+    ...mapGetters(["getData", "getSources", "getErrors", "getQueryIndex"]),
     getSelectedMeasurementUnits: function () {
       return this.selectedMeasurementUnits.length
         ? this.getData.measurementValueDistribution.filter((value) =>
@@ -111,10 +124,10 @@ export default {
       );
     },
   },
-  created() {
-    this.load();
-  },
   methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
     toggleMeasurementValueChart() {
       const encoding = this.specMeasurementValueDistribution.layer[0].encoding;
 
@@ -140,7 +153,6 @@ export default {
           this.$route.params.concept,
       });
     },
-    load: function () {},
   },
 };
 </script>

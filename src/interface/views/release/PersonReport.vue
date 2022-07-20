@@ -57,6 +57,14 @@
             :data="getData.personData.AGE_GENDER_DATA"
             :config="specAgeSex"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="getQueryLink(getQueryIndex.PERSON.AGE_GENDER_DATA)"
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -66,6 +74,14 @@
             :data="getData.personData.RACE_DATA"
             title="Population by Race"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="getQueryLink(getQueryIndex.PERSON.RACE_DATA)"
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -75,6 +91,14 @@
             :data="getData.personData.BIRTH_YEAR_DATA"
             title="Population by Year of Birth"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="getQueryLink(getQueryIndex.PERSON.BIRTH_YEAR_DATA)"
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -84,6 +108,14 @@
             :data="getData.personData.ETHNICITY_DATA"
             title="Population by Ethnicity"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="getQueryLink(getQueryIndex.PERSON.ETHNICITY_DATA)"
+            :divider="true"
+          ></info-panel>
         </v-card>
       </v-responsive>
     </v-container>
@@ -95,9 +127,11 @@ import * as d3Format from "d3-format";
 import { charts } from "@/configs";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
+import infoPanel from "@/interface/components/InfoPanel";
 export default {
   components: {
     VegaChart,
+    infoPanel,
   },
   data() {
     return {
@@ -122,12 +156,16 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
   },
   methods: {
     // Formats values passed as percentages
     formatPercent: function (value) {
       return d3Format.format("0.0%")(value);
+    },
+
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
     },
     // Formats values passed with commas added
     formatComma: function (value) {
@@ -140,5 +178,11 @@ export default {
 <style scoped>
 .viz-container {
   width: 90%;
+}
+.v-tooltip__content {
+  pointer-events: initial;
+}
+.query-link {
+  color: white;
 }
 </style>

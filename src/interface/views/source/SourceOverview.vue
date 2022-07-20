@@ -42,6 +42,14 @@
             :config="specPopulationByRelease"
             :data="getSelectedSource.releases"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="getQueryLink(getQueryIndex.CDM_SOURCE[0])"
+            :divider="true"
+          ></info-panel>
         </v-card>
       </v-col>
       <v-col>
@@ -52,6 +60,14 @@
             :config="specIssuesByRelease"
             :data="getSelectedSource.releases"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="getQueryLink(getQueryIndex.CDM_SOURCE[0])"
+            :divider="true"
+          ></info-panel>
         </v-card>
       </v-col>
     </v-row>
@@ -92,10 +108,11 @@ import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
 import { charts } from "@/configs";
 import * as d3Format from "d3-format";
+import infoPanel from "@/interface/components/InfoPanel";
 
 export default {
   name: "SourceOverview",
-  components: { VegaChart },
+  components: { VegaChart, infoPanel },
   data() {
     return {
       specPopulationByRelease: charts.specPopulationByRelease,
@@ -123,6 +140,9 @@ export default {
     };
   },
   methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
     formatComma: function (value) {
       return d3Format.format(",")(value);
     },
@@ -134,7 +154,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["getErrors", "getSelectedSource"]),
+    ...mapGetters(["getErrors", "getSelectedSource", "getQueryIndex"]),
     getReleasesCount: function () {
       return this.getSelectedSource.count_releases;
     },

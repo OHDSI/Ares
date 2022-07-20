@@ -40,6 +40,19 @@
             :data="getData.conceptData"
             title="Record Proportion by Month"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex[$route.params.domain.toUpperCase()]
+                  .PREVALENCE_BY_MONTH[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
       </v-responsive>
     </v-container>
@@ -47,19 +60,16 @@
 </template>
 
 <script>
-import { flatten, sumBy } from "lodash";
-import * as d3Format from "d3-format";
-import * as d3 from "d3-time-format";
 import ReturnButton from "@/interface/components/ReturnButton";
 import { charts } from "@/configs";
-import { FETCH_MULTIPLE_FILES_BY_RELEASE } from "@/data/store/modules/view/actions.type";
-import { SOURCE_CONCEPT } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
+import infoPanel from "@/interface/components/InfoPanel";
 export default {
   components: {
     VegaChart,
     ReturnButton,
+    infoPanel,
   },
   data() {
     return {
@@ -67,7 +77,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "getQueryIndex"]),
+  },
+  methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
   },
 };
 </script>

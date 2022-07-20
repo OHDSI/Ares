@@ -95,7 +95,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { FETCH_INDEX } from "@/data/store/modules/explorer/actions.type";
+import {
+  FETCH_INDEX,
+  FETCH_QUERY_INDEX,
+} from "@/data/store/modules/explorer/actions.type";
 import { explorerConfigs } from "@/configs";
 
 export default {
@@ -134,6 +137,7 @@ export default {
 
   created() {
     this.$store.dispatch(FETCH_INDEX, { route: this.$route.params });
+    this.$store.dispatch(FETCH_QUERY_INDEX, { route: this.$route.params });
   },
 
   methods: {

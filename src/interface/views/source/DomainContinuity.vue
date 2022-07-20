@@ -16,6 +16,16 @@
         <info-panel
           details="Domain continuity shows the number of records in each domain table for multiple releases of data from a specific vendor or data source. This is NOT the number of records that occur at specific times within a CDM, but a count of the number of records in a release of a data source, graphed over time. This visualization allows one to see how the data is changing across updates for a single data source."
         ></info-panel>
+        <info-panel
+          v-if="getQueryIndex"
+          icon="mdi-code-braces"
+          details="View export query."
+          :link-details="true"
+          :link="
+            getQueryLink(getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0])
+          "
+          :divider="false"
+        ></info-panel>
       </div>
     </v-card>
   </v-responsive>
@@ -25,8 +35,6 @@
 import InfoPanel from "../../components/InfoPanel.vue";
 import { charts } from "@/configs";
 import VegaChart from "@/interface/components/VegaChart";
-import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import { SOURCE_HISTORY_INDEX } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
 
 export default {
@@ -40,7 +48,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
+  },
+  methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
   },
 };
 </script>

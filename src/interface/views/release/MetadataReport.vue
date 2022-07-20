@@ -11,10 +11,19 @@
           {{ d }}: {{ getData.cdmsourceData[0][d] }}
         </v-layout>
       </v-container>
-      <v-card-text>
-        <v-icon left color="info" small>mdi-help-circle</v-icon>CDM Source
-        Details are derived from the CDM_SOURCE table.
-      </v-card-text>
+      <info-panel
+        details="CDM Source
+        Details are derived from the CDM_SOURCE table."
+        :divider="true"
+      ></info-panel>
+      <info-panel
+        v-if="getQueryIndex"
+        icon="mdi-code-braces"
+        details="View export query."
+        :link-details="true"
+        :link="getQueryLink(getQueryIndex.CDM_SOURCE[0])"
+        :divider="false"
+      ></info-panel>
     </v-card>
     <v-card :loading="!getData.metadataData" elevation="10" class="ma-4 pa-2">
       <v-card-title>Metadata</v-card-title>
@@ -28,22 +37,29 @@
         >
         </v-data-table>
       </v-container>
-      <v-card-text>
-        <v-icon left color="info" small>mdi-help-circle</v-icon>Metadata is
-        derived from the METADATA table.
-      </v-card-text>
+      <info-panel
+        details="Metadata is
+        derived from the METADATA table."
+        :divider="true"
+      ></info-panel>
+      <info-panel
+        v-if="getQueryIndex"
+        icon="mdi-code-braces"
+        details="View export query."
+        :link-details="true"
+        :link="getQueryLink(getQueryIndex.METADATA[0])"
+        :divider="false"
+      ></info-panel>
     </v-card>
   </div>
 </template>
 
 <script>
-import * as d3 from "d3-dsv";
-import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import { CDM_SOURCE, METADATA } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
+import infoPanel from "@/interface/components/InfoPanel";
 
 export default {
-  components: {},
+  components: { infoPanel },
   props: {
     resultFile: String,
   },
@@ -96,11 +112,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors"]),
+    ...mapGetters(["getData", "getErrors", "getQueryIndex"]),
   },
   methods: {
     columnValueList(val) {
       return this.domainTable.map((d) => d[val]);
+    },
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
     },
   },
 };

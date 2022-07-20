@@ -56,25 +56,32 @@
           </template>
         </v-data-table>
 
-        <v-card-text>
-          <v-icon left color="primary">mdi-help-circle</v-icon>This report
-          describes how long each analysis executed during
-          <a target="_new" href="https://github.com/ohdsi/achilles">Achilles</a>
-          characterization took to run in seconds.
-        </v-card-text>
+        <info-panel
+          details="This report
+          describes how long each analysis executed during Achilles characterization took to run in seconds."
+          link="https://github.com/ohdsi/achilles"
+        >
+        </info-panel>
+
+        <info-panel
+          v-if="getQueryIndex"
+          icon="mdi-code-braces"
+          details="View export query."
+          :link-details="true"
+          :link="getQueryLink(getQueryIndex.ACHILLES_PERFORMANCE[0])"
+          :divider="false"
+        ></info-panel>
       </v-card>
     </v-container>
   </div>
 </template>
 
 <script>
-import * as d3 from "d3-dsv";
-import { FETCH_FILES } from "@/data/store/modules/view/actions.type";
-import { ACHILLES_PERFORMANCE } from "@/data/services/getFilePath";
 import { mapGetters } from "vuex";
+import infoPanel from "@/interface/components/InfoPanel";
 
 export default {
-  components: {},
+  components: { infoPanel },
   props: {
     resultFile: String,
   },
@@ -105,7 +112,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
     showHeaders() {
       return this.headers.filter((s) => this.selectedHeaders.includes(s));
     },
@@ -129,6 +136,9 @@ export default {
     );
   },
   methods: {
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
     getAnalysisLink: function (id) {
       return (
         "https://github.com/OHDSI/Achilles/blob/master/inst/sql/sql_server/analyses/" +

@@ -11,6 +11,18 @@
             :data="getData.observationPeriodData.CUMULATIVE_DURATION"
             title="Cumulative Observation"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.OBSERVATION_PERIOD.CUMULATIVE_DURATION[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card
           v-if="dataInStore"
@@ -39,6 +51,18 @@
               {{ formatComma(item.COUNT_VALUE) }}
             </template>
           </v-data-table>
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.OBSERVATION_PERIOD.PERSON_PERIODS_DATA[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -48,6 +72,18 @@
             :data="getData.observationPeriodData.OBSERVED_BY_MONTH"
             title="Observation over Time"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.OBSERVATION_PERIOD.OBSERVED_BY_MONTH[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -59,6 +95,19 @@
             "
             title="Years of Observation by Age"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.OBSERVATION_PERIOD
+                  .OBSERVATION_PERIOD_LENGTH_BY_AGE[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -70,6 +119,19 @@
             "
             title="Years of Observation by Sex"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.OBSERVATION_PERIOD
+                  .OBSERVATION_PERIOD_LENGTH_BY_GENDER[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -79,6 +141,18 @@
             :data="getData.observationPeriodData.AGE_AT_FIRST_OBSERVATION"
             title="Age at First Observation"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(
+                getQueryIndex.OBSERVATION_PERIOD.AGE_AT_FIRST_OBSERVATION[0]
+              )
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
           <VegaChart
@@ -88,6 +162,16 @@
             :data="getData.observationPeriodData.AGE_BY_GENDER"
             title="Age at First Observation by Sex"
           />
+          <info-panel
+            v-if="getQueryIndex"
+            icon="mdi-code-braces"
+            details="View export query."
+            :link-details="true"
+            :link="
+              getQueryLink(getQueryIndex.OBSERVATION_PERIOD.AGE_BY_GENDER[0])
+            "
+            :divider="true"
+          ></info-panel>
         </v-card>
       </v-responsive>
     </v-container>
@@ -99,9 +183,11 @@ import * as d3Format from "d3-format";
 import { charts } from "@/configs";
 import VegaChart from "@/interface/components/VegaChart";
 import { mapGetters } from "vuex";
+import infoPanel from "@/interface/components/InfoPanel";
 export default {
   components: {
     VegaChart,
+    infoPanel,
   },
   data() {
     return {
@@ -136,11 +222,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
+    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
   },
   methods: {
     formatComma: function (value) {
       return d3Format.format(",")(value);
+    },
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
     },
   },
 };
