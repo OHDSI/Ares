@@ -230,9 +230,6 @@ export default {
   },
 
   computed: {
-    getUniqueAttributes: function () {
-      return [...new Set(...this.data.map((obj) => Object.keys(obj)))];
-    },
     getUniqueAttributeValues: function () {
       return this.getDisplayedAttributes.reduce(
         (prevState, currAttribute) => ({
@@ -245,11 +242,7 @@ export default {
       );
     },
     getDisplayedAttributes: function () {
-      if (this.attributes.length) {
-        return this.attributes;
-      } else {
-        return this.getUniqueAttributes;
-      }
+      return this.attributes;
     },
   },
   methods: {
