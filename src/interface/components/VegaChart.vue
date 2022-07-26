@@ -17,53 +17,53 @@ export default {
     config: { type: Function, required: true, default: null },
     id: { type: String, required: true, default: null },
     listener: { type: Function, required: false, default: null },
-    width: { type: String, required: false, default: "90" }
+    width: { type: String, required: false, default: "90" },
   },
   computed: {
-    style: function() {
+    style: function () {
       return "width: " + this.width + "%";
     },
     ...mapGetters(["getSettings"]),
-    darkMode: function() {
+    darkMode: function () {
       return this.getSettings.darkMode;
     },
-    zeroBaseline: function() {
+    zeroBaseline: function () {
       return this.getSettings.zeroBaseline;
-    }
+    },
   },
   watch: {
     data: {
       deep: true,
       handler() {
         this.load();
-      }
+      },
     },
     darkMode() {
       this.load();
     },
     zeroBaseline() {
       this.load();
-    }
+    },
   },
   created() {
     this.load();
   },
   methods: {
-    load: function() {
+    load: function () {
       embed(
         `#${this.id}`,
         {
           ...this.config(this.getSettings.zeroBaseline),
-          data: { values: this.data }
+          data: { values: this.data },
         },
         { theme: this.getSettings.darkMode ? "dark" : "" }
-      ).then(result => {
+      ).then((result) => {
         if (this.listener) {
-          this.listener(result);
+          this.listener(result, this.$route);
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
