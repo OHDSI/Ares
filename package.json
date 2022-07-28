@@ -7,24 +7,14 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "electron:build": "vue-cli-service electron:build",
-    "electron:serve": "vue-cli-service electron:serve",
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
-    "start-electron": "electron ./src/electron/index.js",
-    "dist": "electron-builder",
-    "electron:generate-icons": "electron-icon-builder --input=./src/assets/icon.png --output=build --flatten"
+    "lint": "vue-cli-service lint"
   },
-  "main": "background.js",
   "dependencies": {
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "d3-dsv": "^3.0.1",
     "d3-format": "^3.0.1",
     "d3-time-format": "^4.0.0",
-    "electron-icon-builder": "^2.0.1",
-    "is-electron": "^2.2.1",
     "lodash": "^4.17.21",
     "markdown-it-vue": "^1.1.6",
     "vega-embed": "^6.20.2",
@@ -46,15 +36,12 @@
     "@vue/cli-service": "^4.5.15",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
-    "electron": "^16.0.1",
-    "electron-devtools-installer": "^3.2.0",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
     "fibers": "^5.0.0",
     "lint-staged": "^12.1.2",
     "sass": "^1.43.4",
     "sass-loader": "^10.2.0",
-    "vue-cli-plugin-electron-builder": "^2.1.1",
     "vue-template-compiler": "^2.6.14"
   },
   "gitHooks": {
