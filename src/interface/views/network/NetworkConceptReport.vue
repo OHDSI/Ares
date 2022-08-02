@@ -4,7 +4,7 @@
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
           <h2 class="text-uppercase">
-            {{ getData.conceptName }} NETWORK REPORT
+            {{ getData?.metadata?.conceptName }} NETWORK REPORT
           </h2>
           <ReturnButton />
         </v-layout>
@@ -16,7 +16,7 @@
               inline
               dark
               color="info"
-              :content="getData.conceptId"
+              :content="getData?.metadata?.conceptId"
             ></v-badge>
             <p class="text-caption">Concept Identifier</p></v-col
           ><v-col cols="2" align="center">
@@ -26,13 +26,13 @@
               inline
               dark
               color="info"
-              :content="getData.numPersons"
+              :content="getData?.metadata?.numPersons"
             ></v-badge>
             <p class="text-caption">Number of People in Network</p></v-col
           ></v-row
         >
         <v-card
-          v-if="getData.measurementValueDistribution"
+          v-if="getData"
           :loading="!getData"
           elevation="10"
           class="ma-4 pa-2"
@@ -62,7 +62,9 @@
             id="viz-measurementvaluedistribution"
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
-            :data="getSelectedMeasurementUnits"
+            :data="
+              getSelectedMeasurementUnits ? getSelectedMeasurementUnits : []
+            "
           />
           <info-panel
             details="Learn how
@@ -83,6 +85,13 @@
             "
             :divider="false"
           ></info-panel>
+        </v-card>
+        <v-card elevation="10" class="ma-4 pa-2">
+          <v-data-table
+            :headers="headers"
+            :items="getData?.table?.measurementValueDistribution"
+          >
+          </v-data-table>
         </v-card>
       </v-responsive>
     </v-container>
@@ -107,19 +116,99 @@ export default {
       selectedMeasurementUnits: [],
       specMeasurementValueDistribution:
         charts.specMeasurementValueDistribution1,
+      headers: [
+        {
+          text: "Measurement concept name",
+          sortable: true,
+          value: "CONCEPT_NAME",
+          align: "start",
+        },
+        {
+          text: "Measurement concept ID",
+          sortable: true,
+          value: "CONCEPT_ID",
+          align: "start",
+        },
+        {
+          text: "Unit",
+          sortable: true,
+          value: "CATEGORY",
+          align: "start",
+        },
+        {
+          text: "Source",
+          sortable: true,
+          value: "SOURCE",
+          align: "start",
+        },
+        {
+          text: "Release",
+          sortable: true,
+          value: "RELEASE",
+          align: "start",
+        },
+        {
+          text: "Count value",
+          sortable: true,
+          value: "NUM_PERSONS",
+          align: "start",
+        },
+        {
+          text: "Min Value",
+          sortable: true,
+          value: "MIN_VALUE",
+          align: "start",
+        },
+        {
+          text: "Max Value",
+          sortable: true,
+          value: "MAX_VALUE",
+          align: "start",
+        },
+        {
+          text: "Median Value",
+          sortable: true,
+          value: "MEDIAN_VALUE",
+          align: "start",
+        },
+        {
+          text: "P10 Value",
+          sortable: true,
+          value: "P10_VALUE",
+          align: "start",
+        },
+        {
+          text: "P25 Value",
+          sortable: true,
+          value: "P25_VALUE",
+          align: "start",
+        },
+        {
+          text: "P75 Value",
+          sortable: true,
+          value: "P75_VALUE",
+          align: "start",
+        },
+        {
+          text: "P90 Value",
+          sortable: true,
+          value: "P90_VALUE",
+          align: "start",
+        },
+      ],
     };
   },
   computed: {
     ...mapGetters(["getData", "getSources", "getErrors", "getQueryIndex"]),
     getSelectedMeasurementUnits: function () {
       return this.selectedMeasurementUnits.length
-        ? this.getData.measurementValueDistribution.filter((value) =>
+        ? this.getData?.chart?.measurementValueDistribution.filter((value) =>
             this.selectedMeasurementUnits.includes(value.CATEGORY)
           )
-        : this.getData.measurementValueDistribution;
+        : this.getData?.chart?.measurementValueDistribution;
     },
     getMeasurementUnits: function () {
-      return this.getData.measurementValueDistribution.map(
+      return this.getData?.chart?.measurementValueDistribution.map(
         (value) => value.CATEGORY
       );
     },
