@@ -110,7 +110,7 @@
               <v-layout
                 justify-end
                 :class="getWeight(item.PERCENT_PERSONS_NTILE)"
-                >{{ item.NUM_PERSONS }}</v-layout
+                >{{ formatComma(item.NUM_PERSONS) }}</v-layout
               >
             </template>
             <template v-slot:item.PERCENT_PERSONS="{ item }">
@@ -236,6 +236,7 @@ import { debounce } from "lodash";
 import { charts } from "@/configs";
 import { mapGetters } from "vuex";
 import VegaChart from "@/interface/components/VegaChart";
+import * as d3Format from "d3-format";
 export default {
   data: function () {
     return {
@@ -298,6 +299,9 @@ export default {
     };
   },
   methods: {
+    formatComma: function (value) {
+      return d3Format.format(",")(value);
+    },
     getQueryLink(queryPath) {
       return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
     },
