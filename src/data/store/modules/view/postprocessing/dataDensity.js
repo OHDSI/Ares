@@ -5,7 +5,7 @@ import {
 
 export default function dataDensity(data) {
   return {
-    domainDensity: data[DENSITY_RECORDS_PERSON],
-    domainRecords: data[DENSITY_TOTAL],
+    domainDensity: data[DENSITY_TOTAL],
+    domainRecords: data[DENSITY_RECORDS_PERSON],
   };
 }
