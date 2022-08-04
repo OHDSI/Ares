@@ -39,6 +39,7 @@
             <v-row>
               <v-col>
                 <v-text-field
+                  :value="$route.query.search"
                   prepend-icon="mdi-magnify"
                   label="Search in Table"
                   single-line
@@ -84,7 +85,7 @@
             }"
             item-key="CONCEPT_ID"
             :items-per-page="10"
-            :search="search"
+            :search="$route.query.search"
             :sort-by="['PERCENT_PERSONS']"
             :sort-desc="[true, false]"
           >
@@ -247,7 +248,6 @@ export default {
       isDrugExposure: false,
       visitStratification: false,
       drugStratification: [],
-      search: "",
       selectedHeaders: [],
       headers: [],
       headersMap: {
@@ -306,7 +306,11 @@ export default {
       return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
     },
     delayedSearch: debounce(function (data) {
-      this.search = data;
+      this.$router.push({
+        query: {
+          search: data,
+        },
+      });
     }, 300),
     getWeight: function (decile) {
       if (decile == 1) {
