@@ -105,9 +105,12 @@
               label="Filter units"
               multiple
             ></v-select>
-            <v-btn small color="primary" @click="toggleMeasurementValueChart()"
+            <v-btn
+              small
+              color="primary"
+              @click="$refs.measurementvalue.toggleMinMax()"
               ><v-icon dark left>mdi-toggle-switch</v-icon
-              >{{ toggleMode }}</v-btn
+              >{{ minMaxMode }}</v-btn
             >
           </v-layout>
           <VegaChart
@@ -116,6 +119,8 @@
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
             :data="getSelectedMeasurementUnits"
+            min-max
+            @minMaxChanged="changeMinMax"
           />
           <info-panel
             details="Check measurement value distributions across the network"
@@ -581,7 +586,7 @@ export default {
   },
   data() {
     return {
-      toggleMode: "P10/P90",
+      minMaxMode: "P10/P90",
       selectedMeasurementUnits: [],
       hasCountFailed: false,
       specConditionsByType: charts.specConditionsByType,
@@ -639,19 +644,9 @@ export default {
     getQueryLink(queryPath) {
       return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
     },
-    toggleMeasurementValueChart() {
-      const encoding = this.specMeasurementValueDistribution.layer[0].encoding;
 
-      if (this.toggleMode === "MIN/MAX") {
-        encoding.x.field = "P10_VALUE";
-        encoding.x2.field = "P90_VALUE";
-        this.toggleMode = "P10/P90";
-      } else {
-        encoding.x.field = "MIN_VALUE";
-        encoding.x2.field = "MAX_VALUE";
-        this.toggleMode = "MIN/MAX";
-      }
-      this.$refs.measurementvalue.load();
+    changeMinMax: function (value) {
+      this.minMaxMode = value;
     },
 
     formatPercent: function (value) {
