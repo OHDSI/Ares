@@ -3,12 +3,13 @@
     <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
-          <h2 class="text-uppercase">
-            {{ getData?.metadata?.conceptName }} NETWORK REPORT
+          <h2 v-if="getData.metadata" class="text-uppercase">
+            {{ getData.metadata.conceptName }}
+            NETWORK REPORT
           </h2>
           <ReturnButton />
         </v-layout>
-        <v-row v-if="getData" justify="start"
+        <v-row v-if="getData.metadata" justify="start"
           ><v-col cols="2" align="center">
             <v-icon left color="info">mdi-identifier</v-icon>
             <v-badge
@@ -16,7 +17,7 @@
               inline
               dark
               color="info"
-              :content="getData?.metadata?.conceptId"
+              :content="getData.metadata.conceptId"
             ></v-badge>
             <p class="text-caption">Concept Identifier</p></v-col
           ><v-col cols="2" align="center">
@@ -26,13 +27,13 @@
               inline
               dark
               color="info"
-              :content="getData?.metadata?.numPersons"
+              :content="getData.metadata.numPersons"
             ></v-badge>
             <p class="text-caption">Number of People in Network</p></v-col
           ></v-row
         >
         <v-card
-          v-if="getData"
+          v-if="getData.chart"
           :loading="!getData"
           elevation="10"
           class="ma-4 pa-2"
@@ -60,7 +61,6 @@
             >
           </v-layout>
           <VegaChart
-            v-if="getData"
             id="viz-measurementvaluedistribution"
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
@@ -90,10 +90,10 @@
             :divider="false"
           ></info-panel>
         </v-card>
-        <v-card elevation="10" class="ma-4 pa-2">
+        <v-card v-if="getData.table" elevation="10" class="ma-4 pa-2">
           <v-data-table
             :headers="headers"
-            :items="getData?.table?.measurementValueDistribution"
+            :items="getData.table.measurementValueDistribution"
           >
           </v-data-table>
         </v-card>
