@@ -451,6 +451,7 @@
                   'CDM_TABLE_NAME',
                   'FAILED',
                 ]"
+                :aggregators="['Count']"
               >
               </Pivot>
             </v-container>
