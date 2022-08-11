@@ -24,6 +24,7 @@ export const DOMAIN_DRUG_STRATIFICATION = "domainDrugStratification";
 export const DENSITY_DOMAIN_PERSON = "densityDomainPerson";
 export const NETWORK_PERFORMANCE = "networkPerformance";
 export const EXPORT_QUERY_INDEX = "exportQueryIndex";
+export const TEMPORAL_CHARACTERIZATION = "temporalCharacterization";
 
 export default function getFilePath(params = "") {
   return {
@@ -53,5 +54,6 @@ export default function getFilePath(params = "") {
     [DENSITY_DOMAIN_PERSON]: `data/${params.cdm}/${params.release}/datadensity-domains-per-person.csv`,
     [NETWORK_PERFORMANCE]: "data/network-performance.csv",
     [EXPORT_QUERY_INDEX]: "data/export_query_index.json",
+    [TEMPORAL_CHARACTERIZATION]: `data/${params.cdm}/${params.release}/temporal-characterization.csv`,
   };
 }
