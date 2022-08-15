@@ -164,7 +164,7 @@
                 class="pa-3"
                 label="Aggregate attribute"
                 :menu-props="{ bottom: true, offsetY: true }"
-                :items="getDisplayedAttributes"
+                :items="getAggregateValues"
               ></v-select>
             </div>
           </v-card>
@@ -212,9 +212,13 @@ export default {
     VuePivottable,
     draggable,
   },
+
   props: {
     data: { type: Array, required: true, default: () => [] },
     attributes: { type: Array, required: false, default: () => [] },
+    aggregators: { type: Array, required: false, default: () => [] },
+    aggregateAttrs: { type: Array, required: false, default: () => [] },
+    defaults: { type: Object, required: false, default: () => {} },
     eventListener: { type: Function, required: false, default: function () {} },
   },
   data() {
@@ -223,8 +227,7 @@ export default {
       selectedFilterAttributes: [],
       selectedCols: [],
       selectedFilterValues: {},
-      aggregators: ["Count", "Sum"],
-      aggregateFunction: "Count",
+      aggregateFunction: "",
       aggregateValue: [""],
     };
   },
@@ -241,11 +244,31 @@ export default {
         {}
       );
     },
+    getAggregateValues: function () {
+      if (this.aggregateAttrs.length) {
+        return this.aggregateAttrs;
+      } else {
+        return this.getDisplayedAttributes;
+      }
+    },
     getDisplayedAttributes: function () {
       return this.attributes;
     },
   },
+  created() {
+    this.load();
+  },
   methods: {
+    load: function () {
+      this.selectedRows = this.defaults?.rows ? this.defaults.rows : [];
+      this.selectedCols = this.defaults?.columns ? this.defaults.columns : [];
+      this.aggregateFunction = this.defaults?.aggregateFunction
+        ? this.defaults?.aggregateFunction
+        : this.aggregators[0];
+      this.aggregateValue = this.defaults?.aggregateValue
+        ? this.defaults?.aggregateValue
+        : [this.getAggregateValues[0]];
+    },
     removeRows(i) {
       this.$delete(this.selectedRows, i);
     },

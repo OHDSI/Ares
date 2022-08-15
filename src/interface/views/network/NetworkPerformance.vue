@@ -3,14 +3,13 @@
     <v-card>
       <Pivot
         :data="getData['networkPerformance']"
-        :attributes="[
-          'TASK',
-          'TIMING',
-          'PACKAGE',
-          'CATEGORY',
-          'SOURCE',
-          'RELEASE',
-        ]"
+        :attributes="['TASK', 'PACKAGE', 'CATEGORY', 'SOURCE']"
+        :defaults="{
+          rows: ['SOURCE'],
+          columns: ['PACKAGE'],
+        }"
+        :aggregators="['Sum']"
+        :aggregate-attrs="['TIMING']"
       />
     </v-card>
   </v-container>
@@ -29,4 +28,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+>>> table.pvtTable tbody tr td {
+  text-decoration: none;
+  cursor: default;
+}
+</style>
