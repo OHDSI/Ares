@@ -1,20 +1,20 @@
 <template>
-  <v-card v-if="dataInStore" elevation="10" class="ma-4">
-    <v-container fluid class="ma-2 pa-4">
-      <!--Table controls-->
-      <v-row>
-        <v-col cols="5">
-          <v-text-field
-            prepend-icon="mdi-magnify"
-            label="Search in Table"
-            single-line
-            hide-details
-            @input="delayedSearch"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-container>
+  <v-card v-if="dataInStore" elevation="10" class="ma-4 pa-2">
+    <v-card-title>Temporal Characterization</v-card-title>
+    <!--Table controls-->
+    <v-row>
+      <v-col cols="3">
+        <v-text-field
+          prepend-icon="mdi-magnify"
+          label="Search in Table"
+          single-line
+          hide-details
+          @input="delayedSearch"
+        ></v-text-field>
+      </v-col>
+    </v-row>
     <v-data-table
+      class="mt-4"
       :headers="headers"
       :items="filteredChecks"
       :footer-props="{
@@ -45,15 +45,27 @@
         </tr>
       </template>
     </v-data-table>
+    <info-panel
+      v-if="getQueryIndex && getQueryIndex.temporalCharacterization"
+      icon="mdi-code-braces"
+      details="View export query."
+      :link-details="true"
+      :link="getQueryLink(getQueryIndex.temporalCharacterization[0])"
+      :divider="true"
+    ></info-panel>
   </v-card>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import infoPanel from "@/interface/components/InfoPanel";
 import { debounce } from "lodash";
 
 export default {
   name: "TemporalCharacterization",
+  components: {
+    infoPanel,
+  },
   data() {
     return {
       search: "",
@@ -97,9 +109,12 @@ export default {
     columnValueList(val) {
       return this.getData.temporalCharacterization.map((d) => d[val]);
     },
+    getQueryLink(queryPath) {
+      return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
+    },
   },
   computed: {
-    ...mapGetters(["getData", "dataInStore", "getErrors"]),
+    ...mapGetters(["getData", "dataInStore", "getErrors", "getQueryIndex"]),
     filteredChecks() {
       return this.getData.temporalCharacterization.filter((d) => {
         return Object.keys(this.filters).every((f) => {

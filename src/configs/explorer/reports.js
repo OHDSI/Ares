@@ -12,12 +12,6 @@ export const reports = [
     routeName: "person",
   },
   {
-    folder: "Data Source Release",
-    icon: "mdi-chart-line",
-    name: "Temporal Characterization",
-    routeName: "temporalCharacterization",
-  },
-  {
     folder: "Data Network",
     icon: "mdi-database-search",
     name: "Data Source Feasibility",
@@ -137,6 +131,12 @@ export const reports = [
     icon: "mdi-table",
     name: "Unmapped Source Codes",
     routeName: "unmappedSourceCodes",
+  },
+  {
+    folder: "Data Source Release",
+    icon: "mdi-table",
+    name: "Temporal Characterization",
+    routeName: "temporalCharacterization",
   },
   {
     folder: "Data Source Release",
