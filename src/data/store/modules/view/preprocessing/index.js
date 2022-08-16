@@ -14,6 +14,7 @@ import {
   NETWORK_UNMAPPED_SOURCE_CODES,
   QUALITY_COMPLETENESS,
   RECORDS_DOMAIN,
+  TEMPORAL_CHARACTERIZATION,
 } from "@/data/services/getFilePath";
 import csvParse from "@/data/store/modules/view/preprocessing/csvParse";
 
@@ -35,4 +36,5 @@ export default {
   [DENSITY_TOTAL]: csvParse,
   [DENSITY_DOMAIN_PERSON]: csvParse,
   [NETWORK_PERFORMANCE]: csvParse,
+  [TEMPORAL_CHARACTERIZATION]: csvParse,
 };

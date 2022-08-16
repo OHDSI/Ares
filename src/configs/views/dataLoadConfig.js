@@ -22,6 +22,7 @@ import {
   RECORDS_DOMAIN,
   SOURCE_CONCEPT,
   SOURCE_HISTORY_INDEX,
+  TEMPORAL_CHARACTERIZATION,
 } from "@/data/services/getFilePath";
 import {
   FETCH_FILES,
@@ -31,6 +32,10 @@ import {
 
 export default function getFilesByView() {
   return {
+    temporalCharacterization: {
+      loadMethod: FETCH_FILES,
+      payload: { files: [{ name: TEMPORAL_CHARACTERIZATION, required: true }] },
+    },
     feasibility: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
       payload: {

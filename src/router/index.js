@@ -28,6 +28,8 @@ import DataSourcesExplorer from "../interface/views/DataSourcesExplorer";
 import NetworkDataFeasibilityReport from "../interface/views/network/NetworkDataFeasibilityReport/Index";
 import SourceOverview from "../interface/views/source/SourceOverview";
 import networkPerformance from "@/interface/views/network/NetworkPerformance";
+import TemporalCharacterization from "@/interface/views/release/TemporalCharacterization";
+import temporalCharacterization from "@/interface/views/release/TemporalCharacterization";
 Vue.use(VueRouter);
 
 const routes = [
@@ -99,6 +101,11 @@ const routes = [
         path: "observation_period",
         name: "observationPeriod",
         components: { DataSourcesExplorer: observationPeriodReport },
+      },
+      {
+        path: "temporal_characterization",
+        name: "temporalCharacterization",
+        components: { DataSourcesExplorer: temporalCharacterization },
       },
       {
         path: "metadata",

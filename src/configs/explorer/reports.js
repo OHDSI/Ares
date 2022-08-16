@@ -134,6 +134,12 @@ export const reports = [
   },
   {
     folder: "Data Source Release",
+    icon: "mdi-table",
+    name: "Temporal Characterization",
+    routeName: "temporalCharacterization",
+  },
+  {
+    folder: "Data Source Release",
     icon: "mdi-speedometer",
     name: "Performance",
     routeName: "performance",
