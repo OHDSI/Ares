@@ -182,7 +182,7 @@
       class="ma-4 pa-2"
     >
       <VegaChart
-        v-if="visitStratification && dataInStore"
+        v-if="dataInStore && getData.domainStratification"
         id="viz-stratificationbyvisit"
         :config="specVisitStratification"
         :data="getData.domainStratification"
@@ -205,13 +205,13 @@
       ></info-panel>
     </v-card>
     <v-card
-      v-if="getData.drugStratification"
+      v-if="this.$route.params.domain.toUpperCase() == 'DRUG_EXPOSURE'"
       :loading="!dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
       <VegaChart
-        v-if="dataInStore"
+        v-if="dataInStore && getData.drugStratification"
         id="viz-stratificationbydrugtype"
         :config="specDrugTypeStratification"
         :data="getData.drugStratification"
@@ -245,9 +245,6 @@ export default {
       isEra: false,
       isMeasurement: false,
       isVisit: false,
-      isDrugExposure: false,
-      visitStratification: false,
-      drugStratification: [],
       selectedHeaders: [],
       headers: [],
       headersMap: {
