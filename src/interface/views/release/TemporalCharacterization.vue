@@ -46,11 +46,11 @@
       </template>
     </v-data-table>
     <info-panel
-      v-if="getQueryIndex && getQueryIndex.temporalCharacterization"
+      v-if="getQueryIndex && getQueryIndex.TEMPORAL_CHARACTERIZATION[0]"
       icon="mdi-code-braces"
       details="View export query."
       :link-details="true"
-      :link="getQueryLink(getQueryIndex.temporalCharacterization[0])"
+      :link="getQueryLink(getQueryIndex.TEMPORAL_CHARACTERIZATION[0])"
       :divider="true"
     ></info-panel>
   </v-card>
