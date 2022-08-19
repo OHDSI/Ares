@@ -9,8 +9,8 @@
           </h2>
           <ReturnButton />
         </v-layout>
-        <v-row v-if="getData.metadata" justify="start"
-          ><v-col cols="2" align="center">
+        <v-row v-if="getData.metadata" justify="start">
+          <v-col cols="2" align="center">
             <v-icon left color="info">mdi-identifier</v-icon>
             <v-badge
               tile
@@ -19,8 +19,9 @@
               color="info"
               :content="getData.metadata.conceptId"
             ></v-badge>
-            <p class="text-caption">Concept Identifier</p></v-col
-          ><v-col cols="2" align="center">
+            <p class="text-caption">Concept Identifier</p>
+          </v-col>
+          <v-col cols="2" align="center">
             <v-icon left color="info">mdi-account-group</v-icon>
             <v-badge
               tile
@@ -29,9 +30,16 @@
               color="info"
               :content="getData.metadata.numPersons"
             ></v-badge>
-            <p class="text-caption">Number of People in Network</p></v-col
-          ></v-row
-        >
+            <p class="text-caption">Number of People in Network</p>
+          </v-col>
+        </v-row>
+        <v-card v-if="getData.table" elevation="10" class="ma-4 pa-2">
+          <v-data-table
+            :headers="headers"
+            :items="getData.table.measurementValueDistribution"
+          >
+          </v-data-table>
+        </v-card>
         <v-card
           v-if="getData.chart"
           :loading="!getData"
@@ -56,9 +64,9 @@
             <v-btn
               color="primary"
               @click="$refs.measurementvalue.toggleMinMax()"
-              ><v-icon dark left>mdi-toggle-switch</v-icon
-              >{{ minMaxMode }}</v-btn
             >
+              <v-icon dark left>mdi-toggle-switch</v-icon>{{ minMaxMode }}
+            </v-btn>
           </v-layout>
           <VegaChart
             id="viz-measurementvaluedistribution"
@@ -90,13 +98,6 @@
             :divider="false"
           ></info-panel>
         </v-card>
-        <v-card v-if="getData.table" elevation="10" class="ma-4 pa-2">
-          <v-data-table
-            :headers="headers"
-            :items="getData.table.measurementValueDistribution"
-          >
-          </v-data-table>
-        </v-card>
       </v-responsive>
     </v-container>
   </div>
@@ -112,7 +113,7 @@ export default {
   components: {
     VegaChart,
     ReturnButton,
-    infoPanel,
+    infoPanel
   },
   data() {
     return {
@@ -122,103 +123,91 @@ export default {
         charts.specMeasurementValueDistribution1,
       headers: [
         {
-          text: "Measurement concept name",
+          text: "Source",
           sortable: true,
-          value: "CONCEPT_NAME",
-          align: "start",
-        },
-        {
-          text: "Measurement concept ID",
-          sortable: true,
-          value: "CONCEPT_ID",
-          align: "start",
+          value: "SOURCE",
+          align: "start"
         },
         {
           text: "Unit",
           sortable: true,
           value: "CATEGORY",
-          align: "start",
-        },
-        {
-          text: "Source",
-          sortable: true,
-          value: "SOURCE",
-          align: "start",
+          align: "start"
         },
         {
           text: "Release",
           sortable: true,
           value: "RELEASE",
-          align: "start",
+          align: "start"
         },
         {
           text: "Count value",
           sortable: true,
           value: "NUM_PERSONS",
-          align: "start",
+          align: "start"
         },
         {
           text: "Min Value",
           sortable: true,
           value: "MIN_VALUE",
-          align: "start",
-        },
-        {
-          text: "Max Value",
-          sortable: true,
-          value: "MAX_VALUE",
-          align: "start",
-        },
-        {
-          text: "Median Value",
-          sortable: true,
-          value: "MEDIAN_VALUE",
-          align: "start",
+          align: "start"
         },
         {
           text: "P10 Value",
           sortable: true,
           value: "P10_VALUE",
-          align: "start",
+          align: "start"
         },
         {
           text: "P25 Value",
           sortable: true,
           value: "P25_VALUE",
-          align: "start",
+          align: "start"
+        },
+        {
+          text: "Median Value",
+          sortable: true,
+          value: "MEDIAN_VALUE",
+          align: "start"
         },
         {
           text: "P75 Value",
           sortable: true,
           value: "P75_VALUE",
-          align: "start",
+          align: "start"
         },
         {
           text: "P90 Value",
           sortable: true,
           value: "P90_VALUE",
-          align: "start",
+          align: "start"
         },
-      ],
+        {
+          text: "Max Value",
+          sortable: true,
+          value: "MAX_VALUE",
+          align: "start"
+        }
+      ]
     };
   },
   computed: {
     ...mapGetters(["getData", "getSources", "getErrors", "getQueryIndex"]),
-    getSelectedMeasurementUnits: function () {
+    getSelectedMeasurementUnits: function() {
       return this.selectedMeasurementUnits.length
-        ? this.getData?.chart?.measurementValueDistribution.filter((value) =>
+        ? this.getData?.chart?.measurementValueDistribution.filter(value =>
             this.selectedMeasurementUnits.includes(value.CATEGORY)
           )
         : this.getData?.chart?.measurementValueDistribution;
     },
-    getMeasurementUnits: function () {
+    getMeasurementUnits: function() {
       return this.getData?.chart?.measurementValueDistribution.map(
-        (value) => value.CATEGORY
+        value => value.CATEGORY
       );
-    },
+    }
   },
   methods: {
-    changeMinMax: function (value) {
+    changeMinMax: function(value) {
       this.minMaxMode = value;
     },
     getQueryLink(queryPath) {
@@ -232,10 +221,10 @@ export default {
           "/" +
           this.$route.params.release +
           "/data_quality?tab=results&search=" +
-          this.$route.params.concept,
+          this.$route.params.concept
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
