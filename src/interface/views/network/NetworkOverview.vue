@@ -77,9 +77,6 @@
               <template v-slot:item.obs_period_end="{ item }">
                 {{ item.releases[0].obs_period_end }}
               </template>
-              <template v-slot:item.averageDaysBetweenReleases="{ item }">
-                {{ item.averageDaysBetweenReleases.toFixed() }}
-              </template>
             </v-data-table>
           </v-card-text>
         </v-card>
@@ -148,19 +145,13 @@ export default {
           value: "count_releases",
         },
         {
-          text: "Average days between releases",
-          align: "end",
-          sortable: true,
-          value: "averageDaysBetweenReleases",
-        },
-        {
           text: "Vocabulary Version",
           align: "end",
           sortable: true,
           value: "releases[0].vocabulary_version",
         },
         {
-          text: "Update Frequency (days)",
+          text: "Average Update Frequency (days)",
           align: "end",
           sortable: true,
           value: "average_update_interval_days",
@@ -178,6 +169,12 @@ export default {
       this.countDataSourceReleases += source.releases.length;
     });
   },
+  computed: {
+    ...mapGetters(["getSources"]),
+    sourceData: function () {
+      return this.getSources;
+    },
+  },
   methods: {
     getDataSourceRoute(item) {
       return "/datasource/" + item.cdm_source_key;
@@ -187,32 +184,6 @@ export default {
     },
     formatComma: function (value) {
       return d3.format(",")(value);
-    },
-  },
-  computed: {
-    ...mapGetters(["getSources"]),
-    sourceData: function () {
-      const sources = this.getSources.map((source) => ({
-        ...source,
-        averageDaysBetweenReleases: source.releases
-          .map((release) => new Date(release.release_name))
-          .map((date, index, array) => {
-            if (array[index + 1]) {
-              return (date - array[index + 1]) / (1000 * 60 * 60 * 24);
-            }
-          })
-          .filter((value) => value),
-      }));
-      return sources.map((source) => ({
-        ...source,
-        averageDaysBetweenReleases:
-          source.averageDaysBetweenReleases.length > 0
-            ? source.averageDaysBetweenReleases.reduce(
-                (prevValue, current) => prevValue + current,
-                0
-              ) / source.averageDaysBetweenReleases.length
-            : 0,
-      }));
     },
   },
 };
