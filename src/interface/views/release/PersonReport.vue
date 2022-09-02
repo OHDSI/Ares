@@ -46,7 +46,7 @@
                 ')'
               "
             ></v-badge>
-            <p class="text-caption">Gender Proportions</p>
+            <p class="text-caption">Proportion by Sex</p>
           </v-col>
         </v-row>
         <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
