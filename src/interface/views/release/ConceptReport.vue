@@ -105,13 +105,6 @@
               label="Filter units"
               multiple
             ></v-select>
-            <v-btn
-              small
-              color="primary"
-              @click="$refs.measurementvalue.toggleMinMax()"
-              ><v-icon dark left>mdi-toggle-switch</v-icon
-              >{{ minMaxMode }}</v-btn
-            >
           </v-layout>
           <VegaChart
             v-if="dataInStore"
@@ -119,8 +112,6 @@
             ref="measurementvalue"
             :config="specMeasurementValueDistribution"
             :data="getSelectedMeasurementUnits"
-            min-max
-            @minMaxChanged="changeMinMax"
           />
           <info-panel
             details="Check measurement value distributions across the network"
@@ -586,7 +577,6 @@ export default {
   },
   data() {
     return {
-      minMaxMode: "P10/P90",
       selectedMeasurementUnits: [],
       hasCountFailed: false,
       specConditionsByType: charts.specConditionsByType,
@@ -643,10 +633,6 @@ export default {
     },
     getQueryLink(queryPath) {
       return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
-    },
-
-    changeMinMax: function (value) {
-      this.minMaxMode = value;
     },
 
     formatPercent: function (value) {

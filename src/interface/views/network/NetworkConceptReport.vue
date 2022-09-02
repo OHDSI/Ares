@@ -61,12 +61,6 @@
               label="Filter units"
               multiple
             ></v-select>
-            <v-btn
-              color="primary"
-              @click="$refs.measurementvalue.toggleMinMax()"
-            >
-              <v-icon dark left>mdi-toggle-switch</v-icon>{{ minMaxMode }}
-            </v-btn>
           </v-layout>
           <VegaChart
             id="viz-measurementvaluedistribution"
@@ -75,8 +69,6 @@
             :data="
               getSelectedMeasurementUnits ? getSelectedMeasurementUnits : []
             "
-            min-max
-            @minMaxChanged="changeMinMax"
           />
           <info-panel
             details="Learn how
@@ -113,11 +105,10 @@ export default {
   components: {
     VegaChart,
     ReturnButton,
-    infoPanel
+    infoPanel,
   },
   data() {
     return {
-      minMaxMode: "P10/P90",
       selectedMeasurementUnits: [],
       specMeasurementValueDistribution:
         charts.specMeasurementValueDistribution1,
@@ -126,90 +117,87 @@ export default {
           text: "Source",
           sortable: true,
           value: "SOURCE",
-          align: "start"
+          align: "start",
         },
         {
           text: "Unit",
           sortable: true,
           value: "CATEGORY",
-          align: "start"
+          align: "start",
         },
         {
           text: "Release",
           sortable: true,
           value: "RELEASE",
-          align: "start"
+          align: "start",
         },
         {
           text: "Count value",
           sortable: true,
           value: "NUM_PERSONS",
-          align: "start"
+          align: "start",
         },
         {
           text: "Min Value",
           sortable: true,
           value: "MIN_VALUE",
-          align: "start"
+          align: "start",
         },
         {
           text: "P10 Value",
           sortable: true,
           value: "P10_VALUE",
-          align: "start"
+          align: "start",
         },
         {
           text: "P25 Value",
           sortable: true,
           value: "P25_VALUE",
-          align: "start"
+          align: "start",
         },
         {
           text: "Median Value",
           sortable: true,
           value: "MEDIAN_VALUE",
-          align: "start"
+          align: "start",
         },
         {
           text: "P75 Value",
           sortable: true,
           value: "P75_VALUE",
-          align: "start"
+          align: "start",
         },
         {
           text: "P90 Value",
           sortable: true,
           value: "P90_VALUE",
-          align: "start"
+          align: "start",
         },
         {
           text: "Max Value",
           sortable: true,
           value: "MAX_VALUE",
-          align: "start"
-        }
-      ]
+          align: "start",
+        },
+      ],
     };
   },
   computed: {
     ...mapGetters(["getData", "getSources", "getErrors", "getQueryIndex"]),
-    getSelectedMeasurementUnits: function() {
+    getSelectedMeasurementUnits: function () {
       return this.selectedMeasurementUnits.length
-        ? this.getData?.chart?.measurementValueDistribution.filter(value =>
+        ? this.getData?.chart?.measurementValueDistribution.filter((value) =>
             this.selectedMeasurementUnits.includes(value.CATEGORY)
           )
         : this.getData?.chart?.measurementValueDistribution;
     },
-    getMeasurementUnits: function() {
+    getMeasurementUnits: function () {
       return this.getData?.chart?.measurementValueDistribution.map(
-        value => value.CATEGORY
+        (value) => value.CATEGORY
       );
-    }
+    },
   },
   methods: {
-    changeMinMax: function(value) {
-      this.minMaxMode = value;
-    },
     getQueryLink(queryPath) {
       return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${queryPath}`;
     },
@@ -221,10 +209,10 @@ export default {
           "/" +
           this.$route.params.release +
           "/data_quality?tab=results&search=" +
-          this.$route.params.concept
+          this.$route.params.concept,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
