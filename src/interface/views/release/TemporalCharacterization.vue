@@ -25,6 +25,22 @@
       :search="search"
       dense
     >
+      <template v-slot:item.CONCEPT_ID="{ item }">
+        <v-layout flex-end
+          ><router-link :to="getReportRoute(item)">{{
+            item.CONCEPT_ID
+          }}</router-link></v-layout
+        >
+      </template>
+      <template v-slot:item.CONCEPT_NAME="{ item }">
+        <v-row>
+          <v-col cols="10">
+            <router-link :to="getReportRoute(item)" :title="item.CONCEPT_NAME"
+              >{{ item.CONCEPT_NAME }}
+            </router-link>
+          </v-col>
+        </v-row>
+      </template>
       <template v-slot:body.prepend>
         <tr>
           <th v-for="header in headers" :key="header.text">
@@ -46,7 +62,7 @@
       </template>
     </v-data-table>
     <info-panel
-      v-if="getQueryIndex && getQueryIndex.TEMPORAL_CHARACTERIZATION[0]"
+      v-if="getQueryIndex && getQueryIndex.TEMPORAL_CHARACTERIZATION"
       icon="mdi-code-braces"
       details="View export query."
       :link-details="true"
@@ -103,6 +119,15 @@ export default {
     };
   },
   methods: {
+    getReportRoute(item) {
+      return {
+        name: "concept",
+        params: {
+          domain: item.CDM_TABLE_NAME.toLowerCase(),
+          concept: item.CONCEPT_ID,
+        },
+      };
+    },
     delayedSearch: debounce(function (data) {
       this.search = data;
     }, 300),
