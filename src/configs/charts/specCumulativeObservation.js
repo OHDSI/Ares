@@ -7,21 +7,21 @@ export function specCumulativeObservation(zeroBaseline = false) {
       x: {
         field: "YEARS",
         type: "quantitative",
-        title: "Years of Observation"
+        title: "Years of Observation",
       },
       y: {
         field: "PERCENT_PEOPLE",
         type: "quantitative",
         title: "% of People",
-        axis: { format: "0.0%" },
+        axis: { format: ",.2%" },
         scale: {
-          zero: zeroBaseline
-        }
-      }
+          zero: zeroBaseline,
+        },
+      },
     },
     layer: [
       {
-        mark: { type: "line", interpolate: "linear" }
+        mark: { type: "line", interpolate: "linear" },
       },
       {
         selection: {
@@ -29,30 +29,30 @@ export function specCumulativeObservation(zeroBaseline = false) {
             type: "single",
             on: "mousemove",
             encodings: ["x"],
-            nearest: true
-          }
+            nearest: true,
+          },
         },
-        mark: { type: "point", tooltip: true }
+        mark: { type: "point", tooltip: true },
       },
       {
         transform: [
           {
             filter: {
-              and: ["x.YEARS", { selection: "x" }]
-            }
-          }
+              and: ["x.YEARS", { selection: "x" }],
+            },
+          },
         ],
         layer: [
           {
             mark: "rule",
             encoding: {
               y: {
-                height: 1
-              }
-            }
-          }
-        ]
-      }
-    ]
+                height: 1,
+              },
+            },
+          },
+        ],
+      },
+    ],
   };
 }

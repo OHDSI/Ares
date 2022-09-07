@@ -7,21 +7,21 @@ export function specAgeAtFirstObservation(zeroBaseline = false) {
       x: {
         field: "INTERVAL_INDEX",
         type: "quantitative",
-        title: "Age"
+        title: "Age",
       },
       y: {
         field: "PERCENT_VALUE",
         type: "quantitative",
-        axis: { format: "0.0%" },
+        axis: { format: ",.2%" },
         title: "% of Population",
         scale: {
-          zero: zeroBaseline
-        }
-      }
+          zero: zeroBaseline,
+        },
+      },
     },
     layer: [
       {
-        mark: { type: "line", interpolate: "linear" }
+        mark: { type: "line", interpolate: "linear" },
       },
       {
         selection: {
@@ -29,30 +29,30 @@ export function specAgeAtFirstObservation(zeroBaseline = false) {
             type: "single",
             on: "mousemove",
             encodings: ["x"],
-            nearest: true
-          }
+            nearest: true,
+          },
         },
-        mark: { type: "point", tooltip: true }
+        mark: { type: "point", tooltip: true },
       },
       {
         transform: [
           {
             filter: {
-              and: ["x.INTERVAL_INDEX", { selection: "x" }]
-            }
-          }
+              and: ["x.INTERVAL_INDEX", { selection: "x" }],
+            },
+          },
         ],
         layer: [
           {
             mark: "rule",
             encoding: {
               y: {
-                height: 1
-              }
-            }
-          }
-        ]
-      }
-    ]
+                height: 1,
+              },
+            },
+          },
+        ],
+      },
+    ],
   };
 }
