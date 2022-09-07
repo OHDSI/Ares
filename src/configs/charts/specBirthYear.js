@@ -11,7 +11,15 @@ export function specBirthYear(zeroBaseline = false) {
     ],
     mark: { type: "bar" },
     encoding: {
-      tooltip: [{ field: "COUNT_PERSON", title: "# of People", format: "," }],
+      tooltip: [
+        { field: "COUNT_PERSON", title: "# of People", format: "," },
+        {
+          field: "YEAR",
+          title: "Year of Birth",
+          type: "temporal",
+          format: "%Y",
+        },
+      ],
       x: {
         field: "YEAR",
         type: "temporal",
