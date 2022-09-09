@@ -1,4 +1,4 @@
-export function specQuantity(zeroBaseline = false) {
+export function specQuantity(zeroBaseline = false, minMax = false) {
   return {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     height: 100,
@@ -8,27 +8,27 @@ export function specQuantity(zeroBaseline = false) {
         mark: { type: "rule" },
         encoding: {
           x: {
-            field: "MIN_VALUE",
+            field: minMax ? "MIN_VALUE" : "P10_VALUE",
             type: "quantitative",
             scale: { zero: false },
-            title: "Amount"
+            title: "Amount",
           },
-          x2: { field: "MAX_VALUE" }
-        }
+          x2: { field: minMax ? "MAX_VALUE" : "P90_VALUE" },
+        },
       },
       {
         mark: { type: "bar", size: 28, tooltip: {} },
         encoding: {
           x: { field: "P25_VALUE", type: "quantitative" },
-          x2: { field: "P75_VALUE" }
-        }
+          x2: { field: "P75_VALUE" },
+        },
       },
       {
         mark: { type: "tick", color: "white", size: 28 },
         encoding: {
-          x: { field: "MEDIAN_VALUE", type: "quantitative" }
-        }
-      }
-    ]
+          x: { field: "MEDIAN_VALUE", type: "quantitative" },
+        },
+      },
+    ],
   };
 }
