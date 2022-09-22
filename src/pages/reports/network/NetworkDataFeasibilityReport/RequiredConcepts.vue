@@ -150,11 +150,10 @@
 </template>
 
 <script>
-import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/api/getFilePath";
+import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import { mapGetters } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
 import * as d3Format from "d3-format";
-import * as d3Import from "d3-dsv";
 
 export default {
   name: "RequiredConcepts",

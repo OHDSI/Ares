@@ -1,6 +1,7 @@
-import home from "@/pages/info/Home.vue";
-import help from "@/pages/info/Help";
 import reportsView from "@/processes/exploreReports/ui/ReportsView";
+import home from "@/pages/info/Home";
+import help from "@/pages/info/Help";
+import article from "@/pages/info/Article";
 import networkDataQualitySummary from "@/pages/reports/network/NetworkDataQualitySummary";
 import networkPerformance from "@/pages/reports/network/NetworkPerformance";
 import networkUnmappedSourceCodes from "@/pages/reports/network/NetworkUnmappedSourceCodes";
@@ -24,7 +25,6 @@ import dataQualityHistory from "@/pages/reports/source/DataQualityHistory";
 import SourceOverview from "@/pages/reports/source/SourceOverview";
 import domainContinuity from "@/pages/reports/source/DomainContinuity";
 import sourceConceptReport from "@/pages/reports/source/SourceConceptReport";
-import article from "@/pages/info/Article";
 
 export default [
   {

@@ -14,9 +14,9 @@
     <v-list dense>
       <v-list-item v-for="(h, i) in headers" :key="i">
         <v-checkbox
-          v-model="selectedHeaders"
+          v-model="h.show"
           :label="h.text"
-          :value="h"
+          :value="h.show"
           hide-details="auto"
         ></v-checkbox>
       </v-list-item>
@@ -29,10 +29,12 @@ export default {
   name: "SelectColumns",
   props: {
     headers: { type: Array, required: true, default: null },
+    value: { type: Array, required: false, default: () => [] },
   },
   data() {
     return {
       chooseHeaderMenu: false,
+      content: this.value,
     };
   },
 };

@@ -10,7 +10,7 @@
 <script>
 import markdown from "markdown-it-vue";
 import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
-import { HELP } from "@/shared/api/getFilePath";
+import { HELP } from "@/shared/config/files";
 import { mapGetters } from "vuex";
 
 export default {
@@ -19,7 +19,6 @@ export default {
     markdown,
   },
 
-  props: {},
   data() {
     return {
       contentLoaded: false,

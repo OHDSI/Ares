@@ -125,7 +125,7 @@
               to interpret this plot."
             icon="mdi-help-circle"
             :link-details="true"
-            route-link="/help"
+            :route-link="{ name: 'help' }"
             :divider="false"
           ></info-panel>
           <info-panel
@@ -160,7 +160,7 @@
               to interpret this plot."
             icon="mdi-help-circle"
             :link-details="true"
-            route-link="/help"
+            :route-link="{ name: 'help' }"
             :divider="false"
           ></info-panel>
           <info-panel
@@ -195,7 +195,7 @@
               to interpret this plot."
             icon="mdi-help-circle"
             :link-details="true"
-            route-link="/help"
+            :route-link="{ name: 'help' }"
             :divider="true"
           ></info-panel>
           <info-panel
@@ -383,7 +383,7 @@
           />
           <info-panel
             details="Learn how to interpret this plot"
-            route-link="/help"
+            :route-link="{ name: 'help' }"
           ></info-panel>
           <info-panel
             details="View export query."
@@ -420,7 +420,7 @@
             icon="mdi-clock-alert"
             :details="getData.seasonalityComment"
             :divider="false"
-            :link="getCastorLink"
+            :link="getCastorLink()"
           ></info-panel>
           <info-panel
             icon="mdi-database-clock"
@@ -458,7 +458,7 @@
           />
           <info-panel
             details="Learn how to interpret this plot"
-            route-link="/help"
+            :route-link="{ name: 'help' }"
           ></info-panel>
           <info-panel
             v-if="getQueryIndex"
@@ -489,7 +489,7 @@
           />
           <info-panel
             details="Learn how to interpret this plot"
-            route-link="/help"
+            :route-link="{ name: 'help' }"
           ></info-panel>
           <info-panel
             v-if="getQueryIndex"
@@ -610,16 +610,24 @@ export default {
     },
 
     getMeasurementUnits: function () {
-      return this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.map(
-        (value) => value.CATEGORY
-      );
+      if (this.getData?.conceptData?.MEASUREMENT_VALUE_DISTRIBUTION) {
+        return this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.map(
+          (value) => value.CATEGORY
+        );
+      } else {
+        return [];
+      }
     },
     getSelectedMeasurementUnits: function () {
-      return this.selectedMeasurementUnits.length
-        ? this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.filter(
-            (value) => this.selectedMeasurementUnits.includes(value.CATEGORY)
-          )
-        : this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION;
+      if (this.getData?.conceptData?.MEASUREMENT_VALUE_DISTRIBUTION) {
+        return this.selectedMeasurementUnits.length
+          ? this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.filter(
+              (value) => this.selectedMeasurementUnits.includes(value.CATEGORY)
+            )
+          : this.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION;
+      } else {
+        return [];
+      }
     },
   },
   methods: {
@@ -644,7 +652,7 @@ export default {
     navigateToDataQuality() {
       return {
         name: "dataQuality",
-        query: { tab: "results", search: $route.params.concept },
+        query: { tab: "results", search: this.$route.params.concept },
       };
     },
   },

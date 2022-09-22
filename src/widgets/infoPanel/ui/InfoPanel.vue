@@ -45,7 +45,7 @@ export default {
   props: {
     details: { type: String },
     link: { type: String },
-    routeLink: { type: String },
+    routeLink: { type: Object },
     icon: { type: String, default: "mdi-help-circle" },
     divider: { type: Boolean, default: true },
     linkDetails: { type: Boolean, default: false },

@@ -15,23 +15,7 @@
               <v-layout justify-end align-center class="ml-4 mr-4">
                 <v-tooltip v-if="issueCount > 0" left nudge-left="15">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      icon
-                      tile
-                      @click="
-                        navigateTo(
-                          'dataQuality',
-                          {
-                            cdm: $route.params.cdm,
-                            release: $route.params.release,
-                          },
-                          {
-                            tab: 'results',
-                            CDM_TABLE_NAME: $route.params.domain.toUpperCase(),
-                            FAILED: 'FAIL',
-                          }
-                        )
-                      "
+                    <v-btn icon tile @click="navigateToDataQuality"
                       ><v-icon left v-bind="attrs" large color="error" v-on="on"
                         >mdi-database-alert</v-icon
                       >
@@ -64,29 +48,7 @@
                 ></v-text-field>
               </v-col>
               <v-col>
-                <v-menu
-                  v-model="chooseHeaderMenu"
-                  bottom
-                  :close-on-content-click="false"
-                  :offset-y="true"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn color="primary" v-bind="attrs" v-on="on">
-                      <v-icon dark left>mdi-view-column-outline</v-icon> Choose
-                      Columns to Display
-                    </v-btn>
-                  </template>
-                  <v-list dense>
-                    <v-list-item v-for="(h, i) in getHeadersByDomain" :key="i">
-                      <v-checkbox
-                        v-model="h.show"
-                        :label="h.text"
-                        :value="h.show"
-                        hide-details="auto"
-                      ></v-checkbox>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <SelectColumns :headers="getHeadersByDomain" />
               </v-col>
             </v-row>
           </v-container>
@@ -161,7 +123,7 @@
           <info-panel
             :divider="false"
             details="This table uses a preattentive processing visualization technique to highlight values in the top deciles by displaying the values in descending levels of font weight.  Darker values occur in the top 3 deciles of all values appearing in the column."
-            :link="getDatavizDatasheetLink"
+            :link="getDatavizDatasheetLink()"
             icon="mdi-eye"
           ></info-panel>
           <info-panel
@@ -245,9 +207,11 @@ import { chartConfigs, Chart } from "@/widgets/chart";
 import { mapGetters } from "vuex";
 import { mixins } from "@/shared/lib/mixins";
 import { getLinks } from "@/shared/config/links";
+import SelectColumns from "@/features/selectColumns";
 
 export default {
   components: {
+    SelectColumns,
     Chart,
     InfoPanel,
   },
@@ -372,6 +336,20 @@ export default {
         name: "concept",
         params: { concept: item.CONCEPT_ID },
       };
+    },
+    navigateToDataQuality() {
+      this.$router.push({
+        name: "dataQuality",
+        params: {
+          cdm: this.$route.params.cdm,
+          release: this.$route.params.release,
+        },
+        query: {
+          tab: "results",
+          CDM_TABLE_NAME: this.$route.params.domain.toUpperCase(),
+          FAILED: "FAIL",
+        },
+      });
     },
   },
 };

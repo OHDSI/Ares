@@ -163,7 +163,7 @@
                 details="The Data Quality Overview provides a summary
               of the results of the Data Quality assessment performed by the
               Data Quality Dashboard package."
-                :link="getDataQualityDashboardLink"
+                :link="getDataQualityDashboardLink()"
               ></infopanel>
             </v-container>
           </v-tab-item>
@@ -233,36 +233,14 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="auto">
-                  <v-menu
-                    v-model="chooseHeaderMenu"
-                    bottom
-                    :close-on-content-click="false"
-                    :offset-y="getMenuOffset()"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn color="primary" v-bind="attrs" v-on="on">
-                        <v-icon dark left>mdi-view-column-outline</v-icon>
-                        Choose Columns to Display
-                      </v-btn>
-                    </template>
-                    <v-list dense>
-                      <v-list-item v-for="(h, i) in headers" :key="i">
-                        <v-checkbox
-                          v-model="selectedHeaders"
-                          :label="h.text"
-                          :value="h"
-                          hide-details="auto"
-                        ></v-checkbox>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
+                  <SelectColumns :headers="headers" />
                 </v-col>
                 <v-col cols="auto">
                   <v-menu
                     v-model="chooseFilter"
                     bottom
                     :close-on-content-click="false"
-                    :offset-y="getMenuOffset()"
+                    :offset-y="true"
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn color="primary" v-bind="attrs" v-on="on">
@@ -309,7 +287,9 @@
                         deletable-chips
                         hide-details
                         multiple
-                        :items="columnValueList(header.value)"
+                        :items="
+                          getValuesArray(getData.checkResults, header.value)
+                        "
                       ></v-select>
                     </div>
                   </th>
@@ -467,9 +447,11 @@ import infopanel from "../../../widgets/infoPanel";
 import { mapGetters } from "vuex";
 import { mixins } from "@/shared/lib/mixins";
 import { getLinks } from "@/shared/config/links";
+import SelectColumns from "@/features/selectColumns";
 
 export default {
   components: {
+    SelectColumns,
     codemirror,
     infopanel,
     Pivot,
@@ -477,21 +459,7 @@ export default {
   mixins: [mixins, getLinks],
   data: function () {
     return {
-      chooseHeaderMenu: false,
       chooseFilter: false,
-      versions: [],
-      currentTag: "",
-      dqResults: null,
-      selection: [],
-      rawData: [],
-      defaultHeaders: [
-        "FAILED",
-        "PCT_VIOLATED_ROWS",
-        "NUM_VIOLATED_ROWS",
-        "CHECK_DESCRIPTION",
-        "CDM_TABLE_NAME",
-      ],
-      derivedResults: {},
       helpfulFilters: [
         {
           text: "Failed Checks",
@@ -536,78 +504,96 @@ export default {
         CHECK_LEVEL: [],
       },
       search: "",
-      selectedHeaders: [],
       selectedFilter: null,
       headers: [
         {
           text: "Status",
           sortable: true,
           value: "FAILED",
+          show: true,
+          default: true,
         },
         {
           text: "Table",
           sortable: true,
           value: "CDM_TABLE_NAME",
+          show: true,
+          default: true,
         },
         {
           text: "Field",
           sortable: true,
           value: "CDM_FIELD_NAME",
+          show: false,
         },
         {
           text: "Check",
           sortable: true,
           value: "CHECK_NAME",
+          show: false,
         },
         {
           text: "Category",
           sortable: true,
           value: "CATEGORY",
+          show: false,
         },
         {
           text: "Subcategory",
           sortable: true,
           value: "SUBCATEGORY",
+          show: false,
         },
         {
           text: "Context",
           sortable: true,
           value: "CONTEXT",
+          show: false,
         },
         {
           text: "Level",
           sortable: true,
           value: "CHECK_LEVEL",
+          show: false,
         },
         {
           text: "Notes",
           sortable: true,
           value: "NOTES_EXIST",
+          show: false,
         },
         {
           text: "Description",
           sortable: true,
           value: "CHECK_DESCRIPTION",
+          show: true,
+          default: true,
         },
         {
           text: "% Records Failed",
           sortable: true,
           value: "PCT_VIOLATED_ROWS",
+          show: true,
+          default: true,
         },
         {
           text: "# Records Failed",
           sortable: true,
           value: "NUM_VIOLATED_ROWS",
+          show: true,
+          default: true,
         },
         {
           text: "# Total Records",
           sortable: true,
           value: "NUM_DENOMINATOR_ROWS",
+          show: false,
         },
         {
           text: "Execution Duration",
           sortable: true,
           value: "EXECUTION_TIME",
+          show: false,
         },
       ],
     };
@@ -619,9 +605,6 @@ export default {
     },
   },
   created() {
-    this.selectedHeaders = this.headers.filter((h) =>
-      this.defaultHeaders.includes(h.value)
-    );
     this.updateFiltersFromUrl();
     this.updateColumnsList();
   },
@@ -685,10 +668,18 @@ export default {
       );
     },
     updateColumnsList: function () {
-      const parsedParams = JSON.parse(this.filterParams);
-      this.selectedHeaders = this.headers.filter((h) =>
-        [...this.defaultHeaders, ...Object.keys(parsedParams)].includes(h.value)
-      );
+      const parsedParams = Object.keys(JSON.parse(this.filterParams));
+      this.headers = this.headers.map((header) => {
+        if (parsedParams.includes(header.value)) {
+          return { ...header, show: true };
+        } else {
+          if (header.default) {
+            return header;
+          } else {
+            return { ...header, show: false };
+          }
+        }
+      });
     },
     helpfulFilterUpdate: function (filter) {
       this.filters = Object.keys(this.filters).reduce(
@@ -699,9 +690,6 @@ export default {
         {}
       );
     },
-    getMenuOffset: function () {
-      return true;
-    },
     getConceptDrilldown: function (item) {
       return {
         name: "networkConcept",
@@ -710,9 +698,6 @@ export default {
           concept: item.CONCEPT_ID.toString().trim(),
         },
       };
-    },
-    columnValueList(val) {
-      return this.getData.checkResults.map((d) => d[val]);
     },
     renderDescription: function (d) {
       let thresholdMessage = "";
@@ -766,11 +751,8 @@ export default {
         });
       });
     },
-    codemirror() {
-      return this.$refs.myCm.codemirror;
-    },
     showHeaders() {
-      return this.headers.filter((s) => this.selectedHeaders.includes(s));
+      return this.headers.filter((header) => header.show);
     },
   },
 };
