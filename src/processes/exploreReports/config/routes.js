@@ -52,7 +52,7 @@ export default [
       {
         path: "network_data_quality",
         name: "networkDataQuality",
-        components: { networkDataQualitySummary },
+        components: { reportsView: networkDataQualitySummary },
       },
       {
         path: "network_performance",

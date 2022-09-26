@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container v-if="!getErrors" fluid>
+    <v-container v-if="!getErrors && dataInStore" fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-6 d-flex justify-md-space-between">
           <h2 class="text-uppercase">

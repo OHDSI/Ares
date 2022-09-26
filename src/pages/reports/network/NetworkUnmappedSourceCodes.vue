@@ -1,11 +1,6 @@
 <template>
   <div>
-    <v-card
-      v-if="!getErrors"
-      :loading="!dataInStore"
-      elevation="10"
-      class="ma-4 pa-2"
-    >
+    <v-card v-if="!getErrors && dataInStore" elevation="10" class="ma-4 pa-2">
       <v-card-title>Unmapped Source Codes</v-card-title>
       <v-row>
         <v-col cols="3">

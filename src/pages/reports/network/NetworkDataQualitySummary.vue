@@ -29,7 +29,6 @@ export default {
   components: {
     Chart,
   },
-  props: {},
   data() {
     return {
       specIssueStratificationByCategory:
@@ -38,8 +37,6 @@ export default {
         chartConfigs.specIssueStratificationByTable,
     };
   },
-  created() {},
-  methods: {},
   computed: {
     ...mapGetters(["getData", "getErrors", "dataInStore"]),
   },
