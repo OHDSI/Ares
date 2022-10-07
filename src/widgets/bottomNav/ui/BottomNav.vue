@@ -25,7 +25,7 @@
 import { SET_VISIBILITY } from "@/widgets/settings/model/store/mutations.type";
 
 export default {
-  name: "Footer",
+  name: "BottomNav",
   methods: {
     toggleSettings: function () {
       this.$store.commit(SET_VISIBILITY, !this.$store.getters.getVisibility);

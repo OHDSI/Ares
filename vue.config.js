@@ -1,3 +1,4 @@
 module.exports = {
-    publicPath: '/ares/'
-}
+  publicPath: "/ares/",
+  lintOnSave: false,
+};
