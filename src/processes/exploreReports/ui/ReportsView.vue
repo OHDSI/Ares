@@ -4,7 +4,7 @@
     <Error v-if="getErrors" />
     <router-view v-if="!getErrors" name="reportsView" />
     <Settings />
-    <Footer />
+    <BottomNav />
   </v-container>
 </template>
 
@@ -12,7 +12,7 @@
 import { Error } from "@/widgets/error";
 import { Explorer, explorerActions } from "@/widgets/explorer";
 import { Settings } from "@/widgets/settings";
-import Footer from "@/widgets/footer";
+import BottomNav from "@/widgets/bottomNav";
 
 import { RESET_DATA_STORAGE } from "../model/store/actions.type";
 import getFilesByView from "../config/dataLoadConfig";
@@ -21,7 +21,7 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "ReportsView",
-  components: { Footer, Explorer, Error, Settings },
+  components: { BottomNav, Explorer, Error, Settings },
   computed: {
     ...mapGetters(["explorerLoaded", "getSources", "getErrors"]),
     path: function () {
