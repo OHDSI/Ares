@@ -8,7 +8,7 @@
       :headers="domainHeaders"
       :items="getDomainsData"
     >
-      <template v-slot:top>
+      <template #top>
         <v-select
           v-model="switchDomains"
           :items="items"
@@ -20,10 +20,10 @@
           @change="updateBits"
         ></v-select>
       </template>
-      <template v-slot:item.percentage="{ item }">{{
+      <template #item.percentage="{ item }">{{
         (item.percentage * 100).toFixed(2)
       }}</template>
-      <template v-slot:item.population="{ item }">{{
+      <template #item.population="{ item }">{{
         formatComma(item.population)
       }}</template>
     </v-data-table>

@@ -11,7 +11,7 @@
           :items="getVisitTypes"
           show-select
         >
-          <template v-slot:top>
+          <template #top>
             <v-text-field
               v-model="visitTypesSearch"
               label="Filter Visit Types"
@@ -28,14 +28,14 @@
           :items="getSmallestVisitTypeValue"
           :headers="domainTypesResults"
         >
-          <template v-slot:top>
+          <template #top>
             <v-text-field
               v-model="resultsSearch"
               label="Filter Data Sources "
               class="mx-4"
             ></v-text-field>
           </template>
-          <template v-slot:item.percentage="{ item }">{{
+          <template #item.percentage="{ item }">{{
             item.percentage ? (item.percentage * 100).toFixed(2) : ""
           }}</template>
         </v-data-table>

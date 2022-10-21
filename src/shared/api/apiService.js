@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const loadFile = (path, payload) => {
+const apiService = (config, payload) => {
   const instance = axios.create();
   instance.interceptors.response.use(
     function (response) {
@@ -12,7 +12,7 @@ const loadFile = (path, payload) => {
   );
   return new Promise((resolve, reject) => {
     instance
-      .get(path)
+      .request(config)
       .then((response) => {
         resolve({ response, payload });
       })
@@ -20,4 +20,4 @@ const loadFile = (path, payload) => {
   });
 };
 
-export default loadFile;
+export default apiService;

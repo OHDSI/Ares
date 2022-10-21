@@ -25,6 +25,7 @@ import dataQualityHistory from "@/pages/reports/source/DataQualityHistory";
 import SourceOverview from "@/pages/reports/source/SourceOverview";
 import domainContinuity from "@/pages/reports/source/DomainContinuity";
 import sourceConceptReport from "@/pages/reports/source/SourceConceptReport";
+import WebApiInfo from "@/pages/info/WebApiInfo";
 
 export default [
   {
@@ -53,6 +54,11 @@ export default [
         path: "network_data_quality",
         name: "networkDataQuality",
         components: { reportsView: networkDataQualitySummary },
+      },
+      {
+        path: "web_api",
+        name: "webApi",
+        components: { reportsView: WebApiInfo },
       },
       {
         path: "network_performance",

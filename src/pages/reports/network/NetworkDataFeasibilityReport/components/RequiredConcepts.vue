@@ -9,11 +9,11 @@
       :items="getSourcesOverview"
       sort-by="calories"
     >
-      <template v-slot:top>
+      <template #top>
         <v-toolbar flat>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
+          <v-dialog v-model="dialog" max-width="1000px">
+            <template #activator="{ on, attrs }">
               <v-btn
                 dark
                 color="grey darken-4"
@@ -21,40 +21,96 @@
                 v-bind="attrs"
                 v-on="on"
               >
-                Add concept
+                Add concepts
               </v-btn>
             </template>
             <v-form ref="form">
               <v-card>
                 <v-card-title>
-                  <span class="text-h5">New Concept</span>
+                  <span v-if="env.WEB_API_ENABLED === 'true'" class="text-h5"
+                    >Vocabulary search</span
+                  >
+                  <span v-else class="text=h5">Add concepts</span>
                 </v-card-title>
 
                 <v-card-text>
                   <v-container fluid>
                     <v-row>
-                      <v-col cols="auto">
-                        <v-text-field
-                          v-model.number="editedItem.conceptID"
-                          :rules="[rules.required, rules.concept]"
-                          prepend-icon="mdi-chart-timeline-variant-shimmer"
-                          label="Concept ID"
-                          dense
-                          :error-messages="errors"
-                        >
-                        </v-text-field>
+                      <v-col>
+                        <v-row>
+                          <v-col v-if="env.WEB_API_ENABLED === 'true'" cols="4">
+                            <v-text-field
+                              v-if="env.WEB_API_ENABLED === 'true'"
+                              :value="$route.query.search"
+                              label="Search concepts"
+                              placeholder="Your query"
+                              @input="debouncedSearch"
+                            ></v-text-field>
+                          </v-col>
+                          <v-col v-else>
+                            <v-text-field
+                              v-model.number="editedItem.CONCEPT_ID"
+                              :rules="[rules.required, rules.concept]"
+                              prepend-icon="mdi-chart-timeline-variant-shimmer"
+                              label="Concept ID"
+                              dense
+                              :error-messages="errors"
+                            >
+                            </v-text-field>
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col v-if="env.WEB_API_ENABLED === 'true'">
+                            <v-data-table
+                              no-data-text="No concepts found"
+                              item-key="CONCEPT_ID"
+                              :items-per-page="5"
+                              :items="getApiData.data"
+                              :headers="webapiHeaders"
+                            >
+                              <template #item.actions="{ item }">
+                                <v-icon
+                                  v-if="!addedConcepts[item.CONCEPT_ID]"
+                                  @click="save(item)"
+                                  >mdi-plus</v-icon
+                                >
+                                <v-icon
+                                  v-if="
+                                    addedConcepts[item.CONCEPT_ID] ===
+                                    'Not found'
+                                  "
+                                  >mdi-close-octagon</v-icon
+                                >
+                                <v-icon
+                                  v-if="
+                                    addedConcepts[item.CONCEPT_ID] === 'Loaded'
+                                  "
+                                  >mdi-check</v-icon
+                                >
+                              </template>
+                            </v-data-table>
+                          </v-col>
+                          <v-col v-else>
+                            <v-autocomplete
+                              v-model="editedItem.DOMAIN_ID"
+                              :rules="[rules.required]"
+                              label="Domain"
+                              prepend-icon="mdi-folder"
+                              dense
+                              :items="domains"
+                            >
+                            </v-autocomplete>
+                          </v-col>
+                        </v-row>
                       </v-col>
-                      <v-col cols="auto">
-                        <v-autocomplete
-                          v-model="editedItem.domain"
-                          :rules="[rules.required]"
-                          label="Domain"
-                          return-object
-                          prepend-icon="mdi-folder"
-                          dense
-                          :items="domains"
+                      <v-col v-if="env.WEB_API_ENABLED === 'false'">
+                        <v-btn
+                          color="blue darken-1"
+                          text
+                          @click="save(editedItem)"
                         >
-                        </v-autocomplete>
+                          Add
+                        </v-btn>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -63,42 +119,25 @@
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn color="blue darken-1" text @click="close">
-                    Cancel
+                    Close
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                  <!--                  <v-btn color="blue darken-1" text @click="save"> Add </v-btn>-->
                 </v-card-actions>
               </v-card>
             </v-form>
           </v-dialog>
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-toolbar>
       </template>
-      <template v-slot:item.min_population="{ item }">{{
+      <template #item.min_population="{ item }">{{
         formatComma(item.min_population) || "No data"
       }}</template>
-      <template v-slot:item.max_population="{ item }">{{
+      <template #item.max_population="{ item }">{{
         formatComma(item.max_population) || "No data"
       }}</template>
-      <template v-slot:item.concepts.length="{ item }">{{
-        `${item.concepts.length}/${conceptsCount}`
+      <template #item.concepts.length="{ item }">{{
+        `${item.concepts.length}/${addedConceptsCount}`
       }}</template>
-      <template v-slot:expanded-item="{ headers, item }">
+      <template #expanded-item="{ headers, item }">
         <td :colspan="headers.length">
           <v-data-table
             :hide-default-footer="true"
@@ -108,23 +147,23 @@
             :items="item.concepts"
             class="elevation-1 accent"
           >
-            <template v-slot:item.time_series="{ item }">{{
+            <template #item.time_series="{ item }">{{
               item.time_series
                 ? item.time_series[0] === false
                   ? "Non-stationary"
                   : "Stationary"
                 : "No data"
             }}</template>
-            <template v-slot:item.issues="{ item }">{{
+            <template #item.issues="{ item }">{{
               item.issues ? item.issues[0] : ""
             }}</template>
-            <template v-slot:item.percentage="{ item }">{{
+            <template #item.percentage="{ item }">{{
               (item.percentage * 100).toFixed(2) || "No data"
             }}</template>
-            <template v-slot:item.population="{ item }">{{
+            <template #item.population="{ item }">{{
               formatComma(item.population)
             }}</template>
-            <template v-slot:item.measurement="{ item }">{{
+            <template #item.measurement="{ item }">{{
               !item.measurement
                 ? isNaN(item.measurement)
                   ? "No data"
@@ -134,10 +173,7 @@
           </v-data-table>
         </td>
       </template>
-      <template v-slot:item.actions="{ item }">
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
-      </template>
-      <template v-slot:no-data>
+      <template #no-data>
         <div>No concepts selected</div>
       </template>
     </v-data-table>
@@ -151,21 +187,26 @@
 
 <script>
 import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
+import environment from "@/shared/api/environment";
 import { mapGetters } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
-import * as d3Format from "d3-format";
+import {
+  FETCH_VOCABULARY_SEARCH_RESULTS,
+  FETCH_WEBAPI,
+  RESET_API_STORAGE,
+} from "@/shared/api/webAPI/store/actions.type";
+import { mixins } from "@/shared/lib/mixins";
+import webApiKeyMap from "@/shared/config/webApiKeyMap";
 
 export default {
   name: "RequiredConcepts",
+  mixins: [mixins],
   data: () => ({
+    addedConcepts: {},
+    env: environment,
     dialog: false,
-    dialogDelete: false,
     errors: "",
-    conceptsCount: 0,
     conceptData: [],
-    selectedDomain: [],
-    domainSummary: [],
-    selectedConcepts: [],
     rules: {
       required: (value) => !!value || "Required field",
       concept: (value) => {
@@ -173,6 +214,27 @@ export default {
         return pattern.test(value) || "The field is digits only";
       },
     },
+    webapiHeaders: [
+      {
+        text: "Concept ID",
+        align: "start",
+        sortable: false,
+        value: "CONCEPT_ID",
+      },
+      {
+        text: "Concept Name",
+        align: "start",
+        sortable: false,
+        value: "CONCEPT_NAME",
+      },
+      {
+        text: "Domain",
+        align: "start",
+        sortable: false,
+        value: "DOMAIN_ID",
+      },
+      { text: "", value: "actions", sortable: false },
+    ],
     headers: [
       {
         text: "Source",
@@ -186,30 +248,36 @@ export default {
       { text: "Min population", value: "min_population" },
       { text: "Max population", value: "max_population" },
     ],
-    concepts: [],
     expanded: [],
     sources: [],
     domains: [
-      { text: "Condition occurrence", value: "condition_occurrence" },
-      { text: "Drug Exposure", value: "drug_exposure" },
-      { text: "Device Exposure", value: "device_exposure" },
-      { text: "Measurement", value: "measurement" },
-      { text: "Death", value: "death" },
-      { text: "Procedure Occurrence", value: "procedure_occurrence" },
-      { text: "Observation", value: "observation" },
+      { text: "Condition occurrence", value: "Condition" },
+      { text: "Drug Exposure", value: "Drug" },
+      { text: "Device Exposure", value: "Device" },
+      { text: "Measurement", value: "Measurement" },
+      { text: "Procedure Occurrence", value: "Procedure" },
+      { text: "Observation", value: "Observation" },
     ],
     editedItem: {
-      conceptID: "",
-      domain: "",
+      CONCEPT_ID: "",
+      DOMAIN_ID: "",
     },
     defaultItem: {
-      conceptID: "",
-      domain: "",
+      CONCEPT_ID: "",
+      DOMAIN_ID: "",
     },
   }),
 
   computed: {
-    ...mapGetters(["getData", "getSources"]),
+    query: function () {
+      return this.$route.query.search;
+    },
+    addedConceptsCount: function () {
+      return Object.keys(this.addedConcepts).filter(
+        (key) => this.addedConcepts[key] === "Loaded"
+      ).length;
+    },
+    ...mapGetters(["getData", "getSources", "getApiData"]),
     filterSourcesWithData: function () {
       return this.sources.filter((data) => data.concepts.length);
     },
@@ -270,8 +338,10 @@ export default {
         this.$refs.form.resetValidation();
       }
     },
-    dialogDelete(val) {
-      val || this.closeDelete();
+    query() {
+      if (this.query && this.query !== "") {
+        this.searchApi();
+      }
     },
     filterSourcesWithData: function () {
       this.$emit("overlappingDataChanged", this.filterSourcesWithData);
@@ -294,11 +364,12 @@ export default {
     getDomainSummary: function () {
       return this.$store
         .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [DOMAIN_SUMMARY],
-          params: {
-            concept: this.conceptsData[0].data.CONCEPT_ID[0],
-            domain: "measurement",
-          },
+          files: [
+            {
+              name: DOMAIN_SUMMARY,
+              instanceParams: [{ domain: "measurement", concept: "" }],
+            },
+          ],
           criticalError: false,
         })
         .then(() => {
@@ -308,23 +379,20 @@ export default {
           }));
         });
     },
-
+    searchApi: function () {
+      this.$store.dispatch(FETCH_VOCABULARY_SEARCH_RESULTS, {
+        search: this.$route.query.search,
+      });
+    },
     addConceptToList: function (concepts) {
-      if (concepts[0]?.concept_id && !this.isLoaded()) {
-        this.conceptsCount += 1;
-        this.sources.forEach((source) => {
-          const sourceConcept = concepts.filter(
-            (concept) => source.cdm_name === concept.cdm_name
-          )[0];
-
-          if (sourceConcept) {
-            source.concepts.push(sourceConcept);
-          }
-        });
-        this.close();
-      } else {
-        this.errors = "Entered concept is not found across data sources";
-      }
+      this.sources.forEach((source) => {
+        const sourceConcept = concepts.filter(
+          (concept) => source.cdm_name === concept.cdm_name
+        );
+        if (sourceConcept.length) {
+          source.concepts.push(...sourceConcept);
+        }
+      });
     },
     getConceptsForRequest: function (measurement = []) {
       return this.conceptsData.map((value) => {
@@ -354,76 +422,71 @@ export default {
         };
       });
     },
-    isLoaded: function () {
-      return [
-        ...this.sources.reduce(
-          (prevValue, value) => [
-            ...prevValue,
-            ...value.concepts.filter(
-              (concept) => concept.concept_id === this.editedItem.conceptID
-            ),
-          ],
-          []
-        ),
-      ].length;
-    },
-    formatComma: function (value) {
-      return d3Format.format(",")(value);
-    },
-    deleteItem(item) {
-      this.editedIndex = this.concepts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
-    },
-
-    deleteItemConfirm() {
-      this.concepts.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-
     close() {
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
       });
-    },
-
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
+      this.$router.replace({
+        ...this.$router.currentRoute,
+        query: {},
       });
+      this.$store.dispatch(RESET_API_STORAGE);
     },
-
-    save() {
-      if (this.editedItem.conceptID === "" || this.editedItem.domain === "") {
+    save(item) {
+      if (
+        this.env.WEB_API_ENABLED === "true" &&
+        !this.$route.query?.search?.length
+      ) {
+        return;
+      } else if (
+        this.editedItem.CONCEPT_ID === "" &&
+        this.editedItem.domain === ""
+      ) {
+        return;
+      } else if (this.addedConcepts[item.CONCEPT_ID] === "Loaded") {
+        this.errors = "This concept has already been loaded";
         return;
       }
-      if (this.isLoaded()) {
-        this.errors = "Entered concept is already on the list";
-        return;
-      }
-
       this.$store
         .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [CONCEPT],
-          params: {
-            concept: this.editedItem.conceptID,
-            domain: this.editedItem.domain.value,
-          },
+          files: [
+            {
+              name: CONCEPT,
+              instanceParams: [
+                {
+                  domain: webApiKeyMap.domains[item.DOMAIN_ID],
+                  concept: item.CONCEPT_ID,
+                },
+              ],
+            },
+          ],
           criticalError: false,
         })
         .then(() => {
           this.conceptsData = this.getData.concept;
-          if (this.conceptsData[0]?.data?.CDM_TABLE_NAME[0] === "MEASUREMENT") {
+          if (!this.conceptsData.length) {
+            this.errors = "Requested concept is not found across data bases";
+            this.addedConcepts = {
+              ...this.addedConcepts,
+              [item.CONCEPT_ID]: "Not found",
+            };
+            return;
+          }
+          const withMeasurement = this.conceptsData.filter(
+            (value) => value.data.CDM_TABLE_NAME[0] === "MEASUREMENT"
+          );
+          if (withMeasurement.length) {
             this.getDomainSummary().then((value) => {
               this.addConceptToList(this.getConceptsForRequest(value));
             });
           } else {
             this.addConceptToList(this.getConceptsForRequest());
           }
+          this.addedConcepts = {
+            ...this.addedConcepts,
+            [item.CONCEPT_ID]: "Loaded",
+          };
         });
     },
   },

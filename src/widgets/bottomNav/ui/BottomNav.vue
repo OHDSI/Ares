@@ -1,6 +1,9 @@
 <template>
   <v-bottom-navigation fixed dark dense>
     <v-layout justify-end>
+      <v-btn v-if="env.WEB_API_ENABLED === 'true'" to="/network/web_api">
+        <v-icon dark>mdi-server</v-icon>
+      </v-btn>
       <v-btn to="/help">
         <v-icon dark>mdi-help-circle-outline</v-icon>
       </v-btn>
@@ -23,9 +26,15 @@
 
 <script>
 import { SET_VISIBILITY } from "@/widgets/settings/model/store/mutations.type";
+import environment from "@/shared/api/environment";
 
 export default {
   name: "BottomNav",
+  data() {
+    return {
+      env: environment,
+    };
+  },
   methods: {
     toggleSettings: function () {
       this.$store.commit(SET_VISIBILITY, !this.$store.getters.getVisibility);

@@ -9,7 +9,7 @@
         hide-details
         class="align-center"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-text-field
             :value="rangeAge[0]"
             class="mt-0 pt-0"
@@ -20,7 +20,7 @@
             @change="$set(rangeAge, 0, $event)"
           ></v-text-field>
         </template>
-        <template v-slot:append>
+        <template #append>
           <v-text-field
             :value="rangeAge[1]"
             class="mt-0 pt-0"
@@ -40,7 +40,7 @@
         hide-details
         class="align-center"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-text-field
             :value="rangeYear[0]"
             class="mt-0 pt-0"
@@ -51,7 +51,7 @@
             @change="$set(rangeYear, 0, $event)"
           ></v-text-field>
         </template>
-        <template v-slot:append>
+        <template #append>
           <v-text-field
             :value="rangeYear[1]"
             class="mt-0 pt-0"
@@ -71,7 +71,7 @@
         hide-details
         class="align-center"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-text-field
             :value="cumulativeObservation[0]"
             class="mt-0 pt-0"
@@ -85,25 +85,25 @@
       </v-slider>
     </v-container>
     <v-data-table dense :headers="yearHeaders" :items="getRangeData">
-      <template v-slot:item.population_observed="{ item }">{{
+      <template #item.population_observed="{ item }">{{
         !isNaN(item.population_observed)
           ? formatComma(item.population_observed)
           : "No data"
       }}</template>
-      <template v-slot:item.population_age="{ item }">{{
+      <template #item.population_age="{ item }">{{
         item.population_age ? formatComma(item.population_age) : "No data"
       }}</template>
-      <template v-slot:item.average_population_percentage="{ item }">{{
+      <template #item.average_population_percentage="{ item }">{{
         item.average_population_percentage
           ? (item.average_population_percentage * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.cumulative_duration="{ item }">{{
+      <template #item.cumulative_duration="{ item }">{{
         item.cumulative_duration
           ? (item.cumulative_duration * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.population_age_percent="{ item }">{{
+      <template #item.population_age_percent="{ item }">{{
         item.population_age_percent
           ? (item.population_age_percent * 100).toFixed(2)
           : "No data"

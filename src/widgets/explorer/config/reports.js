@@ -19,6 +19,12 @@ export const reports = [
   },
   {
     folder: "Data Network",
+    icon: "mdi-database-search",
+    name: "Web API",
+    routeName: "webApi",
+  },
+  {
+    folder: "Data Network",
     icon: "mdi-speedometer",
     name: "Network Performance",
     routeName: "networkPerformance",

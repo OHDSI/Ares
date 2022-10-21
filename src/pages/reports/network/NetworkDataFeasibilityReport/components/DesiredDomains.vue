@@ -8,7 +8,7 @@
       :headers="getDomainHeaders"
       :items="getDomainsData"
     >
-      <template v-slot:top>
+      <template #top>
         <v-select
           v-model="switchDomains"
           :items="items"
@@ -19,25 +19,25 @@
           hide-selected
         ></v-select>
       </template>
-      <template v-slot:item.condition_occurrence.data="{ item }">{{
+      <template #item.condition_occurrence.data="{ item }">{{
         item.condition_occurrence.data ? "Yes" : "No"
       }}</template>
-      <template v-slot:item.drug_exposure.data="{ item }">{{
+      <template #item.drug_exposure.data="{ item }">{{
         item.drug_exposure.data ? "Yes" : "No"
       }}</template
-      ><template v-slot:item.device_exposure.data="{ item }">{{
+      ><template #item.device_exposure.data="{ item }">{{
         item.device_exposure.data ? "Yes" : "No"
       }}</template>
-      <template v-slot:item.measurement.data="{ item }">{{
+      <template #item.measurement.data="{ item }">{{
         item.measurement.data ? "Yes" : "No"
       }}</template>
-      <template v-slot:item.death.data="{ item }">{{
+      <template #item.death.data="{ item }">{{
         item.death.data ? "Yes" : "No"
       }}</template>
-      <template v-slot:item.procedure_occurrence.data="{ item }">{{
+      <template #item.procedure_occurrence.data="{ item }">{{
         item.procedure_occurrence.data ? "Yes" : "No"
       }}</template>
-      <template v-slot:item.observation_period.data="{ item }">{{
+      <template #item.observation_period.data="{ item }">{{
         item.observation_period.data ? "Yes" : "No"
       }}</template>
     </v-data-table>

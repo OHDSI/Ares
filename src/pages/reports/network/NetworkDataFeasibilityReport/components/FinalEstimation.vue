@@ -10,43 +10,43 @@
       :sort-by="['estimation']"
       :sort-desc="[true, false]"
     >
-      <template v-slot:item.domain_percent.data="{ item }">{{
+      <template #item.domain_percent.data="{ item }">{{
         item.domain_percent.data
           ? (item.domain_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.observation_percent.data="{ item }">{{
+      <template #item.observation_percent.data="{ item }">{{
         item.observation_percent.data
           ? (item.observation_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.visit_types_percent.data="{ item }">{{
+      <template #item.visit_types_percent.data="{ item }">{{
         item.visit_types_percent.data
           ? (item.visit_types_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.concepts_percent.data="{ item }">{{
+      <template #item.concepts_percent.data="{ item }">{{
         item.concepts_percent.data
           ? (item.concepts_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.cumulative_duration_percent.data="{ item }">{{
+      <template #item.cumulative_duration_percent.data="{ item }">{{
         item.cumulative_duration_percent.data
           ? (item.cumulative_duration_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.population.data="{ item }">{{
+      <template #item.population.data="{ item }">{{
         item.population.data ? formatComma(item.population.data) : "No data"
       }}</template>
-      <template v-slot:item.estimation="{ item }">{{
+      <template #item.estimation="{ item }">{{
         item.estimation ? formatComma(item.estimation.toFixed(2)) : "No data"
       }}</template>
-      <template v-slot:item.population_age_percent.data="{ item }">{{
+      <template #item.population_age_percent.data="{ item }">{{
         item.population_age_percent.data
           ? (item.population_age_percent.data * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.desired_domain_value.data="{ item }">{{
+      <template #item.desired_domain_value.data="{ item }">{{
         item.desired_domain_value.data ? "Present" : "No data"
       }}</template>
     </v-data-table>

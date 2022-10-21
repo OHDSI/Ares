@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid min-width="900">
+  <v-container v-if="explorerLoaded" fluid min-width="900">
     <v-card elevation="10" class="ma-4" pa-2>
       <v-responsive>
         <v-expansion-panels v-model="panel" multiple>
@@ -74,12 +74,12 @@
 
 <script>
 import { mapGetters } from "vuex";
-import DomainRequirements from "@/pages/reports/network/NetworkDataFeasibilityReport/DomainRequirements";
-import Range from "@/pages/reports/network/NetworkDataFeasibilityReport/Range";
-import VisitTypes from "@/pages/reports/network/NetworkDataFeasibilityReport/VisitTypes";
-import RequiredConcepts from "@/pages/reports/network/NetworkDataFeasibilityReport/RequiredConcepts";
-import FinalEstimation from "@/pages/reports/network/NetworkDataFeasibilityReport/FinalEstimation";
-import DesiredDomains from "@/pages/reports/network/NetworkDataFeasibilityReport/DesiredDomains";
+import DomainRequirements from "@/pages/reports/network/NetworkDataFeasibilityReport/components/DomainRequirements";
+import Range from "@/pages/reports/network/NetworkDataFeasibilityReport/components/Range";
+import VisitTypes from "@/pages/reports/network/NetworkDataFeasibilityReport/components/VisitTypes";
+import RequiredConcepts from "@/pages/reports/network/NetworkDataFeasibilityReport/components/RequiredConcepts";
+import FinalEstimation from "@/pages/reports/network/NetworkDataFeasibilityReport/components/FinalEstimation";
+import DesiredDomains from "@/pages/reports/network/NetworkDataFeasibilityReport/components/DesiredDomains";
 
 export default {
   name: "NetworkDataFeasibility",

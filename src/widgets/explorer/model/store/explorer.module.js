@@ -9,7 +9,7 @@ import {
   FETCH_QUERY_INDEX,
 } from "@/widgets/explorer/model/store/actions.type";
 import { EXPORT_QUERY_INDEX, INDEX } from "@/shared/config/files";
-import loadFile from "@/shared/api/loadFile";
+import apiService from "@/shared/api/apiService";
 import getFilePath from "@/shared/api/getFilePath";
 import config from "@/widgets/explorer/config";
 
@@ -69,7 +69,7 @@ const getters = {
 
 const actions = {
   [FETCH_INDEX]({ commit, dispatch }, params) {
-    loadFile(getFilePath(params)[INDEX], { required: true }).then(
+    apiService(getFilePath(params)[INDEX], { required: true }).then(
       (response) => {
         commit(SOURCES, response.response.data.sources);
         commit(EXPLORER_LOADED);
@@ -77,11 +77,11 @@ const actions = {
     );
   },
   [FETCH_QUERY_INDEX]({ commit, dispatch }, params) {
-    loadFile(getFilePath(params)[EXPORT_QUERY_INDEX], { required: false }).then(
-      (response) => {
-        commit(LOAD_QUERY_INDEX, response.response.data);
-      }
-    );
+    apiService(getFilePath(params)[EXPORT_QUERY_INDEX], {
+      required: false,
+    }).then((response) => {
+      commit(LOAD_QUERY_INDEX, response.response.data);
+    });
   },
 };
 
