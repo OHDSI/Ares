@@ -12,6 +12,7 @@ import { EXPORT_QUERY_INDEX, INDEX } from "@/shared/config/files";
 import loadFile from "@/shared/api/loadFile";
 import getFilePath from "@/shared/api/getFilePath";
 import config from "@/widgets/explorer/config";
+import { errorActions } from "@/widgets/error";
 
 const state = {
   folders: config.folders,
@@ -71,6 +72,16 @@ const actions = {
   [FETCH_INDEX]({ commit, dispatch }, params) {
     loadFile(getFilePath(params)[INDEX], { required: true }).then(
       (response) => {
+        if (
+          response.payload?.required &&
+          response.response?.name === "AxiosError"
+        ) {
+          dispatch(errorActions.NEW_ERROR, {
+            message: response.response.message,
+            details: response.response.request.responseURL,
+          });
+          return;
+        }
         commit(SOURCES, response.response.data.sources);
         commit(EXPLORER_LOADED);
       }
@@ -79,6 +90,16 @@ const actions = {
   [FETCH_QUERY_INDEX]({ commit, dispatch }, params) {
     loadFile(getFilePath(params)[EXPORT_QUERY_INDEX], { required: false }).then(
       (response) => {
+        if (
+          response.payload?.required &&
+          response.response?.name === "AxiosError"
+        ) {
+          dispatch(errorActions.NEW_ERROR, {
+            message: response.response.message,
+            details: response.response.request.responseURL,
+          });
+          return;
+        }
         commit(LOAD_QUERY_INDEX, response.response.data);
       }
     );
