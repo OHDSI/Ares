@@ -24,7 +24,7 @@
           item-value="name"
           @input="changeFolder"
         >
-          <template v-slot:item="{ item }">
+          <template #item="{ item }">
             <v-icon left small>{{ item.icon }}</v-icon> {{ item.name }}
           </template>
         </v-autocomplete>
@@ -73,7 +73,7 @@
           item-value="route"
           @input="changeReport"
         >
-          <template v-slot:item="{ item }">
+          <template #item="{ item }">
             <v-icon left small>{{ item.icon }}</v-icon> {{ item.name }}
           </template>
         </v-autocomplete>
@@ -95,13 +95,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import {
-  FETCH_INDEX,
-  FETCH_QUERY_INDEX,
-} from "@/widgets/explorer/model/store/actions.type";
 import config from "@/widgets/explorer/config";
 
 export default {
+  // eslint-disable-next-line vue/multi-word-component-names
   name: "Explorer",
   data() {
     return {

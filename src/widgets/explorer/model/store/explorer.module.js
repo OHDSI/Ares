@@ -69,7 +69,7 @@ const getters = {
 
 const actions = {
   [FETCH_INDEX]({ commit, dispatch }, params) {
-    apiService(getFilePath(params)[INDEX], { required: true }).then(
+    return apiService(getFilePath(params)[INDEX], { required: true }).then(
       (response) => {
         commit(SOURCES, response.response.data.sources);
         commit(EXPLORER_LOADED);

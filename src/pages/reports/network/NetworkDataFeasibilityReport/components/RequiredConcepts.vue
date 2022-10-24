@@ -429,7 +429,7 @@ export default {
           source: this.vocabularySource,
         })
         .then(() => {
-          if (this.getApiData.error.name === "AxiosError") {
+          if (this.getApiData?.error?.name === "AxiosError") {
             this.$store.dispatch(ADD_ALERT, {
               message: "WebAPI server replied with status code",
               status: this.getApiData.error.response.status,
