@@ -3,9 +3,9 @@ import apiService from "@/shared/api/apiService";
 
 export const VocabularyService = {
   search: {
-    get(query) {
+    get(query, source) {
       return apiService({
-        url: `${environment.WEB_API_URL}/vocabulary/search/${query}`,
+        url: `${environment.WEB_API_URL}/vocabulary/${source}/search/${query}`,
         baseURL: "./",
         method: "get",
         headers: { "Content-Type": "application/json" },

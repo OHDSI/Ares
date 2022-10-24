@@ -9,7 +9,7 @@
 <script>
 import { mapGetters } from "vuex";
 import { errorActions } from "@/widgets/error";
-
+import { webApiActions } from "@/shared/api/webAPI";
 export default {
   name: "ARES",
   computed: {
@@ -27,6 +27,7 @@ export default {
     },
     path() {
       this.$store.dispatch(errorActions.RESET_ERRORS);
+      this.$store.dispatch(webApiActions.RESET_API_STORAGE);
     },
   },
   created() {

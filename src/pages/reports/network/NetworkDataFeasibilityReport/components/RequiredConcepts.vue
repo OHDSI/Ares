@@ -24,7 +24,7 @@
                 Add concepts
               </v-btn>
             </template>
-            <v-form ref="form">
+            <v-form v-if="env.WEB_API_ENABLED === 'true'" ref="form">
               <v-card>
                 <v-card-title>
                   <span v-if="env.WEB_API_ENABLED === 'true'" class="text-h5"
@@ -38,35 +38,36 @@
                     <v-row>
                       <v-col>
                         <v-row>
-                          <v-col v-if="env.WEB_API_ENABLED === 'true'" cols="4">
+                          <v-col cols="4">
                             <v-text-field
-                              v-if="env.WEB_API_ENABLED === 'true'"
                               :value="$route.query.search"
                               label="Search concepts"
                               placeholder="Your query"
                               @input="debouncedSearch"
                             ></v-text-field>
                           </v-col>
-                          <v-col v-else>
-                            <v-text-field
-                              v-model.number="editedItem.CONCEPT_ID"
-                              :rules="[rules.required, rules.concept]"
-                              prepend-icon="mdi-chart-timeline-variant-shimmer"
-                              label="Concept ID"
-                              dense
-                              :error-messages="errors"
+                          <v-col cols="4">
+                            <v-autocomplete
+                              v-model="vocabularySource"
+                              :items="apiSources"
+                              item-text="sourceKey"
+                              item-value="sourceKey"
+                              auto-select-first
+                              label="Vocabulary source"
                             >
-                            </v-text-field>
+                            </v-autocomplete>
                           </v-col>
                         </v-row>
                         <v-row>
-                          <v-col v-if="env.WEB_API_ENABLED === 'true'">
+                          <v-col>
                             <v-data-table
+                              :loading="getApiData.loading"
                               no-data-text="No concepts found"
                               item-key="CONCEPT_ID"
                               :items-per-page="5"
                               :items="getApiData.data"
                               :headers="webapiHeaders"
+                              loading-text="Loading concepts"
                             >
                               <template #item.actions="{ item }">
                                 <v-icon
@@ -90,20 +91,53 @@
                               </template>
                             </v-data-table>
                           </v-col>
-                          <v-col v-else>
-                            <v-autocomplete
-                              v-model="editedItem.DOMAIN_ID"
-                              :rules="[rules.required]"
-                              label="Domain"
-                              prepend-icon="mdi-folder"
-                              dense
-                              :items="domains"
-                            >
-                            </v-autocomplete>
-                          </v-col>
                         </v-row>
                       </v-col>
-                      <v-col v-if="env.WEB_API_ENABLED === 'false'">
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="close">
+                    Close
+                  </v-btn>
+                  <!--                  <v-btn color="blue darken-1" text @click="save"> Add </v-btn>-->
+                </v-card-actions>
+              </v-card>
+            </v-form>
+            <v-form v-else>
+              <v-card>
+                <v-card-title>
+                  <span class="text=h5">Add concepts</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container fluid>
+                    <v-row justify="space-between">
+                      <v-col>
+                        <v-text-field
+                          v-model.number="editedItem.CONCEPT_ID"
+                          :rules="[rules.required, rules.concept]"
+                          prepend-icon="mdi-chart-timeline-variant-shimmer"
+                          label="Concept ID"
+                          dense
+                          :success-messages="successMessage"
+                          :error-messages="errors"
+                        >
+                        </v-text-field>
+                      </v-col>
+                      <v-col>
+                        <v-autocomplete
+                          v-model="editedItem.DOMAIN_ID"
+                          :rules="[rules.required]"
+                          label="Domain"
+                          prepend-icon="mdi-folder"
+                          dense
+                          :items="domains"
+                        >
+                        </v-autocomplete>
+                      </v-col>
+                      <v-col>
                         <v-btn
                           color="blue darken-1"
                           text
@@ -190,13 +224,10 @@ import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import environment from "@/shared/api/environment";
 import { mapGetters } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
-import {
-  FETCH_VOCABULARY_SEARCH_RESULTS,
-  FETCH_WEBAPI,
-  RESET_API_STORAGE,
-} from "@/shared/api/webAPI/store/actions.type";
+import { webApiActions } from "@/shared/api/webAPI";
 import { mixins } from "@/shared/lib/mixins";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
+import { ADD_ALERT } from "@/widgets/snackbar/model/store/actions.type";
 
 export default {
   name: "RequiredConcepts",
@@ -206,6 +237,9 @@ export default {
     env: environment,
     dialog: false,
     errors: "",
+    successMessage: [],
+    apiSources: [],
+    vocabularySource: "",
     conceptData: [],
     rules: {
       required: (value) => !!value || "Required field",
@@ -349,11 +383,20 @@ export default {
     editedItem: {
       handler() {
         this.errors = "";
+        this.successMessage = [];
       },
       deep: true,
     },
   },
   created() {
+    this.$store.dispatch(webApiActions.FETCH_WEBAPI_INFO).then(() => {
+      this.apiSources = this.getApiData.apiSources.filter((source) =>
+        source.daimons
+          .reduce((array, current) => [...array, current.daimonType], [])
+          .includes("Vocabulary")
+      );
+      this.vocabularySource = this.apiSources[0].sourceKey;
+    });
     this.sources = this.getSources.map((value) => ({
       cdm_name: value.cdm_source_abbreviation,
       concepts: [],
@@ -375,14 +418,24 @@ export default {
         .then(() => {
           return this.getData.domainSummary.map((value) => ({
             parsedData: value.data,
-            source: value.source.cdm_source_abbreviation,
+            source: value.source,
           }));
         });
     },
     searchApi: function () {
-      this.$store.dispatch(FETCH_VOCABULARY_SEARCH_RESULTS, {
-        search: this.$route.query.search,
-      });
+      this.$store
+        .dispatch(webApiActions.FETCH_VOCABULARY_SEARCH_RESULTS, {
+          search: this.$route.query.search,
+          source: this.vocabularySource,
+        })
+        .then(() => {
+          if (this.getApiData.error.name === "AxiosError") {
+            this.$store.dispatch(ADD_ALERT, {
+              message: "WebAPI server replied with status code",
+              status: this.getApiData.error.response.status,
+            });
+          }
+        });
     },
     addConceptToList: function (concepts) {
       this.sources.forEach((source) => {
@@ -431,7 +484,7 @@ export default {
         ...this.$router.currentRoute,
         query: {},
       });
-      this.$store.dispatch(RESET_API_STORAGE);
+      this.$store.dispatch(webApiActions.RESET_API_STORAGE);
     },
     save(item) {
       if (
@@ -466,7 +519,7 @@ export default {
         .then(() => {
           this.conceptsData = this.getData.concept;
           if (!this.conceptsData.length) {
-            this.errors = "Requested concept is not found across data bases";
+            this.errors = "Requested concept is not found across data sources";
             this.addedConcepts = {
               ...this.addedConcepts,
               [item.CONCEPT_ID]: "Not found",
@@ -487,6 +540,7 @@ export default {
             ...this.addedConcepts,
             [item.CONCEPT_ID]: "Loaded",
           };
+          this.successMessage = ["Concept added"];
         });
     },
   },

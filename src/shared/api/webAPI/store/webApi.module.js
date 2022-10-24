@@ -12,6 +12,7 @@ import { VocabularyService } from "@/shared/api/webAPI/webApiServices/vocabulary
 
 const state = {
   apiData: {},
+  apiError: {},
 };
 
 const getters = {
@@ -22,11 +23,13 @@ const getters = {
 
 const actions = {
   async [FETCH_WEBAPI_INFO]({ commit }) {
+    commit(SET_WEBAPI, { loading: true });
     const webApiInfo = await InfoService.webApi.get();
     const sources = await InfoService.sources.get();
     commit(SET_WEBAPI, {
       serviceDetails: webApiInfo.response.data,
       apiSources: sources.response.data,
+      loading: false,
     });
   },
 
@@ -34,11 +37,20 @@ const actions = {
     { commit, dispatch, rootState },
     payload
   ) {
+    commit(SET_WEBAPI, { loading: true });
     await VocabularyService.search
-      .get(payload.search)
-      .then((data) =>
-        commit(SET_WEBAPI, { data: data.response.data, payload })
-      );
+      .get(payload.search, payload.source)
+      .then((data) => {
+        if (!data.response?.data) {
+          commit(SET_WEBAPI, { loading: false, error: data.response });
+        } else {
+          commit(SET_WEBAPI, {
+            data: data.response.data,
+            payload,
+            loading: false,
+          });
+        }
+      });
   },
   [RESET_API_STORAGE]({ commit }) {
     commit(CLEAR_API_STORAGE);

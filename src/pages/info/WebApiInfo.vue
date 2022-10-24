@@ -1,14 +1,20 @@
 <template>
   <v-container>
-    <v-card :loading="!getApiData" elevation="10" class="ma-4 pa-2">
+    <v-card
+      v-if="Object.keys(getApiData).length"
+      :loading="getApiData.loading"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
       <v-card-title>WebAPI details</v-card-title>
       <v-container v-if="getApiData.serviceDetails" fluid>
+        <v-layout> </v-layout>
         <v-layout
-          v-for="(d, i) in getApiData.serviceDetails"
-          :key="i"
+          v-for="(value, propertyName) in getApiMetadata()"
+          :key="propertyName"
           class="pl-8"
         >
-          {{ d }}: {{ getApiData.serviceDetails[d] }}
+          {{ propertyName }}: {{ value }}
         </v-layout>
       </v-container>
     </v-card>
@@ -19,6 +25,7 @@
       class="ma-4 pa-2"
     >
       <v-data-table
+        :loading="getApiData.loading"
         :items="getApiData.apiSources"
         :headers="sourceHeaders"
       ></v-data-table>
@@ -60,6 +67,17 @@ export default {
         },
       ],
     };
+  },
+  methods: {
+    getApiMetadata: function () {
+      const data = this.getApiData.serviceDetails;
+      return {
+        "WebAPI version": data.version,
+        Timestamp: data.buildInfo.timestamp,
+        Branch: data.buildInfo.branch,
+        "Commit ID": data.buildInfo.commitId,
+      };
+    },
   },
   computed: {
     ...mapGetters(["getApiData"]),

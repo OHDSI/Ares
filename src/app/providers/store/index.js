@@ -8,6 +8,7 @@ import { errorStore } from "@/widgets/error";
 import { reportsDataStore } from "@/processes/exploreReports";
 import { settingsStore } from "@/widgets/settings";
 import { webApiStore } from "@/shared/api/webAPI";
+import { snackbarStore } from "@/widgets/snackbar";
 
 export default new Vuex.Store({
   modules: {
@@ -16,5 +17,6 @@ export default new Vuex.Store({
     errorStore,
     settingsStore,
     webApiStore,
+    snackbarStore,
   },
 });

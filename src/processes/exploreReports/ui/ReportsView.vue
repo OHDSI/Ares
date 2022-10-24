@@ -3,6 +3,7 @@
     <Explorer v-if="showExplorer" />
     <Error v-if="getErrors" />
     <router-view v-if="!getErrors" name="reportsView" />
+    <Snackbar />
     <Settings />
     <BottomNav />
   </v-container>
@@ -12,6 +13,7 @@
 import { Error } from "@/widgets/error";
 import { Explorer, explorerActions } from "@/widgets/explorer";
 import { Settings } from "@/widgets/settings";
+import { Snackbar } from "@/widgets/snackbar";
 import BottomNav from "@/widgets/bottomNav";
 
 import { RESET_DATA_STORAGE } from "../model/store/actions.type";
@@ -21,7 +23,7 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "ReportsView",
-  components: { BottomNav, Explorer, Error, Settings },
+  components: { Snackbar, BottomNav, Explorer, Error, Settings },
   computed: {
     ...mapGetters(["explorerLoaded", "getSources", "getErrors"]),
     path: function () {
