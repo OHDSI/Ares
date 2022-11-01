@@ -22,10 +22,10 @@ const getters = {
 };
 
 const actions = {
-  async [FETCH_WEBAPI_INFO]({ commit }) {
+  async [FETCH_WEBAPI_INFO]({ commit, dispatch, rootState, rootGetters }) {
     commit(SET_WEBAPI, { loading: true });
-    const webApiInfo = await InfoService.webApi.get();
-    const sources = await InfoService.sources.get();
+    const webApiInfo = await InfoService.webApi.get(rootGetters.getToken);
+    const sources = await InfoService.sources.get(rootGetters.getToken);
     commit(SET_WEBAPI, {
       serviceDetails: webApiInfo.response.data,
       apiSources: sources.response.data,
@@ -34,12 +34,12 @@ const actions = {
   },
 
   async [FETCH_VOCABULARY_SEARCH_RESULTS](
-    { commit, dispatch, rootState },
+    { commit, dispatch, rootState, rootGetters },
     payload
   ) {
     commit(SET_WEBAPI, { loading: true });
     await VocabularyService.search
-      .get(payload.search, payload.source)
+      .get(payload.search, payload.source, rootGetters.getToken)
       .then((data) => {
         if (!data.response?.data) {
           commit(SET_WEBAPI, { loading: false, error: data.response });

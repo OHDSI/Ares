@@ -3,7 +3,7 @@ import environment from "@/shared/api/environment";
 
 export const InfoService = {
   sources: {
-    get() {
+    get(token) {
       return apiService(
         {
           url: `${environment.WEB_API_URL}/source/sources`,
@@ -11,6 +11,7 @@ export const InfoService = {
           baseURL: "/",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         },
         {}
@@ -18,7 +19,7 @@ export const InfoService = {
     },
   },
   webApi: {
-    get() {
+    get(token) {
       return apiService(
         {
           url: `${environment.WEB_API_URL}/info`,
@@ -26,6 +27,7 @@ export const InfoService = {
           baseURL: "/",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         },
         {}

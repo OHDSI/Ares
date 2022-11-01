@@ -6,11 +6,13 @@ import vuetify from "@/app/plugins/vuetify";
 import sync from "./shared/lib/vuex-router-sync";
 import { settingsActions } from "@/widgets/settings";
 import environment from "@/shared/api/environment";
+import { authActions } from "@/shared/api/authentication";
 
 environment.load().then(() => {
   sync(store, router);
   //loads app settings from the local storage (if there are any saved)
   store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE);
+  store.dispatch(authActions.SET_DEFAULT_STATE);
 
   new Vue({
     vuetify,

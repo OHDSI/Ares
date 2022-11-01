@@ -9,7 +9,7 @@ import { reportsDataStore } from "@/processes/exploreReports";
 import { settingsStore } from "@/widgets/settings";
 import { webApiStore } from "@/shared/api/webAPI";
 import { snackbarStore } from "@/widgets/snackbar";
-
+import { authStore } from "@/shared/api/authentication";
 export default new Vuex.Store({
   modules: {
     explorerStore,
@@ -18,5 +18,6 @@ export default new Vuex.Store({
     settingsStore,
     webApiStore,
     snackbarStore,
+    authStore,
   },
 });
