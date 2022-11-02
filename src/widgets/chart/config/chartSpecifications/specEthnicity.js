@@ -29,9 +29,13 @@ export function specEthnicity(zeroBaseline = false) {
         { field: "PERCENT", title: "Percent", format: ",.2%" },
       ],
       x: {
-        field: "COUNT_VALUE",
+        field: "PERCENT",
+        type: "quantitative",
         aggregate: "sum",
-        title: "Number of People",
+        title: "% of People",
+        axis: {
+          format: "0%",
+        },
       },
       color: {
         field: "CONCEPT_NAME",
