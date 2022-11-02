@@ -42,7 +42,7 @@ export function specRace(zeroBaseline = false) {
         type: "nominal",
         legend: {
           orient: "right",
-          title: null,
+          title: "Race",
         },
       },
       order: {
