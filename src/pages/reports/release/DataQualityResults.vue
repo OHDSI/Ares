@@ -242,7 +242,7 @@
                     :close-on-content-click="false"
                     :offset-y="true"
                   >
-                    <template v-slot:activator="{ on, attrs }">
+                    <template #activator="{ on, attrs }">
                       <v-btn color="primary" v-bind="attrs" v-on="on">
                         <v-icon dark left>mdi-filter</v-icon>
                         Helpful Filters
@@ -276,7 +276,7 @@
               :search="search"
               dense
             >
-              <template v-slot:body.prepend>
+              <template #body.prepend>
                 <tr>
                   <th><v-icon>mdi-filter</v-icon></th>
                   <th v-for="header in showHeaders" :key="header.text">
@@ -295,7 +295,7 @@
                   </th>
                 </tr>
               </template>
-              <template v-slot:expanded-item="{ headers, item }">
+              <template #expanded-item="{ headers, item }">
                 <td class="text-left pa-4" :colspan="headers.length">
                   <v-row dense>
                     <v-col cols="2">Check Name</v-col>
@@ -388,21 +388,21 @@
                   </v-row>
                 </td>
               </template>
-              <template v-slot:item.SUBCATEGORY="{ item }">{{
+              <template #item.SUBCATEGORY="{ item }">{{
                 item.SUBCATEGORY == undefined ? d.SUBCATEGORY : "None"
               }}</template>
-              <template v-slot:item.CHECK_DESCRIPTION="{ item }">{{
+              <template #item.CHECK_DESCRIPTION="{ item }">{{
                 renderDescription(item)
               }}</template>
-              <template v-slot:item.PCT_VIOLATED_ROWS="{ item }">
+              <template #item.PCT_VIOLATED_ROWS="{ item }">
                 <div class="text-right">{{ renderPercentPassed(item) }} %</div>
               </template>
-              <template v-slot:item.NUM_VIOLATED_ROWS="{ item }">
+              <template #item.NUM_VIOLATED_ROWS="{ item }">
                 <div class="text-right">
                   {{ formatComma(item.NUM_VIOLATED_ROWS) }}
                 </div>
               </template>
-              <template v-slot:item.NUM_DENOMINATOR_ROWS="{ item }">
+              <template #item.NUM_DENOMINATOR_ROWS="{ item }">
                 <div class="text-right">
                   {{ formatComma(item.NUM_DENOMINATOR_ROWS) }}
                 </div>
@@ -425,7 +425,7 @@
                   'CDM_TABLE_NAME',
                   'FAILED',
                 ]"
-                :aggregators="['Count']"
+                :aggregator-names-list="['Count']"
               >
               </Pivot>
             </v-container>
