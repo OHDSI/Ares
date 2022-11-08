@@ -11,7 +11,7 @@ export const InfoService = {
           baseURL: "/",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: token ? `Bearer ${token}` : null,
           },
         },
         {}
@@ -27,7 +27,7 @@ export const InfoService = {
           baseURL: "/",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: token ? `Bearer ${token}` : null,
           },
         },
         {}

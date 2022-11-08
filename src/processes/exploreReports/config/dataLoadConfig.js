@@ -29,7 +29,7 @@ import {
   FETCH_MULTIPLE_FILES_BY_RELEASE,
   FETCH_MULTIPLE_FILES_BY_SOURCE,
 } from "../model/store/actions.type";
-import { FETCH_WEBAPI_INFO } from "@/shared/api/webAPI/store/actions.type";
+import { FETCH_WEBAPI_INFO } from "@/shared/api/webAPI/data/store/actions.type";
 
 export default function getFilesByView() {
   return {

@@ -9,7 +9,6 @@
           <v-toolbar-title>Settings</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
-        <Auth />
         <v-list three-line subheader>
           <v-subheader>General</v-subheader>
           <!--Features-->
@@ -33,12 +32,11 @@ import { settingsActions } from "@/widgets/settings";
 import ToggleDarkMode from "@/features/toggleDarkMode/";
 import ToggleBaseLine from "@/features/toggleBaseLine/";
 import ToggleMinMax from "@/features/toggleMinMax/";
-import Auth from "@/features/userAuth/Auth";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Settings",
-  components: { Auth, ToggleMinMax, ToggleBaseLine, ToggleDarkMode },
+  components: { ToggleMinMax, ToggleBaseLine, ToggleDarkMode },
   computed: {
     ...mapGetters(["getVisibility"]),
     showMenu: {

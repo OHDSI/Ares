@@ -10,7 +10,7 @@ export const VocabularyService = {
         method: "get",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: token ? `Bearer ${token}` : null,
         },
       });
     },

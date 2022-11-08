@@ -1,4 +1,6 @@
-import webApiStore from "@/shared/api/webAPI/store/webApi.module";
-import * as webApiActions from "./store/actions.type";
+import webApiStore from "@/shared/api/webAPI/data/store/webApi.module";
+import authStore from "@/shared/api/webAPI/authentication/model/store/auth.module";
+import * as authActions from "./authentication/model/store/actions.type";
+import * as webApiActions from "./data/store/actions.type";
 
-export { webApiStore, webApiActions };
+export { webApiStore, webApiActions, authStore, authActions };

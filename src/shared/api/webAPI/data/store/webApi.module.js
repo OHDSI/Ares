@@ -2,13 +2,13 @@ import {
   FETCH_VOCABULARY_SEARCH_RESULTS,
   FETCH_WEBAPI_INFO,
   RESET_API_STORAGE,
-} from "@/shared/api/webAPI/store/actions.type";
-import { InfoService } from "@/shared/api/webAPI/webApiServices/infoService";
+} from "@/shared/api/webAPI/data/store/actions.type";
+import { InfoService } from "@/shared/api/webAPI/services/infoService";
 import {
   CLEAR_API_STORAGE,
   SET_WEBAPI,
-} from "@/shared/api/webAPI/store/mutations.type";
-import { VocabularyService } from "@/shared/api/webAPI/webApiServices/vocabularyService";
+} from "@/shared/api/webAPI/data/store/mutations.type";
+import { VocabularyService } from "@/shared/api/webAPI/services/vocabularyService";
 
 const state = {
   apiData: {},
@@ -24,8 +24,8 @@ const getters = {
 const actions = {
   async [FETCH_WEBAPI_INFO]({ commit, dispatch, rootState, rootGetters }) {
     commit(SET_WEBAPI, { loading: true });
-    const webApiInfo = await InfoService.webApi.get(rootGetters.getToken);
-    const sources = await InfoService.sources.get(rootGetters.getToken);
+    const webApiInfo = await InfoService.webApi.get(rootGetters.getWebAPIToken);
+    const sources = await InfoService.sources.get(rootGetters.getWebAPIToken);
     commit(SET_WEBAPI, {
       serviceDetails: webApiInfo.response.data,
       apiSources: sources.response.data,
@@ -39,7 +39,7 @@ const actions = {
   ) {
     commit(SET_WEBAPI, { loading: true });
     await VocabularyService.search
-      .get(payload.search, payload.source, rootGetters.getToken)
+      .get(payload.search, payload.source, rootGetters.getWebAPIToken)
       .then((data) => {
         if (!data.response?.data) {
           commit(SET_WEBAPI, { loading: false, error: data.response });
