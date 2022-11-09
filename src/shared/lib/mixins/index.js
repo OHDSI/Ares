@@ -1,6 +1,9 @@
 import { debouncedSearch } from "@/shared/lib/mixins/methods/debouncedSearch";
 import { getFontWeight } from "@/shared/lib/mixins/methods/getFontWeight";
-import { getPaddedDate } from "@/shared/lib/mixins/methods/getPaddedDate";
+import {
+  getPaddedDate,
+  padTo2Digits,
+} from "@/shared/lib/mixins/methods/getPaddedDate";
 import { getValuesArray } from "@/shared/lib/mixins/methods/getValuesArray";
 import { navigateTo } from "@/shared/lib/mixins/methods/navigateTo";
 import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
@@ -15,5 +18,6 @@ export const mixins = {
     navigateTo,
     formatComma,
     formatPercent,
+    padTo2Digits,
   },
 };
