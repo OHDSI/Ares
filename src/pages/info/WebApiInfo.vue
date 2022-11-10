@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-card
-      v-if="Object.keys(getApiData).length"
+      v-if="getApiData.serviceDetails"
       :loading="getApiData.loading"
       elevation="10"
       class="ma-4 pa-2"
@@ -17,19 +17,21 @@
           {{ propertyName }}: {{ value }}
         </v-layout>
       </v-container>
+      <v-card v-else
+        ><v-card-title
+          >WebAPI server is unavailabe at the time</v-card-title
+        ></v-card
+      >
     </v-card>
 
-    <v-card
-      v-if="Object.keys(getApiData).length"
-      elevation="10"
-      class="ma-4 pa-2"
-    >
+    <v-card v-if="getApiData.apiSources" elevation="10" class="ma-4 pa-2">
       <v-data-table
         :loading="getApiData.loading"
         :items="getApiData.apiSources"
         :headers="sourceHeaders"
       ></v-data-table>
     </v-card>
+    <h1 v-else class="text-center">No data available</h1>
   </v-container>
 </template>
 

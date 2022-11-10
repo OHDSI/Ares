@@ -40,10 +40,10 @@
                         <v-row>
                           <v-col cols="4">
                             <v-text-field
-                              :value="$route.query.search"
+                              v-model="query"
                               label="Search concepts"
                               placeholder="Your query"
-                              @input="debouncedSearch"
+                              @keyup.enter="searchApi"
                             ></v-text-field>
                           </v-col>
                           <v-col cols="4">
@@ -57,6 +57,16 @@
                             >
                             </v-autocomplete>
                           </v-col>
+                          <v-col>
+                            <v-btn
+                              color="primary"
+                              elevation="0"
+                              rounded
+                              class="search-btn"
+                              @click="searchApi"
+                              >Search</v-btn
+                            >
+                          </v-col>
                         </v-row>
                         <v-row>
                           <v-col>
@@ -65,6 +75,7 @@
                               no-data-text="No concepts found"
                               item-key="CONCEPT_ID"
                               :items-per-page="5"
+                              dense
                               :items="getApiData.data"
                               :headers="webapiHeaders"
                               loading-text="Loading concepts"
@@ -102,7 +113,6 @@
                   <v-btn color="blue darken-1" text @click="close">
                     Close
                   </v-btn>
-                  <!--                  <v-btn color="blue darken-1" text @click="save"> Add </v-btn>-->
                 </v-card-actions>
               </v-card>
             </v-form>
@@ -234,6 +244,7 @@ export default {
   mixins: [mixins],
   data: () => ({
     addedConcepts: {},
+    query: "",
     env: environment,
     dialog: false,
     errors: "",
@@ -252,19 +263,19 @@ export default {
       {
         text: "Concept ID",
         align: "start",
-        sortable: false,
+        sortable: true,
         value: "CONCEPT_ID",
       },
       {
         text: "Concept Name",
         align: "start",
-        sortable: false,
+        sortable: true,
         value: "CONCEPT_NAME",
       },
       {
         text: "Domain",
         align: "start",
-        sortable: false,
+        sortable: true,
         value: "DOMAIN_ID",
       },
       { text: "", value: "actions", sortable: false },
@@ -303,9 +314,6 @@ export default {
   }),
 
   computed: {
-    query: function () {
-      return this.$route.query.search;
-    },
     addedConceptsCount: function () {
       return Object.keys(this.addedConcepts).filter(
         (key) => this.addedConcepts[key] === "Loaded"
@@ -372,11 +380,6 @@ export default {
         this.$refs.form.resetValidation();
       }
     },
-    query() {
-      if (this.query && this.query !== "") {
-        this.searchApi();
-      }
-    },
     filterSourcesWithData: function () {
       this.$emit("overlappingDataChanged", this.filterSourcesWithData);
     },
@@ -423,9 +426,12 @@ export default {
         });
     },
     searchApi: function () {
+      if (!this.query.length) {
+        return;
+      }
       this.$store
         .dispatch(webApiActions.FETCH_VOCABULARY_SEARCH_RESULTS, {
-          search: this.$route.query.search,
+          search: this.query,
           source: this.vocabularySource,
         })
         .then(() => {
@@ -480,17 +486,10 @@ export default {
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
       });
-      this.$router.replace({
-        ...this.$router.currentRoute,
-        query: {},
-      });
       this.$store.dispatch(webApiActions.RESET_API_STORAGE);
     },
     save(item) {
-      if (
-        this.env.WEB_API_ENABLED === "true" &&
-        !this.$route.query?.search?.length
-      ) {
+      if (this.env.WEB_API_ENABLED === "true" && !this.query.length) {
         return;
       } else if (
         this.editedItem.CONCEPT_ID === "" &&
