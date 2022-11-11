@@ -24,8 +24,8 @@
                 multiple
                 :items="getDisplayedAttributes"
               >
-                <template v-slot:selection="{}"></template>
-                <template v-slot:append>
+                <template #selection="{}"></template>
+                <template #append>
                   <v-icon color="white">mdi-plus-box</v-icon> </template
                 >filter
               </v-select>
@@ -33,7 +33,7 @@
                 <template v-for="(item, i) in selectedRows">
                   <v-list-item :key="i" class="list-item">
                     <v-list-item-content>
-                      <v-list-item-title v-text="item"></v-list-item-title>
+                      <v-list-item-title>{{ item }}</v-list-item-title>
                     </v-list-item-content>
                     <v-list-item-action>
                       <v-btn icon @click="removeRows(i)"
@@ -60,8 +60,8 @@
                 multiple
                 :items="getDisplayedAttributes"
               >
-                <template v-slot:selection="{}"> </template>
-                <template v-slot:append>
+                <template #selection="{}"> </template>
+                <template #append>
                   <v-icon color="white">mdi-plus-box</v-icon>
                 </template>
               </v-select>
@@ -69,7 +69,7 @@
                 <template v-for="(item, i) in selectedCols">
                   <v-list-item :key="i" class="list-item">
                     <v-list-item-content>
-                      <v-list-item-title v-text="item"></v-list-item-title>
+                      <v-list-item-title>{{ item }}</v-list-item-title>
                     </v-list-item-content>
                     <v-list-item-action>
                       <v-btn icon @click="removeCols(i)"
@@ -101,7 +101,7 @@
               label="Filters"
               @click:clear="removeFilterAttributes()"
             >
-              <template v-slot:selection="{ attrs, item, select, selected }">
+              <template #selection="{ item, select, selected }">
                 <v-menu
                   allow-overflow
                   offset-y
@@ -109,7 +109,7 @@
                   max-height="500"
                   :close-on-content-click="false"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-chip
                       color="primary"
                       :input-value="selected"
@@ -154,7 +154,7 @@
                 class="px-3"
                 label="Aggregate function"
                 :menu-props="{ bottom: true, offsetY: true }"
-                :items="aggregators"
+                :items="aggregatorNamesList"
               ></v-select>
               <v-select
                 v-if="aggregateFunction === 'Sum'"
@@ -184,6 +184,7 @@
               :data="data"
               :rows="selectedRows"
               :cols="selectedCols"
+              :aggregators="aggregators"
               :attributes="getDisplayedAttributes"
               :value-filter="selectedFilterValues"
               :aggregator-name="aggregateFunction"
@@ -205,18 +206,23 @@
 import { VuePivottable } from "vue-pivottable";
 import "./vue-pivottable.css";
 import draggable from "vuedraggable";
+import { mixins } from "@/shared/lib/mixins";
 
 export default {
+  // eslint-disable-next-line vue/multi-word-component-names
   name: "Pivot",
   components: {
     VuePivottable,
     draggable,
   },
 
+  mixins: [mixins],
+
   props: {
     data: { type: Array, required: true, default: () => [] },
     attributes: { type: Array, required: false, default: () => [] },
-    aggregators: { type: Array, required: false, default: () => [] },
+    aggregatorNamesList: { type: Array, required: false, default: () => [] },
+    aggregators: { type: Object, required: false, default: () => {} },
     aggregateAttrs: { type: Array, required: false, default: () => [] },
     defaults: { type: Object, required: false, default: () => {} },
     eventListener: { type: Function, required: false, default: function () {} },
@@ -264,7 +270,7 @@ export default {
       this.selectedCols = this.defaults?.columns ? this.defaults.columns : [];
       this.aggregateFunction = this.defaults?.aggregateFunction
         ? this.defaults?.aggregateFunction
-        : this.aggregators[0];
+        : this.aggregatorNamesList[0];
       this.aggregateValue = this.defaults?.aggregateValue
         ? this.defaults?.aggregateValue
         : [this.getAggregateValues[0]];
