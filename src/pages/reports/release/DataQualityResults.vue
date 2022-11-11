@@ -194,6 +194,10 @@
                 <v-col>{{ getData.cdmVersion }}</v-col>
               </v-row>
               <v-row>
+                <v-col cols="2">DQD Version</v-col>
+                <v-col>{{ getData.dqdVersion }}</v-col>
+              </v-row>
+              <v-row>
                 <v-col cols="2">Vocabulary Version</v-col>
                 <v-col>{{ getData.vocabularyVersion }}</v-col>
               </v-row>
