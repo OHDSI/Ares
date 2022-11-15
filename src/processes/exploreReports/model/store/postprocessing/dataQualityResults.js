@@ -12,6 +12,7 @@ export default function dataQuality(data) {
     rawData.Metadata[0].SOURCE_DOCUMENTATION_REFERENCE;
   const cdmVersion = rawData.Metadata[0].CDM_VERSION;
   const vocabularyVersion = rawData.Metadata[0].VOCABULARY_VERSION;
+  const dqdVersion = rawData.Metadata[0].DQD_VERSION;
   const sourceReleaseDate = rawData.Metadata[0].SOURCE_RELEASE_DATE;
   const cdmReleaseDate = rawData.Metadata[0].CDM_RELEASE_DATE;
   const checkResults = rawData.CheckResults;
@@ -29,5 +30,6 @@ export default function dataQuality(data) {
     sourceDocumentationReference,
     vocabularyVersion,
     sourceReleaseDate,
+    dqdVersion,
   };
 }
