@@ -39,4 +39,7 @@ export default {
 .main {
   width: 95%;
 }
+>>> .v-list-item__title {
+  font-size: 0.75rem !important;
+}
 </style>
