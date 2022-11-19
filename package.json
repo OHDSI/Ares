@@ -22,6 +22,7 @@
     "vega-lite": "^5.5.0",
     "vue": "^2.6.14",
     "vue-codemirror": "^4.0.6",
+    "vue-easytable": "^2.21.7",
     "vue-google-charts": "^0.3.3",
     "vue-pivottable": "^0.4.2",
     "vue-router": "^3.5.3",
