@@ -14,6 +14,20 @@ export default function deriveResults(dqResults) {
       c.CATEGORY == "Plausibility"
   ).length;
 
+  const VerificationPlausibilityError = dqResults.CheckResults.filter(
+    (c) =>
+      c.IS_ERROR == 1 &&
+      c.CONTEXT == "Verification" &&
+      c.CATEGORY == "Plausibility"
+  ).length;
+
+  const VerificationPlausibilityNotApplicable = dqResults.CheckResults.filter(
+    (c) =>
+      c.NOT_APPLICABLE == 1 &&
+      c.CONTEXT == "Verification" &&
+      c.CATEGORY == "Plausibility"
+  ).length;
+
   const VerificationPlausibilityTotal = dqResults.CheckResults.filter(
     (c) => c.CONTEXT == "Verification" && c.CATEGORY == "Plausibility"
   ).length;
@@ -37,6 +51,20 @@ export default function deriveResults(dqResults) {
   const VerificationConformanceFail = dqResults.CheckResults.filter(
     (c) =>
       c.FAILED == 1 &&
+      c.CONTEXT == "Verification" &&
+      c.CATEGORY == "Conformance"
+  ).length;
+
+  const VerificationConformanceError = dqResults.CheckResults.filter(
+    (c) =>
+      c.IS_ERROR == 1 &&
+      c.CONTEXT == "Verification" &&
+      c.CATEGORY == "Conformance"
+  ).length;
+
+  const VerificationConformanceNotApplicable = dqResults.CheckResults.filter(
+    (c) =>
+      c.NOT_APPLICABLE == 1 &&
       c.CONTEXT == "Verification" &&
       c.CATEGORY == "Conformance"
   ).length;
@@ -68,6 +96,20 @@ export default function deriveResults(dqResults) {
       c.CATEGORY == "Completeness"
   ).length;
 
+  const VerificationCompletenessError = dqResults.CheckResults.filter(
+    (c) =>
+      c.IS_ERROR == 1 &&
+      c.CONTEXT == "Verification" &&
+      c.CATEGORY == "Completeness"
+  ).length;
+
+  const VerificationCompletenessNotApplicable = dqResults.CheckResults.filter(
+    (c) =>
+      c.NOT_APPLICABLE == 1 &&
+      c.CONTEXT == "Verification" &&
+      c.CATEGORY == "Completeness"
+  ).length;
+
   const VerificationCompletenessTotal = dqResults.CheckResults.filter(
     (c) => c.CONTEXT == "Verification" && c.CATEGORY == "Completeness"
   ).length;
@@ -89,6 +131,14 @@ export default function deriveResults(dqResults) {
     (c) => c.FAILED == 1 && c.CONTEXT == "Verification"
   ).length;
 
+  const VerificationError = dqResults.CheckResults.filter(
+    (c) => c.IS_ERROR == 1 && c.CONTEXT == "Verification"
+  ).length;
+
+  const VerificationNotApplicable = dqResults.CheckResults.filter(
+    (c) => c.NOT_APPLICABLE == 1 && c.CONTEXT == "Verification"
+  ).length;
+
   const VerificationTotal = dqResults.CheckResults.filter(
     (c) => c.CONTEXT == "Verification"
   ).length;
@@ -107,6 +157,20 @@ export default function deriveResults(dqResults) {
   const ValidationPlausibilityFail = dqResults.CheckResults.filter(
     (c) =>
       c.FAILED == 1 && c.CONTEXT == "Validation" && c.CATEGORY == "Plausibility"
+  ).length;
+
+  const ValidationPlausibilityError = dqResults.CheckResults.filter(
+    (c) =>
+      c.IS_ERROR == 1 &&
+      c.CONTEXT == "Validation" &&
+      c.CATEGORY == "Plausibility"
+  ).length;
+
+  const ValidationPlausibilityNotApplicable = dqResults.CheckResults.filter(
+    (c) =>
+      c.NOT_APPLICABLE == 1 &&
+      c.CONTEXT == "Validation" &&
+      c.CATEGORY == "Plausibility"
   ).length;
 
   const ValidationPlausibilityTotal = dqResults.CheckResults.filter(
@@ -132,6 +196,20 @@ export default function deriveResults(dqResults) {
       c.FAILED == 1 && c.CONTEXT == "Validation" && c.CATEGORY == "Conformance"
   ).length;
 
+  const ValidationConformanceError = dqResults.CheckResults.filter(
+    (c) =>
+      c.IS_ERROR == 1 &&
+      c.CONTEXT == "Validation" &&
+      c.CATEGORY == "Conformance"
+  ).length;
+
+  const ValidationConformanceNotApplicable = dqResults.CheckResults.filter(
+    (c) =>
+      c.NOT_APPLICABLE == 1 &&
+      c.CONTEXT == "Validation" &&
+      c.CATEGORY == "Conformance"
+  ).length;
+
   const ValidationConformanceTotal = dqResults.CheckResults.filter(
     (c) => c.CONTEXT == "Validation" && c.CATEGORY == "Conformance"
   ).length;
@@ -155,6 +233,20 @@ export default function deriveResults(dqResults) {
       c.FAILED == 1 && c.CONTEXT == "Validation" && c.CATEGORY == "Completeness"
   ).length;
 
+  const ValidationCompletenessError = dqResults.CheckResults.filter(
+    (c) =>
+      c.IS_ERROR == 1 &&
+      c.CONTEXT == "Validation" &&
+      c.CATEGORY == "Completeness"
+  ).length;
+
+  const ValidationCompletenessNotApplicable = dqResults.CheckResults.filter(
+    (c) =>
+      c.NOT_APPLICABLE == 1 &&
+      c.CONTEXT == "Validation" &&
+      c.CATEGORY == "Completeness"
+  ).length;
+
   const ValidationCompletenessTotal = dqResults.CheckResults.filter(
     (c) => c.CONTEXT == "Validation" && c.CATEGORY == "Completeness"
   ).length;
@@ -176,6 +268,14 @@ export default function deriveResults(dqResults) {
     (c) => c.FAILED == 1 && c.CONTEXT == "Validation"
   ).length;
 
+  const ValidationError = dqResults.CheckResults.filter(
+    (c) => c.IS_ERROR == 1 && c.CONTEXT == "Validation"
+  ).length;
+
+  const ValidationNotApplicable = dqResults.CheckResults.filter(
+    (c) => c.NOT_APPLICABLE == 1 && c.CONTEXT == "Validation"
+  ).length;
+
   const ValidationTotal = dqResults.CheckResults.filter(
     (c) => c.CONTEXT == "Validation"
   ).length;
@@ -192,6 +292,14 @@ export default function deriveResults(dqResults) {
 
   const PlausibilityFail = dqResults.CheckResults.filter(
     (c) => c.FAILED == 1 && c.CATEGORY == "Plausibility"
+  ).length;
+
+  const PlausibilityError = dqResults.CheckResults.filter(
+    (c) => c.IS_ERROR == 1 && c.CATEGORY == "Plausibility"
+  ).length;
+
+  const PlausibilityNotApplicable = dqResults.CheckResults.filter(
+    (c) => c.NOT_APPLICABLE == 1 && c.CATEGORY == "Plausibility"
   ).length;
 
   const PlausibilityTotal = dqResults.CheckResults.filter(
@@ -212,6 +320,14 @@ export default function deriveResults(dqResults) {
     (c) => c.FAILED == 1 && c.CATEGORY == "Conformance"
   ).length;
 
+  const ConformanceError = dqResults.CheckResults.filter(
+    (c) => c.IS_ERROR == 1 && c.CATEGORY == "Conformance"
+  ).length;
+
+  const ConformanceNotApplicable = dqResults.CheckResults.filter(
+    (c) => c.NOT_APPLICABLE == 1 && c.CATEGORY == "Conformance"
+  ).length;
+
   const ConformanceTotal = dqResults.CheckResults.filter(
     (c) => c.CATEGORY == "Conformance"
   ).length;
@@ -230,6 +346,14 @@ export default function deriveResults(dqResults) {
     (c) => c.FAILED == 1 && c.CATEGORY == "Completeness"
   ).length;
 
+  const CompletenessError = dqResults.CheckResults.filter(
+    (c) => c.IS_ERROR == 1 && c.CATEGORY == "Completeness"
+  ).length;
+
+  const CompletenessNotApplicable = dqResults.CheckResults.filter(
+    (c) => c.NOT_APPLICABLE == 1 && c.CATEGORY == "Completeness"
+  ).length;
+
   const CompletenessTotal = dqResults.CheckResults.filter(
     (c) => c.CATEGORY == "Completeness"
   ).length;
@@ -243,6 +367,14 @@ export default function deriveResults(dqResults) {
   const AllPass = dqResults.CheckResults.filter((c) => c.FAILED == 0).length;
 
   const AllFail = dqResults.CheckResults.filter((c) => c.FAILED == 1).length;
+
+  const AllError = dqResults.CheckResults.filter(
+    (c) => c.IS_ERROR === 1
+  ).length;
+
+  const AllNotApplicable = dqResults.CheckResults.filter(
+    (c) => c.NOT_APPLICABLE === 1
+  ).length;
 
   const AllTotal = dqResults.CheckResults.length;
 
@@ -275,24 +407,32 @@ export default function deriveResults(dqResults) {
       Plausibility: {
         Pass: VerificationPlausibilityPass,
         Fail: VerificationPlausibilityFail,
+        Error: VerificationPlausibilityError,
+        NotApplicable: VerificationPlausibilityNotApplicable,
         Total: VerificationPlausibilityTotal,
         PercentPass: VerificationPlausibilityPercentPass,
       },
       Conformance: {
         Pass: VerificationConformancePass,
         Fail: VerificationConformanceFail,
+        Error: VerificationConformanceError,
+        NotApplicable: VerificationConformanceNotApplicable,
         Total: VerificationConformanceTotal,
         PercentPass: VerificationConformancePercentPass,
       },
       Completeness: {
         Pass: VerificationCompletenessPass,
         Fail: VerificationCompletenessFail,
+        Error: VerificationCompletenessError,
+        NotApplicable: VerificationCompletenessNotApplicable,
         Total: VerificationCompletenessTotal,
         PercentPass: VerificationCompletenessPercentPass,
       },
       Total: {
         Pass: VerificationPass,
         Fail: VerificationFail,
+        Error: VerificationError,
+        NotApplicable: VerificationNotApplicable,
         Total: VerificationTotal,
         PercentPass: VerificationPercentPass,
       },
@@ -301,24 +441,32 @@ export default function deriveResults(dqResults) {
       Plausibility: {
         Pass: ValidationPlausibilityPass,
         Fail: ValidationPlausibilityFail,
+        Error: ValidationPlausibilityError,
+        NotApplicable: ValidationPlausibilityNotApplicable,
         Total: ValidationPlausibilityTotal,
         PercentPass: ValidationPlausibilityPercentPass,
       },
       Conformance: {
         Pass: ValidationConformancePass,
         Fail: ValidationConformanceFail,
+        Error: ValidationConformanceError,
+        NotApplicable: ValidationConformanceNotApplicable,
         Total: ValidationConformanceTotal,
         PercentPass: ValidationConformancePercentPass,
       },
       Completeness: {
         Pass: ValidationCompletenessPass,
         Fail: ValidationCompletenessFail,
+        Error: ValidationCompletenessError,
+        NotApplicable: ValidationCompletenessNotApplicable,
         Total: ValidationCompletenessTotal,
         PercentPass: ValidationCompletenessPercentPass,
       },
       Total: {
         Pass: ValidationPass,
         Fail: ValidationFail,
+        Error: ValidationError,
+        NotApplicable: ValidationNotApplicable,
         Total: ValidationTotal,
         PercentPass: ValidationPercentPass,
       },
@@ -327,24 +475,32 @@ export default function deriveResults(dqResults) {
       Plausibility: {
         Pass: PlausibilityPass,
         Fail: PlausibilityFail,
+        Error: PlausibilityError,
+        NotApplicable: PlausibilityNotApplicable,
         Total: PlausibilityTotal,
         PercentPass: PlausibilityPercentPass,
       },
       Conformance: {
         Pass: ConformancePass,
         Fail: ConformanceFail,
+        Error: ConformanceError,
+        NotApplicable: ConformanceNotApplicable,
         Total: ConformanceTotal,
         PercentPass: ConformancePercentPass,
       },
       Completeness: {
         Pass: CompletenessPass,
         Fail: CompletenessFail,
+        Error: CompletenessError,
+        NotApplicable: CompletenessNotApplicable,
         Total: CompletenessTotal,
         PercentPass: CompletenessPercentPass,
       },
       Total: {
         Pass: AllPass,
         Fail: AllFail,
+        Error: AllError,
+        NotApplicable: AllNotApplicable,
         Total: AllTotal,
         PercentPass: AllPercentPass,
       },

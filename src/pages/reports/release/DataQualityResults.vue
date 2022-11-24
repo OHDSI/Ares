@@ -15,20 +15,26 @@
                 <thead>
                   <tr>
                     <td></td>
-                    <td colspan="3" class="header text-center">Verification</td>
-                    <td colspan="3" class="header text-center">Validation</td>
-                    <td colspan="3" class="header text-center">Total</td>
+                    <td colspan="5" class="header text-center">Verification</td>
+                    <td colspan="5" class="header text-center">Validation</td>
+                    <td colspan="5" class="header text-center">Total</td>
                   </tr>
                   <tr>
                     <td></td>
                     <td class="subheader text-center">Pass</td>
                     <td class="subheader text-center">Fail</td>
+                    <td class="subheader text-center">Error</td>
+                    <td class="subheader text-center">N/A</td>
                     <td class="subheader text-center">Total</td>
                     <td class="subheader text-center">Pass</td>
                     <td class="subheader text-center">Fail</td>
+                    <td class="subheader text-center">Error</td>
+                    <td class="subheader text-center">N/A</td>
                     <td class="subheader text-center">Total</td>
                     <td class="subheader text-center">Pass</td>
                     <td class="subheader text-center">Fail</td>
+                    <td class="subheader text-center">Error</td>
+                    <td class="subheader text-center">N/A</td>
                     <td class="subheader text-center">Total</td>
                   </tr>
                 </thead>
@@ -47,6 +53,17 @@
                     </td>
                     <td>
                       {{
+                        getData.derivedResults.Verification.Plausibility.Error
+                      }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Verification.Plausibility
+                          .NotApplicable
+                      }}
+                    </td>
+                    <td>
+                      {{
                         getData.derivedResults.Verification.Plausibility.Total
                       }}
                     </td>
@@ -57,6 +74,15 @@
                       {{ getData.derivedResults.Validation.Plausibility.Fail }}
                     </td>
                     <td>
+                      {{ getData.derivedResults.Validation.Plausibility.Error }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Validation.Plausibility
+                          .NotApplicable
+                      }}
+                    </td>
+                    <td>
                       {{ getData.derivedResults.Validation.Plausibility.Total }}
                     </td>
                     <td>
@@ -64,6 +90,14 @@
                     </td>
                     <td>
                       {{ getData.derivedResults.Total.Plausibility.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Plausibility.Error }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Total.Plausibility.NotApplicable
+                      }}
                     </td>
                     <td>
                       {{ getData.derivedResults.Total.Plausibility.Total }}
@@ -79,6 +113,17 @@
                     </td>
                     <td>
                       {{
+                        getData.derivedResults.Verification.Conformance.Error
+                      }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Verification.Conformance
+                          .NotApplicable
+                      }}
+                    </td>
+                    <td>
+                      {{
                         getData.derivedResults.Verification.Conformance.Total
                       }}
                     </td>
@@ -89,11 +134,28 @@
                       {{ getData.derivedResults.Validation.Conformance.Fail }}
                     </td>
                     <td>
+                      {{ getData.derivedResults.Validation.Conformance.Error }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Validation.Conformance
+                          .NotApplicable
+                      }}
+                    </td>
+                    <td>
                       {{ getData.derivedResults.Validation.Conformance.Total }}
                     </td>
                     <td>{{ getData.derivedResults.Total.Conformance.Pass }}</td>
                     <td>
                       {{ getData.derivedResults.Total.Conformance.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Conformance.Error }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Total.Conformance.NotApplicable
+                      }}
                     </td>
                     <td>
                       {{ getData.derivedResults.Total.Conformance.Total }}
@@ -113,6 +175,17 @@
                     </td>
                     <td>
                       {{
+                        getData.derivedResults.Verification.Completeness.Error
+                      }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Verification.Completeness
+                          .NotApplicable
+                      }}
+                    </td>
+                    <td>
+                      {{
                         getData.derivedResults.Verification.Completeness.Total
                       }}
                     </td>
@@ -123,6 +196,15 @@
                       {{ getData.derivedResults.Validation.Completeness.Fail }}
                     </td>
                     <td>
+                      {{ getData.derivedResults.Validation.Completeness.Error }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Validation.Completeness
+                          .NotApplicable
+                      }}
+                    </td>
+                    <td>
                       {{ getData.derivedResults.Validation.Completeness.Total }}
                     </td>
                     <td>
@@ -130,6 +212,14 @@
                     </td>
                     <td>
                       {{ getData.derivedResults.Total.Completeness.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Completeness.Error }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Total.Completeness.NotApplicable
+                      }}
                     </td>
                     <td>
                       {{ getData.derivedResults.Total.Completeness.Total }}
@@ -144,16 +234,38 @@
                       {{ getData.derivedResults.Verification.Total.Fail }}
                     </td>
                     <td>
+                      {{ getData.derivedResults.Verification.Total.Error }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Verification.Total.NotApplicable
+                      }}
+                    </td>
+                    <td>
                       {{ getData.derivedResults.Verification.Total.Total }}
                     </td>
                     <td>{{ getData.derivedResults.Validation.Total.Pass }}</td>
                     <td>
                       {{ getData.derivedResults.Validation.Total.Fail }}
                     </td>
+                    <td>
+                      {{ getData.derivedResults.Validation.Total.Error }}
+                    </td>
+                    <td>
+                      {{
+                        getData.derivedResults.Validation.Total.NotApplicable
+                      }}
+                    </td>
                     <td>{{ getData.derivedResults.Validation.Total.Total }}</td>
                     <td>{{ getData.derivedResults.Total.Total.Pass }}</td>
                     <td>
                       {{ getData.derivedResults.Total.Total.Fail }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Total.Error }}
+                    </td>
+                    <td>
+                      {{ getData.derivedResults.Total.Total.NotApplicable }}
                     </td>
                     <td>{{ getData.derivedResults.Total.Total.Total }}</td>
                   </tr>
@@ -290,7 +402,8 @@
                         :items="
                           getValuesArray(getData.checkResults, header.value)
                         "
-                      ></v-select>
+                      >
+                      </v-select>
                     </div>
                   </th>
                 </tr>
@@ -474,6 +587,8 @@ export default {
             SUBCATEGORY: [],
             CONTEXT: [],
             CHECK_LEVEL: [],
+            NOT_APPLICABLE: [],
+            IS_ERROR: [],
           },
         },
         {
@@ -489,6 +604,8 @@ export default {
             SUBCATEGORY: [],
             CONTEXT: [],
             CHECK_LEVEL: [],
+            NOT_APPLICABLE: [],
+            IS_ERROR: [],
           },
         },
       ],
@@ -502,6 +619,8 @@ export default {
         SUBCATEGORY: [],
         CONTEXT: [],
         CHECK_LEVEL: [],
+        NOT_APPLICABLE: [],
+        IS_ERROR: [],
       },
       search: "",
       selectedFilter: null,
@@ -510,6 +629,20 @@ export default {
           text: "Status",
           sortable: true,
           value: "FAILED",
+          show: true,
+          default: true,
+        },
+        {
+          text: "N/A",
+          sortable: true,
+          value: "NOT_APPLICABLE",
+          show: true,
+          default: true,
+        },
+        {
+          text: "Error",
+          sortable: true,
+          value: "IS_ERROR",
           show: true,
           default: true,
         },

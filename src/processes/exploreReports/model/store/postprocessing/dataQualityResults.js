@@ -14,7 +14,11 @@ export default function dataQuality(data) {
   const vocabularyVersion = rawData.Metadata[0].VOCABULARY_VERSION;
   const sourceReleaseDate = rawData.Metadata[0].SOURCE_RELEASE_DATE;
   const cdmReleaseDate = rawData.Metadata[0].CDM_RELEASE_DATE;
-  const checkResults = rawData.CheckResults;
+  const checkResults = rawData.CheckResults.map((val) => ({
+    ...val,
+    NOT_APPLICABLE: val.NOT_APPLICABLE ? "Yes" : "No",
+    IS_ERROR: val.IS_ERROR ? "Yes" : "No",
+  }));
 
   return {
     rawData,
