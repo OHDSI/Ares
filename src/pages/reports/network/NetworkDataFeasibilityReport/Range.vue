@@ -9,7 +9,7 @@
         hide-details
         class="align-center"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-text-field
             :value="rangeAge[0]"
             class="mt-0 pt-0"
@@ -20,7 +20,7 @@
             @change="$set(rangeAge, 0, $event)"
           ></v-text-field>
         </template>
-        <template v-slot:append>
+        <template #append>
           <v-text-field
             :value="rangeAge[1]"
             class="mt-0 pt-0"
@@ -40,7 +40,7 @@
         hide-details
         class="align-center"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-text-field
             :value="rangeYear[0]"
             class="mt-0 pt-0"
@@ -51,7 +51,7 @@
             @change="$set(rangeYear, 0, $event)"
           ></v-text-field>
         </template>
-        <template v-slot:append>
+        <template #append>
           <v-text-field
             :value="rangeYear[1]"
             class="mt-0 pt-0"
@@ -63,47 +63,47 @@
           ></v-text-field>
         </template>
       </v-range-slider>
-      <v-subheader>Minimum cumulative observation</v-subheader>
+      <v-subheader>Minimum continuous observation</v-subheader>
       <v-slider
-        v-model="cumulativeObservation[0]"
+        v-model="continuousObservation[0]"
         :min="getDurationMinMax[0]"
         :max="getDurationMinMax[1]"
         hide-details
         class="align-center"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-text-field
-            :value="cumulativeObservation[0]"
+            :value="continuousObservation[0]"
             class="mt-0 pt-0"
             hide-details
             single-line
             type="number"
             style="width: 60px"
-            @change="$set(cumulativeObservation, 0, $event)"
+            @change="$set(continuousObservation, 0, $event)"
           ></v-text-field>
         </template>
       </v-slider>
     </v-container>
     <v-data-table dense :headers="yearHeaders" :items="getRangeData">
-      <template v-slot:item.population_observed="{ item }">{{
+      <template #item.population_observed="{ item }">{{
         !isNaN(item.population_observed)
           ? formatComma(item.population_observed)
           : "No data"
       }}</template>
-      <template v-slot:item.population_age="{ item }">{{
+      <template #item.population_age="{ item }">{{
         item.population_age ? formatComma(item.population_age) : "No data"
       }}</template>
-      <template v-slot:item.average_population_percentage="{ item }">{{
+      <template #item.average_population_percentage="{ item }">{{
         item.average_population_percentage
           ? (item.average_population_percentage * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.cumulative_duration="{ item }">{{
-        item.cumulative_duration
-          ? (item.cumulative_duration * 100).toFixed(2)
+      <template #item.continuous_duration="{ item }">{{
+        item.continuous_duration
+          ? (item.continuous_duration * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.population_age_percent="{ item }">{{
+      <template #item.population_age_percent="{ item }">{{
         item.population_age_percent
           ? (item.population_age_percent * 100).toFixed(2)
           : "No data"
@@ -111,7 +111,7 @@
     </v-data-table>
     <v-divider></v-divider>
     <v-alert color="grey darken-3" dark dense icon="mdi-help-rhombus" prominent>
-      The cumulative duration column shows the lowest % of all values found in
+      The continuous duration column shows the lowest % of all values found in
       the range.
     </v-alert>
   </v-container>
@@ -135,7 +135,7 @@ export default {
       maxYear: 2021,
       rangeAge: [0, 100],
       rangeYear: [1900, 2021],
-      cumulativeObservation: [50],
+      continuousObservation: [50],
       yearHeaders: [
         {
           text: "Data source",
@@ -154,8 +154,8 @@ export default {
           align: "end",
         },
         {
-          text: "Cumulative observation %",
-          value: "cumulative_duration",
+          text: "Continuous observation %",
+          value: "continuous_duration",
           align: "end",
         },
         {
@@ -207,7 +207,7 @@ export default {
             };
           }, {}),
           filtered_duration: value.data.CUMULATIVE_DURATION.filter(
-            (data) => data.YEARS <= this.cumulativeObservation[0]
+            (data) => data.YEARS <= this.continuousObservation[0]
           ),
         }))
         .map((value) => ({
@@ -224,7 +224,7 @@ export default {
               0
             ) / Object.keys(value.data).length,
           years_observed: Object.keys(value.data).length,
-          cumulative_duration: Math.min(
+          continuous_duration: Math.min(
             ...value.filtered_duration.map((value) => value.PERCENT_PEOPLE)
           ),
         }));
