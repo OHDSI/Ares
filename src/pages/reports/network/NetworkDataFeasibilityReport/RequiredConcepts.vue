@@ -3,24 +3,18 @@
     <v-data-table
       class="mb-4"
       show-expand
+      density="compact"
       item-key="cdm_name"
-      :expanded.sync="expanded"
+      v-model:expanded="expanded"
       :headers="headers"
       :items="getSourcesOverview"
-      sort-by="calories"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar color="transparent" density="compact" flat>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                dark
-                color="grey darken-4"
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
-              >
+            <template v-slot:activator="{ props }">
+              <v-btn variant="flat" color="primary" class="mb-2" v-bind="props">
                 Add concept
               </v-btn>
             </template>
@@ -32,14 +26,15 @@
 
                 <v-card-text>
                   <v-container fluid>
-                    <v-row>
+                    <v-row class="flex-column">
                       <v-col cols="auto">
                         <v-text-field
                           v-model.number="editedItem.conceptID"
                           :rules="[rules.required, rules.concept]"
                           prepend-icon="mdi-chart-timeline-variant-shimmer"
                           label="Concept ID"
-                          dense
+                          variant="outlined"
+                          density="compact"
                           :error-messages="errors"
                         >
                         </v-text-field>
@@ -49,9 +44,11 @@
                           v-model="editedItem.domain"
                           :rules="[rules.required]"
                           label="Domain"
+                          variant="outlined"
+                          item-title="title"
                           return-object
                           prepend-icon="mdi-folder"
-                          dense
+                          density="compact"
                           :items="domains"
                         >
                         </v-autocomplete>
@@ -90,343 +87,363 @@
         </v-toolbar>
       </template>
       <template v-slot:item.min_population="{ item }">{{
-        formatComma(item.min_population) || "No data"
+        formatComma(item.raw.min_population) || "No data"
       }}</template>
       <template v-slot:item.max_population="{ item }">{{
-        formatComma(item.max_population) || "No data"
+        formatComma(item.raw.max_population) || "No data"
       }}</template>
       <template v-slot:item.concepts.length="{ item }">{{
-        `${item.concepts.length}/${conceptsCount}`
+        `${item.raw.concepts.length}/${conceptsCount}`
       }}</template>
-      <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length">
+      <template v-slot:expanded-row="{ columns, item }">
+        <td :colspan="columns.length">
           <v-data-table
             :hide-default-footer="true"
             :disable-pagination="true"
-            dense
+            density="compact"
             :headers="conceptHeaders"
-            :items="item.concepts"
+            :items="item.raw.concepts"
             class="elevation-1 accent"
           >
             <template v-slot:item.time_series="{ item }">{{
-              item.time_series
-                ? item.time_series[0] === false
+              item.raw.time_series
+                ? item.raw.time_series[0] === false
                   ? "Non-stationary"
                   : "Stationary"
                 : "No data"
             }}</template>
             <template v-slot:item.issues="{ item }">{{
-              item.issues ? item.issues[0] : ""
+              item.issues ? item.raw.issues[0] : ""
             }}</template>
             <template v-slot:item.percentage="{ item }">{{
-              (item.percentage * 100).toFixed(2) || "No data"
+              (item.raw.percentage * 100).toFixed(2) || "No data"
             }}</template>
             <template v-slot:item.population="{ item }">{{
-              formatComma(item.population)
+              formatComma(item.raw.population)
             }}</template>
             <template v-slot:item.measurement="{ item }">{{
-              !item.measurement
-                ? isNaN(item.measurement)
+              !item.raw.measurement
+                ? isNaN(item.raw.measurement)
                   ? "No data"
                   : "N/A"
-                : item.measurement
+                : item.raw.measurement
             }}</template>
           </v-data-table>
         </td>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+        <v-icon small @click="deleteItem(item.raw)"> mdi-delete </v-icon>
       </template>
-      <template v-slot:no-data>
-        <div>No concepts selected</div>
-      </template>
+      <template v-slot:no-data> </template>
     </v-data-table>
     <v-divider></v-divider>
-    <v-alert color="grey darken-3" dark dense icon="mdi-help-rhombus" prominent>
+    <v-alert
+      color="message"
+      dark
+      density="compact"
+      icon="mdi-help-rhombus"
+      prominent
+    >
       The overview section uses the smallest population count of all added
       concepts in estimations.
     </v-alert>
   </v-container>
 </template>
 
-<script>
+<script setup lang="ts">
 import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
-import { mapGetters } from "vuex";
+import { useStore } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
 import * as d3Format from "d3-format";
+import {
+  computed,
+  ref,
+  watch,
+  defineEmits,
+  Ref,
+  onBeforeMount,
+  nextTick,
+} from "vue";
+import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import { VDataTable } from "vuetify/labs/VDataTable";
 
+const store = useStore();
+
+const concepts = ref([]);
+const sources = ref([]);
+const filterSourcesWithData = computed(function () {
+  return sources.value.filter((data) => data.concepts.length);
+});
+const getSourcesOverview = computed(function () {
+  return filterSourcesWithData.value.map((value) => ({
+    ...value,
+    min_population: Math.min(
+      ...value.concepts.reduce(
+        (prev, current) => [...prev, current.population],
+        []
+      )
+    ),
+    max_population: Math.max(
+      ...value.concepts.reduce(
+        (prev, current) => [...prev, current.population],
+        []
+      )
+    ),
+    issues: value.concepts.filter((value) => value.issues === false).length,
+    time_series_issues: value.concepts.filter((value) =>
+      value.time_series ? value.time_series[0] === false : false
+    ).length,
+  }));
+});
+
+const conceptsCount: Ref<number> = ref(0);
+
+const conceptsData = ref([]);
+const getConceptsForRequest = function (measurement = []) {
+  return conceptsData.value.map((value) => {
+    const missingData = measurement.length
+      ? measurement
+          .filter(
+            (source) => source.source === value.source?.cdm_source_abbreviation
+          )[0]
+          ?.parsedData.filter(
+            (summaryReport) =>
+              summaryReport.CONCEPT_ID == value?.data.CONCEPT_ID[0]
+          )[0].PERCENT_MISSING_VALUES
+      : [];
+    return {
+      concept_id: value?.data.CONCEPT_ID[0],
+      concept_name: value?.data.CONCEPT_NAME[0],
+      domain: value?.data.CDM_TABLE_NAME[0],
+      population: value?.data.NUM_PERSONS[0],
+      percentage: value?.data.PERCENT_PERSONS[0],
+      cdm_name: value?.source.cdm_source_abbreviation,
+      time_series: value?.data.IS_STATIONARY,
+      issues: value?.data.COUNT_FAILED,
+      measurement: measurement.length
+        ? (1 - missingData) * (100).toFixed(2)
+        : null,
+    };
+  });
+};
+
+const addConceptToList = function (concepts) {
+  if (concepts[0]?.concept_id && !isLoaded()) {
+    conceptsCount.value += 1;
+    sources.value.forEach((source) => {
+      const sourceConcept = concepts.filter(
+        (concept) => source.cdm_name === concept.cdm_name
+      )[0];
+
+      if (sourceConcept) {
+        source.concepts.push(sourceConcept);
+      }
+    });
+    close();
+  } else {
+    errors.value = "Entered concept is not found across data sources";
+  }
+};
+
+const errors: Ref<string> = ref("");
+const dialog: Ref<boolean> = ref(false);
+
+const form = ref(null);
+watch(dialog, (val) => {
+  val || close();
+  if (form.value) {
+    form.value.resetValidation();
+  }
+});
+
+const defaultItem = ref({
+  conceptID: "",
+  domain: "",
+});
+const editedItem = ref({
+  conceptID: "",
+  domain: "",
+});
+const isLoaded = function () {
+  return [
+    ...sources.value.reduce(
+      (prevValue, value) => [
+        ...prevValue,
+        ...value.concepts.filter(
+          (concept) => concept.concept_id === editedItem.value.conceptID
+        ),
+      ],
+      []
+    ),
+  ].length;
+};
+
+const editedIndex = ref(null);
+
+function save() {
+  if (editedItem.value.conceptID === "" || editedItem.value.domain === "") {
+    return;
+  }
+  if (isLoaded()) {
+    errors.value = "Entered concept is already on the list";
+    return;
+  }
+
+  store
+    .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
+      files: [CONCEPT],
+      params: {
+        concept: editedItem.value.conceptID,
+        domain: editedItem.value.domain.key,
+      },
+      criticalError: false,
+    })
+    .then(() => {
+      conceptsData.value = store.getters.getData[CONCEPT];
+      if (conceptsData.value[0]?.data?.CDM_TABLE_NAME[0] === "MEASUREMENT") {
+        getDomainSummary().then((value) => {
+          addConceptToList(getConceptsForRequest(value));
+        });
+      } else {
+        addConceptToList(getConceptsForRequest());
+      }
+    });
+}
+function close() {
+  dialog.value = false;
+  nextTick(() => {
+    editedItem.value = Object.assign({}, defaultItem.value);
+    editedIndex.value = -1;
+  });
+}
+
+watch(editedItem, () => {
+  errors.value = "";
+  //deep
+});
+
+const dialogDelete: Ref<boolean> = ref(false);
+function closeDelete() {
+  dialogDelete.value = false;
+  nextTick(() => {
+    editedItem.value = Object.assign({}, defaultItem.value);
+    editedIndex.value = -1;
+  });
+}
+function deleteItemConfirm() {
+  concepts.value.splice(editedIndex.value, 1);
+  closeDelete();
+}
+
+function deleteItem(item) {
+  editedIndex.value = concepts.value.indexOf(item);
+  editedItem.value = Object.assign({}, item);
+  dialogDelete.value = true;
+}
+
+watch(dialogDelete, (val) => {
+  val || closeDelete();
+});
+
+const rules = {
+  required: (value) => !!value || "Required field",
+  concept: (value) => {
+    const pattern = /^\d+$/;
+    return pattern.test(value) || "The field is digits only";
+  },
+};
+
+const headers: Ref<DataTableHeader[]> = ref([
+  {
+    title: "Source",
+    align: "start",
+    sortable: false,
+    key: "cdm_name",
+  },
+  { title: "Issues", key: "issues" },
+  { title: "Time-series issues", key: "time_series_issues" },
+  { title: "Available concepts", key: "concepts.length" },
+  { title: "Min population", key: "min_population" },
+  { title: "Max population", key: "max_population" },
+]);
+const domains: Ref<DataTableHeader[]> = ref([
+  { title: "Condition occurrence", key: "condition_occurrence" },
+  { title: "Drug Exposure", key: "drug_exposure" },
+  { title: "Device Exposure", key: "device_exposure" },
+  { title: "Measurement", key: "measurement" },
+  { title: "Death", key: "death" },
+  { title: "Procedure Occurrence", key: "procedure_occurrence" },
+  { title: "Observation", key: "observation" },
+]);
+
+const expanded = ref([]);
+
+const conceptHeaders = computed(function (): DataTableHeader[] {
+  return [
+    {
+      title: "Concept ID",
+      align: "start",
+      sortable: false,
+      key: "concept_id",
+      show: true,
+    },
+    { title: "Concept Name", key: "concept_name", show: true },
+    { title: "Domain", key: "domain", show: true },
+    { title: "Population", key: "population", show: true },
+    { title: "%", key: "percentage", show: true },
+    { title: "Time series", key: "time_series", show: true },
+    { title: "Issues", key: "issues", show: true },
+    {
+      title: "% with values",
+      key: "measurement",
+      show: [
+        ...getSourcesOverview.value.map((value) =>
+          value.concepts.filter((concept) => concept.domain === "MEASUREMENT")
+        ),
+      ].filter((value) => value.length).length,
+    },
+  ].filter((header) => header.show);
+});
+
+const getDomainSummary = function () {
+  return store
+    .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
+      files: [DOMAIN_SUMMARY],
+      params: {
+        concept: conceptsData.value[0].data.CONCEPT_ID[0],
+        domain: "measurement",
+      },
+      criticalError: false,
+    })
+    .then(() => {
+      return store.getters.getData.domainSummary.map((value) => ({
+        parsedData: value.data,
+        source: value.source.cdm_source_abbreviation,
+      }));
+    });
+};
+
+const formatComma = function (value) {
+  return d3Format.format(",")(value);
+};
+
+const emit = defineEmits(["overlappingDataChanged"]);
+
+watch(filterSourcesWithData, () => {
+  emit("overlappingDataChanged", filterSourcesWithData.value);
+});
+
+onBeforeMount(() => {
+  sources.value = store.getters.getSources.map((value) => ({
+    cdm_name: value.cdm_source_abbreviation,
+    concepts: [],
+  }));
+});
+</script>
+
+<script lang="ts">
 export default {
   name: "RequiredConcepts",
-  data: () => ({
-    dialog: false,
-    dialogDelete: false,
-    errors: "",
-    conceptsCount: 0,
-    conceptData: [],
-    selectedDomain: [],
-    domainSummary: [],
-    selectedConcepts: [],
-    rules: {
-      required: (value) => !!value || "Required field",
-      concept: (value) => {
-        const pattern = /^\d+$/;
-        return pattern.test(value) || "The field is digits only";
-      },
-    },
-    headers: [
-      {
-        text: "Source",
-        align: "start",
-        sortable: false,
-        value: "cdm_name",
-      },
-      { text: "Issues", value: "issues" },
-      { text: "Time-series issues", value: "time_series_issues" },
-      { text: "Available concepts", value: "concepts.length" },
-      { text: "Min population", value: "min_population" },
-      { text: "Max population", value: "max_population" },
-    ],
-    concepts: [],
-    expanded: [],
-    sources: [],
-    domains: [
-      { text: "Condition occurrence", value: "condition_occurrence" },
-      { text: "Drug Exposure", value: "drug_exposure" },
-      { text: "Device Exposure", value: "device_exposure" },
-      { text: "Measurement", value: "measurement" },
-      { text: "Death", value: "death" },
-      { text: "Procedure Occurrence", value: "procedure_occurrence" },
-      { text: "Observation", value: "observation" },
-    ],
-    editedItem: {
-      conceptID: "",
-      domain: "",
-    },
-    defaultItem: {
-      conceptID: "",
-      domain: "",
-    },
-  }),
-
-  computed: {
-    ...mapGetters(["getData", "getSources"]),
-    filterSourcesWithData: function () {
-      return this.sources.filter((data) => data.concepts.length);
-    },
-    getSourcesOverview: function () {
-      return this.filterSourcesWithData.map((value) => ({
-        ...value,
-        min_population: Math.min(
-          ...value.concepts.reduce(
-            (prev, current) => [...prev, current.population],
-            []
-          )
-        ),
-        max_population: Math.max(
-          ...value.concepts.reduce(
-            (prev, current) => [...prev, current.population],
-            []
-          )
-        ),
-        issues: value.concepts.filter((value) => value.issues === false).length,
-        time_series_issues: value.concepts.filter((value) =>
-          value.time_series ? value.time_series[0] === false : false
-        ).length,
-      }));
-    },
-    conceptHeaders: function () {
-      return [
-        {
-          text: "Concept ID",
-          align: "start",
-          sortable: false,
-          value: "concept_id",
-          show: true,
-        },
-        { text: "Concept Name", value: "concept_name", show: true },
-        { text: "Domain", value: "domain", show: true },
-        { text: "Population", value: "population", show: true },
-        { text: "%", value: "percentage", show: true },
-        { text: "Time series", value: "time_series", show: true },
-        { text: "Issues", value: "issues", show: true },
-        {
-          text: "% with values",
-          value: "measurement",
-          show: [
-            ...this.getSourcesOverview.map((value) =>
-              value.concepts.filter(
-                (concept) => concept.domain === "MEASUREMENT"
-              )
-            ),
-          ].filter((value) => value.length).length,
-        },
-      ].filter((header) => header.show);
-    },
-  },
-  watch: {
-    dialog(val) {
-      val || this.close();
-      if (this.$refs?.form) {
-        this.$refs.form.resetValidation();
-      }
-    },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
-    filterSourcesWithData: function () {
-      this.$emit("overlappingDataChanged", this.filterSourcesWithData);
-    },
-    editedItem: {
-      handler() {
-        this.errors = "";
-      },
-      deep: true,
-    },
-  },
-  created() {
-    this.sources = this.getSources.map((value) => ({
-      cdm_name: value.cdm_source_abbreviation,
-      concepts: [],
-    }));
-  },
-
-  methods: {
-    getDomainSummary: function () {
-      return this.$store
-        .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [DOMAIN_SUMMARY],
-          params: {
-            concept: this.conceptsData[0].data.CONCEPT_ID[0],
-            domain: "measurement",
-          },
-          criticalError: false,
-        })
-        .then(() => {
-          return this.getData.domainSummary.map((value) => ({
-            parsedData: value.data,
-            source: value.source.cdm_source_abbreviation,
-          }));
-        });
-    },
-
-    addConceptToList: function (concepts) {
-      if (concepts[0]?.concept_id && !this.isLoaded()) {
-        this.conceptsCount += 1;
-        this.sources.forEach((source) => {
-          const sourceConcept = concepts.filter(
-            (concept) => source.cdm_name === concept.cdm_name
-          )[0];
-
-          if (sourceConcept) {
-            source.concepts.push(sourceConcept);
-          }
-        });
-        this.close();
-      } else {
-        this.errors = "Entered concept is not found across data sources";
-      }
-    },
-    getConceptsForRequest: function (measurement = []) {
-      return this.conceptsData.map((value) => {
-        const missingData = measurement.length
-          ? measurement
-              .filter(
-                (source) =>
-                  source.source === value.source?.cdm_source_abbreviation
-              )[0]
-              ?.parsedData.filter(
-                (summaryReport) =>
-                  summaryReport.CONCEPT_ID == value?.data.CONCEPT_ID[0]
-              )[0].PERCENT_MISSING_VALUES
-          : [];
-        return {
-          concept_id: value?.data.CONCEPT_ID[0],
-          concept_name: value?.data.CONCEPT_NAME[0],
-          domain: value?.data.CDM_TABLE_NAME[0],
-          population: value?.data.NUM_PERSONS[0],
-          percentage: value?.data.PERCENT_PERSONS[0],
-          cdm_name: value?.source.cdm_source_abbreviation,
-          time_series: value?.data.IS_STATIONARY,
-          issues: value?.data.COUNT_FAILED,
-          measurement: measurement.length
-            ? (1 - missingData) * (100).toFixed(2)
-            : null,
-        };
-      });
-    },
-    isLoaded: function () {
-      return [
-        ...this.sources.reduce(
-          (prevValue, value) => [
-            ...prevValue,
-            ...value.concepts.filter(
-              (concept) => concept.concept_id === this.editedItem.conceptID
-            ),
-          ],
-          []
-        ),
-      ].length;
-    },
-    formatComma: function (value) {
-      return d3Format.format(",")(value);
-    },
-    deleteItem(item) {
-      this.editedIndex = this.concepts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
-    },
-
-    deleteItemConfirm() {
-      this.concepts.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    save() {
-      if (this.editedItem.conceptID === "" || this.editedItem.domain === "") {
-        return;
-      }
-      if (this.isLoaded()) {
-        this.errors = "Entered concept is already on the list";
-        return;
-      }
-
-      this.$store
-        .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-          files: [CONCEPT],
-          params: {
-            concept: this.editedItem.conceptID,
-            domain: this.editedItem.domain.value,
-          },
-          criticalError: false,
-        })
-        .then(() => {
-          this.conceptsData = this.getData.concept;
-          if (this.conceptsData[0]?.data?.CDM_TABLE_NAME[0] === "MEASUREMENT") {
-            this.getDomainSummary().then((value) => {
-              this.addConceptToList(this.getConceptsForRequest(value));
-            });
-          } else {
-            this.addConceptToList(this.getConceptsForRequest());
-          }
-        });
-    },
-  },
 };
 </script>
 

@@ -1,14 +1,18 @@
 <template>
-  <div v-if="!getErrors">
-    <v-card :loading="!getData.cdmsourceData" elevation="10" class="ma-4 pa-2">
+  <div v-if="!store.getters.getErrors">
+    <v-card
+      :loading="!store.getters.getData.cdmsourceData"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
       <v-card-title>CDM Source Details</v-card-title>
-      <v-container v-if="getData.cdmsourceData" fluid>
+      <v-container v-if="store.getters.getData.cdmsourceData" fluid>
         <v-layout
-          v-for="(d, i) in getData.cdmsourceData.columns"
+          v-for="(d, i) in store.getters.getData.cdmsourceData.columns"
           :key="i"
           class="pl-8"
         >
-          {{ d }}: {{ getData.cdmsourceData[0][d] }}
+          {{ d }}: {{ store.getters.getData.cdmsourceData[0][d] }}
         </v-layout>
       </v-container>
       <info-panel
@@ -17,23 +21,27 @@
         :divider="true"
       ></info-panel>
       <info-panel
-        v-if="getQueryIndex"
+        v-if="store.getters.getQueryIndex"
         icon="mdi-code-braces"
         details="View export query."
         :link-details="true"
-        :link="getSqlQueryLink(getQueryIndex.CDM_SOURCE[0])"
+        :link="links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])"
         :divider="false"
       ></info-panel>
     </v-card>
-    <v-card :loading="!getData.metadataData" elevation="10" class="ma-4 pa-2">
+    <v-card
+      :loading="!store.getters.getData.metadataData"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
       <v-card-title>Metadata</v-card-title>
-      <v-container v-if="getData.metadataData" fluid>
+      <v-container v-if="store.getters.getData.metadataData" fluid>
         <v-data-table
-          v-if="getData"
+          v-if="store.getters.getData"
           class="mt-4"
           dense
           :headers="headers"
-          :items="getData.metadataData"
+          :items="store.getters.getData.metadataData"
         >
         </v-data-table>
       </v-container>
@@ -43,73 +51,66 @@
         :divider="true"
       ></info-panel>
       <info-panel
-        v-if="getQueryIndex"
+        v-if="store.getters.getQueryIndex"
         icon="mdi-code-braces"
         details="View export query."
         :link-details="true"
-        :link="getSqlQueryLink(getQueryIndex.METADATA[0])"
+        :link="links.getSqlQueryLink(store.getters.getQueryIndex.METADATA[0])"
         :divider="false"
       ></info-panel>
     </v-card>
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-import infoPanel from "@/widgets/infoPanel";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+<script setup lang="ts">
+import InfoPanel from "@/widgets/infoPanel";
+import { VDataTable } from "vuetify/labs/VDataTable";
+import { links } from "@/shared/config/links";
 
-export default {
-  components: { infoPanel },
-  mixins: [mixins, getLinks],
-  data: function () {
-    return {
-      search: "",
-      headers: [
-        {
-          text: "METADATA_CONCEPT_ID",
-          sortable: true,
-          value: "METADATA_CONCEPT_ID",
-          align: "start",
-        },
-        {
-          text: "NAME",
-          sortable: true,
-          value: "NAME",
-          align: "start",
-        },
-        {
-          text: "VALUE_AS_STRING",
-          sortable: true,
-          value: "VALUE_AS_STRING",
-          align: "start",
-        },
-        {
-          text: "VALUE_AS_CONCEPT_ID",
-          sortable: true,
-          value: "VALUE_AS_CONCEPT_ID",
-          align: "start",
-        },
-        {
-          text: "METADATA_DATE",
-          sortable: true,
-          value: "METADATA_DATE",
-          align: "start",
-        },
-        {
-          text: "METADATA_DATETIME",
-          sortable: true,
-          value: "METADATA_DATETIME",
-          align: "start",
-        },
-      ],
-    };
+import { useStore } from "vuex";
+import { ref, Ref } from "vue";
+import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+
+const store = useStore();
+
+const headers: Ref<DataTableHeader[]> = ref([
+  {
+    title: "METADATA_CONCEPT_ID",
+    sortable: true,
+    key: "METADATA_CONCEPT_ID",
+    align: "start",
   },
-  computed: {
-    ...mapGetters(["getData", "getErrors", "getQueryIndex"]),
+  {
+    title: "NAME",
+    sortable: true,
+    key: "NAME",
+    align: "start",
   },
-};
+  {
+    title: "VALUE_AS_STRING",
+    sortable: true,
+    key: "VALUE_AS_STRING",
+    align: "start",
+  },
+  {
+    title: "VALUE_AS_CONCEPT_ID",
+    sortable: true,
+    key: "VALUE_AS_CONCEPT_ID",
+    align: "start",
+  },
+  {
+    title: "METADATA_DATE",
+    sortable: true,
+    key: "METADATA_DATE",
+    align: "start",
+  },
+  {
+    title: "METADATA_DATETIME",
+    sortable: true,
+    key: "METADATA_DATETIME",
+    align: "start",
+  },
+]);
 </script>
 
 <style scoped>

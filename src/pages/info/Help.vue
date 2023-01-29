@@ -1,53 +1,43 @@
 <template>
-  <div v-if="!getErrors" id="help">
-    <markdown
+  <div v-if="!store.getters.getErrors" id="help">
+    <Markdown
       v-if="contentLoaded"
-      :content="markdownContent"
-      :options="options"
-    ></markdown>
+      html
+      breaks
+      :source="markdownContent"
+    ></Markdown>
   </div>
 </template>
-<script>
-import markdown from "markdown-it-vue";
-import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
-import { HELP } from "@/shared/config/files";
-import { mapGetters } from "vuex";
-
+<script lang="ts">
 export default {
   name: "Help",
-  components: {
-    markdown,
-  },
-
-  data() {
-    return {
-      contentLoaded: false,
-      markdownContent: null,
-      options: {
-        markdownIt: {
-          html: true,
-          breaks: true,
-        },
-      },
-    };
-  },
-  created() {
-    this.$store
-      .dispatch(FETCH_FILES, {
-        files: [{ name: HELP, required: true }],
-      })
-      .then(() => {
-        if (!this.getErrors) {
-          this.markdownContent = this.getData[HELP];
-          this.contentLoaded = true;
-        }
-      });
-  },
-  methods: {},
-  computed: {
-    ...mapGetters(["getData", "getErrors"]),
-  },
 };
+</script>
+<script setup lang="ts">
+import Markdown from "vue3-markdown-it";
+import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
+import { HELP } from "@/shared/config/files";
+
+import { onBeforeMount, ref, Ref } from "vue";
+import { useStore } from "vuex";
+
+const store = useStore();
+
+const contentLoaded: Ref<boolean> = ref(false);
+const markdownContent = ref(null);
+
+onBeforeMount(() => {
+  store
+    .dispatch(FETCH_FILES, {
+      files: [{ name: HELP, required: true }],
+    })
+    .then(() => {
+      if (!store.getters.getErrors) {
+        markdownContent.value = store.getters.getData[HELP];
+        contentLoaded.value = true;
+      }
+    });
+});
 </script>
 
 <style></style>

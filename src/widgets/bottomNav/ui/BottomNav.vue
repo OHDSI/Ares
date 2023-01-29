@@ -1,18 +1,14 @@
 <template>
-  <v-bottom-navigation fixed dark dense>
-    <v-layout justify-end>
+  <v-bottom-navigation density="comfortable">
+    <v-layout class="justify-end align-center">
       <v-btn to="/help">
-        <v-icon dark>mdi-help-circle-outline</v-icon>
+        <v-icon>mdi-help-circle-outline</v-icon>
       </v-btn>
       <v-btn to="/network/overview">
-        <v-icon dark>mdi-database</v-icon>
+        <v-icon>mdi-database</v-icon>
       </v-btn>
       <v-btn to="/">
-        <v-img
-          :src="require('@/shared/assets/icon.png')"
-          max-height="20"
-          max-width="20"
-        ></v-img>
+        <v-img :class="iconClass" :src="logo" width="20"></v-img>
       </v-btn>
       <v-btn @click="toggleSettings">
         <v-icon dark>mdi-cog-outline</v-icon>
@@ -21,17 +17,31 @@
   </v-bottom-navigation>
 </template>
 
-<script>
-import { SET_VISIBILITY } from "@/widgets/settings/model/store/mutations.type";
-
+<script lang="ts">
 export default {
   name: "BottomNav",
-  methods: {
-    toggleSettings: function () {
-      this.$store.commit(SET_VISIBILITY, !this.$store.getters.getVisibility);
-    },
-  },
 };
 </script>
 
-<style scoped></style>
+<script setup lang="ts">
+import { SET_VISIBILITY } from "@/widgets/settings/model/store/mutations.type";
+import logo from "@/shared/assets/icon.png";
+import { useStore } from "vuex";
+import { computed } from "vue";
+
+const store = useStore();
+
+const iconClass = computed((): string => {
+  return store.getters.getSettings.darkMode ? "" : "inverted";
+});
+
+const toggleSettings = function (): void {
+  store.commit(SET_VISIBILITY, !store.getters.getVisibility);
+};
+</script>
+
+<style scoped>
+.inverted {
+  filter: invert(1);
+}
+</style>

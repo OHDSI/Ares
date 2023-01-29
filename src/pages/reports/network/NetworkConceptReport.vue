@@ -1,15 +1,15 @@
 <template>
-  <div v-if="!getErrors">
+  <div v-if="!store.getters.getErrors">
     <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-5 d-flex justify-space-between">
-          <h2 v-if="getData.metadata" class="text-uppercase">
-            {{ getData.metadata.conceptName }}
+          <h2 v-if="store.getters.getData.metadata" class="text-uppercase">
+            {{ store.getters.getData.metadata.conceptName }}
             NETWORK REPORT
           </h2>
           <ReturnButton />
         </v-layout>
-        <v-row v-if="getData.metadata" justify="start">
+        <v-row v-if="store.getters.getData.metadata" justify="start">
           <v-col cols="2" align="center">
             <v-icon left color="info">mdi-identifier</v-icon>
             <v-badge
@@ -17,7 +17,7 @@
               inline
               dark
               color="info"
-              :content="getData.metadata.conceptId"
+              :content="store.getters.getData.metadata.conceptId"
             ></v-badge>
             <p class="text-caption">Concept Identifier</p>
           </v-col>
@@ -28,35 +28,40 @@
               inline
               dark
               color="info"
-              :content="getData.metadata.numPersons"
+              :content="store.getters.getData.metadata.numPersons"
             ></v-badge>
             <p class="text-caption">Number of People in Network</p>
           </v-col>
         </v-row>
-        <v-card v-if="getData.table" elevation="10" class="ma-4 pa-2">
+        <v-card
+          v-if="store.getters.getData.table"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <v-data-table
+            density="compact"
             :headers="headers"
-            :items="getData.table.measurementValueDistribution"
+            :items="store.getters.getData.table.measurementValueDistribution"
           >
           </v-data-table>
         </v-card>
         <v-card
-          v-if="getData.chart"
-          :loading="!getData"
+          v-if="store.getters.getData.chart"
+          :loading="!store.getters.getData"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title
             >Measurement Value Distributions by Database and Unit</v-card-title
           >
-          <v-layout class="pa-4" justify-end>
+          <v-layout class="pa-4">
             <v-select
               v-model="selectedMeasurementUnits"
               class="mr-13"
               :items="getMeasurementUnits"
-              attach
+              variant="outlined"
               hide-selected
-              deletable-chips
+              closable-chips
               chips
               label="Filter units"
               multiple
@@ -65,142 +70,138 @@
           <Chart
             id="viz-measurementvaluedistribution"
             ref="measurementvalue"
-            :config="specMeasurementValueDistribution"
+            :config="chartConfigs.specMeasurementValueDistribution"
             :data="
               getSelectedMeasurementUnits ? getSelectedMeasurementUnits : []
             "
           />
-          <info-panel
+          <infopanel
             details="Learn how
               to interpret this plot."
             route-link="/help"
             :divider="true"
             :link-details="true"
-          ></info-panel>
-          <info-panel
-            v-if="getQueryIndex"
+          ></infopanel>
+          <infopanel
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.MEASUREMENT.MEASUREMENT_VALUE_DISTRIBUTION[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.MEASUREMENT
+                  .MEASUREMENT_VALUE_DISTRIBUTION[0]
               )
             "
             :divider="false"
-          ></info-panel>
+          ></infopanel>
         </v-card>
       </v-responsive>
     </v-container>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import ReturnButton from "@/features/returnToPreviousPage";
 import { chartConfigs, Chart } from "@/widgets/chart";
-import { mapGetters } from "vuex";
-import infoPanel from "@/widgets/infoPanel";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+import { VDataTable } from "vuetify/labs/VDataTable";
+import { links } from "@/shared/config/links";
+import { useStore } from "vuex";
+import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 
-export default {
-  components: {
-    Chart,
-    ReturnButton,
-    infoPanel,
+import { computed, Ref, ref } from "vue";
+import Infopanel from "@/widgets/infoPanel/ui/InfoPanel.vue";
+
+const store = useStore();
+
+const headers: Ref<DataTableHeader[]> = ref([
+  {
+    title: "Source",
+    sortable: true,
+    key: "SOURCE",
+    align: "start",
   },
-  mixins: [mixins, getLinks],
-  data() {
-    return {
-      selectedMeasurementUnits: [],
-      specMeasurementValueDistribution:
-        chartConfigs.specMeasurementValueDistribution1,
-      headers: [
-        {
-          text: "Source",
-          sortable: true,
-          value: "SOURCE",
-          align: "start",
-        },
-        {
-          text: "Unit",
-          sortable: true,
-          value: "CATEGORY",
-          align: "start",
-        },
-        {
-          text: "Release",
-          sortable: true,
-          value: "RELEASE",
-          align: "start",
-        },
-        {
-          text: "Count value",
-          sortable: true,
-          value: "NUM_PERSONS",
-          align: "start",
-        },
-        {
-          text: "Min Value",
-          sortable: true,
-          value: "MIN_VALUE",
-          align: "start",
-        },
-        {
-          text: "P10 Value",
-          sortable: true,
-          value: "P10_VALUE",
-          align: "start",
-        },
-        {
-          text: "P25 Value",
-          sortable: true,
-          value: "P25_VALUE",
-          align: "start",
-        },
-        {
-          text: "Median Value",
-          sortable: true,
-          value: "MEDIAN_VALUE",
-          align: "start",
-        },
-        {
-          text: "P75 Value",
-          sortable: true,
-          value: "P75_VALUE",
-          align: "start",
-        },
-        {
-          text: "P90 Value",
-          sortable: true,
-          value: "P90_VALUE",
-          align: "start",
-        },
-        {
-          text: "Max Value",
-          sortable: true,
-          value: "MAX_VALUE",
-          align: "start",
-        },
-      ],
-    };
+  {
+    title: "Unit",
+    sortable: true,
+    key: "CATEGORY",
+    align: "start",
   },
-  computed: {
-    ...mapGetters(["getData", "getSources", "getErrors", "getQueryIndex"]),
-    getSelectedMeasurementUnits: function () {
-      return this.selectedMeasurementUnits.length
-        ? this.getData?.chart?.measurementValueDistribution.filter((value) =>
-            this.selectedMeasurementUnits.includes(value.CATEGORY)
-          )
-        : this.getData?.chart?.measurementValueDistribution;
-    },
-    getMeasurementUnits: function () {
-      return this.getData?.chart?.measurementValueDistribution.map(
+  {
+    title: "Release",
+    sortable: true,
+    key: "RELEASE",
+    align: "start",
+  },
+  {
+    title: "Count value",
+    sortable: true,
+    key: "NUM_PERSONS",
+    align: "start",
+  },
+  {
+    title: "Min Value",
+    sortable: true,
+    key: "MIN_VALUE",
+    align: "start",
+  },
+  {
+    title: "P10 Value",
+    sortable: true,
+    key: "P10_VALUE",
+    align: "start",
+  },
+  {
+    title: "P25 Value",
+    sortable: true,
+    key: "P25_VALUE",
+    align: "start",
+  },
+  {
+    title: "Median Value",
+    sortable: true,
+    key: "MEDIAN_VALUE",
+    align: "start",
+  },
+  {
+    title: "P75 Value",
+    sortable: true,
+    key: "P75_VALUE",
+    align: "start",
+  },
+  {
+    title: "P90 Value",
+    sortable: true,
+    key: "P90_VALUE",
+    align: "start",
+  },
+  {
+    title: "Max Value",
+    sortable: true,
+    key: "MAX_VALUE",
+    align: "start",
+  },
+]);
+
+const getMeasurementUnits = computed(function () {
+  return [
+    ...new Set(
+      store.getters.getData?.chart?.measurementValueDistribution.map(
         (value) => value.CATEGORY
-      );
-    },
-  },
-};
+      )
+    ),
+  ];
+});
+
+const selectedMeasurementUnits: Ref<string[]> = ref([]);
+
+const getSelectedMeasurementUnits = computed(function () {
+  return selectedMeasurementUnits.value.length
+    ? store.getters.getData?.chart?.measurementValueDistribution.filter(
+        (value) => selectedMeasurementUnits.value.includes(value.CATEGORY)
+      )
+    : store.getters.getData?.chart?.measurementValueDistribution;
+});
 </script>
 
 <style scoped>

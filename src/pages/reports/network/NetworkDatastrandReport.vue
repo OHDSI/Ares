@@ -1,89 +1,88 @@
 <template>
-  <v-container v-if="!getErrors" fluid min-width="900">
-    <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+  <v-container v-if="!store.getters.getErrors" fluid min-width="900">
+    <v-card
+      :loading="!store.getters.dataInStore"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
       <v-card-title>Data Strands</v-card-title>
-      <div v-if="getData" id="viz-datastrand" class="viz-container"></div>
-      <infopanel
+      <div
+        v-if="store.getters.getData"
+        id="viz-datastrand"
+        class="viz-container"
+      ></div>
+      <info-panel
         details="Data strands are simple visualizations that describe the composition of
         a data source across the various CDM domain tables. Each individual
         strand shows the percentage of the data source comprised of data from a
         particular domain table. Across the network, the strands can be visually
         compared and contrasted."
-      ></infopanel>
-      <infopanel
-        v-if="getQueryIndex"
+      ></info-panel>
+      <InfoPanel
+        v-if="store.getters.getQueryIndex"
         icon="mdi-code-braces"
         details="View export query."
         :link-details="true"
         :link="
-          getSqlQueryLink(getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0])
+          links.getSqlQueryLink(
+            store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
+          )
         "
         :divider="false"
-      ></infopanel>
+      ></InfoPanel>
     </v-card>
   </v-container>
 </template>
 
-<script>
+<script setup lang="ts">
 import embed from "vega-embed";
-import infopanel from "../../../widgets/infoPanel";
-import { chartConfigs } from "@/widgets/chart";
-import { mapGetters } from "vuex";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+import { watch, computed } from "vue";
+import { useRouter } from "vue-router";
 
-export default {
-  components: {
-    infopanel,
-  },
-  mixins: [mixins, getLinks],
-  data() {
-    return {
-      specDatastrand: chartConfigs.specDatastrand,
-    };
-  },
-  watch: {
-    darkMode() {
-      this.renderChart();
-    },
-    getData() {
-      if (this.getData) {
-        this.specDatastrand.data[0].values = this.getData;
-        this.renderChart();
-      }
-    },
-  },
-  methods: {
-    renderChart: function () {
-      embed("#viz-datastrand", this.specDatastrand, {
-        theme: this.getSettings.darkMode ? "dark" : "",
-      }).then((result) => {
-        result.view.addSignalListener("selectDomain", (name, value) => {
-          const domainKey = value.domain.toLowerCase().replace(" ", "_");
-          this.navigateTo("domainTable", {
-            cdm: value.cdm_source_key,
-            release: value.cdm_release_key,
-            domain: domainKey,
-          });
-          document.getElementById("vg-tooltip-element").style.display = "none";
-        });
+const router = useRouter();
+const store = useStore();
+
+import InfoPanel from "../../../widgets/infoPanel";
+import { chartConfigs } from "@/widgets/chart";
+import { links } from "@/shared/config/links";
+
+const config = chartConfigs.specDatastrand;
+
+import { useStore } from "vuex";
+
+const renderChart = function () {
+  embed("#viz-datastrand", config, {
+    theme: store.getters.getSettings.darkMode ? "dark" : "",
+  }).then((result) => {
+    result.view.addSignalListener("selectDomain", (name, value) => {
+      const domainKey = value.domain.toLowerCase().replace(" ", "_");
+      router.push({
+        name: "domainTable",
+        params: {
+          cdm: value.cdm_source_key,
+          release: value.cdm_release_key,
+          domain: domainKey,
+        },
       });
-    },
-  },
-  computed: {
-    ...mapGetters([
-      "getData",
-      "getSources",
-      "getErrors",
-      "getSettings",
-      "dataInStore",
-      "getQueryIndex",
-    ]),
-    darkMode: function () {
-      return this.getSettings.darkMode;
-    },
-  },
+      document.getElementById("vg-tooltip-element").style.display = "none";
+    });
+  });
 };
+
+const data = computed(() => store.getters.getData);
+
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+
+watch(data, function () {
+  if (data.value) {
+    config.data[0].values = data.value;
+    renderChart();
+  }
+});
+
+watch(darkMode, () => {
+  renderChart();
+});
 </script>
 
 <style scoped>

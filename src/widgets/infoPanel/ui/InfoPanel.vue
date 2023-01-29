@@ -1,35 +1,35 @@
 <template>
   <v-container fluid class="mt-1">
-    <v-divider v-if="divider" inset class="pa-1"></v-divider>
+    <v-divider v-if="props.divider" inset class="pa-1"></v-divider>
     <v-row
       ><v-col cols="1" class="pa-2">
-        <v-icon color="blue-grey" right>{{ icon }}</v-icon> </v-col
+        <v-icon color="blue-grey" right>{{
+          props.icon ? props.icon : "mdi-help-circle"
+        }}</v-icon> </v-col
       ><v-col cols="11" class="text-caption pa-2">
-        <v-layout v-if="!linkDetails">{{ details }}</v-layout>
-        <a v-if="link != undefined" target="_blank" :href="link">
-          <v-layout v-if="!linkDetails"
+        <v-layout v-if="!props.linkDetails">{{ props.details }}</v-layout>
+        <a v-if="props.link" target="_blank" :href="props.link">
+          <v-layout v-if="!props.linkDetails"
             >Click here to learn more
-            <v-icon left small color="primary"
+            <v-icon icon="mdi-open-in-new" left small
               >mdi-open-in-new</v-icon
             ></v-layout
           >
-          <v-layout v-if="linkDetails"
-            >{{ details }}
-            <v-icon left small color="primary"
-              >mdi-open-in-new</v-icon
-            ></v-layout
-          >
+          <v-layout v-if="props.linkDetails"
+            >{{ props.details }}
+            <v-icon icon="mdi-open-in-new" left small></v-icon
+          ></v-layout>
         </a>
-        <router-link v-if="routeLink" :to="routeLink">
-          <v-layout v-if="!linkDetails"
+        <router-link v-if="props.routeLink" :to="props.routeLink">
+          <v-layout v-if="!props.linkDetails"
             >Click here to learn more
-            <v-icon left small color="primary"
+            <v-icon icon="mdi-open-in-new" left small
               >mdi-open-in-new</v-icon
             ></v-layout
           >
-          <v-layout v-if="linkDetails"
-            >{{ details }}
-            <v-icon left small color="primary"
+          <v-layout v-if="props.linkDetails"
+            >{{ props.details }}
+            <v-icon icon="mdi-open-in-new" left small
               >mdi-open-in-new</v-icon
             ></v-layout
           >
@@ -39,22 +39,26 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 export default {
-  name: "Infopanel",
-  props: {
-    details: { type: String },
-    link: { type: String },
-    routeLink: { type: Object },
-    icon: { type: String, default: "mdi-help-circle" },
-    divider: { type: Boolean, default: true },
-    linkDetails: { type: Boolean, default: false },
-  },
-  data() {
-    return {};
-  },
-  created() {},
+  name: "InfoPanel",
 };
+</script>
+
+<script setup lang="ts">
+import { defineProps } from "vue";
+import { LocationQuery } from "vue-router";
+
+interface Props {
+  details?: string;
+  link?: string;
+  routeLink?: string | LocationQuery;
+  icon?: string;
+  divider?: boolean;
+  linkDetails?: boolean;
+}
+
+const props = defineProps<Props>();
 </script>
 
 <style scoped>

@@ -1,29 +1,31 @@
 <template>
   <v-responsive min-width="900">
     <v-card
-      v-if="!getErrors"
-      :loading="!dataInStore"
+      v-if="!store.getters.getErrors"
+      :loading="!store.getters.dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
-      <div v-if="dataInStore">
+      <div v-if="store.getters.dataInStore">
         <Chart
           id="viz-continuity"
           title="Domain Continuity"
-          :config="specOverview"
-          :data="getData.domainRecords"
+          :config="chartConfigs.specOverview"
+          :data="store.getters.getData.domainRecords"
           :listener="eventListener"
         />
         <info-panel
           details="Domain continuity shows the number of records in each domain table for multiple releases of data from a specific vendor or data source. This is NOT the number of records that occur at specific times within a CDM, but a count of the number of records in a release of a data source, graphed over time. This visualization allows one to see how the data is changing across updates for a single data source."
         ></info-panel>
         <info-panel
-          v-if="getQueryIndex"
+          v-if="store.getters.getQueryIndex"
           icon="mdi-code-braces"
           details="View export query."
           :link-details="true"
           :link="
-            getSqlQueryLink(getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0])
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
+            )
           "
           :divider="false"
         ></info-panel>
@@ -32,51 +34,40 @@
   </v-responsive>
 </template>
 
-<script>
+<script setup lang="ts">
 import InfoPanel from "../../../widgets/infoPanel";
 import { chartConfigs, Chart } from "@/widgets/chart";
-import { mapGetters } from "vuex";
-import { getLinks } from "@/shared/config/links";
-import { mixins } from "@/shared/lib/mixins";
-export default {
-  components: {
-    Chart,
-    InfoPanel,
-  },
-  mixins: [getLinks, mixins],
-  data() {
-    return {
-      specOverview: chartConfigs.specOverview,
+import { links } from "@/shared/config/links";
+import { helpers } from "@/shared/lib/mixins";
+import { RouteLocation, useRouter } from "vue-router";
+import { useStore } from "vuex";
+
+const router = useRouter();
+const store = useStore();
+
+const navigate = function (route) {
+  router.push(route);
+  // hide tooltip otherwise it persists on navigation
+  document.getElementById("vg-tooltip-element").style.display = "none";
+};
+
+const eventListener = function (result, route: RouteLocation) {
+  return result.view.addEventListener("click", (event, item) => {
+    const itemData = item.datum.datum;
+    const releaseKey = helpers.getPaddedDate(
+      new Date(itemData.release_date),
+      ""
+    );
+    const routeUrl = {
+      name: "domainTable",
+      params: {
+        cdm: route.params.cdm,
+        release: releaseKey,
+        domain: itemData.domain.toLowerCase().split(" ").join("_"),
+      },
     };
-  },
-  computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
-  },
-  methods: {
-    navigate: function (route) {
-      this.$router.push(route);
-      // hide tooltip otherwise it persists on navigation
-      document.getElementById("vg-tooltip-element").style.display = "none";
-    },
-    eventListener: function (result, route) {
-      return result.view.addEventListener("click", (event, item) => {
-        const itemData = item.datum.datum;
-        const releaseKey = this.getPaddedDate(
-          new Date(itemData.release_date),
-          ""
-        );
-        const routeUrl = {
-          name: "domainTable",
-          params: {
-            cdm: route.params.cdm,
-            release: releaseKey,
-            domain: itemData.domain.toLowerCase().split(" ").join("_"),
-          },
-        };
-        this.navigate(routeUrl);
-      });
-    },
-  },
+    navigate(routeUrl);
+  });
 };
 </script>
 

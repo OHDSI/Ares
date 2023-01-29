@@ -37,7 +37,7 @@ table.pvtTable {
 
 table.pvtTable thead tr th,
 table.pvtTable tbody tr th {
-    background-color: var(--v-accent-base);
+    background-color: rgb(var(--v-theme-accent));
     padding: 5px;
 }
 
@@ -50,8 +50,7 @@ table.pvtTable .pvtTotalLabel {
 
 table.pvtTable tbody tr td {
     padding: 3px;
-    background-color: var(--v-base);
-    border: 1px solid var(--v-accent-base);
+    border: 1px solid rgb(140, 140, 140);
     vertical-align: top;
     text-align: right;
     text-decoration: underline;

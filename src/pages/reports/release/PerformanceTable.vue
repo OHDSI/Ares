@@ -1,6 +1,10 @@
 <template>
   <div>
-    <v-container v-if="dataInStore && !getErrors" fluid class="pa-1">
+    <v-container
+      v-if="store.getters.dataInStore && !store.getters.getErrors"
+      fluid
+      class="pa-1"
+    >
       <v-card elevation="10" class="ma-4 pa-2">
         <v-card-title>Performance</v-card-title>
         <v-row>
@@ -10,6 +14,7 @@
               prepend-icon="mdi-magnify"
               label="Search in Table"
               single-line
+              variant="outlined"
               hide-details
             ></v-text-field>
           </v-col>
@@ -18,7 +23,7 @@
 
         <v-data-table
           class="mt-4"
-          dense
+          density="compact"
           :headers="headers"
           :items="filteredRecords"
           :footer-props="{
@@ -28,49 +33,60 @@
           :items-per-page="10"
           :search="search"
         >
-          <template v-slot:body.prepend>
+          <template #body.prepend>
             <tr>
-              <th v-for="header in headers" :key="header.text">
-                <div v-if="filters.hasOwnProperty(header.value)">
+              <th v-for="header in headers" :key="header.title">
+                <div v-if="filters.hasOwnProperty(header.key)">
                   <v-select
-                    v-model="filters[header.value]"
+                    v-model="filters[header.key]"
                     small-chips
                     deletable-chips
                     hide-details
                     multiple
-                    :items="getValuesArray(getData.domainTable, header.value)"
+                    :items="
+                      helpers.getValuesArray(
+                        store.getters.getData.domainTable,
+                        header.key
+                      )
+                    "
                   ></v-select>
                 </div>
               </th>
             </tr>
           </template>
-          <template v-slot:item.analysis_id="{ item }">
+          <template #item.analysis_id="{ item }">
             <v-layout justify-end
               ><a
                 target="_new"
-                :href="getSqlQueryLink(`analyses/${item.analysis_id}.sql`)"
-                >{{ item.analysis_id }}</a
+                :href="
+                  links.getSqlQueryLink(`analyses/${item.raw.analysis_id}.sql`)
+                "
+                >{{ item.raw.analysis_id }}</a
               ></v-layout
             >
           </template>
-          <template v-slot:item.elapsed_seconds="{ item }">
-            <v-layout justify-end>{{ item.elapsed_seconds }}</v-layout>
+          <template #item.elapsed_seconds="{ item }">
+            <v-layout justify-end>{{ item.raw.elapsed_seconds }}</v-layout>
           </template>
         </v-data-table>
 
         <info-panel
           details="This report
           describes how long each analysis executed during Achilles characterization took to run in seconds."
-          :link="getAchillesLink"
+          :link="links.getAchillesLink"
         >
         </info-panel>
 
         <info-panel
-          v-if="getQueryIndex"
+          v-if="store.getters.getQueryIndex"
           icon="mdi-code-braces"
           details="View export query."
           :link-details="true"
-          :link="getSqlQueryLink(getQueryIndex.ACHILLES_PERFORMANCE[0])"
+          :link="
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.ACHILLES_PERFORMANCE[0]
+            )
+          "
           :divider="false"
         ></info-panel>
       </v-card>
@@ -78,53 +94,47 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-import { getLinks } from "@/shared/config/links";
-import infoPanel from "@/widgets/infoPanel";
-import { mixins } from "@/shared/lib/mixins";
+<script setup lang="ts">
+import { links } from "@/shared/config/links";
+import InfoPanel from "@/widgets/infoPanel";
+import { VDataTable } from "vuetify/labs/VDataTable";
+import { helpers } from "@/shared/lib/mixins";
+import { useStore } from "vuex";
 
-export default {
-  components: { infoPanel },
-  mixins: [mixins, getLinks],
-  props: {
-    resultFile: String,
+const store = useStore();
+
+import { ref, computed } from "vue";
+
+const search = ref("");
+const filters = ref({});
+const headers = ref([
+  {
+    title: "Analysis Id",
+    sortable: true,
+    key: "analysis_id",
   },
-  data: function () {
-    return {
-      chooseHeaderMenu: false,
-      search: "",
-      filters: {},
-      headers: [
-        {
-          text: "Analysis Id",
-          sortable: true,
-          value: "analysis_id",
-        },
-        {
-          text: "Analysis Name",
-          sortable: true,
-          value: "analysis_name",
-        },
-        {
-          text: "Duration (seconds)",
-          sortable: true,
-          value: "elapsed_seconds",
-        },
-      ],
-    };
+  {
+    title: "Analysis Name",
+    sortable: true,
+    key: "analysis_name",
   },
-  computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
-    filteredRecords() {
-      return this.getData.domainTable.filter((d) => {
-        return Object.keys(this.filters).every((f) => {
-          return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
-        });
-      });
-    },
+  {
+    title: "Duration (seconds)",
+    sortable: true,
+    key: "elapsed_seconds",
   },
-};
+]);
+
+const filteredRecords = computed(function () {
+  return store.getters.getData.domainTable.filter((d) => {
+    return Object.keys(filters.value).every((f) => {
+      return (
+        filters.value[f as keyof typeof filters].length < 1 ||
+        filters.value[f as keyof typeof filters].includes(d[f])
+      );
+    });
+  });
+});
 </script>
 
 <style scoped>

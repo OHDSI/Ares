@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-card
-      v-if="!getErrors"
-      :loading="!dataInStore"
+      v-if="!store.getters.getErrors"
+      :loading="!store.getters.dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
@@ -14,16 +14,16 @@
             label="Search in Table"
             single-line
             hide-details
-            @input="debouncedSearch"
+            @input="helpers.debouncedSearch"
           ></v-text-field>
         </v-col>
         <v-col cols="9"> </v-col>
       </v-row>
 
       <v-data-table
-        v-if="dataInStore"
+        v-if="store.getters.dataInStore"
         class="mt-4"
-        dense
+        density="compact"
         :headers="headers"
         :items="filteredRecords"
         :footer-props="{
@@ -32,27 +32,27 @@
         item-key="CONCEPT_ID"
         :items-per-page="10"
         :search="search"
-        sort-by="RECORD_COUNT"
-        :sort-desc="true"
       >
-        <template v-slot:body.prepend>
+        <template #body.prepend>
           <tr>
             <th v-for="header in headers" :key="header.text">
-              <div v-if="filters.hasOwnProperty(header.value)">
+              <div v-if="filters.hasOwnProperty(header.key)">
                 <v-select
-                  v-model="filters[header.value]"
+                  v-model="filters[header.key]"
                   small-chips
                   deletable-chips
                   hide-details
                   multiple
-                  :items="getValuesArray(filteredRecords, header.value)"
+                  :items="helpers.getValuesArray(filteredRecords, header.key)"
                 ></v-select>
               </div>
             </th>
           </tr>
         </template>
-        <template v-slot:item.RECORD_COUNT="{ item }">
-          <v-layout justify-end>{{ formatComma(item.RECORD_COUNT) }}</v-layout>
+        <template #item.RECORD_COUNT="{ item }">
+          <v-layout justify-end>{{
+            helpers.formatComma(item.raw.RECORD_COUNT)
+          }}</v-layout>
         </template>
       </v-data-table>
       <v-card-text>
@@ -65,54 +65,50 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-import { mixins } from "@/shared/lib/mixins";
+<script setup lang="ts">
+import { helpers } from "@/shared/lib/mixins";
+import { computed, Ref, ref } from "vue";
+import { useStore } from "vuex";
+import { VDataTable } from "vuetify/labs/VDataTable";
 
-export default {
-  mixins: [mixins],
-  data: function () {
-    return {
-      search: "",
-      filters: {
-        CDM_TABLE_NAME: [],
-        CDM_FIELD_NAME: [],
-      },
-      headers: [
-        {
-          text: "CDM Table",
-          sortable: true,
-          value: "CDM_TABLE_NAME",
-        },
-        {
-          text: "CDM Field",
-          sortable: true,
-          value: "CDM_FIELD_NAME",
-        },
-        {
-          text: "Source Value",
-          sortable: true,
-          value: "SOURCE_VALUE",
-        },
-        {
-          text: "# Records",
-          sortable: true,
-          value: "RECORD_COUNT",
-        },
-      ],
-    };
+const store = useStore();
+
+const search: Ref<string> = ref("");
+const filters = ref({});
+
+const headers = ref([
+  {
+    text: "CDM Table",
+    sortable: true,
+    key: "CDM_TABLE_NAME",
   },
-  computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore"]),
-    filteredRecords() {
-      return this.getData.domainTable.filter((d) => {
-        return Object.keys(this.filters).every((f) => {
-          return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
-        });
-      });
-    },
+  {
+    text: "CDM Field",
+    sortable: true,
+    key: "CDM_FIELD_NAME",
   },
-};
+  {
+    text: "Source Value",
+    sortable: true,
+    key: "SOURCE_VALUE",
+  },
+  {
+    text: "# Records",
+    sortable: true,
+    key: "RECORD_COUNT",
+  },
+]);
+
+const filteredRecords = computed(function () {
+  return store.getters.getData.domainTable.filter((d) => {
+    return Object.keys(filters.value).every((f) => {
+      return (
+        filters.value[f as keyof typeof filters].length < 1 ||
+        filters.value[f].includes(d[f])
+      );
+    });
+  });
+});
 </script>
 
 <style scoped>
