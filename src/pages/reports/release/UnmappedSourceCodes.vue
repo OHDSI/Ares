@@ -35,7 +35,7 @@
       >
         <template #body.prepend>
           <tr>
-            <th v-for="header in headers" :key="header.text">
+            <th v-for="header in headers" :key="header.title">
               <div v-if="filters.hasOwnProperty(header.key)">
                 <v-select
                   v-model="filters[header.key]"
