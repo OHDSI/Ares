@@ -70,30 +70,31 @@ import { helpers } from "@/shared/lib/mixins";
 import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
 import { VDataTable } from "vuetify/labs/VDataTable";
+import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 
 const store = useStore();
 
 const search: Ref<string> = ref("");
 const filters = ref({});
 
-const headers = ref([
+const headers: Ref<DataTableHeader[]> = ref([
   {
-    text: "CDM Table",
+    title: "CDM Table",
     sortable: true,
     key: "CDM_TABLE_NAME",
   },
   {
-    text: "CDM Field",
+    title: "CDM Field",
     sortable: true,
     key: "CDM_FIELD_NAME",
   },
   {
-    text: "Source Value",
+    title: "Source Value",
     sortable: true,
     key: "SOURCE_VALUE",
   },
   {
-    text: "# Records",
+    title: "# Records",
     sortable: true,
     key: "RECORD_COUNT",
   },
