@@ -44,6 +44,15 @@ export default function concept(data) {
       v.X_CALENDAR_MONTH.toString()
     );
   });
+
+  const measurementTable = conceptData.MEASUREMENT_VALUE_DISTRIBUTION
+    ? conceptData.MEASUREMENT_VALUE_DISTRIBUTION.map((value) => ({
+        ...value,
+        UNIT_COUNT: conceptData.RECORDS_BY_UNIT.filter(
+          (val) => val.CONCEPT_NAME === value.CATEGORY
+        )[0].COUNT_VALUE,
+      }))
+    : null;
   return {
     conceptData,
     conceptName,
@@ -56,5 +65,6 @@ export default function concept(data) {
     percentPersons,
     recordsPerPerson,
     domainSummary,
+    measurementTable,
   };
 }
