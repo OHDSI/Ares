@@ -1,42 +1,49 @@
 <template>
   <div>
-    <v-container v-if="!getErrors" fluid>
+    <v-container v-if="!store.getters.getErrors" fluid>
       <v-responsive min-width="900">
         <div class="text-uppercase text-h6">Observation Period Report</div>
-        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.dataInStore"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-cumulativeobservation"
-            :config="specCumulativeObservation"
-            :data="getData.observationPeriodData.CUMULATIVE_DURATION"
+            :config="chartConfigs.specCumulativeObservation"
+            :data="
+              store.getters.getData.observationPeriodData.CUMULATIVE_DURATION
+            "
             title="Cumulative Observation"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.OBSERVATION_PERIOD.CUMULATIVE_DURATION[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
+                  .CUMULATIVE_DURATION[0]
               )
             "
             :divider="true"
           ></info-panel>
         </v-card>
         <v-card
-          v-if="dataInStore"
-          :loading="!getData"
+          v-if="store.getters.dataInStore"
+          :loading="!store.getters.getData"
           elevation="10"
           class="ma-4 pa-2"
         >
           <v-card-title>Observation Periods per Person</v-card-title>
           <v-data-table
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             class="mt-4"
-            dense
+            density="compact"
             :headers="headers"
-            :items="getData.personPeriods"
+            :items="store.getters.getData.personPeriods"
             :footer-props="{
               'items-per-page-options': [5, 10, 25, 50],
             }"
@@ -44,131 +51,164 @@
             :sort-by="['PERCENT_PEOPLE']"
             :sort-desc="[true, false]"
           >
-            <template v-slot:item.PERCENT_PEOPLE="{ item }">
-              {{ item.PERCENT_PEOPLE }}%
+            <template #item.PERCENT_PEOPLE="{ item }">
+              {{ item.raw.PERCENT_PEOPLE }}%
             </template>
-            <template v-slot:item.COUNT_VALUE="{ item }">
-              {{ formatComma(item.COUNT_VALUE) }}
+            <template #item.COUNT_VALUE="{ item }">
+              {{ helpers.formatComma(item.raw.COUNT_VALUE) }}
             </template>
           </v-data-table>
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.OBSERVATION_PERIOD.PERSON_PERIODS_DATA[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
+                  .PERSON_PERIODS_DATA[0]
               )
             "
             :divider="true"
           ></info-panel>
         </v-card>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.getData"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-observationbymonth"
-            :config="specObservationByMonth"
-            :data="getData.observationPeriodData.OBSERVED_BY_MONTH"
+            width="90"
+            :config="chartConfigs.specObservationByMonth"
+            :data="
+              store.getters.getData.observationPeriodData.OBSERVED_BY_MONTH
+            "
             title="Observation over Time"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.OBSERVATION_PERIOD.OBSERVED_BY_MONTH[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
+                  .OBSERVED_BY_MONTH[0]
               )
             "
             :divider="true"
           ></info-panel>
         </v-card>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.getData"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-observationbyage"
-            :config="specObservationByAge"
+            :config="chartConfigs.specObservationByAge"
             :data="
-              getData.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE
+              store.getters.getData.observationPeriodData
+                .OBSERVATION_PERIOD_LENGTH_BY_AGE
             "
             title="Years of Observation by Age"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.OBSERVATION_PERIOD
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
                   .OBSERVATION_PERIOD_LENGTH_BY_AGE[0]
               )
             "
             :divider="true"
           ></info-panel>
         </v-card>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.getData"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-observationbysex"
-            :config="specObservationBySex"
+            :config="chartConfigs.specObservationBySex"
             :data="
-              getData.observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_GENDER
+              store.getters.getData.observationPeriodData
+                .OBSERVATION_PERIOD_LENGTH_BY_GENDER
             "
             title="Years of Observation by Sex"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.OBSERVATION_PERIOD
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
                   .OBSERVATION_PERIOD_LENGTH_BY_GENDER[0]
               )
             "
             :divider="true"
           ></info-panel>
         </v-card>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.getData"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-ageatfirstobservation"
-            :config="specAgeAtFirstObservation"
-            :data="getData.observationPeriodData.AGE_AT_FIRST_OBSERVATION"
+            :config="chartConfigs.specAgeAtFirstObservation"
+            :data="
+              store.getters.getData.observationPeriodData
+                .AGE_AT_FIRST_OBSERVATION
+            "
             title="Age at First Observation"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.OBSERVATION_PERIOD.AGE_AT_FIRST_OBSERVATION[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
+                  .AGE_AT_FIRST_OBSERVATION[0]
               )
             "
             :divider="true"
           ></info-panel>
         </v-card>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.getData"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-agebysex"
-            :config="specAgeBySex"
-            :data="getData.observationPeriodData.AGE_BY_GENDER"
+            :config="chartConfigs.specAgeBySex"
+            :data="store.getters.getData.observationPeriodData.AGE_BY_GENDER"
             title="Age at First Observation by Sex"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(getQueryIndex.OBSERVATION_PERIOD.AGE_BY_GENDER[0])
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD.AGE_BY_GENDER[0]
+              )
             "
             :divider="true"
           ></info-panel>
@@ -178,53 +218,39 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { chartConfigs, Chart } from "@/widgets/chart";
-import { mapGetters } from "vuex";
-import infoPanel from "@/widgets/infoPanel";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+import InfoPanel from "@/widgets/infoPanel";
+import { helpers } from "@/shared/lib/mixins";
+import { links } from "@/shared/config/links";
+import { VDataTable } from "vuetify/labs/VDataTable";
 
-export default {
-  components: {
-    Chart,
-    infoPanel,
+import { useStore } from "vuex";
+
+const store = useStore();
+import { ref, Ref } from "vue";
+import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+
+const headers: Ref<DataTableHeader[]> = ref([
+  {
+    title: "Number of Observation Periods",
+    sortable: true,
+    key: "CONCEPT_ID",
+    align: "start",
   },
-  mixins: [mixins, getLinks],
-  data() {
-    return {
-      headers: [
-        {
-          text: "Number of Observation Periods",
-          sortable: true,
-          value: "CONCEPT_ID",
-          align: "start",
-        },
-        {
-          text: "Number of People",
-          sortable: true,
-          value: "COUNT_VALUE",
-          align: "start",
-        },
-        {
-          text: "% of People",
-          sortable: true,
-          value: "PERCENT_PEOPLE",
-          align: "end",
-        },
-      ],
-      specAgeAtFirstObservation: chartConfigs.specAgeAtFirstObservation,
-      specAgeBySex: chartConfigs.specAgeBySex,
-      specCumulativeObservation: chartConfigs.specCumulativeObservation,
-      specObservationByAge: chartConfigs.specObservationByAge,
-      specObservationBySex: chartConfigs.specAgeBySex,
-      specObservationByMonth: chartConfigs.specObservationByMonth,
-    };
+  {
+    title: "Number of People",
+    sortable: true,
+    key: "COUNT_VALUE",
+    align: "start",
   },
-  computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
+  {
+    title: "% of People",
+    sortable: true,
+    key: "PERCENT_PEOPLE",
+    align: "end",
   },
-};
+]);
 </script>
 
 <style scoped>

@@ -1,5 +1,9 @@
 <template>
-  <div v-if="explorerLoaded" id="network-data-quality-overview" class="pa-4">
+  <div
+    v-if="store.getters.explorerLoaded"
+    id="network-data-quality-overview"
+    class="pa-4"
+  >
     <v-row>
       <v-col>
         <v-card elevation="10" class="mx-auto pb-6" outlined>
@@ -35,37 +39,43 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-card elevation="10" class="mx-auto pb-6" outlined>
+        <v-card elevation="10" class="mx-auto pb-6">
           <Chart
             id="population_releases"
             title="Population History"
-            :config="specPopulationByRelease"
-            :data="getSelectedSource.releases"
+            width="95"
+            :config="chartConfigs.specPopulationByRelease"
+            :data="store.getters.getSelectedSource.releases"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
-            :link="getSqlQueryLink(getQueryIndex.CDM_SOURCE[0])"
+            :link="
+              links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
+            "
             :divider="true"
           ></info-panel>
         </v-card>
       </v-col>
       <v-col>
-        <v-card elevation="10" class="mx-auto pb-6" outlined>
+        <v-card elevation="10" class="mx-auto pb-6">
           <Chart
             id="issues_releases"
             title="Data Quality Issues History"
-            :config="specIssuesByRelease"
-            :data="getSelectedSource.releases"
+            width="95"
+            :config="chartConfigs.specIssuesByRelease"
+            :data="store.getters.getSelectedSource.releases"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
-            :link="getSqlQueryLink(getQueryIndex.CDM_SOURCE[0])"
+            :link="
+              links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
+            "
             :divider="true"
           ></info-panel>
         </v-card>
@@ -77,22 +87,22 @@
           <v-card-title>Release Listing</v-card-title>
           <v-card-text>
             <v-data-table
-              dense
+              density="compact"
               :items="getTable"
               :headers="overviewTable"
               :items-per-page="-1"
               hide-default-footer
             >
-              <template v-slot:item.count_person="{ item }">
+              <template #item.count_person="{ item }">
                 <router-link
-                  :to="getPersonLink(item)"
-                  :title="item.count_person"
-                  >{{ formatComma(item.count_person) }}</router-link
+                  :to="getPersonLink(item.raw)"
+                  :title="item.raw.count_person"
+                  >{{ helpers.formatComma(item.raw.count_person) }}</router-link
                 >
               </template>
-              <template v-slot:item.count_data_quality_issues="{ item }">
-                <router-link :to="getQualityLink(item)">{{
-                  formatComma(item.count_data_quality_issues)
+              <template #item.count_data_quality_issues="{ item }">
+                <router-link :to="getQualityLink(item.raw)">{{
+                  helpers.formatComma(item.raw.count_data_quality_issues)
                 }}</router-link>
               </template>
             </v-data-table>
@@ -103,109 +113,94 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
+<script setup lang="ts">
 import { chartConfigs, Chart } from "@/widgets/chart";
-import infoPanel from "@/widgets/infoPanel";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+import InfoPanel from "@/widgets/infoPanel";
+import { helpers } from "@/shared/lib/mixins";
+import { VDataTable } from "vuetify/labs/VDataTable";
+import { links } from "@/shared/config/links";
+import { useStore } from "vuex";
+import { computed, ref } from "vue";
 
-export default {
-  name: "SourceOverview",
-  components: { Chart, infoPanel },
-  mixins: [mixins, getLinks],
-  data() {
-    return {
-      specPopulationByRelease: chartConfigs.specPopulationByRelease,
-      specIssuesByRelease: chartConfigs.specIssuesByRelease,
-      overviewTable: [
-        {
-          text: "Release date",
-          align: "start",
-          sortable: true,
-          value: "release_name",
-        },
-        {
-          text: "Number of people",
-          align: "end",
-          sortable: true,
-          value: "count_person",
-        },
-        {
-          text: "Data quality issues",
-          align: "end",
-          sortable: true,
-          value: "count_data_quality_issues",
-        },
-      ],
-    };
+const store = useStore();
+
+const overviewTable = ref([
+  {
+    title: "Release date",
+    align: "start",
+    sortable: true,
+    key: "release_name",
   },
-  methods: {
-    getQualityLink: function (item) {
-      return {
-        name: "dataQuality",
-        params: {
-          cdm: this.getSelectedSource.cdm_source_key,
-          release: item.release_id,
-        },
-        query: { tab: "overview" },
-      };
-    },
-    getPersonLink: function (item) {
-      return {
-        name: "person",
-        params: {
-          cdm: this.getSelectedSource.cdm_source_key,
-          release: item.release_id,
-        },
-      };
-    },
+  {
+    title: "Number of people",
+    align: "end",
+    sortable: true,
+    key: "count_person",
   },
-  computed: {
-    ...mapGetters([
-      "getErrors",
-      "getSelectedSource",
-      "getQueryIndex",
-      "explorerLoaded",
-    ]),
-    getReleasesCount: function () {
-      if (this.explorerLoaded) {
-        return this.getSelectedSource.count_releases;
-      } else {
-        return [];
-      }
-    },
-
-    getDaysBetweenReleases: function () {
-      if (this.explorerLoaded) {
-        const dates = this.getSelectedSource.releases.map(
-          (value) => new Date(value.release_name)
-        );
-        //todo rewrite using array functional methods
-        const numbers = [];
-
-        for (let i = 0; i < dates.length - 1; i++) {
-          numbers.push((dates[i] - dates[i + 1]) / (1000 * 60 * 60 * 24));
-        }
-
-        return numbers.length
-          ? numbers.reduce((prevValue, current) => prevValue + current, 0) /
-              numbers.length
-          : 0;
-      } else {
-        return [];
-      }
-    },
-
-    getTable: function () {
-      if (this.explorerLoaded) {
-        return this.getSelectedSource.releases;
-      } else {
-        return [];
-      }
-    },
+  {
+    title: "Data quality issues",
+    align: "end",
+    sortable: true,
+    key: "count_data_quality_issues",
   },
+]);
+
+const getQualityLink = function (item) {
+  return {
+    name: "dataQuality",
+    params: {
+      cdm: store.getters.getSelectedSource.cdm_source_key,
+      release: item.release_id,
+    },
+    query: { tab: "overview" },
+  };
 };
+const getPersonLink = function (item) {
+  return {
+    name: "person",
+    params: {
+      cdm: store.getters.getSelectedSource.cdm_source_key,
+      release: item.release_id,
+    },
+  };
+};
+
+const getReleasesCount = computed(function () {
+  if (store.getters.explorerLoaded) {
+    return store.getters.getSelectedSource.count_releases;
+  } else {
+    return [];
+  }
+});
+
+const getDaysBetweenReleases = computed(function () {
+  if (store.getters.explorerLoaded) {
+    const dates = store.getters.getSelectedSource.releases.map(
+      (value) => new Date(value.release_name)
+    );
+    //todo rewrite using array functional methods
+    const numbers = [];
+
+    for (let i = 0; i < dates.length - 1; i++) {
+      numbers.push((dates[i] - dates[i + 1]) / (1000 * 60 * 60 * 24));
+    }
+
+    return numbers.length
+      ? numbers.reduce((prevValue, current) => prevValue + current, 0) /
+          numbers.length
+      : 0;
+  } else {
+    return [];
+  }
+});
+
+const getTable = computed(function () {
+  if (store.getters.explorerLoaded) {
+    return store.getters.getSelectedSource.releases;
+  } else {
+    return [];
+  }
+});
 </script>
 
 <style scoped></style>

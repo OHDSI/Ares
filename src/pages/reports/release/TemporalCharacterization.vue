@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="dataInStore" elevation="10" class="ma-4 pa-2">
+  <v-card v-if="store.getters.dataInStore" elevation="10" class="ma-4 pa-2">
     <v-card-title>Temporal Characterization</v-card-title>
     <!--Table controls-->
     <v-row>
@@ -9,7 +9,8 @@
           label="Search in Table"
           single-line
           hide-details
-          @input="debouncedSearch"
+          variant="outlined"
+          v-model="search"
         ></v-text-field>
       </v-col>
     </v-row>
@@ -23,29 +24,33 @@
       item-key="checkId"
       :items-per-page="10"
       :search="search"
-      dense
+      density="compact"
     >
       <template v-slot:item.CONCEPT_ID="{ item }">
         <v-layout flex-end
-          ><router-link :to="getReportRoute(item)">{{
-            item.CONCEPT_ID
+          ><router-link :to="getReportRoute(item.raw)">{{
+            item.raw.CONCEPT_ID
           }}</router-link></v-layout
         >
       </template>
       <template v-slot:item.CONCEPT_NAME="{ item }">
         <v-row>
           <v-col cols="10">
-            <router-link :to="getReportRoute(item)" :title="item.CONCEPT_NAME"
-              >{{ item.CONCEPT_NAME }}
+            <router-link
+              :to="getReportRoute(item.raw)"
+              :title="item.raw.CONCEPT_NAME"
+              >{{ item.raw.CONCEPT_NAME }}
             </router-link>
           </v-col>
         </v-row>
       </template>
       <template v-slot:body.prepend>
         <tr>
-          <th v-for="header in headers" :key="header.text">
+          <th v-for="header in headers" :key="header.title">
             <div
-              v-if="header.text === 'Table' || header.text === 'Is Stationary'"
+              v-if="
+                header.title === 'Table' || header.title === 'Is Stationary'
+              "
             >
               <v-select
                 v-model="filters[header.value]"
@@ -54,7 +59,7 @@
                 deletable-chips
                 hide-details
                 multiple
-                :items="getValuesArray(filteredChecks, header.value)"
+                :items="helpers.getValuesArray(filteredChecks, header.value)"
               ></v-select>
             </div>
           </th>
@@ -62,86 +67,90 @@
       </template>
     </v-data-table>
     <info-panel
-      v-if="getQueryIndex && getQueryIndex.TEMPORAL_CHARACTERIZATION"
+      v-if="
+        store.getters.getQueryIndex &&
+        store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION
+      "
       icon="mdi-code-braces"
       details="View export query."
       :link-details="true"
-      :link="getSqlQueryLink(getQueryIndex.TEMPORAL_CHARACTERIZATION[0])"
+      :link="
+        links.getSqlQueryLink(
+          store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+        )
+      "
       :divider="true"
     ></info-panel>
   </v-card>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-import infoPanel from "@/widgets/infoPanel";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+<script setup lang="ts">
+import InfoPanel from "@/widgets/infoPanel";
+import { VDataTable } from "vuetify/labs/VDataTable";
+import { helpers } from "@/shared/lib/mixins";
+import { links } from "@/shared/config/links";
+import { computed, ref, Ref } from "vue";
+import { useStore } from "vuex";
+import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 
-export default {
-  name: "TemporalCharacterization",
-  components: {
-    infoPanel,
+const store = useStore();
+
+const search = ref("");
+const filters = ref({
+  CDM_TABLE_NAME: [],
+  IS_STATIONARY: [],
+});
+const headers: Ref<DataTableHeader[]> = ref([
+  {
+    title: "Table",
+    sortable: false,
+    key: "CDM_TABLE_NAME",
   },
-  mixins: [mixins, getLinks],
-  data() {
-    return {
-      search: "",
-      filters: {
-        CDM_TABLE_NAME: [],
-        IS_STATIONARY: [],
-      },
-      headers: [
-        {
-          text: "Table",
-          sortable: false,
-          value: "CDM_TABLE_NAME",
-        },
-        {
-          text: "Concept id",
-          sortable: false,
-          value: "CONCEPT_ID",
-        },
-        {
-          text: "Concept Name",
-          sortable: false,
-          value: "CONCEPT_NAME",
-        },
-        {
-          text: "Seasonality Score",
-          sortable: true,
-          value: "SEASONALITY_SCORE",
-        },
-        {
-          text: "Is Stationary",
-          sortable: true,
-          value: "IS_STATIONARY",
-        },
-      ],
-    };
+  {
+    title: "Concept id",
+    sortable: false,
+    key: "CONCEPT_ID",
   },
-  methods: {
-    getReportRoute(item) {
-      return {
-        name: "concept",
-        params: {
-          domain: item.CDM_TABLE_NAME.toLowerCase(),
-          concept: item.CONCEPT_ID,
-        },
-      };
+  {
+    title: "Concept Name",
+    sortable: false,
+    key: "CONCEPT_NAME",
+  },
+  {
+    title: "Seasonality Score",
+    sortable: true,
+    key: "SEASONALITY_SCORE",
+  },
+  {
+    title: "Is Stationary",
+    sortable: true,
+    key: "IS_STATIONARY",
+  },
+]);
+
+const filteredChecks = computed(function () {
+  return store.getters.getData.temporalCharacterization.filter((d) => {
+    return Object.keys(filters.value).every((f) => {
+      return (
+        filters.value[f as keyof typeof filters].length < 1 ||
+        filters.value[f as keyof typeof filters].includes(d[f])
+      );
+    });
+  });
+});
+
+function getReportRoute(item: {
+  CDM_TABLE_NAME: string;
+  CONCEPT_ID: string | number;
+}) {
+  return {
+    name: "concept",
+    params: {
+      domain: item.CDM_TABLE_NAME.toLowerCase(),
+      concept: item.CONCEPT_ID,
     },
-  },
-  computed: {
-    ...mapGetters(["getData", "dataInStore", "getErrors", "getQueryIndex"]),
-    filteredChecks() {
-      return this.getData.temporalCharacterization.filter((d) => {
-        return Object.keys(this.filters).every((f) => {
-          return this.filters[f].length < 1 || this.filters[f].includes(d[f]);
-        });
-      });
-    },
-  },
-};
+  };
+}
 </script>
 
 <style scoped></style>

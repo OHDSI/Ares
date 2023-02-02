@@ -1,9 +1,9 @@
 <template>
   <v-container fluid>
-    <v-alert elevation="4" text prominent type="error" icon="mdi-cloud-alert">
+    <v-alert elevation="4" prominent type="error" icon="mdi-cloud-alert">
       <v-card-title>An error has occurred</v-card-title>
       <ul>
-        <li v-for="(error, index) in getErrors" :key="index">
+        <li v-for="(error, index) in store.getters.getErrors" :key="index">
           <span style="color: crimson">{{ error.message }}</span> --
           <span style="color: red">{ {{ error.details }} }</span>
         </li>
@@ -12,14 +12,15 @@
   </v-container>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-
+<script lang="ts">
 export default {
   name: "ErrorAlert",
-  computed: {
-    ...mapGetters(["getErrors"]),
-  },
 };
+</script>
+
+<script setup lang="ts">
+import { useStore } from "vuex";
+
+const store = useStore();
 </script>
 <style scoped></style>

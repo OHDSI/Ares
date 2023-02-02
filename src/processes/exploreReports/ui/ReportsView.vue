@@ -1,14 +1,19 @@
 <template>
   <v-container fluid>
     <Explorer v-if="showExplorer" />
-    <Error v-if="getErrors" />
-    <router-view v-if="!getErrors" name="reportsView" />
+    <Error v-if="store.getters.getErrors" />
+    <router-view v-if="!store.getters.getErrors" name="reportsView" />
     <Settings />
     <BottomNav />
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+export default {
+  name: "ReportsView",
+};
+</script>
+<script setup lang="ts">
 import { Error } from "@/widgets/error";
 import { Explorer, explorerActions } from "@/widgets/explorer";
 import { Settings } from "@/widgets/settings";
@@ -17,48 +22,46 @@ import BottomNav from "@/widgets/bottomNav";
 import { RESET_DATA_STORAGE } from "../model/store/actions.type";
 import getFilesByView from "../config/dataLoadConfig";
 
-import { mapGetters } from "vuex";
+import { useStore } from "vuex";
 
-export default {
-  name: "ReportsView",
-  components: { BottomNav, Explorer, Error, Settings },
-  computed: {
-    ...mapGetters(["explorerLoaded", "getSources", "getErrors"]),
-    path: function () {
-      return this.$route.path;
-    },
-    showExplorer: function () {
-      return (
-        this.path.includes("network") ||
-        this.path.includes("cdm") ||
-        this.path.includes("datasource")
-      );
-    },
-  },
-  watch: {
-    path() {
-      this.$store.dispatch(RESET_DATA_STORAGE);
-      this.loadViewData();
-    },
-  },
-  created() {
-    this.$store.dispatch(explorerActions.FETCH_QUERY_INDEX, {
-      route: this.$route.params,
-    });
-    this.$store
-      .dispatch(explorerActions.FETCH_INDEX, { route: this.$route.params })
-      .then(() => this.loadViewData());
-  },
+import { watch, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 
-  methods: {
-    loadViewData: function () {
-      const view = getFilesByView()[this.$route.name];
-      if (view) {
-        this.$store.dispatch(view.loadMethod, view.payload);
-      }
-    },
-  },
+const route = useRoute();
+const store = useStore();
+
+const path = computed(function () {
+  return route.path;
+});
+
+const showExplorer = computed(function () {
+  return (
+    path.value.includes("network") ||
+    path.value.includes("cdm") ||
+    path.value.includes("datasource")
+  );
+});
+
+const loadViewData = function () {
+  const view = getFilesByView()[route.name];
+  if (view) {
+    store.dispatch(view.loadMethod, view.payload);
+  }
 };
+
+watch(path, () => {
+  store.dispatch(RESET_DATA_STORAGE);
+  loadViewData();
+});
+
+onMounted(() => {
+  store.dispatch(explorerActions.FETCH_QUERY_INDEX, {
+    route: route.params,
+  });
+  store
+    .dispatch(explorerActions.FETCH_INDEX, { route: route.params })
+    .then(() => loadViewData());
+});
 </script>
 
 <style scoped></style>

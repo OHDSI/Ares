@@ -1,182 +1,184 @@
 <template>
-  <div v-if="explorerLoaded" id="explorer" class="pa-2">
+  <div v-if="store.getters.explorerLoaded" id="explorer" class="pa-2">
     <v-row>
       <v-col cols="1">
-        <v-btn to="/home" icon large class="mb-8">
-          <v-img
-            class="inverted"
-            :src="require('../../../shared/assets/icon.png')"
-            max-height="32"
-            max-width="32"
-          ></v-img></v-btn
+        <v-btn to="/home" icon variant="plain">
+          <v-img :class="iconClass" :src="icon" width="32"></v-img> </v-btn
       ></v-col>
       <v-col cols="auto">
         <v-autocomplete
-          :value="getSelectedFolder"
-          class="mt-4"
+          :model-value="store.getters.getSelectedFolder"
+          class="mt-2"
           label="Report Category"
-          return-object
           prepend-icon="mdi-folder"
-          auto-select-first
-          dense
-          :items="folders"
-          item-text="name"
+          return-object
+          density="compact"
+          variant="outlined"
+          :items="config.folders"
+          item-title="name"
           item-value="name"
-          @input="changeFolder"
+          @update:modelValue="changeFolder"
         >
-          <template v-slot:item="{ item }">
-            <v-icon left small>{{ item.icon }}</v-icon> {{ item.name }}
+          <template v-slot:item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :title="item.value.name"
+              :append-icon="item.value.icon"
+            ></v-list-item>
           </template>
         </v-autocomplete>
       </v-col>
       <v-col v-if="showSourceSelector" cols="auto">
         <v-autocomplete
-          class="mt-4"
+          class="mt-2"
+          variant="outlined"
           label="Data Source"
-          :value="getSelectedSource"
+          density="compact"
+          :model-value="store.getters.getSelectedSource"
           return-object
           prepend-icon="mdi-database"
           auto-select-first
           dense
-          :items="getSources"
-          item-text="cdm_source_abbreviation"
+          :items="store.getters.getSources"
+          item-title="cdm_source_abbreviation"
           item-value="cdm_source_key"
-          @input="changeSource"
-        ></v-autocomplete>
+          @update:modelValue="changeSource"
+        >
+        </v-autocomplete>
       </v-col>
       <v-col v-if="showReleaseSelector" cols="auto">
         <v-autocomplete
-          class="mt-4"
+          class="mt-2"
+          variant="outlined"
+          density="compact"
           label="Data Source Release"
-          :value="getSelectedRelease"
+          :model-value="store.getters.getSelectedRelease"
           return-object
           prepend-icon="mdi-database-clock"
           auto-select-first
-          dense
-          :items="getReleases"
-          item-text="release_name"
+          :items="store.getters.getReleases"
+          item-title="release_name"
           item-value="release_id"
-          @input="changeRelease"
-        ></v-autocomplete>
+          @update:modelValue="changeRelease"
+        >
+        </v-autocomplete>
       </v-col>
       <v-col cols="auto">
         <v-autocomplete
-          class="mt-4"
+          class="mt-2"
           label="Report"
-          :value="getSelectedReport"
+          density="compact"
+          variant="outlined"
+          :model-value="store.getters.getSelectedReport"
           return-object
           prepend-icon="mdi-file-chart"
-          auto-select-first
-          dense
-          :items="getFilteredReports"
-          item-text="name"
+          :items="store.getters.getFilteredReports"
+          item-title="name"
           item-value="route"
-          @input="changeReport"
+          @update:modelValue="changeReport"
         >
-          <template v-slot:item="{ item }">
-            <v-icon left small>{{ item.icon }}</v-icon> {{ item.name }}
+          <template v-slot:item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :title="item.value.name"
+              :append-icon="item.value.icon"
+            ></v-list-item>
           </template>
         </v-autocomplete>
       </v-col>
       <v-col v-if="showConceptSelector" cols="auto">
-        <v-text-field
+        <v-autocomplete
           readonly
-          class="mt-4"
+          variant="outlined"
+          density="compact"
+          class="mt-2"
           label="Concept ID"
-          return-object
           prepend-icon="mdi-chart-timeline-variant-shimmer"
-          dense
-          :value="showConceptSelector"
-        ></v-text-field>
+          :model-value="showConceptSelector"
+        ></v-autocomplete>
       </v-col>
     </v-row>
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-import {
-  FETCH_INDEX,
-  FETCH_QUERY_INDEX,
-} from "@/widgets/explorer/model/store/actions.type";
-import config from "@/widgets/explorer/config";
-
+<script lang="ts">
 export default {
-  name: "Explorer",
-  data() {
-    return {
-      folders: config.folders,
-      reports: config.reports,
-    };
-  },
-
-  computed: {
-    ...mapGetters([
-      "getSources",
-      "getSelectedFolder",
-      "getReleases",
-      "explorerLoaded",
-      "getFilteredReports",
-      "getSelectedRelease",
-      "getSelectedSource",
-      "getSelectedReport",
-    ]),
-    showConceptSelector: function () {
-      return this.$route.params.concept;
-    },
-    showSourceSelector: function () {
-      return (
-        this.getSelectedFolder.key === "datasource" ||
-        this.getSelectedFolder.key === "cdm"
-      );
-    },
-    showReleaseSelector: function () {
-      return this.getSelectedFolder.key === "cdm";
-    },
-  },
-  methods: {
-    changeSource(data) {
-      this.$router.push({
-        params: {
-          ...this.$route.params,
-          cdm: data.cdm_source_key,
-          release: data.releases[0].release_id,
-        },
-      });
-    },
-    changeRelease(data) {
-      this.$router.push({
-        params: {
-          ...this.$route.params,
-          release: data.release_id,
-        },
-      });
-    },
-    changeFolder(data) {
-      this.$router.push({
-        name: data.key,
-        params: {
-          cdm: this.getSelectedSource
-            ? this.getSelectedSource.cdm_source_key
-            : this.getSources[0].cdm_source_key,
-          release: this.getSelectedSource
-            ? this.getSelectedRelease.release_id
-            : this.getSources[0].releases[0].release_id,
-        },
-      });
-    },
-    changeReport(data) {
-      this.$router.push({
-        name: data.routeName,
-        params: {
-          ...this.$route.params,
-          domain: data.domain,
-          concept: "",
-        },
-      });
-    },
-  },
+  name: "ReportsExplorer",
 };
+</script>
+<script setup lang="ts">
+import { useStore } from "vuex";
+import icon from "@/shared/assets/icon.png";
+import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+
+import config from "@/widgets/explorer/config";
+import {
+  Source,
+  SourceRelease,
+} from "@/processes/exploreReports/model/interfaces/files/SourceIndex";
+
+const route = useRoute();
+const store = useStore();
+const router = useRouter();
+
+const iconClass = computed((): string => {
+  return store.getters.getSettings.darkMode ? "" : "inverted";
+});
+
+function changeSource(data: Source): void {
+  router.push({
+    params: {
+      ...route.params,
+      cdm: data.cdm_source_key,
+      release: data.releases[0].release_id,
+    },
+  });
+}
+function changeRelease(data: SourceRelease): void {
+  router.push({
+    params: {
+      ...route.params,
+      release: data.release_id,
+    },
+  });
+}
+function changeFolder(data): void {
+  router.push({
+    name: data.key,
+    params: {
+      cdm: store.getters.getSelectedSource
+        ? store.getters.getSelectedSource.cdm_source_key
+        : store.getters.getSources[0].cdm_source_key,
+      release: store.getters.getSelectedSource
+        ? store.getters.getSelectedRelease.release_id
+        : store.getters.getSources[0].releases[0].release_id,
+    },
+  });
+}
+function changeReport(data): void {
+  router.push({
+    name: data.routeName,
+    params: {
+      ...route.params,
+      domain: data.domain,
+      concept: "",
+    },
+  });
+}
+
+const showConceptSelector = computed(function (): string | string[] {
+  return route.params.concept;
+});
+const showSourceSelector = computed(function (): boolean {
+  return (
+    store.getters.getSelectedFolder.key === "datasource" ||
+    store.getters.getSelectedFolder.key === "cdm"
+  );
+});
+const showReleaseSelector = computed(function (): boolean {
+  return store.getters.getSelectedFolder.key === "cdm";
+});
 </script>
 
 <style scoped>
@@ -187,6 +189,6 @@ tr:hover {
   font-size: 14px;
 }
 .inverted {
-  filter: invert(0.5);
+  filter: invert(1);
 }
 </style>

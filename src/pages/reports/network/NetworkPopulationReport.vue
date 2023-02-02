@@ -1,47 +1,57 @@
 <template>
-  <div v-if="!getErrors">
+  <div v-if="!store.getters.getErrors">
     <v-container fluid>
       <v-responsive min-width="900">
         <v-layout class="ma-0 mb-6 text-uppercase text-h6"
           >NETWORK POPULATION OVERVIEW</v-layout
         >
-        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.dataInStore"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-ageatfirstobservation"
-            :config="specAgeAtFirstObservation"
-            :data="getData.allAgeAtFirstObservationData"
+            :config="chartConfigs.specAgeAtFirstObservation"
+            :data="store.getters.getData.allAgeAtFirstObservationData"
             title="Age at First Observation"
           />
-          <info-panel
-            v-if="getQueryIndex"
+          <InfoPanel
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.OBSERVATION_PERIOD.AGE_AT_FIRST_OBSERVATION[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
+                  .AGE_AT_FIRST_OBSERVATION[0]
               )
             "
             :divider="true"
-          ></info-panel>
+          ></InfoPanel>
         </v-card>
-        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.dataInStore"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-cumulativeobservation"
-            :config="specCumulativeObservation"
-            :data="getData.allCumulativeDurationData"
+            :config="chartConfigs.specCumulativeObservation"
+            :data="store.getters.getData.allCumulativeDurationData"
             title="Cumulative Observation"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.OBSERVATION_PERIOD.CUMULATIVE_DURATION[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
+                  .CUMULATIVE_DURATION[0]
               )
             "
             :divider="true"
@@ -52,35 +62,13 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { chartConfigs, Chart } from "@/widgets/chart";
-import { mapGetters } from "vuex";
-import infoPanel from "@/widgets/infoPanel";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+import { useStore } from "vuex";
+import { links } from "@/shared/config/links";
+import InfoPanel from "@/widgets/infoPanel/ui/InfoPanel.vue";
 
-export default {
-  components: {
-    Chart,
-    infoPanel,
-  },
-  mixins: [mixins, getLinks],
-  data() {
-    return {
-      specAgeAtFirstObservation: chartConfigs.specAgeAtFirstObservationBySource,
-      specCumulativeObservation: chartConfigs.specCumulativeObservationBySource,
-    };
-  },
-  computed: {
-    ...mapGetters([
-      "getData",
-      "getSources",
-      "getErrors",
-      "dataInStore",
-      "getQueryIndex",
-    ]),
-  },
-};
+const store = useStore();
 </script>
 
 <style scoped></style>

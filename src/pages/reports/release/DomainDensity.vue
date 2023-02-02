@@ -1,68 +1,69 @@
 <template>
-  <div v-if="!getErrors">
-    <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+  <div v-if="!store.getters.getErrors">
+    <v-card
+      :loading="!store.getters.dataInStore"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
       <Chart
-        v-if="dataInStore"
+        v-if="store.getters.dataInStore"
         id="viz-overview"
         width="80"
         title="Domain
       Density"
-        :config="defOverview"
-        :data="getData.domainDensity"
+        :config="chartConfigs.defOverview"
+        :data="store.getters.getData.domainDensity"
       />
       <info-panel
-        v-if="getQueryIndex"
+        v-if="store.getters.getQueryIndex"
         icon="mdi-code-braces"
         details="View export query."
         :link-details="true"
         :link="
-          getSqlQueryLink(
-            getQueryIndex.DATA_DENSITY.DATADENSITY_RECORDS_PER_PERSON[0]
+          links.getSqlQueryLink(
+            store.getters.getQueryIndex.DATA_DENSITY
+              .DATADENSITY_RECORDS_PER_PERSON[0]
           )
         "
         :divider="true"
       ></info-panel>
     </v-card>
-    <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+    <v-card
+      :loading="!store.getters.dataInStore"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
       <Chart
-        v-if="dataInStore"
+        v-if="store.getters.dataInStore"
         id="viz-recordsperperson"
         width="80"
         title="Domain Records per Person"
-        :config="defRecordsPerPerson"
-        :data="getData.domainRecords"
+        :config="chartConfigs.defRecordsPerPerson"
+        :data="store.getters.getData.domainRecords"
       />
-      <info-panel
-        v-if="getQueryIndex"
+      <InfoPanel
+        v-if="store.getters.getQueryIndex"
         icon="mdi-code-braces"
         details="View export query."
         :link-details="true"
-        :link="getSqlQueryLink(getQueryIndex.DATA_DENSITY.DATADENSITY_TOTAL[0])"
+        :link="
+          links.getSqlQueryLink(
+            store.getters.getQueryIndex.DATA_DENSITY.DATADENSITY_TOTAL[0]
+          )
+        "
         :divider="true"
-      ></info-panel>
+      ></InfoPanel>
     </v-card>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { chartConfigs, Chart } from "@/widgets/chart";
-import { mapGetters } from "vuex";
-import infoPanel from "@/widgets/infoPanel";
-import { getLinks } from "@/shared/config/links";
+import InfoPanel from "@/widgets/infoPanel";
+import { links } from "@/shared/config/links";
 
-export default {
-  components: { Chart, infoPanel },
-  mixins: [getLinks],
-  data() {
-    return {
-      defRecordsPerPerson: chartConfigs.defRecordsPerPerson,
-      defOverview: chartConfigs.defOverview,
-    };
-  },
-  computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
-  },
-};
+import { useStore } from "vuex";
+const store = useStore();
 </script>
 
 <style scoped></style>

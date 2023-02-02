@@ -1,31 +1,30 @@
 <template>
-  <div v-if="!getErrors">
+  <div v-if="!store.getters.getErrors">
     <v-container fluid class="pa-1">
-      <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
-        <div v-if="dataInStore">
+      <v-card
+        :loading="!store.getters.dataInStore"
+        elevation="10"
+        class="ma-4 pa-2"
+      >
+        <div v-if="store.getters.dataInStore">
           <v-row
             ><v-col cols="8">
               <v-layout justify-start align-center class="ml-4 mr-4">
                 <v-card-title>{{
-                  this.$route.params.domain.toUpperCase().replace("_", " ")
+                  route.params.domain.toUpperCase().replace("_", " ")
                 }}</v-card-title>
               </v-layout>
             </v-col>
             <v-col cols="4">
-              <v-layout justify-end align-center class="ml-4 mr-4">
+              <v-layout class="ml-4 mr-4 justify-end align-center">
                 <v-tooltip v-if="issueCount > 0" left nudge-left="15">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon tile @click="navigateToDataQuality"
-                      ><v-icon left v-bind="attrs" large color="error" v-on="on"
-                        >mdi-database-alert</v-icon
-                      >
-                      <v-badge
-                        tile
-                        inline
-                        dark
-                        color="error"
-                        :content="issueCount"
-                      ></v-badge>
+                  <template v-slot:activator="{ props }">
+                    <v-btn variant="flat" icon @click="navigateToDataQuality">
+                      <v-badge icon color="error" :content="issueCount">
+                        <v-icon size="large" v-bind="props"
+                          >mdi-database</v-icon
+                        >
+                      </v-badge>
                     </v-btn>
                   </template>
                   <span
@@ -39,12 +38,13 @@
             <v-row>
               <v-col>
                 <v-text-field
-                  :value="$route.query.search"
                   prepend-icon="mdi-magnify"
                   label="Search in Table"
                   single-line
+                  density="compact"
+                  variant="outlined"
                   hide-details
-                  @input="debouncedSearch"
+                  @update:modelValue="debouncedSearch"
                 ></v-text-field>
               </v-col>
               <v-col>
@@ -53,24 +53,24 @@
             </v-row>
           </v-container>
           <v-data-table
-            v-if="getData"
+            v-if="store.getters.getData"
             class="mt-4"
-            dense
+            density="compact"
             :headers="showHeaders"
-            :items="getData.domainTable"
+            :items="store.getters.getData.domainTable"
             :footer-props="{
               'items-per-page-options': [10, 25, 50],
             }"
             item-key="CONCEPT_ID"
             :items-per-page="10"
-            :search="$route.query.search"
+            :search="route.query.search"
             :sort-by="['PERCENT_PERSONS']"
             :sort-desc="[true, false]"
           >
             <template v-slot:item.CONCEPT_ID="{ item }">
               <v-layout flex-end
                 ><router-link :to="getReportRoute(item)">{{
-                  item.CONCEPT_ID
+                  item.raw.CONCEPT_ID
                 }}</router-link></v-layout
               >
             </template>
@@ -79,38 +79,48 @@
                 <v-col cols="10">
                   <router-link
                     :to="getReportRoute(item)"
-                    :title="item.CONCEPT_NAME"
-                    >{{ item.CONCEPT_NAME }}
+                    :title="item.raw.CONCEPT_NAME"
+                    >{{ item.raw.CONCEPT_NAME }}
                   </router-link>
                 </v-col>
               </v-row>
             </template>
             <template v-slot:item.NUM_PERSONS="{ item }">
-              <v-layout
-                justify-end
-                :class="getFontWeight(item.PERCENT_PERSONS_NTILE)"
-                >{{ formatComma(item.NUM_PERSONS) }}</v-layout
+              <v-layout class="justify-end"
+                ><div
+                  :class="helpers.getFontWeight(item.raw.PERCENT_PERSONS_NTILE)"
+                >
+                  {{ helpers.formatComma(item.raw.NUM_PERSONS) }}
+                </div></v-layout
               >
             </template>
             <template v-slot:item.PERCENT_PERSONS="{ item }">
-              <v-layout
-                justify-end
-                :class="getFontWeight(item.PERCENT_PERSONS_NTILE)"
-                >{{ (item.PERCENT_PERSONS * 100).toFixed(2) }} %</v-layout
+              <v-layout class="justify-end"
+                ><div
+                  :class="helpers.getFontWeight(item.raw.PERCENT_PERSONS_NTILE)"
+                >
+                  {{ (item.raw.PERCENT_PERSONS * 100).toFixed(2) }} %
+                </div></v-layout
               >
             </template>
             <template v-slot:item.RECORDS_PER_PERSON="{ item }">
-              <v-layout
-                justify-end
-                :class="getFontWeight(item.RECORDS_PER_PERSON_NTILE)"
-                >{{ item.RECORDS_PER_PERSON }}</v-layout
+              <v-layout class="justify-end"
+                ><div
+                  :class="
+                    helpers.getFontWeight(item.raw.RECORDS_PER_PERSON_NTILE)
+                  "
+                >
+                  {{ item.raw.RECORDS_PER_PERSON }}
+                </div></v-layout
               >
             </template>
             <template v-slot:item.PERCENT_MISSING_VALUES="{ item }">
-              <v-layout justify-end
+              <v-layout class="justify-end"
                 >{{
-                  item.PERCENT_MISSING_VALUES
-                    ? `${((1 - item.PERCENT_MISSING_VALUES) * 100).toFixed(2)}%`
+                  item.raw.PERCENT_MISSING_VALUES
+                    ? `${((1 - item.raw.PERCENT_MISSING_VALUES) * 100).toFixed(
+                        2
+                      )}%`
                     : "No data"
                 }}
               </v-layout>
@@ -123,35 +133,39 @@
           <info-panel
             :divider="false"
             details="This table uses a preattentive processing visualization technique to highlight values in the top deciles by displaying the values in descending levels of font weight.  Darker values occur in the top 3 deciles of all values appearing in the column."
-            :link="getDatavizDatasheetLink()"
             icon="mdi-eye"
           ></info-panel>
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
+            :divider="false"
             :link="
-              getSqlQueryLink(
-                getQueryIndex.DOMAIN_SUMMARY[$route.params.domain.toUpperCase()]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.DOMAIN_SUMMARY[
+                  route.params.domain.toUpperCase()
+                ]
               )
             "
-            :divider="false"
           ></info-panel>
         </div>
       </v-card>
     </v-container>
     <v-card
-      v-if="$route.params.domain.toUpperCase() === 'VISIT_OCCURRENCE'"
-      :loading="!dataInStore"
+      v-if="route.params.domain.toUpperCase() === 'VISIT_OCCURRENCE'"
+      :loading="!store.getters.dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
       <Chart
-        v-if="dataInStore && getData.domainStratification"
+        v-if="
+          store.getters.dataInStore &&
+          store.getters.getData.domainStratification
+        "
         id="viz-stratificationbyvisit"
-        :config="specVisitStratification"
-        :data="getData.domainStratification"
+        :config="chartConfigs.specVisitStratification"
+        :data="store.getters.getData.domainStratification"
         title="Domain Data Stratification by Visit"
       />
       <info-panel
@@ -160,198 +174,200 @@
         :divider="true"
       ></info-panel>
       <info-panel
-        v-if="getQueryIndex"
+        v-if="store.getters.getQueryIndex"
         icon="mdi-code-braces"
         details="View export query."
-        :link-details="true"
-        :link="
-          getSqlQueryLink(
-            getQueryIndex.DOMAIN_SUMMARY.DOMAIN_VISIT_STRATIFICATION
-          )
-        "
         :divider="false"
       ></info-panel>
     </v-card>
     <v-card
       v-if="$route.params.domain.toUpperCase() === 'DRUG_EXPOSURE'"
-      :loading="!dataInStore"
+      :loading="!store.getters.dataInStore"
       elevation="10"
       class="ma-4 pa-2"
     >
       <Chart
-        v-if="dataInStore && getData.drugStratification"
+        v-if="
+          store.getters.dataInStore && store.getters.getData.drugStratification
+        "
         id="viz-stratificationbydrugtype"
-        :config="specDrugTypeStratification"
-        :data="getData.drugStratification"
+        :config="chartConfigs.specDrugTypeStratification"
+        :data="store.getters.getData.drugStratification"
         title="Drug Domain Stratification by Drug Type"
       />
       <info-panel
-        v-if="getQueryIndex"
+        v-if="store.getters.getQueryIndex"
         icon="mdi-code-braces"
         details="View export query."
         :link-details="true"
+        :divider="false"
         :link="
-          getSqlQueryLink(
-            getQueryIndex.DOMAIN_SUMMARY.DOMAIN_DRUG_STRATIFICATION
+          links.getSqlQueryLink(
+            store.getters.getQueryIndex.DOMAIN_SUMMARY
+              .DOMAIN_DRUG_STRATIFICATION
           )
         "
-        :divider="false"
       ></info-panel>
     </v-card>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import InfoPanel from "../../../widgets/infoPanel";
 import { chartConfigs, Chart } from "@/widgets/chart";
-import { mapGetters } from "vuex";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+import { VDataTable } from "vuetify/labs/VDataTable";
+import { helpers } from "@/shared/lib/mixins";
+import { links } from "@/shared/config/links";
 import SelectColumns from "@/features/selectColumns";
 
-export default {
-  components: {
-    SelectColumns,
-    Chart,
-    InfoPanel,
+import { ref, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { debounce } from "lodash";
+import { DomainIssues } from "@/processes/exploreReports/model/interfaces/files/DomainIssues";
+
+const route = useRoute();
+const router = useRouter();
+const store = useStore();
+
+const headers = ref([
+  {
+    title: "Concept Id",
+    sortable: true,
+    key: "CONCEPT_ID",
+    align: "start",
+    show: true,
+    domain: ["ALL"],
   },
-  mixins: [mixins, getLinks],
-  data: function () {
-    return {
-      chooseHeaderMenu: false,
-      headers: [
-        {
-          text: "Concept Id",
-          sortable: true,
-          value: "CONCEPT_ID",
-          align: "start",
-          show: true,
-          domain: ["ALL"],
-        },
-        {
-          text: "Concept Name",
-          sortable: true,
-          value: "CONCEPT_NAME",
-          align: "start",
-          show: true,
-          domain: ["ALL"],
-        },
-        {
-          text: "# People",
-          sortable: true,
-          value: "NUM_PERSONS",
-          align: "end",
-          show: false,
-          domain: ["ALL"],
-        },
-        {
-          text: "% People",
-          sortable: true,
-          value: "PERCENT_PERSONS",
-          align: "end",
-          show: true,
-          domain: ["ALL"],
-        },
-        {
-          text: "Records per Person",
-          sortable: true,
-          value: "RECORDS_PER_PERSON",
-          align: "end",
-          show: true,
-          domain: ["ALL"],
-        },
-        {
-          text: "Avg Duration",
-          sortable: true,
-          value: "AVERAGE_DURATION",
-          align: "end",
-          domain: ["VISIT_OCCURRENCE", "VISIT_DETAIL"],
-          show: true,
-        },
-        {
-          text: "% with Values",
-          sortable: true,
-          value: "PERCENT_MISSING_VALUES",
-          align: "end",
-          domain: ["MEASUREMENT"],
-          show: true,
-        },
-        {
-          text: "Median Era Length (Days)",
-          sortable: true,
-          value: "MEDIAN_VALUE",
-          align: "end",
-          domain: ["DRUG_ERA", "CONDITION_ERA"],
-          show: true,
-        },
-        {
-          text: "25th % Era Length (Days)",
-          sortable: true,
-          align: "end",
-          value: "P25_VALUE",
-          domain: ["DRUG_ERA", "CONDITION_ERA"],
-          show: false,
-        },
-        {
-          text: "75th % Era Length (Days)",
-          sortable: true,
-          align: "end",
-          value: "P75_VALUE",
-          domain: ["DRUG_ERA", "CONDITION_ERA"],
-          show: false,
-        },
-      ],
-      specVisitStratification: chartConfigs.specVisitStratification,
-      specDrugTypeStratification: chartConfigs.specDrugTypeStratification,
-    };
+  {
+    title: "Concept Name",
+    sortable: true,
+    key: "CONCEPT_NAME",
+    align: "start",
+    show: true,
+    domain: ["ALL"],
   },
-  computed: {
-    getHeadersByDomain() {
-      const openedDomain = this.$route.params.domain.toUpperCase();
-      return this.headers.filter(
-        (value) =>
-          value.domain.includes("ALL") || value.domain.includes(openedDomain)
-      );
-    },
-    showHeaders() {
-      return this.getHeadersByDomain.filter((header) => header.show);
-    },
-    domainIssue: function () {
-      if (this.getData) {
-        return this.getData.domainIssues.find(
-          (di) => di.cdm_table_name === this.$route.params.domain
-        );
-      } else {
-        return [];
-      }
-    },
-    issueCount: function () {
-      return this.domainIssue?.count_failed || 0;
-    },
-    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
+  {
+    title: "# People",
+    sortable: true,
+    key: "NUM_PERSONS",
+    align: "end",
+    show: false,
+    domain: ["ALL"],
   },
-  methods: {
-    getReportRoute(item) {
-      return {
-        name: "concept",
-        params: { concept: item.CONCEPT_ID },
-      };
-    },
-    navigateToDataQuality() {
-      this.$router.push({
-        name: "dataQuality",
-        params: {
-          cdm: this.$route.params.cdm,
-          release: this.$route.params.release,
-        },
-        query: {
-          tab: "results",
-          CDM_TABLE_NAME: this.$route.params.domain.toUpperCase(),
-          FAILED: "FAIL",
-        },
-      });
-    },
+  {
+    title: "% People",
+    sortable: true,
+    key: "PERCENT_PERSONS",
+    align: "end",
+    show: true,
+    domain: ["ALL"],
   },
+  {
+    title: "Records per Person",
+    sortable: true,
+    key: "RECORDS_PER_PERSON",
+    align: "end",
+    show: true,
+    domain: ["ALL"],
+  },
+  {
+    title: "Avg Duration",
+    sortable: true,
+    key: "AVERAGE_DURATION",
+    align: "end",
+    domain: ["VISIT_OCCURRENCE", "VISIT_DETAIL"],
+    show: true,
+  },
+  {
+    title: "% with Values",
+    sortable: true,
+    key: "PERCENT_MISSING_VALUES",
+    align: "end",
+    domain: ["MEASUREMENT"],
+    show: true,
+  },
+  {
+    title: "Median Era Length (Days)",
+    sortable: true,
+    key: "MEDIAN_VALUE",
+    align: "end",
+    domain: ["DRUG_ERA", "CONDITION_ERA"],
+    show: true,
+  },
+  {
+    title: "25th % Era Length (Days)",
+    sortable: true,
+    align: "end",
+    key: "P25_VALUE",
+    domain: ["DRUG_ERA", "CONDITION_ERA"],
+    show: false,
+  },
+  {
+    title: "75th % Era Length (Days)",
+    sortable: true,
+    align: "end",
+    key: "P75_VALUE",
+    domain: ["DRUG_ERA", "CONDITION_ERA"],
+    show: false,
+  },
+]);
+
+const getHeadersByDomain = computed(function () {
+  //add param type check
+  const openedDomain = route.params.domain.toUpperCase();
+  return headers.value.filter(
+    (value) =>
+      value.domain.includes("ALL") || value.domain.includes(openedDomain)
+  );
+});
+
+const showHeaders = computed(() => {
+  return getHeadersByDomain.value.filter((header) => header.show);
+});
+
+const debouncedSearch = debounce(function (data: string): void {
+  router.push({
+    query: {
+      search: data,
+    },
+  });
+}, 300);
+
+const domainIssue = computed(function (): DomainIssues | [] {
+  if (store.getters.getData) {
+    return store.getters.getData.domainIssues.find(
+      (di) => di.cdm_table_name === route.params.domain
+    );
+  } else {
+    return [];
+  }
+});
+
+const issueCount = computed(function (): number {
+  return domainIssue.value?.count_failed || 0;
+});
+
+const getReportRoute = function (item) {
+  return {
+    name: "concept",
+    params: { concept: item.raw.CONCEPT_ID },
+  };
+};
+
+const navigateToDataQuality = function () {
+  router.push({
+    name: "dataQuality",
+    params: {
+      cdm: route.params.cdm,
+      release: route.params.release,
+    },
+    query: {
+      tab: "results",
+      CDM_TABLE_NAME: route.params.domain.toUpperCase(),
+      FAILED: "FAIL",
+    },
+  });
 };
 </script>
 

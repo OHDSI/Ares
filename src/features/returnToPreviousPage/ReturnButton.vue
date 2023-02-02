@@ -1,21 +1,34 @@
 <template>
-  <v-btn :block="block" color="primary" small @click="back">
+  <v-btn
+    :block="props.block"
+    color="primary"
+    density="comfortable"
+    @click="back"
+  >
     <v-icon>mdi-arrow-left</v-icon>
     Back
   </v-btn>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "ReturnButton",
-  props: {
-    block: Boolean,
-  },
-  methods: {
-    back: function () {
-      this.$router.back();
-    },
-  },
+};
+</script>
+<script setup lang="ts">
+import { defineProps } from "vue";
+
+const props = defineProps<Props>();
+
+interface Props {
+  block?: boolean;
+}
+
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const back = function (): void {
+  router.back();
 };
 </script>
 

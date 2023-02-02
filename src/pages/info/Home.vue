@@ -1,12 +1,12 @@
 <template>
   <v-card elevation="10" class="ma-5 pa-7">
-    <v-layout class="ma-4" justify-center>
+    <v-layout class="ma-4 justify-center">
       <h2>A R E S</h2>
     </v-layout>
-    <v-layout justify-center>
+    <v-layout class="justify-center">
       <v-img
-        class="inverted"
-        :src="require('../../shared/assets/icon.png')"
+        :class="iconClass"
+        :src="logo"
         max-height="64"
         max-width="64"
       ></v-img>
@@ -18,27 +18,30 @@
       are presented with proper context.
     </div>
     <v-card-actions>
-      <v-layout justify-center>
-        <v-btn class="ma-2" dark color="primary" to="/network/overview">
+      <v-layout class="justify-center">
+        <v-btn class="ma-2" color="primary" to="/network/overview">
           <v-icon left>mdi-database</v-icon>Explore Data Sources
         </v-btn>
-        <!--
-        <v-btn class="ma-2" disabled text outlined to="/_network">
-          <v-icon left>mdi-file-document</v-icon>Explore Vocabularies
-        </v-btn>
-        <v-btn class="ma-2" disabled text outlined to="/_network">
-          <v-icon left>mdi-file-document</v-icon>Explore Research Papers
-        </v-btn>
-        -->
       </v-layout>
     </v-card-actions>
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "Home",
 };
+</script>
+<script setup lang="ts">
+import { useStore } from "vuex";
+import { computed } from "vue";
+import logo from "@/shared/assets/icon.png";
+
+const store = useStore();
+
+const iconClass = computed((): string => {
+  return store.getters.getSettings.darkMode ? "" : "inverted";
+});
 </script>
 
 <style scoped>

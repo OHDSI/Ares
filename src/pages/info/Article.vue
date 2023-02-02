@@ -22,26 +22,14 @@
         to their standardized concepts and further to the manufacturer.
         <div class="text-h6 mt-4">Results</div>
       </div>
-
-      <div class="pa-4">
-        <GChart
-          :settings="{ packages: ['sankey'] }"
-          :data="chartData"
-          :options="chartOptions"
-          type="Sankey"
-          @ready="onChartReady"
-        ></GChart>
-      </div>
     </v-card>
   </v-container>
 </template>
 
 <script>
-import { GChart } from "vue-google-charts";
 import axios from "axios";
 import * as d3Import from "d3-dsv";
 export default {
-  components: { GChart },
   data: function () {
     return {
       chartOptions: {

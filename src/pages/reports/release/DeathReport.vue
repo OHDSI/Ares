@@ -1,127 +1,134 @@
 <template>
   <div>
-    <v-container v-if="!getErrors" fluid>
+    <v-container v-if="!store.getters.getErrors" fluid>
       <v-responsive min-width="900">
         <div class="text-uppercase text-h6">Death Report</div>
-        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.dataInStore"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-ageatdeath"
+            width="100"
             title="Age at Death"
-            :config="specAgeAtDeath"
-            :data="getData.AGE_AT_DEATH"
+            :config="chartConfigs.specAgeAtDeath"
+            :data="store.getters.getData.AGE_AT_DEATH"
           />
-          <info-panel
-            v-if="getQueryIndex"
+          <infopanel
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex[$route.name.toUpperCase()].AGE_AT_DEATH[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.name.toUpperCase()]
+                  .AGE_AT_DEATH[0]
               )
             "
             :divider="true"
-          ></info-panel>
+          ></infopanel>
         </v-card>
-        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.dataInStore"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-deathbytype"
+            width="100"
             title="Death By Type"
-            :config="specDeathByType"
-            :data="getData.DEATH_BY_TYPE"
+            :config="chartConfigs.specDeathByType"
+            :data="store.getters.getData.DEATH_BY_TYPE"
           />
-          <info-panel
-            v-if="getQueryIndex"
+          <infopanel
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex[$route.name.toUpperCase()].DEATH_BY_TYPE[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.name.toUpperCase()]
+                  .DEATH_BY_TYPE[0]
               )
             "
             :divider="true"
-          ></info-panel>
+          ></infopanel>
         </v-card>
-        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.dataInStore"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-recordproportionbyagesexyear"
-            :config="specRecordProportionByAgeSexYear"
-            :data="getData.PREVALENCE_BY_GENDER_AGE_YEAR"
+            width="90"
+            :config="chartConfigs.specRecordProportionByAgeSexYear"
+            :data="store.getters.getData.PREVALENCE_BY_GENDER_AGE_YEAR"
             title="Record Count Proportion by Age, Sex, and Year"
           />
-          <info-panel
-            v-if="getQueryIndex"
+          <infopanel
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex[$route.name.toUpperCase()]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.name.toUpperCase()]
                   .PREVALENCE_BY_GENDER_AGE_YEAR[0]
               )
             "
             :divider="true"
-          ></info-panel>
+          ></infopanel>
         </v-card>
-        <v-card :loading="!dataInStore" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.dataInStore"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-recordproportionbymonth"
-            :config="specRecordProportionByMonth"
-            :data="getData.PREVALENCE_BY_MONTH"
+            width="90"
+            :config="chartConfigs.specRecordProportionByMonth"
+            :data="store.getters.getData.PREVALENCE_BY_MONTH"
             title="Record Count Proportion by Month"
           />
-          <info-panel
+          <infopanel
             details="Proportion of people with at least one record per 1000 people."
             :divider="true"
-          ></info-panel>
-          <info-panel
-            v-if="getQueryIndex"
+          ></infopanel>
+          <infopanel
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
             :link="
-              getSqlQueryLink(
-                getQueryIndex[$route.name.toUpperCase()].PREVALENCE_BY_MONTH[0]
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.name.toUpperCase()]
+                  .PREVALENCE_BY_MONTH[0]
               )
             "
             :divider="false"
-          ></info-panel>
+          ></infopanel>
         </v-card>
       </v-responsive>
     </v-container>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { chartConfigs, Chart } from "@/widgets/chart";
-import infoPanel from "@/widgets/infoPanel";
-import { mapGetters } from "vuex";
-import { getLinks } from "@/shared/config/links";
+import { useRoute } from "vue-router";
+import { useStore } from "vuex";
+import Infopanel from "@/widgets/infoPanel";
+import { links } from "@/shared/config/links";
 
-export default {
-  components: {
-    Chart,
-    infoPanel,
-  },
-  mixins: [getLinks],
-  data() {
-    return {
-      specDeathByType: chartConfigs.specDeathByType,
-      specAgeAtDeath: chartConfigs.specAgeAtDeath,
-      specRecordProportionByAgeSexYear:
-        chartConfigs.specRecordProportionByAgeSexYear,
-      specRecordProportionByMonth: chartConfigs.specRecordProportionByMonth,
-    };
-  },
-  computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
-  },
-};
+const route = useRoute();
+const store = useStore();
 </script>
 
 <style scoped>

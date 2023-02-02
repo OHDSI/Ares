@@ -1,19 +1,21 @@
 <template>
   <div>
-    <v-container v-if="!getErrors && dataInStore" fluid>
+    <v-container
+      v-if="!store.getters.getErrors && store.getters.dataInStore"
+      fluid
+    >
+      <div class="text-uppercase text-h5 ma-4">Person Report</div>
       <v-responsive min-width="900">
-        <div class="text-uppercase text-h6">Person Report</div>
-        <br />
-        <v-row>
+        <v-row class="ma-4" justify="start">
           <!-- Total persons in top bar -->
-          <v-col cols="2" align="center">
+          <v-col cols="2">
             <v-icon left color="info">mdi-account-group</v-icon>
             <v-badge
               tile
               inline
               dark
               color="info"
-              :content="formatComma(getData.numPersons)"
+              :content="helpers.formatComma(store.getters.getData.numPersons)"
             ></v-badge>
             <p class="text-caption">Number of People</p>
           </v-col>
@@ -27,9 +29,9 @@
               color="info"
               :content="
                 'Male: ' +
-                formatComma(getData.genderMaleCount) +
+                helpers.formatComma(store.getters.getData.genderMaleCount) +
                 ' (' +
-                formatPercent(getData.genderMalePct) +
+                helpers.formatPercent(store.getters.getData.genderMalePct) +
                 ')'
               "
             ></v-badge>
@@ -40,80 +42,109 @@
               color="info"
               :content="
                 'Female: ' +
-                formatComma(getData.genderFemaleCount) +
+                helpers.formatComma(store.getters.getData.genderFemaleCount) +
                 ' (' +
-                formatPercent(getData.genderFemalePct) +
+                helpers.formatPercent(store.getters.getData.genderFemalePct) +
                 ')'
               "
             ></v-badge>
             <p class="text-caption">Proportion by Sex</p>
           </v-col>
         </v-row>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-populationbyageandsex"
             title="Population by Age &amp; Sex"
-            :data="getData.personData.AGE_GENDER_DATA"
-            :config="specAgeSex"
+            width="90"
+            :data="store.getters.getData.personData.AGE_GENDER_DATA"
+            :config="chartConfigs.specAgeSex"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
-            :link="getSqlQueryLink(getQueryIndex.PERSON.AGE_GENDER_DATA)"
+            :link="
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
+              )
+            "
             :divider="true"
           ></info-panel>
         </v-card>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.getData"
+          elevation="2"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-race"
-            :config="specRace"
-            :data="getData.personData.RACE_DATA"
+            :config="chartConfigs.specRace"
+            :data="store.getters.getData.personData.RACE_DATA"
             title="Population by Race"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
-            :link="getSqlQueryLink(getQueryIndex.PERSON.RACE_DATA)"
+            :link="
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.PERSON.RACE_DATA
+              )
+            "
             :divider="true"
           ></info-panel>
         </v-card>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.getData"
+          elevation="2"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-birthyear"
-            :config="specBirthYear"
-            :data="getData.personData.BIRTH_YEAR_DATA"
+            :config="chartConfigs.specBirthYear"
+            :data="store.getters.getData.personData.BIRTH_YEAR_DATA"
             title="Population by Year of Birth"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
-            :link="getSqlQueryLink(getQueryIndex.PERSON.BIRTH_YEAR_DATA)"
+            :link="
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
+              )
+            "
             :divider="true"
           ></info-panel>
         </v-card>
-        <v-card :loading="!getData" elevation="10" class="ma-4 pa-2">
+        <v-card
+          :loading="!store.getters.getData"
+          elevation="2"
+          class="ma-4 pa-2"
+        >
           <Chart
-            v-if="dataInStore"
+            v-if="store.getters.dataInStore"
             id="viz-ethnicity"
-            :config="specEthnicity"
-            :data="getData.personData.ETHNICITY_DATA"
+            :config="chartConfigs.specEthnicity"
+            :data="store.getters.getData.personData.ETHNICITY_DATA"
             title="Population by Ethnicity"
           />
           <info-panel
-            v-if="getQueryIndex"
+            v-if="store.getters.getQueryIndex"
             icon="mdi-code-braces"
             details="View export query."
             :link-details="true"
-            :link="getSqlQueryLink(getQueryIndex.PERSON.ETHNICITY_DATA)"
+            :link="
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.PERSON.ETHNICITY_DATA
+              )
+            "
             :divider="true"
           ></info-panel>
         </v-card>
@@ -122,31 +153,15 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { chartConfigs, Chart } from "@/widgets/chart";
-import { mapGetters } from "vuex";
-import infoPanel from "@/widgets/infoPanel";
-import { mixins } from "@/shared/lib/mixins";
-import { getLinks } from "@/shared/config/links";
+import InfoPanel from "@/widgets/infoPanel";
+import { helpers } from "@/shared/lib/mixins";
+import { links } from "@/shared/config/links";
 
-export default {
-  components: {
-    Chart,
-    infoPanel,
-  },
-  mixins: [mixins, getLinks],
-  data() {
-    return {
-      specBirthYear: chartConfigs.specBirthYear,
-      specRace: chartConfigs.specRace,
-      specEthnicity: chartConfigs.specEthnicity,
-      specAgeSex: chartConfigs.specAgeSex,
-    };
-  },
-  computed: {
-    ...mapGetters(["getData", "getErrors", "dataInStore", "getQueryIndex"]),
-  },
-};
+import { useStore } from "vuex";
+
+const store = useStore();
 </script>
 
 <style scoped>

@@ -1,5 +1,4 @@
 // Copyright (c) 2016 Evan You,  https://github.com/vuejs/vuex-router-sync
-
 export default function sync(store, router, options) {
   const moduleName = (options || {}).moduleName || "route";
 
