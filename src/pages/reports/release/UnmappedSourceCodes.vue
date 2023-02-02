@@ -12,9 +12,12 @@
           <v-text-field
             prepend-icon="mdi-magnify"
             label="Search in Table"
+            variant="outlined"
+            density="compact"
             single-line
             hide-details
-            @input="helpers.debouncedSearch"
+            :model-value="route.query.search"
+            @update:modelValue="debouncedSearch"
           ></v-text-field>
         </v-col>
         <v-col cols="9"> </v-col>
@@ -31,7 +34,7 @@
         }"
         item-key="CONCEPT_ID"
         :items-per-page="10"
-        :search="search"
+        :search="route.query.search"
       >
         <template #body.prepend>
           <tr>
@@ -70,12 +73,23 @@ import { helpers } from "@/shared/lib/mixins";
 import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
 import { VDataTable } from "vuetify/labs/VDataTable";
+import { useRoute, useRouter } from "vue-router";
+import { debounce } from "lodash";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 
 const store = useStore();
+const router = useRouter();
+const route = useRoute();
 
-const search: Ref<string> = ref("");
 const filters = ref({});
+
+const debouncedSearch = debounce(function (data: string): void {
+  router.push({
+    query: {
+      search: data,
+    },
+  });
+}, 300);
 
 const headers: Ref<DataTableHeader[]> = ref([
   {
