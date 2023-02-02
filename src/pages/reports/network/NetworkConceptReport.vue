@@ -136,7 +136,7 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Count value",
     sortable: true,
-    key: "NUM_PERSONS",
+    key: "UNIT_COUNT",
     align: "start",
   },
   {

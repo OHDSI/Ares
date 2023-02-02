@@ -38,7 +38,9 @@ export default function networkConcept(data) {
                 ...value,
                 SOURCE: current.source.cdm_source_key,
                 RELEASE: current.source.releases[0].release_name,
-                NUM_PERSONS: current.data.NUM_PERSONS[0],
+                UNIT_COUNT: current.data.RECORDS_BY_UNIT.filter(
+                  (val) => val.CONCEPT_NAME === value.CATEGORY
+                )[0].COUNT_VALUE,
                 CONCEPT_NAME: concept[0].data.CONCEPT_NAME[0],
                 CONCEPT_ID: concept[0].data.CONCEPT_ID[0],
               })),
