@@ -65,10 +65,10 @@
           ></v-text-field>
         </template>
       </v-range-slider>
-      <v-card-subtitle>Minimum cumulative observation</v-card-subtitle>
+      <v-card-subtitle>Minimum continuous observation</v-card-subtitle>
       <v-slider
         step="1"
-        v-model="cumulativeObservation[0]"
+        v-model="continuousObservation[0]"
         :min="getDurationMinMax[0]"
         :max="getDurationMinMax[1]"
         hide-details
@@ -76,7 +76,7 @@
       >
         <template v-slot:prepend>
           <v-text-field
-            v-model="cumulativeObservation[0]"
+            v-model="continuousObservation[0]"
             class="mt-0 pt-0"
             hide-details
             variant="underlined"
@@ -103,9 +103,9 @@
           ? (item.raw.average_population_percentage * 100).toFixed(2)
           : "No data"
       }}</template>
-      <template v-slot:item.cumulative_duration="{ item }">{{
-        item.raw.cumulative_duration
-          ? (item.raw.cumulative_duration * 100).toFixed(2)
+      <template v-slot:item.continuous_duration="{ item }">{{
+        item.raw.continuous_duration
+          ? (item.raw.continuous_duration * 100).toFixed(2)
           : "No data"
       }}</template>
       <template v-slot:item.population_age_percent="{ item }">{{
@@ -121,7 +121,7 @@
       icon="mdi-help-rhombus"
       prominent
     >
-      The cumulative duration column shows the lowest % of all values found in
+      The continuous duration column shows the lowest % of all values found in
       the range.
     </v-alert>
   </v-container>
@@ -146,7 +146,7 @@ const props = defineProps<Props>();
 
 const rangeAge: Ref<number[]> = ref([0, 100]);
 const rangeYear: Ref<number[]> = ref([1900, 2021]);
-const cumulativeObservation: Ref<number[]> = ref([50]);
+const continuousObservation: Ref<number[]> = ref([50]);
 const yearHeaders: Ref<DataTableHeader[]> = ref([
   {
     title: "Data source",
@@ -216,7 +216,7 @@ const getRangeData = computed(function () {
         };
       }, {}),
       filtered_duration: value.data.CUMULATIVE_DURATION.filter(
-        (data) => data.YEARS <= cumulativeObservation.value[0]
+        (data) => data.YEARS <= continuousObservation.value[0]
       ),
     }))
     .map((value) => ({
