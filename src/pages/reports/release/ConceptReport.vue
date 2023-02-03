@@ -93,6 +93,18 @@
           ></v-row
         >
         <v-card
+          v-if="store.getters.getData.measurementTable"
+          elevation="10"
+          class="ma-4 pa-2"
+        >
+          <v-data-table
+            density="compact"
+            :headers="headers"
+            :items="store.getters.getData.measurementTable"
+          >
+          </v-data-table>
+        </v-card>
+        <v-card
           v-if="
             store.getters.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION
           "
@@ -592,10 +604,67 @@ import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
 import { computed, ref, Ref } from "vue";
 import { useStore } from "vuex";
-import { RouteLocation } from "vue-router";
+import { VDataTable } from "vuetify/labs/VDataTable";
+import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 
 const route = useRoute();
 const store = useStore();
+const headers: Ref<DataTableHeader[]> = ref([
+  {
+    title: "Unit",
+    sortable: true,
+    key: "CATEGORY",
+    align: "start",
+  },
+  {
+    title: "Count value",
+    sortable: true,
+    key: "UNIT_COUNT",
+    align: "start",
+  },
+  {
+    title: "Min Value",
+    sortable: true,
+    key: "MIN_VALUE",
+    align: "start",
+  },
+  {
+    title: "P10 Value",
+    sortable: true,
+    key: "P10_VALUE",
+    align: "start",
+  },
+  {
+    title: "P25 Value",
+    sortable: true,
+    key: "P25_VALUE",
+    align: "start",
+  },
+  {
+    title: "Median Value",
+    sortable: true,
+    key: "MEDIAN_VALUE",
+    align: "start",
+  },
+  {
+    title: "P75 Value",
+    sortable: true,
+    key: "P75_VALUE",
+    align: "start",
+  },
+  {
+    title: "P90 Value",
+    sortable: true,
+    key: "P90_VALUE",
+    align: "start",
+  },
+  {
+    title: "Max Value",
+    sortable: true,
+    key: "MAX_VALUE",
+    align: "start",
+  },
+]);
 
 const selectedMeasurementUnits: Ref<string[]> = ref([]);
 
