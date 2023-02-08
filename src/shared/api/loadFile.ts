@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 const loadFile = (path: string, payload: object) => {
-  const instance = axios.create({ baseURL: "/" });
+  const instance = axios.create({ baseURL: "/ares" });
   instance.interceptors.response.use(
     function (response: AxiosResponse) {
       return response;
