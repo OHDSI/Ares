@@ -9,7 +9,7 @@ export function specBirthYear(zeroBaseline = false) {
     params: [
       {
         name: "paintbrush",
-        select: { type: "point", on: "mouseover", nearest: true },
+        select: { type: "point", on: "mouseover", nearest: false },
       },
     ],
     mark: { type: "bar" },
@@ -19,14 +19,14 @@ export function specBirthYear(zeroBaseline = false) {
         {
           field: "YEAR",
           title: "Year of Birth",
-          type: "temporal",
-          format: "%Y",
+          type: "quantitative",
         },
       ],
       x: {
         field: "YEAR",
-        type: "temporal",
+        type: "quantitative",
         title: "Year of Birth",
+        axis: { format: "0000" },
       },
       y: {
         field: "COUNT_PERSON",
