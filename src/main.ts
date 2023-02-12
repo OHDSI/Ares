@@ -6,6 +6,9 @@ import "@/main.scss";
 import store from "./app/providers/store";
 import router from "./app/providers/router";
 import sync from "./shared/lib/vuex-router-sync";
+import environment from "@/shared/api/environment";
+import { authActions } from "@/shared/api/webAPI";
+//todo: Think how to improve auth
 import { settingsActions } from "@/widgets/settings";
 // adds reactive router module to global state
 sync(store, router);

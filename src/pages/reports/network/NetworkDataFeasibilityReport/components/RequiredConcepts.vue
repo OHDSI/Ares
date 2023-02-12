@@ -8,6 +8,7 @@
       v-model:expanded="expanded"
       :headers="headers"
       :items="getSourcesOverview"
+-->
     >
       <template v-slot:top>
         <v-toolbar color="transparent" density="compact" flat>
@@ -18,71 +19,14 @@
                 Add concept
               </v-btn>
             </template>
-            <v-form ref="form">
-              <v-card>
-                <v-card-title>
-                  <span class="text-h5">New Concept</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-container fluid>
-                    <v-row class="flex-column">
-                      <v-col cols="auto">
-                        <v-text-field
-                          v-model.number="editedItem.conceptID"
-                          :rules="[rules.required, rules.concept]"
-                          prepend-icon="mdi-chart-timeline-variant-shimmer"
-                          label="Concept ID"
-                          variant="outlined"
-                          density="compact"
-                          :error-messages="errors"
-                        >
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="auto">
-                        <v-autocomplete
-                          v-model="editedItem.domain"
-                          :rules="[rules.required]"
-                          label="Domain"
-                          variant="outlined"
-                          item-title="title"
-                          return-object
-                          prepend-icon="mdi-folder"
-                          density="compact"
-                          :items="domains"
-                        >
-                        </v-autocomplete>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-form>
-          </v-dialog>
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
+            <ConceptSearchForm
+              :added-concepts="addedConcepts"
+              :success-message="successMessage"
+              :errors="errors"
+              @close="close"
+              @save="(item) => save(item)"
+              @inputChanged="clearMessages"
+            />
           </v-dialog>
         </v-toolbar>
       </template>
@@ -166,11 +110,42 @@ import {
 } from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { VDataTable } from "vuetify/labs/VDataTable";
+import environment from "@/shared/api/environment";
+import webApiKeyMap from "@/shared/config/webApiKeyMap";
+import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
+import { webApiActions } from "@/shared/api/webAPI";
 
 const store = useStore();
 
+const webapiHeaders = ref([
+    {
+      text: "Concept ID",
+      align: "start",
+      sortable: true,
+      value: "CONCEPT_ID",
+    },
+    {
+      text: "Concept Name",
+      align: "start",
+      sortable: true,
+      value: "CONCEPT_NAME",
+    },
+    {
+      text: "Domain",
+      align: "start",
+      sortable: true,
+      value: "DOMAIN_ID",
+    },
+    { text: "", value: "actions", sortable: false },
+  ]);
+
 const concepts = ref([]);
 const sources = ref([]);
+const addedConceptsCount = computed(function () {
+  return Object.keys(this.addedConcepts).filter(
+    (key) => this.addedConcepts[key] === "Loaded"
+  ).length;
+})
 const filterSourcesWithData = computed(function () {
   return sources.value.filter((data) => data.concepts.length);
 });

@@ -1,5 +1,5 @@
 import getFilePath from "@/shared/api/getFilePath";
-import loadFile from "@/shared/api/loadFile";
+import apiService from "@/shared/api/apiService";
 
 import preprocessing from "./preprocessing";
 import postprocessing from "./postprocessing";
@@ -32,12 +32,16 @@ const actions = {
   [RESET_DATA_STORAGE]({ commit }) {
     commit(CLEAR_DATA);
   },
+
   async [FETCH_FILES]({ commit, dispatch, rootState }, payload) {
     const promises = payload.files.map((file) => {
-      return loadFile(
-        getFilePath(payload.params ? payload.params : rootState.route.params)[
-          file.name
-        ],
+      return apiService(
+        {
+          url: getFilePath(
+            payload.params ? payload.params : rootState.route.params
+          )[file.name],
+          method: "get",
+        },
         {
           required: file.required,
         }
@@ -80,25 +84,40 @@ const actions = {
     const promises = payload.files.reduce(
       (obj, file) => ({
         ...obj,
-        [file]: rootGetters.getSources.map((source) => {
-          return loadFile(
-            getFilePath({
-              cdm: source.cdm_source_key,
-              release: source.releases[0].release_id,
-              domain: payload.params?.domain
-                ? payload.params.domain
-                : rootState.route.params.domain,
-              concept: payload.params?.concept
-                ? payload.params.concept
-                : rootState.route.params.concept,
-            })[file],
-            { source }
-          );
-        }),
+        [file.name]: rootGetters.getSources.reduce(
+          (filesArray, currentSource) => {
+            const loadedFiles = file.instanceParams.reduce(
+              (array, currentInstance) => {
+                return [
+                  ...array,
+                  apiService(
+                    {
+                      url: getFilePath({
+                        cdm: currentSource.cdm_source_key,
+                        release: currentSource.releases[0].release_id,
+                        domain: currentInstance.domain
+                          ? currentInstance.domain
+                          : rootState.route.params.domain,
+                        concept: currentInstance.concept
+                          ? currentInstance.concept
+                          : rootState.route.params.concept,
+                      })[file.name],
+                      method: "get",
+                    },
+
+                    { source: currentSource }
+                  ),
+                ];
+              },
+              []
+            );
+            return [...filesArray, ...loadedFiles];
+          },
+          []
+        ),
       }),
       {}
     );
-
     const data = {};
     for (const file in promises) {
       await Promise.allSettled(promises[file]).then((responses) => {
@@ -138,13 +157,16 @@ const actions = {
       (obj, file) => ({
         ...obj,
         [file]: rootGetters.getSelectedSource.releases.map((release) => {
-          return loadFile(
-            getFilePath({
-              cdm: rootGetters.getSelectedSource.cdm_source_key,
-              release: release.release_id,
-              domain: rootState.route.params.domain,
-              concept: rootState.route.params.concept,
-            })[file],
+          return apiService(
+            {
+              url: getFilePath({
+                cdm: rootGetters.getSelectedSource.cdm_source_key,
+                release: release.release_id,
+                domain: rootState.route.params.domain,
+                concept: rootState.route.params.concept,
+              })[file],
+              method: "get",
+            },
             release.release_name
           );
         }),
@@ -187,6 +209,7 @@ const mutations = {
   },
   [CLEAR_DATA](state) {
     state.data = {};
+    state.webApiData = {};
   },
 };
 
