@@ -1,13 +1,13 @@
 <template>
   <v-container>
     <v-card
-      v-if="getApiData.serviceDetails"
-      :loading="getApiData.loading"
+      v-if="store.getters.getApiData.serviceDetails"
+      :loading="store.getters.getApiData.loading"
       elevation="10"
       class="ma-4 pa-2"
     >
       <v-card-title>WebAPI details</v-card-title>
-      <v-container v-if="getApiData.serviceDetails" fluid>
+      <v-container v-if="store.getters.getApiData.serviceDetails" fluid>
         <v-layout> </v-layout>
         <v-layout
           v-for="(value, propertyName) in getApiMetadata()"
@@ -24,10 +24,14 @@
       >
     </v-card>
 
-    <v-card v-if="getApiData.apiSources" elevation="10" class="ma-4 pa-2">
+    <v-card
+      v-if="store.getters.getApiData.apiSources"
+      elevation="10"
+      class="ma-4 pa-2"
+    >
       <v-data-table
-        :loading="getApiData.loading"
-        :items="getApiData.apiSources"
+        :loading="store.getters.getApiData.loading"
+        :items="store.getters.getApiData.apiSources"
         :headers="sourceHeaders"
       ></v-data-table>
     </v-card>
@@ -35,55 +39,52 @@
   </v-container>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
+<script setup lang="ts">
+import { useStore } from "vuex";
+import { VDataTable } from "vuetify/labs/VDataTable";
 
+const store = useStore();
+const sourceHeaders = [
+  {
+    title: "Source",
+    align: "start",
+    sortable: false,
+    key: "sourceKey",
+  },
+  {
+    title: "Source dialect",
+    align: "start",
+    sortable: false,
+    key: "sourceDialect",
+  },
+  {
+    title: "Source name",
+    align: "start",
+    sortable: false,
+    key: "sourceName",
+  },
+  {
+    title: "Source ID",
+    align: "start",
+    sortable: false,
+    key: "sourceId",
+  },
+];
+
+const getApiMetadata = function () {
+  const data = store.getters.getApiData.serviceDetails;
+  return {
+    "WebAPI version": data.version,
+    Timestamp: data.buildInfo.timestamp,
+    Branch: data.buildInfo.branch,
+    "Commit ID": data.buildInfo.commitId,
+  };
+};
+</script>
+
+<script lang="ts">
 export default {
   name: "WebApiInfo",
-  data() {
-    return {
-      sourceHeaders: [
-        {
-          text: "Source",
-          align: "start",
-          sortable: false,
-          value: "sourceKey",
-        },
-        {
-          text: "Source dialect",
-          align: "start",
-          sortable: false,
-          value: "sourceDialect",
-        },
-        {
-          text: "Source name",
-          align: "start",
-          sortable: false,
-          value: "sourceName",
-        },
-        {
-          text: "Source ID",
-          align: "start",
-          sortable: false,
-          value: "sourceId",
-        },
-      ],
-    };
-  },
-  methods: {
-    getApiMetadata: function () {
-      const data = this.getApiData.serviceDetails;
-      return {
-        "WebAPI version": data.version,
-        Timestamp: data.buildInfo.timestamp,
-        Branch: data.buildInfo.branch,
-        "Commit ID": data.buildInfo.commitId,
-      };
-    },
-  },
-  computed: {
-    ...mapGetters(["getApiData"]),
-  },
 };
 </script>
 

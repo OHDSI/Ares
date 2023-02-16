@@ -6,7 +6,7 @@ export const InfoService = {
     get(token) {
       return apiService(
         {
-          url: `${environment.WEB_API_URL}/source/sources`,
+          url: `${environment.WEB_API_URL}source/sources`,
           method: "get",
           baseURL: "/",
           headers: {
@@ -22,7 +22,7 @@ export const InfoService = {
     get(token) {
       return apiService(
         {
-          url: `${environment.WEB_API_URL}/info`,
+          url: `${environment.WEB_API_URL}info`,
           method: "get",
           baseURL: "/",
           headers: {

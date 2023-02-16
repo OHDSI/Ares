@@ -12,6 +12,9 @@ const getters = {
   getWebAPIToken: function (state) {
     return state.accessToken;
   },
+  authenticated: function (state) {
+    return !!state.accessToken;
+  },
 };
 
 const actions = {
@@ -19,19 +22,19 @@ const actions = {
     if (environment.WEB_API_ENABLED === "false") {
       return;
     }
-    return await authService.token.get().then((data) => {
-      const token = data.response.headers?.["bearer"];
-      if (!token) {
+    return await authService.token
+      .get()
+      .then((data) => {
+        const token = data.response?.headers?.["bearer"];
+        commit(SET_ACCESS_TOKEN, token);
+      })
+      .catch((error) => {
         dispatch(ADD_ALERT, {
           message: "Could not authenticate",
-          status: data.response.message
-            ? data.response.message
-            : "No additional data",
+          status: error.message ? error.message : "No additional data",
         });
         return;
-      }
-      commit(SET_ACCESS_TOKEN, token);
-    });
+      });
   },
 };
 const mutations = {

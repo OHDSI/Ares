@@ -34,7 +34,6 @@ watch(darkMode, (): void => {
 watch(route, (): void => {
   store.dispatch(errorActions.RESET_ERRORS);
   store.dispatch(webApiActions.RESET_API_STORAGE);
-
 });
 
 onBeforeMount((): void => {

@@ -8,12 +8,11 @@
       v-model:expanded="expanded"
       :headers="headers"
       :items="getSourcesOverview"
--->
     >
       <template v-slot:top>
         <v-toolbar color="transparent" density="compact" flat>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
+          <v-dialog v-model="dialog" max-width="1000px">
             <template v-slot:activator="{ props }">
               <v-btn variant="flat" color="primary" class="mb-2" v-bind="props">
                 Add concept
@@ -31,13 +30,13 @@
         </v-toolbar>
       </template>
       <template v-slot:item.min_population="{ item }">{{
-        formatComma(item.raw.min_population) || "No data"
+        helpers.formatComma(item.raw.min_population) || "No data"
       }}</template>
       <template v-slot:item.max_population="{ item }">{{
-        formatComma(item.raw.max_population) || "No data"
+        helpers.formatComma(item.raw.max_population) || "No data"
       }}</template>
       <template v-slot:item.concepts.length="{ item }">{{
-        `${item.raw.concepts.length}/${conceptsCount}`
+        `${item.raw.concepts.length}/${addedConceptsCount}`
       }}</template>
       <template v-slot:expanded-row="{ columns, item }">
         <td :colspan="columns.length">
@@ -63,7 +62,7 @@
               (item.raw.percentage * 100).toFixed(2) || "No data"
             }}</template>
             <template v-slot:item.population="{ item }">{{
-              formatComma(item.raw.population)
+              helpers.formatComma(item.raw.population)
             }}</template>
             <template v-slot:item.measurement="{ item }">{{
               !item.raw.measurement
@@ -75,10 +74,7 @@
           </v-data-table>
         </td>
       </template>
-      <template v-slot:item.actions="{ item }">
-        <v-icon small @click="deleteItem(item.raw)"> mdi-delete </v-icon>
-      </template>
-      <template v-slot:no-data> </template>
+      <template v-slot:no-data><div>No concepts selected</div></template>
     </v-data-table>
     <v-divider></v-divider>
     <v-alert
@@ -99,56 +95,58 @@ import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import { useStore } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
 import * as d3Format from "d3-format";
-import {
-  computed,
-  ref,
-  watch,
-  defineEmits,
-  Ref,
-  onBeforeMount,
-  nextTick,
-} from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import { helpers } from "@/shared/lib/mixins";
+import { computed, ref, watch, defineEmits, Ref, onBeforeMount } from "vue";
 import { VDataTable } from "vuetify/labs/VDataTable";
-import environment from "@/shared/api/environment";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import { webApiActions } from "@/shared/api/webAPI";
 
 const store = useStore();
 
-const webapiHeaders = ref([
-    {
-      text: "Concept ID",
-      align: "start",
-      sortable: true,
-      value: "CONCEPT_ID",
-    },
-    {
-      text: "Concept Name",
-      align: "start",
-      sortable: true,
-      value: "CONCEPT_NAME",
-    },
-    {
-      text: "Domain",
-      align: "start",
-      sortable: true,
-      value: "DOMAIN_ID",
-    },
-    { text: "", value: "actions", sortable: false },
-  ]);
-
-const concepts = ref([]);
+const addedConcepts = ref({});
+const dialog = ref(false);
+const errors = ref("");
+const conceptsData = ref([]);
+const successMessage = ref([]);
+const headers = ref([
+  {
+    title: "Source",
+    align: "start",
+    sortable: false,
+    key: "cdm_name",
+  },
+  { title: "Issues", key: "issues" },
+  { title: "Time-series issues", key: "time_series_issues" },
+  { title: "Available concepts", key: "concepts.length" },
+  { title: "Min population", key: "min_population" },
+  { title: "Max population", key: "max_population" },
+]);
+const expanded = ref([]);
 const sources = ref([]);
+
 const addedConceptsCount = computed(function () {
-  return Object.keys(this.addedConcepts).filter(
-    (key) => this.addedConcepts[key] === "Loaded"
+  return Object.keys(addedConcepts.value).filter(
+    (key) => addedConcepts.value[key] === "Loaded"
   ).length;
-})
+});
+
+const emit = defineEmits(["overlappingDataChanged"]);
+/*
+watch(dialog, (val) => {
+  val || close();
+  if (this.$refs?.form) {
+    this.$refs.form.resetValidation();
+  }
+});*/
+
 const filterSourcesWithData = computed(function () {
   return sources.value.filter((data) => data.concepts.length);
 });
+watch(filterSourcesWithData, () => {
+  emit("overlappingDataChanged", filterSourcesWithData);
+});
+
 const getSourcesOverview = computed(function () {
   return filterSourcesWithData.value.map((value) => ({
     ...value,
@@ -170,10 +168,65 @@ const getSourcesOverview = computed(function () {
     ).length,
   }));
 });
+const conceptHeaders = computed(function () {
+  return [
+    {
+      title: "Concept ID",
+      align: "start",
+      sortable: false,
+      key: "concept_id",
+      show: true,
+    },
+    { title: "Concept Name", key: "concept_name", show: true },
+    { title: "Domain", key: "domain", show: true },
+    { title: "Population", key: "population", show: true },
+    { title: "%", key: "percentage", show: true },
+    { title: "Time series", key: "time_series", show: true },
+    { title: "Issues", key: "issues", show: true },
+    {
+      title: "% with values",
+      key: "measurement",
+      show: [
+        ...getSourcesOverview.value.map((value) =>
+          value.concepts.filter((concept) => concept.domain === "MEASUREMENT")
+        ),
+      ].filter((value) => value.length).length,
+    },
+  ].filter((header) => header.show);
+});
 
-const conceptsCount: Ref<number> = ref(0);
-
-const conceptsData = ref([]);
+const clearMessages = function () {
+  errors.value = "";
+  successMessage.value = [];
+};
+const getDomainSummary = function () {
+  return store
+    .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
+      files: [
+        {
+          name: DOMAIN_SUMMARY,
+          instanceParams: [{ domain: "measurement", concept: "" }],
+        },
+      ],
+      criticalError: false,
+    })
+    .then(() => {
+      return store.getters.getData.domainSummary.map((value) => ({
+        parsedData: value.data,
+        source: value.source,
+      }));
+    });
+};
+const addConceptToList = function (concepts) {
+  sources.value.forEach((source) => {
+    const sourceConcept = concepts.filter(
+      (concept) => source.cdm_name === concept.cdm_name
+    );
+    if (sourceConcept.length) {
+      source.concepts.push(...sourceConcept);
+    }
+  });
+};
 const getConceptsForRequest = function (measurement = []) {
   return conceptsData.value.map((value) => {
     const missingData = measurement.length
@@ -201,212 +254,58 @@ const getConceptsForRequest = function (measurement = []) {
     };
   });
 };
-
-const addConceptToList = function (concepts) {
-  if (concepts[0]?.concept_id && !isLoaded()) {
-    conceptsCount.value += 1;
-    sources.value.forEach((source) => {
-      const sourceConcept = concepts.filter(
-        (concept) => source.cdm_name === concept.cdm_name
-      )[0];
-
-      if (sourceConcept) {
-        source.concepts.push(sourceConcept);
-      }
-    });
-    close();
-  } else {
-    errors.value = "Entered concept is not found across data sources";
-  }
+const close = function () {
+  dialog.value = false;
+  store.dispatch(webApiActions.RESET_API_STORAGE);
+  successMessage.value = [];
 };
-
-const errors: Ref<string> = ref("");
-const dialog: Ref<boolean> = ref(false);
-
-const form = ref(null);
-watch(dialog, (val) => {
-  val || close();
-  if (form.value) {
-    form.value.resetValidation();
-  }
-});
-
-const defaultItem = ref({
-  conceptID: "",
-  domain: "",
-});
-const editedItem = ref({
-  conceptID: "",
-  domain: "",
-});
-const isLoaded = function () {
-  return [
-    ...sources.value.reduce(
-      (prevValue, value) => [
-        ...prevValue,
-        ...value.concepts.filter(
-          (concept) => concept.concept_id === editedItem.value.conceptID
-        ),
-      ],
-      []
-    ),
-  ].length;
-};
-
-const editedIndex = ref(null);
-
-function save() {
-  if (editedItem.value.conceptID === "" || editedItem.value.domain === "") {
+const save = function (item) {
+  if (addedConcepts.value[item.CONCEPT_ID] === "Loaded") {
+    errors.value = "This concept has already been loaded";
     return;
   }
-  if (isLoaded()) {
-    errors.value = "Entered concept is already on the list";
-    return;
-  }
-
   store
     .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-      files: [CONCEPT],
-      params: {
-        concept: editedItem.value.conceptID,
-        domain: editedItem.value.domain.key,
-      },
+      files: [
+        {
+          name: CONCEPT,
+          instanceParams: [
+            {
+              domain: webApiKeyMap.domains[item.DOMAIN_ID],
+              concept: item.CONCEPT_ID,
+            },
+          ],
+        },
+      ],
       criticalError: false,
     })
     .then(() => {
-      conceptsData.value = store.getters.getData[CONCEPT];
-      if (conceptsData.value[0]?.data?.CDM_TABLE_NAME[0] === "MEASUREMENT") {
+      conceptsData.value = store.getters.getData.concept;
+      if (!conceptsData.value.length) {
+        errors.value = "Requested concept is not found across data sources";
+        addedConcepts.value = {
+          ...addedConcepts.value,
+          [item.CONCEPT_ID]: "Not found",
+        };
+        return;
+      }
+      const withMeasurement = conceptsData.value.filter(
+        (value) => value.data.CDM_TABLE_NAME[0] === "MEASUREMENT"
+      );
+      if (withMeasurement.length) {
         getDomainSummary().then((value) => {
           addConceptToList(getConceptsForRequest(value));
         });
       } else {
         addConceptToList(getConceptsForRequest());
       }
-    });
-}
-function close() {
-  dialog.value = false;
-  nextTick(() => {
-    editedItem.value = Object.assign({}, defaultItem.value);
-    editedIndex.value = -1;
-  });
-}
-
-watch(editedItem, () => {
-  errors.value = "";
-  //deep
-});
-
-const dialogDelete: Ref<boolean> = ref(false);
-function closeDelete() {
-  dialogDelete.value = false;
-  nextTick(() => {
-    editedItem.value = Object.assign({}, defaultItem.value);
-    editedIndex.value = -1;
-  });
-}
-function deleteItemConfirm() {
-  concepts.value.splice(editedIndex.value, 1);
-  closeDelete();
-}
-
-function deleteItem(item) {
-  editedIndex.value = concepts.value.indexOf(item);
-  editedItem.value = Object.assign({}, item);
-  dialogDelete.value = true;
-}
-
-watch(dialogDelete, (val) => {
-  val || closeDelete();
-});
-
-const rules = {
-  required: (value) => !!value || "Required field",
-  concept: (value) => {
-    const pattern = /^\d+$/;
-    return pattern.test(value) || "The field is digits only";
-  },
-};
-
-const headers: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Source",
-    align: "start",
-    sortable: false,
-    key: "cdm_name",
-  },
-  { title: "Issues", key: "issues" },
-  { title: "Time-series issues", key: "time_series_issues" },
-  { title: "Available concepts", key: "concepts.length" },
-  { title: "Min population", key: "min_population" },
-  { title: "Max population", key: "max_population" },
-]);
-const domains: Ref<DataTableHeader[]> = ref([
-  { title: "Condition occurrence", key: "condition_occurrence" },
-  { title: "Drug Exposure", key: "drug_exposure" },
-  { title: "Device Exposure", key: "device_exposure" },
-  { title: "Measurement", key: "measurement" },
-  { title: "Death", key: "death" },
-  { title: "Procedure Occurrence", key: "procedure_occurrence" },
-  { title: "Observation", key: "observation" },
-]);
-
-const expanded = ref([]);
-
-const conceptHeaders = computed(function (): DataTableHeader[] {
-  return [
-    {
-      title: "Concept ID",
-      align: "start",
-      sortable: false,
-      key: "concept_id",
-      show: true,
-    },
-    { title: "Concept Name", key: "concept_name", show: true },
-    { title: "Domain", key: "domain", show: true },
-    { title: "Population", key: "population", show: true },
-    { title: "%", key: "percentage", show: true },
-    { title: "Time series", key: "time_series", show: true },
-    { title: "Issues", key: "issues", show: true },
-    {
-      title: "% with values",
-      key: "measurement",
-      show: [
-        ...getSourcesOverview.value.map((value) =>
-          value.concepts.filter((concept) => concept.domain === "MEASUREMENT")
-        ),
-      ].filter((value) => value.length).length,
-    },
-  ].filter((header) => header.show);
-});
-
-const getDomainSummary = function () {
-  return store
-    .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-      files: [DOMAIN_SUMMARY],
-      params: {
-        concept: conceptsData.value[0].data.CONCEPT_ID[0],
-        domain: "measurement",
-      },
-      criticalError: false,
-    })
-    .then(() => {
-      return store.getters.getData.domainSummary.map((value) => ({
-        parsedData: value.data,
-        source: value.source.cdm_source_abbreviation,
-      }));
+      addedConcepts.value = {
+        ...addedConcepts.value,
+        [item.CONCEPT_ID]: "Loaded",
+      };
+      successMessage.value = ["Concept loaded"];
     });
 };
-
-const formatComma = function (value) {
-  return d3Format.format(",")(value);
-};
-
-const emit = defineEmits(["overlappingDataChanged"]);
-
-watch(filterSourcesWithData, () => {
-  emit("overlappingDataChanged", filterSourcesWithData.value);
-});
 
 onBeforeMount(() => {
   sources.value = store.getters.getSources.map((value) => ({

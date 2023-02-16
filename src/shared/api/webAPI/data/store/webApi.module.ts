@@ -24,13 +24,17 @@ const getters = {
 const actions = {
   async [FETCH_WEBAPI_INFO]({ commit, dispatch, rootState, rootGetters }) {
     commit(SET_WEBAPI, { loading: true });
-    const webApiInfo = await InfoService.webApi.get(rootGetters.getWebAPIToken);
-    const sources = await InfoService.sources.get(rootGetters.getWebAPIToken);
-    commit(SET_WEBAPI, {
-      serviceDetails: webApiInfo.response.data,
-      apiSources: sources.response.data,
-      loading: false,
-    });
+    const webApiInfo = InfoService.webApi.get(rootGetters.getWebAPIToken);
+    const sources = InfoService.sources.get(rootGetters.getWebAPIToken);
+    return await Promise.all([webApiInfo, sources])
+      .then((res) => {
+        commit(SET_WEBAPI, {
+          serviceDetails: res[0].data,
+          apiSources: res[1].data,
+          loading: false,
+        });
+      })
+      .catch((err) => commit(SET_WEBAPI, { loading: false, error: err.error }));
   },
 
   async [FETCH_VOCABULARY_SEARCH_RESULTS](
@@ -41,15 +45,14 @@ const actions = {
     await VocabularyService.search
       .get(payload.search, payload.source, rootGetters.getWebAPIToken)
       .then((data) => {
-        if (!data.response?.data) {
-          commit(SET_WEBAPI, { loading: false, error: data.response });
-        } else {
-          commit(SET_WEBAPI, {
-            data: data.response.data,
-            payload,
-            loading: false,
-          });
-        }
+        commit(SET_WEBAPI, {
+          data: data.data,
+          payload,
+          loading: false,
+        });
+      })
+      .catch((err) => {
+        commit(SET_WEBAPI, { loading: false, error: err.error });
       });
   },
   [RESET_API_STORAGE]({ commit }) {

@@ -6,7 +6,7 @@ export const authService = {
     get() {
       return apiService(
         {
-          url: `${environment.WEB_API_URL}/user/login/windows`,
+          url: `${environment.WEB_API_URL}user/login/windows`,
           method: "get",
           baseURL: "/",
           withCredentials: true,

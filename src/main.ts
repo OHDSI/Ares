@@ -13,7 +13,16 @@ import { settingsActions } from "@/widgets/settings";
 // adds reactive router module to global state
 sync(store, router);
 
-//loads app settings from the local storage (if there are any saved)
-store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE).then(() => {
-  createApp(App).use(store).use(router).use(vuetify).mount("#app");
+environment.load().then(() => {
+  store
+    .dispatch(authActions.GET_AUTH_TOKEN)
+    .then()
+    .catch()
+    .finally(() => {
+      store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE).then(() => {
+        createApp(App).use(store).use(router).use(vuetify).mount("#app");
+      });
+    });
 });
+
+//loads app settings from the local storage (if there are any saved)
