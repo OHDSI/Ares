@@ -25,7 +25,7 @@ const actions = {
     return await authService.token
       .get()
       .then((data) => {
-        const token = data.response?.headers?.["bearer"];
+        const token = data.headers?.["bearer"];
         commit(SET_ACCESS_TOKEN, token);
       })
       .catch((error) => {

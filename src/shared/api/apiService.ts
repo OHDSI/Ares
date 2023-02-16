@@ -12,7 +12,7 @@ const loadFile = (config: AxiosRequestConfig, payload: object) => {
   );
 
   return instance.request(config).then((response) => {
-    return { data: response.data, payload };
+    return { data: response.data, headers: response.headers, payload };
   });
 };
 
