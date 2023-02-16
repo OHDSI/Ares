@@ -29,6 +29,7 @@ import {
   FETCH_MULTIPLE_FILES_BY_RELEASE,
   FETCH_MULTIPLE_FILES_BY_SOURCE,
 } from "../model/store/actions.type";
+import { FETCH_WEBAPI_INFO } from "@/shared/api/webAPI/data/store/actions.type";
 
 export default function getFilesByView() {
   return {
@@ -40,13 +41,25 @@ export default function getFilesByView() {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
       payload: {
         files: [
-          OBSERVATION_PERIOD,
-          PERSON,
-          DENSITY_DOMAIN_PERSON,
-          DOMAIN_SUMMARY,
+          {
+            name: OBSERVATION_PERIOD,
+            instanceParams: [{ domain: "visit_occurrence" }],
+          },
+          { name: PERSON, instanceParams: [{ domain: "visit_occurrence" }] },
+          {
+            name: DENSITY_DOMAIN_PERSON,
+            instanceParams: [{ domain: "visit_occurrence" }],
+          },
+          {
+            name: DOMAIN_SUMMARY,
+            instanceParams: [{ domain: "visit_occurrence" }],
+          },
         ],
-        params: { domain: "visit_occurrence" },
       },
+    },
+    webApi: {
+      loadMethod: FETCH_WEBAPI_INFO,
+      payload: {},
     },
     networkPerformance: {
       loadMethod: FETCH_FILES,
@@ -61,7 +74,7 @@ export default function getFilesByView() {
     networkConcept: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
       payload: {
-        files: [CONCEPT],
+        files: [{ name: CONCEPT, instanceParams: [{}] }],
       },
     },
     networkDataQuality: {
@@ -73,13 +86,13 @@ export default function getFilesByView() {
     dataStrandReport: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
       payload: {
-        files: [RECORDS_DOMAIN],
+        files: [{ name: RECORDS_DOMAIN, instanceParams: [{}] }],
       },
     },
     population: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
       payload: {
-        files: [OBSERVATION_PERIOD],
+        files: [{ name: OBSERVATION_PERIOD, instanceParams: [{}] }],
       },
     },
     concept: {

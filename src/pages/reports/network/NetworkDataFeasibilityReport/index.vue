@@ -74,12 +74,12 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import DomainRequirements from "@/pages/reports/network/NetworkDataFeasibilityReport/DomainRequirements.vue";
-import Range from "@/pages/reports/network/NetworkDataFeasibilityReport/Range.vue";
-import VisitTypes from "@/pages/reports/network/NetworkDataFeasibilityReport/VisitTypes.vue";
-import RequiredConcepts from "@/pages/reports/network/NetworkDataFeasibilityReport/RequiredConcepts.vue";
-import FinalEstimation from "@/pages/reports/network/NetworkDataFeasibilityReport/FinalEstimation.vue";
-import DesiredDomains from "@/pages/reports/network/NetworkDataFeasibilityReport/DesiredDomains.vue";
+import DomainRequirements from "@/pages/reports/network/NetworkDataFeasibilityReport/components/DomainRequirements.vue";
+import Range from "@/pages/reports/network/NetworkDataFeasibilityReport/components/Range.vue";
+import VisitTypes from "@/pages/reports/network/NetworkDataFeasibilityReport/components/VisitTypes.vue";
+import RequiredConcepts from "@/pages/reports/network/NetworkDataFeasibilityReport/components/RequiredConcepts.vue";
+import FinalEstimation from "@/pages/reports/network/NetworkDataFeasibilityReport/components/FinalEstimation.vue";
+import DesiredDomains from "@/pages/reports/network/NetworkDataFeasibilityReport/components/DesiredDomains.vue";
 
 import { computed, watch, ref } from "vue";
 

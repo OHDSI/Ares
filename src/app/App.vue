@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import { errorActions } from "@/widgets/error";
+import { webApiActions } from "@/shared/api/webAPI";
 
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
@@ -32,6 +33,7 @@ watch(darkMode, (): void => {
 
 watch(route, (): void => {
   store.dispatch(errorActions.RESET_ERRORS);
+  store.dispatch(webApiActions.RESET_API_STORAGE);
 });
 
 onBeforeMount((): void => {

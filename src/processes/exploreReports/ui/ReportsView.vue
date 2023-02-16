@@ -3,6 +3,7 @@
     <Explorer v-if="showExplorer" />
     <Error v-if="store.getters.getErrors" />
     <router-view v-if="!store.getters.getErrors" name="reportsView" />
+    <Snackbar />
     <Settings />
     <BottomNav />
   </v-container>
@@ -17,6 +18,7 @@ export default {
 import { Error } from "@/widgets/error";
 import { Explorer, explorerActions } from "@/widgets/explorer";
 import { Settings } from "@/widgets/settings";
+import { Snackbar } from "@/widgets/snackbar";
 import BottomNav from "@/widgets/bottomNav";
 
 import { RESET_DATA_STORAGE } from "../model/store/actions.type";

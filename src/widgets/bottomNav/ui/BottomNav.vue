@@ -1,6 +1,9 @@
 <template>
   <v-bottom-navigation density="comfortable">
     <v-layout class="justify-end align-center">
+      <v-btn v-if="environment.WEB_API_ENABLED === 'true'" to="/network/web_api">
+        <v-icon dark>mdi-server</v-icon>
+      </v-btn>
       <v-btn to="/help">
         <v-icon>mdi-help-circle-outline</v-icon>
       </v-btn>
@@ -28,6 +31,7 @@ import { SET_VISIBILITY } from "@/widgets/settings/model/store/mutations.type";
 import logo from "@/shared/assets/icon.png";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import environment from "@/shared/api/environment";
 
 const store = useStore();
 
