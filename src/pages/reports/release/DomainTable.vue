@@ -94,6 +94,13 @@
                 </div></v-layout
               >
             </template>
+            <template v-slot:item.DIFF_NUM_PERSONS="{ item }">
+              <v-layout class="justify-end"
+                >
+                  {{ helpers.formatComma(item.raw.DIFF_NUM_PERSONS) }}
+              </v-layout
+              >
+            </template>            
             <template v-slot:item.PERCENT_PERSONS="{ item }">
               <v-layout class="justify-end"
                 ><div
@@ -103,6 +110,15 @@
                 </div></v-layout
               >
             </template>
+            <template v-slot:item.DIFF_PERCENT_PERSONS="{ item }">
+              <v-layout class="justify-end"
+                ><div
+                  :class="helpers.getFontWeight(item.raw.DIFF_PERCENT_PERSONS_NTILE)"
+                >
+                  {{ (item.raw.DIFF_PERCENT_PERSONS * 100).toFixed(2) }} %
+                </div></v-layout
+              >
+            </template>            
             <template v-slot:item.RECORDS_PER_PERSON="{ item }">
               <v-layout class="justify-end"
                 ><div
@@ -256,6 +272,14 @@ const headers = ref([
     domain: ["ALL"],
   },
   {
+    title: "Delta # Person",
+    sortable: true,
+    key: "DIFF_NUM_PERSONS",
+    align: "end",
+    show: false,
+    domain: ["ALL"],
+  },      
+  {
     title: "% People",
     sortable: true,
     key: "PERCENT_PERSONS",
@@ -264,6 +288,14 @@ const headers = ref([
     domain: ["ALL"],
   },
   {
+    title: "Delta % People",
+    sortable: true,
+    key: "DIFF_PERCENT_PERSONS",
+    align: "end",
+    show: false,
+    domain: ["ALL"],
+  },     
+  {
     title: "Records per Person",
     sortable: true,
     key: "RECORDS_PER_PERSON",
@@ -271,6 +303,14 @@ const headers = ref([
     show: true,
     domain: ["ALL"],
   },
+  {
+    title: "Delta Records per Person",
+    sortable: true,
+    key: "DIFF_RECORDS_PER_PERSON",
+    align: "end",
+    show: false,
+    domain: ["ALL"],
+  },  
   {
     title: "Avg Duration",
     sortable: true,
