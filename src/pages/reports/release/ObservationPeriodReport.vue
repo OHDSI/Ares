@@ -242,7 +242,7 @@ const headers: Ref<DataTableHeader[]> = ref([
     title: "Number of People",
     sortable: true,
     key: "COUNT_VALUE",
-    align: "start",
+    align: "end",
   },
   {
     title: "% of People",
