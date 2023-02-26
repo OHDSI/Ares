@@ -1,12 +1,13 @@
 <template>
-  <v-list-item>
-    <v-list-item-action>
-      <v-switch v-model="darkMode"></v-switch>
-    </v-list-item-action>
-    <v-list-item-title>{{
-      darkMode ? "Dark Mode" : "Light Mode"
-    }}</v-list-item-title>
-    <v-list-item-subtitle>Select the Color mode</v-list-item-subtitle>
+  <v-list-item
+    :title="darkMode ? 'Dark Mode' : 'Light mode'"
+    subtitle="Select the Color mode"
+  >
+    <template v-slot:prepend>
+      <v-list-item-action>
+        <v-switch v-model="darkMode"></v-switch>
+      </v-list-item-action>
+    </template>
   </v-list-item>
 </template>
 
@@ -19,6 +20,7 @@ export default {
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { TOGGLE_DARK_MODE } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 
@@ -27,7 +29,7 @@ const darkMode = computed({
     return store.getters.getSettings.darkMode;
   },
   set: function (value: boolean): void {
-    store.commit("setDarkMode", value);
+    store.dispatch(TOGGLE_DARK_MODE, value);
   },
 });
 </script>

@@ -1,13 +1,14 @@
 <template>
-  <v-list-item>
-    <v-list-item-action>
-      <v-switch v-model="minMax"></v-switch>
-    </v-list-item-action>
-    <v-list-item-title>{{ minMax ? "MIN/MAX" : "P10/P90" }}</v-list-item-title>
-    <v-list-item-subtitle
-      >Applicable to some reports. Determines whether to use Min/Max or P10/P90
-      values for chart rendering</v-list-item-subtitle
-    >
+  <v-list-item
+    :title="minMax ? 'MIN/MAX' : 'P10/P90'"
+    subtitle="Applicable to some reports. Determines whether to use Min/Max or P10/P90
+      values for chart rendering"
+  >
+    <template v-slot:prepend>
+      <v-list-item-action>
+        <v-switch v-model="minMax"></v-switch>
+      </v-list-item-action>
+    </template>
   </v-list-item>
 </template>
 

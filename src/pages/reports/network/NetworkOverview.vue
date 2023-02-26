@@ -15,7 +15,7 @@
                   <h3 class="mb-4 text--center">Data Sources</h3>
                   <h1 class="text-center">
                     {{ store.getters.getSources.length
-                    }}<v-icon large color="info" class="mx-2"
+                    }}<v-icon large color="primary" class="mx-2"
                       >mdi-database</v-icon
                     >
                   </h1>
@@ -24,7 +24,7 @@
                   <h3 class="mb-4 text-center">People</h3>
                   <h1 class="text-center">
                     {{ personCountFormatter(countPeople)
-                    }}<v-icon large color="info" class="mx-2"
+                    }}<v-icon large color="primary" class="mx-2"
                       >mdi-account</v-icon
                     >
                   </h1>
@@ -33,7 +33,7 @@
                   <h3 class="mb-4 text-center">Data Quality Issues</h3>
                   <h1 class="text-center">
                     {{ countDataQualityIssues
-                    }}<v-icon large color="info" class="mx-2"
+                    }}<v-icon large color="primary" class="mx-2"
                       >mdi-database-alert</v-icon
                     >
                   </h1>
@@ -42,7 +42,7 @@
                   <h3 class="mb-4 text-center">Data Source Releases</h3>
                   <h1 class="text-center">
                     {{ countDataSourceReleases
-                    }}<v-icon large color="info" class="mx-2"
+                    }}<v-icon large color="primary" class="mx-2"
                       >mdi-history</v-icon
                     >
                   </h1>

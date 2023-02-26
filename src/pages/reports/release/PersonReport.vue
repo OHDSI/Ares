@@ -9,24 +9,24 @@
         <v-row class="ma-4" justify="start">
           <!-- Total persons in top bar -->
           <v-col cols="2">
-            <v-icon left color="info">mdi-account-group</v-icon>
+            <v-icon left color="primary">mdi-account-group</v-icon>
             <v-badge
               tile
               inline
               dark
-              color="info"
+              color="primary"
               :content="helpers.formatComma(store.getters.getData.numPersons)"
             ></v-badge>
             <p class="text-caption">Number of People</p>
           </v-col>
           <!-- Gender breakdown in top bar -->
           <v-col cols="4" align="center">
-            <v-icon left color="info">mdi-human-male-female</v-icon>
+            <v-icon left color="primary">mdi-human-male-female</v-icon>
             <v-badge
               tile
               inline
               dark
-              color="info"
+              color="primary"
               :content="
                 'Male: ' +
                 helpers.formatComma(store.getters.getData.genderMaleCount) +
@@ -39,7 +39,7 @@
               tile
               inline
               dark
-              color="info"
+              color="primary"
               :content="
                 'Female: ' +
                 helpers.formatComma(store.getters.getData.genderFemaleCount) +

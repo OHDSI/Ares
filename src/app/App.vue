@@ -25,10 +25,18 @@ const darkMode = computed(function (): boolean {
   return store.getters.getSettings.darkMode;
 });
 
+const activeTheme = computed(function (): boolean {
+  return store.getters.getSettings.theme;
+});
 watch(darkMode, (): void => {
-  theme.global.name.value = store.getters.getSettings.darkMode
-    ? "dark"
-    : "light";
+  theme.global.name.value = `${store.getters.getSettings.theme}${
+    store.getters.getSettings.darkMode ? "Dark" : "Light"
+  }`;
+});
+watch(activeTheme, (): void => {
+  theme.global.name.value = `${store.getters.getSettings.theme}${
+    store.getters.getSettings.darkMode ? "Dark" : "Light"
+  }`;
 });
 
 watch(route, (): void => {
@@ -37,17 +45,22 @@ watch(route, (): void => {
 });
 
 onBeforeMount((): void => {
-  theme.global.name.value = store.getters.getSettings.darkMode
-    ? "dark"
-    : "light";
+  theme.global.name.value = `${store.getters.getSettings.theme}${
+    store.getters.getSettings.darkMode ? "Dark" : "Light"
+  }`;
 });
 </script>
 
-<style scoped>
+<style lang="scss">
 .main {
   width: 95%;
 }
-:deep(.v-list-item__title) {
-  font-size: 0.75rem !important;
+
+a {
+  color: rgb(var(--v-theme-primary));
+}
+
+a:visited {
+  color: rgb(var(--v-theme-primary-lighten-2));
 }
 </style>
