@@ -64,6 +64,17 @@
               :headers="dataSourceColumns"
               hide-default-footer
             >
+              <template v-slot:item.cdm_source_name="{ item }">
+                <v-row>
+                  <v-col cols="10">
+                    <router-link
+                      :to="getDataSourceRoute(item.raw)"
+                      :title="item.raw.cdm_source_name"
+                      >{{ item.raw.cdm_source_name }}
+                    </router-link>
+                  </v-col>
+                </v-row>
+              </template>
             </v-data-table>
           </v-card-text>
         </v-card>
@@ -137,10 +148,10 @@ const dataSourceColumns: Ref<DataTableHeader[]> = ref([
   },
 ]);
 
-function getDataSourceRoute(item: { cdm_source_key: string }) {
+function getDataSourceRoute(item: { cdm_source_name: string }) {
   return {
     name: "dataSourceOverview",
-    params: { cdm: item.cdm_source_key },
+    params: { cdm: item.cdm_source_name },
   };
 }
 const personCountFormatter = function (count: number) {
