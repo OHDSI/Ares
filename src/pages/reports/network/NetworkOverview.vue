@@ -148,10 +148,10 @@ const dataSourceColumns: Ref<DataTableHeader[]> = ref([
   },
 ]);
 
-function getDataSourceRoute(item: { cdm_source_name: string }) {
+function getDataSourceRoute(item: { cdm_source_key: string }) {
   return {
     name: "dataSourceOverview",
-    params: { cdm: item.cdm_source_name },
+    params: { cdm: item.cdm_source_key },
   };
 }
 const personCountFormatter = function (count: number) {
