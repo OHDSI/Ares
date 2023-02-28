@@ -27,6 +27,12 @@
           :headers="headers"
           :items="conceptData"
         >
+          <template v-slot:item.PEOPLE_COUNT="{ item }">
+            {{ helpers.formatComma(item.raw.PEOPLE_COUNT) }}
+          </template>
+          <template v-slot:item.PEOPLE_PERCENT="{ item }">
+            {{ item.raw.PEOPLE_PERCENT }}%
+          </template>
         </v-data-table>
         <v-card-text v-else class="placeholder table-placeholder"
           >Add at least one concept to display the results</v-card-text
@@ -47,6 +53,8 @@ import "./index.css";
 import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
+
+import { helpers } from "@/shared/lib/mixins";
 
 const addedConcepts = ref({});
 const conceptData = ref([]);
@@ -139,15 +147,17 @@ const headers = computed(function () {
     {
       key: "CONCEPT_ID",
       title: "Concept ID",
-      align: "center",
+      align: "end",
     },
     {
       key: `PEOPLE_COUNT`,
       title: "# People",
+      align: "end",
     },
     {
       key: "PEOPLE_PERCENT",
       title: "% People",
+      align: "end",
     },
   ];
 });
