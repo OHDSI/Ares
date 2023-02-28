@@ -10,44 +10,43 @@
         </v-layout>
         <v-row v-if="store.getters.dataInStore" justify="start"
           ><v-col cols="2" align="center">
-            <v-icon left color="info">mdi-identifier</v-icon>
+            <v-icon left color="primary">mdi-identifier</v-icon>
             <v-badge
               tile
               inline
-              dark
-              color="info"
+              color="primary"
               :content="store.getters.getData.conceptId"
             ></v-badge>
             <p class="text-caption">Concept Identifier</p></v-col
           ><v-col cols="2" align="center">
-            <v-icon left color="info">mdi-account-group</v-icon>
+            <v-icon left color="primary">mdi-account-group</v-icon>
             <v-badge
               tile
               inline
               dark
-              color="info"
+              color="primary"
               :content="store.getters.getData.numPersons"
             ></v-badge>
             <p class="text-caption">Number of People</p></v-col
           ><v-col cols="2" align="center">
-            <v-icon small left color="info">mdi-percent</v-icon>
+            <v-icon small left color="primary">mdi-percent</v-icon>
             <v-badge
               tile
               inline
               dark
-              color="info"
+              color="primary"
               :content="
                 helpers.formatPercent(store.getters.getData.percentPersons)
               "
             ></v-badge>
             <p class="text-caption">% of People</p></v-col
           ><v-col cols="2" align="center">
-            <v-icon left color="info">mdi-table-row</v-icon>
+            <v-icon left color="primary">mdi-table-row</v-icon>
             <v-badge
               tile
               inline
               dark
-              color="info"
+              color="primary"
               :content="store.getters.getData.recordsPerPerson"
             ></v-badge>
             <p class="text-caption">Records per Person</p></v-col
@@ -57,12 +56,12 @@
             cols="2"
             align="center"
           >
-            <v-icon left color="info">mdi-database-check-outline</v-icon>
+            <v-icon left color="primary">mdi-database-check-outline</v-icon>
             <v-badge
               tile
               inline
               dark
-              color="info"
+              color="primary"
               :content="getPercentWithValues"
             ></v-badge>
             <p class="text-caption">% with Values</p></v-col

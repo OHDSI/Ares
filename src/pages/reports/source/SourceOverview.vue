@@ -15,7 +15,7 @@
                   <h3 class="mb-4 text--center">Releases</h3>
                   <h1 class="text-center">
                     {{ getReleasesCount
-                    }}<v-icon large color="info" class="mx-2"
+                    }}<v-icon large color="primary" class="mx-2"
                       >mdi-history</v-icon
                     >
                   </h1>
@@ -26,7 +26,7 @@
                   </h3>
                   <h1 class="text-center">
                     {{ getDaysBetweenReleases.toFixed(0)
-                    }}<v-icon large color="info" class="mx-2"
+                    }}<v-icon large color="primary" class="mx-2"
                       >mdi-clock-outline</v-icon
                     >
                   </h1>

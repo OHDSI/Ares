@@ -1,7 +1,10 @@
 <template>
   <v-bottom-navigation density="comfortable">
     <v-layout class="justify-end align-center">
-      <v-btn v-if="environment.WEB_API_ENABLED === 'true'" to="/network/web_api">
+      <v-btn
+        v-if="environment.WEB_API_ENABLED === 'true'"
+        to="/network/web_api"
+      >
         <v-icon dark>mdi-server</v-icon>
       </v-btn>
       <v-btn to="/help">
@@ -47,5 +50,12 @@ const toggleSettings = function (): void {
 <style scoped>
 .inverted {
   filter: invert(1);
+}
+a {
+  color: rgba(var(--v-theme-on-surface));
+}
+
+a:visited {
+  color: rgba(var(--v-theme-on-surface));
 }
 </style>

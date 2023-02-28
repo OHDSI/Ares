@@ -6,24 +6,25 @@
       width="512"
       temporary
     >
-      <v-card>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click="showMenu = false">
+      <v-card class="overflow-y: auto">
+        <v-toolbar color="primary">
+          <v-btn icon @click="showMenu = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
           <v-toolbar-title>Settings</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
-        <v-list three-line subheader>
+        <v-list lines="two">
           <v-list-subheader>Charts</v-list-subheader>
           <!--Features-->
           <ToggleBaseLine />
           <ToggleMinMax />
         </v-list>
         <v-divider></v-divider>
-        <v-list three-line subheader>
-          <v-list-subheader>General</v-list-subheader>
+        <v-list>
+          <v-list-subheader>Appearance</v-list-subheader>
           <!--Features-->
+          <ToggleTheme></ToggleTheme>
           <ToggleDarkMode />
         </v-list>
       </v-card>
@@ -42,6 +43,7 @@ import { settingsActions } from "@/widgets/settings";
 import ToggleDarkMode from "@/features/toggleDarkMode";
 import ToggleBaseLine from "@/features/toggleBaseLine";
 import ToggleMinMax from "@/features/toggleMinMax";
+import ToggleTheme from "@/features/toggleTheme";
 
 import { computed } from "vue";
 import { useStore } from "vuex";

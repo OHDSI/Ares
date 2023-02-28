@@ -1,15 +1,14 @@
 <template>
-  <v-list-item>
-    <v-list-item-action>
-      <v-switch v-model="zeroBaseLine"></v-switch>
-    </v-list-item-action>
-    <v-list-item-title>{{
-      zeroBaseLine ? "Zero Baseline" : "Non-zero baseline"
-    }}</v-list-item-title>
-    <v-list-item-subtitle
-      >Determines whether the axis starts from the 0 or the lowest value in the
-      set</v-list-item-subtitle
-    >
+  <v-list-item
+    :title="zeroBaseLine ? 'Zero Baseline' : 'Non-zero baseline'"
+    subtitle="Determines whether the axis starts from the 0 or the lowest value in
+        the set"
+  >
+    <template v-slot:prepend>
+      <v-list-item-action>
+        <v-switch v-model="zeroBaseLine"></v-switch>
+      </v-list-item-action>
+    </template>
   </v-list-item>
 </template>
 

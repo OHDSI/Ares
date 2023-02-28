@@ -3,7 +3,12 @@ import "@/main.scss";
 import { aliases, mdi } from "vuetify/iconsets/mdi";
 import { createVuetify } from "vuetify";
 
-import { light, dark } from "@/app/plugins/themes";
+import {
+  purpleLight,
+  purpleDark,
+  blueLight,
+  blueDark,
+} from "@/app/plugins/themes";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 
@@ -19,8 +24,15 @@ const vuetify = createVuetify({
   },
   theme: {
     themes: {
-      light,
-      dark,
+      purpleLight,
+      purpleDark,
+      blueLight,
+      blueDark,
+    },
+    variations: {
+      colors: ["primary", "secondary"],
+      lighten: 2,
+      darken: 2,
     },
   },
 });
