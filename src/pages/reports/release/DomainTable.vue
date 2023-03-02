@@ -95,12 +95,14 @@
               >
             </template>
             <template v-slot:item.DIFF_NUM_PERSONS="{ item }">
-              <v-layout class="justify-end"
-                >
-                  {{ helpers.formatComma(item.raw.DIFF_NUM_PERSONS) }}
-              </v-layout
-              >
-            </template>            
+              <v-layout class="justify-end">
+                {{
+                  item.raw.DIFF_NUM_PERSONS
+                    ? helpers.formatComma(item.raw.DIFF_NUM_PERSONS)
+                    : "No data"
+                }}
+              </v-layout>
+            </template>
             <template v-slot:item.PERCENT_PERSONS="{ item }">
               <v-layout class="justify-end"
                 ><div
@@ -113,12 +115,18 @@
             <template v-slot:item.DIFF_PERCENT_PERSONS="{ item }">
               <v-layout class="justify-end"
                 ><div
-                  :class="helpers.getFontWeight(item.raw.DIFF_PERCENT_PERSONS_NTILE)"
+                  :class="
+                    helpers.getFontWeight(item.raw.DIFF_PERCENT_PERSONS_NTILE)
+                  "
                 >
-                  {{ (item.raw.DIFF_PERCENT_PERSONS * 100).toFixed(2) }} %
+                  {{
+                    item.raw.DIFF_PERCENT_PERSONS
+                      ? (item.raw.DIFF_PERCENT_PERSONS * 100).toFixed(2) + " %"
+                      : "No data"
+                  }}
                 </div></v-layout
               >
-            </template>            
+            </template>
             <template v-slot:item.RECORDS_PER_PERSON="{ item }">
               <v-layout class="justify-end"
                 ><div
@@ -130,13 +138,20 @@
                 </div></v-layout
               >
             </template>
+            <template v-slot:item.DIFF_RECORDS_PER_PERSON="{ item }">
+              {{
+                item.raw.DIFF_RECORDS_PER_PERSON
+                  ? item.raw.DIFF_RECORDS_PER_PERSON
+                  : "No data"
+              }}
+            </template>
             <template v-slot:item.PERCENT_MISSING_VALUES="{ item }">
               <v-layout class="justify-end"
                 >{{
                   item.raw.PERCENT_MISSING_VALUES
                     ? `${((1 - item.raw.PERCENT_MISSING_VALUES) * 100).toFixed(
                         2
-                      )}%`
+                      )} %`
                     : "No data"
                 }}
               </v-layout>
@@ -278,7 +293,7 @@ const headers = ref([
     align: "end",
     show: false,
     domain: ["ALL"],
-  },      
+  },
   {
     title: "% People",
     sortable: true,
@@ -294,7 +309,7 @@ const headers = ref([
     align: "end",
     show: false,
     domain: ["ALL"],
-  },     
+  },
   {
     title: "Records per Person",
     sortable: true,
@@ -310,7 +325,7 @@ const headers = ref([
     align: "end",
     show: false,
     domain: ["ALL"],
-  },  
+  },
   {
     title: "Avg Duration",
     sortable: true,
