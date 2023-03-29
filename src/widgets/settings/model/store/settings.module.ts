@@ -76,7 +76,7 @@ const mutations = {
     localStorageService.set("settings", state.settings);
   },
   [SET_SETTINGS](state, payload) {
-    state.settings = payload;
+    state.settings = { ...state.settings, ...payload };
   },
   [SET_VISIBILITY](state, payload) {
     state.visible = payload;
