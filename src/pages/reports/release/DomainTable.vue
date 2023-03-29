@@ -94,12 +94,36 @@
                 </div></v-layout
               >
             </template>
+            <template v-slot:item.DIFF_NUM_PERSONS="{ item }">
+              <v-layout class="justify-end">
+                {{
+                  item.raw.DIFF_NUM_PERSONS
+                    ? helpers.formatComma(item.raw.DIFF_NUM_PERSONS)
+                    : "No data"
+                }}
+              </v-layout>
+            </template>
             <template v-slot:item.PERCENT_PERSONS="{ item }">
               <v-layout class="justify-end"
                 ><div
                   :class="helpers.getFontWeight(item.raw.PERCENT_PERSONS_NTILE)"
                 >
                   {{ (item.raw.PERCENT_PERSONS * 100).toFixed(2) }} %
+                </div></v-layout
+              >
+            </template>
+            <template v-slot:item.DIFF_PERCENT_PERSONS="{ item }">
+              <v-layout class="justify-end"
+                ><div
+                  :class="
+                    helpers.getFontWeight(item.raw.DIFF_PERCENT_PERSONS_NTILE)
+                  "
+                >
+                  {{
+                    item.raw.DIFF_PERCENT_PERSONS
+                      ? (item.raw.DIFF_PERCENT_PERSONS * 100).toFixed(2) + " %"
+                      : "No data"
+                  }}
                 </div></v-layout
               >
             </template>
@@ -114,13 +138,20 @@
                 </div></v-layout
               >
             </template>
+            <template v-slot:item.DIFF_RECORDS_PER_PERSON="{ item }">
+              {{
+                item.raw.DIFF_RECORDS_PER_PERSON
+                  ? item.raw.DIFF_RECORDS_PER_PERSON
+                  : "No data"
+              }}
+            </template>
             <template v-slot:item.PERCENT_MISSING_VALUES="{ item }">
               <v-layout class="justify-end"
                 >{{
                   item.raw.PERCENT_MISSING_VALUES
                     ? `${((1 - item.raw.PERCENT_MISSING_VALUES) * 100).toFixed(
                         2
-                      )}%`
+                      )} %`
                     : "No data"
                 }}
               </v-layout>
@@ -259,6 +290,14 @@ const headers = ref([
     domain: ["ALL"],
   },
   {
+    title: "Delta # Person",
+    sortable: true,
+    key: "DIFF_NUM_PERSONS",
+    align: "end",
+    show: false,
+    domain: ["ALL"],
+  },
+  {
     title: "% People",
     sortable: true,
     key: "PERCENT_PERSONS",
@@ -267,11 +306,27 @@ const headers = ref([
     domain: ["ALL"],
   },
   {
+    title: "Delta % People",
+    sortable: true,
+    key: "DIFF_PERCENT_PERSONS",
+    align: "end",
+    show: false,
+    domain: ["ALL"],
+  },
+  {
     title: "Records per Person",
     sortable: true,
     key: "RECORDS_PER_PERSON",
     align: "end",
     show: true,
+    domain: ["ALL"],
+  },
+  {
+    title: "Delta Records per Person",
+    sortable: true,
+    key: "DIFF_RECORDS_PER_PERSON",
+    align: "end",
+    show: false,
     domain: ["ALL"],
   },
   {
