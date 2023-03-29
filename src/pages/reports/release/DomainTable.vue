@@ -181,7 +181,10 @@
       ></info-panel>
     </v-card>
     <v-card
-      v-if="route.params.domain.toUpperCase() === 'DRUG_EXPOSURE'"
+      v-if="
+        route.params.domain.toUpperCase() === 'DRUG_EXPOSURE' &&
+        store.getters.getData.drugStratification
+      "
       :loading="!store.getters.dataInStore"
       elevation="10"
       class="ma-4 pa-2"

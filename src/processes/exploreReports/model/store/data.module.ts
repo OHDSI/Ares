@@ -52,14 +52,14 @@ const actions = {
       const data = responses.reduce((obj, currValue, index) => {
         const status = currValue.status;
         if (status === "fulfilled") {
-          const data = currValue.value?.data;
+          const fileData = currValue.value?.data;
           return {
             ...obj,
             [payload.files[index].name]: preprocessing[
               payload.files[index].name
             ]
-              ? preprocessing[payload.files[index].name](data)
-              : data,
+              ? preprocessing[payload.files[index].name](fileData)
+              : fileData,
           };
         }
         if (status === "rejected" && currValue.reason.payload.required) {
@@ -69,6 +69,13 @@ const actions = {
             message,
             details: url,
           });
+          return {
+            ...obj,
+          };
+        } else {
+          return {
+            ...obj,
+          };
         }
       }, {});
       postprocessing[rootState.route.name]
