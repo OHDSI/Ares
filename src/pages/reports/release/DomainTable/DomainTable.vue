@@ -247,7 +247,7 @@
 </template>
 
 <script setup lang="ts">
-import InfoPanel from "../../../widgets/infoPanel";
+import InfoPanel from "../../../../widgets/infoPanel";
 import { chartConfigs, Chart } from "@/widgets/chart";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import { helpers } from "@/shared/lib/mixins";

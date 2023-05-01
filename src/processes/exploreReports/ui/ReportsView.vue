@@ -28,6 +28,7 @@ import { useStore } from "vuex";
 
 import { watch, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import NewNote from "@/widgets/newNoteDialog/newNote.vue";
 
 const route = useRoute();
 const store = useStore();

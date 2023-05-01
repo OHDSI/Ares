@@ -548,7 +548,7 @@
 <script setup lang="ts">
 import Codemirror from "codemirror-editor-vue3";
 import { VDataTable } from "vuetify/labs/VDataTable";
-import Pivot from "../../../widgets/pivot";
+import Pivot from "../../../../widgets/pivot";
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/sql/sql";
 import "codemirror/theme/neat.css";

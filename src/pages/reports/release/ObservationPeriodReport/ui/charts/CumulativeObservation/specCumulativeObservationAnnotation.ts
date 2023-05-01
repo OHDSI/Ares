@@ -1,53 +1,31 @@
 import { VEGA_SCHEMA } from "@/shared/config/links";
 import { TopLevelSpec } from "vega-lite";
 
-export function specBirthYear(zeroBaseline = false) {
+export function specCumulativeObservationAnnotation(zeroBaseline = false) {
   return {
     $schema: VEGA_SCHEMA,
+    height: 150,
     width: "container",
-    height: 100,
     data: { name: "conceptData" },
+    encoding: {
+      x: {
+        field: "YEARS",
+        type: "quantitative",
+        title: "Years of Observation",
+      },
+      y: {
+        field: "PERCENT_PEOPLE",
+        type: "quantitative",
+        title: "% of People",
+        axis: { format: ",.2%" },
+        scale: {
+          zero: zeroBaseline,
+        },
+      },
+    },
     layer: [
       {
-        params: [
-          {
-            name: "paintbrush",
-            select: { type: "point", on: "mouseover", nearest: false },
-          },
-        ],
-        mark: { type: "bar" },
-        encoding: {
-          tooltip: [
-            { field: "COUNT_PERSON", title: "# of People", format: "," },
-            {
-              field: "YEAR",
-              title: "Year of Birth",
-              type: "quantitative",
-            },
-          ],
-          x: {
-            field: "YEAR",
-            type: "quantitative",
-            title: "Year of Birth",
-            axis: { format: "0000" },
-          },
-          y: {
-            field: "COUNT_PERSON",
-            aggregate: "sum",
-            title: "Number of People",
-            scale: {
-              zero: zeroBaseline,
-            },
-          },
-          color: {
-            condition: {
-              param: "paintbrush",
-              type: "nominal",
-              legend: null,
-            },
-            value: "grey",
-          },
-        },
+        mark: { type: "line", interpolate: "linear" },
       },
       {
         mark: { type: "rect", opacity: 0.1 },

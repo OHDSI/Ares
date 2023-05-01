@@ -595,7 +595,7 @@
 </template>
 
 <script setup lang="ts">
-import InfoPanel from "../../../widgets/infoPanel";
+import InfoPanel from "../../../../widgets/infoPanel";
 import ReturnButton from "@/features/returnToPreviousPage";
 import { useRoute } from "vue-router";
 import { chartConfigs, Chart } from "@/widgets/chart";

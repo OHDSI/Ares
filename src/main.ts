@@ -10,6 +10,7 @@ import environment from "@/shared/api/environment";
 import { authActions } from "@/shared/api/webAPI";
 //todo: Think how to improve auth
 import { settingsActions } from "@/widgets/settings";
+import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
 // adds reactive router module to global state
 sync(store, router);
 
@@ -20,7 +21,9 @@ environment.load().then(() => {
     .catch()
     .finally(() => {
       store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE).then(() => {
-        createApp(App).use(store).use(router).use(vuetify).mount("#app");
+        store.dispatch(LOAD_NOTES).then(() => {
+          createApp(App).use(store).use(router).use(vuetify).mount("#app");
+        });
       });
     });
 });
