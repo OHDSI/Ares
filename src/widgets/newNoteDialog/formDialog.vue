@@ -14,7 +14,6 @@
               label="Title"
             ></v-text-field>
             <v-textarea
-              :rules="[rules.characterLimit]"
               variant="outlined"
               v-model="description"
               label="Description"
@@ -32,8 +31,6 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from "vuex";
-
 import { ref, defineProps, defineEmits, computed, watch } from "vue";
 interface Props {
   action: (a, b) => void;
@@ -59,8 +56,6 @@ const sh = computed({
 const emit = defineEmits(["close"]);
 
 const props = defineProps<Props>();
-
-const store = useStore();
 
 const title = ref("");
 const description = ref("");
