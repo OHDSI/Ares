@@ -6,7 +6,7 @@
           formTitle
         }}</v-card-title>
         <v-sheet width="300" class="mx-auto">
-          <v-form class="px-5 pt-4">
+          <v-form class="px-5 pt-4" @submit="submit">
             <v-text-field
               :rules="[rules.required]"
               variant="outlined"
