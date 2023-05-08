@@ -12,11 +12,14 @@
     "lint:fix": "eslint src --fix"
   },
   "dependencies": {
+    "@mdi/font": "^7.0.96",
     "axios": "^1.2.3",
     "codemirror-editor-vue3": "^2.1.7",
     "d3-dsv": "^3.0.1",
     "d3-format": "^3.0.1",
     "d3-time-format": "^4.0.0",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "vega-embed": "^6.20.2",
     "vega-lite": "^5.6.0",
@@ -28,18 +31,17 @@
     "vuedraggable": "^4.1.0",
     "vuetify": "^3.1.3",
     "vuex": "^4.1.0",
-    "@mdi/font": "^7.0.96",
     "yorkie": "^2.0.0"
   },
   "devDependencies": {
-    "vite-plugin-vuetify": "^1.0.1",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "@vitejs/plugin-vue-jsx": "^3.0.0",
     "@types/d3-format": "^3.0.1",
     "@types/d3-time-format": "^4.0.0",
+    "@types/file-saver": "^2.0.5",
     "@types/lodash": "^4.14.191",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vitejs/plugin-vue-jsx": "^3.0.0",
     "@vue/eslint-config-typescript": "^9.1.0",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.3.0",
@@ -49,8 +51,9 @@
     "prettier": "^2.8.3",
     "sass": "^1.58.0",
     "typescript": "~4.9.5",
-    "yorkie": "^2.0.0",
-    "vite": "4.0.4"
+    "vite": "4.0.4",
+    "vite-plugin-vuetify": "^1.0.1",
+    "yorkie": "^2.0.0"
   },
   "browserslist": [
     "> 1%",

@@ -41,7 +41,7 @@ interface Props {
   id: string;
   width?: string;
   config: (a?: boolean, b?: boolean) => TopLevelSpec;
-  annotationsConfig: (a?: boolean, b?: boolean) => TopLevelSpec;
+  annotationsConfig?: (a?: boolean, b?: boolean) => TopLevelSpec;
   clickListener?: (a: any, b: RouteLocationNormalizedLoaded, c: any) => void;
   signalListener?: (a: any, b: any) => void;
   notes?: [];

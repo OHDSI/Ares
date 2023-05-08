@@ -21,9 +21,7 @@ environment.load().then(() => {
     .catch()
     .finally(() => {
       store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE).then(() => {
-        store.dispatch(LOAD_NOTES).then(() => {
-          createApp(App).use(store).use(router).use(vuetify).mount("#app");
-        });
+        createApp(App).use(store).use(router).use(vuetify).mount("#app");
       });
     });
 });

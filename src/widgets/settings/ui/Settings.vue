@@ -29,10 +29,9 @@
         </v-list>
         <v-divider></v-divider>
         <v-list>
-          <v-list-subheader>Other</v-list-subheader>
+          <v-list-subheader>Notes</v-list-subheader>
           <!--Features-->
-          <NotesLoader></NotesLoader>
-          <ExportNotesFileButton></ExportNotesFileButton>
+          <ExportNotes></ExportNotes>
         </v-list>
       </v-card>
     </v-navigation-drawer>
@@ -54,8 +53,7 @@ import ToggleTheme from "@/features/toggleTheme";
 
 import { computed } from "vue";
 import { useStore } from "vuex";
-import NotesLoader from "@/features/NotesLoader/NotesLoader.vue";
-import ExportNotesFileButton from "@/features/exportNotesFile/ExportNotesFileButton.vue";
+import ExportNotes from "@/features/exportNotes/ExportNotes.vue";
 
 const store = useStore();
 

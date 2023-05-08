@@ -1,6 +1,7 @@
+б
 <template>
   <div>
-    <v-slide-group v-model="model" class="pa-4" show-arrows>
+    <v-slide-group v-model="model" class="pa-4" show-arrows="always">
       <v-slide-group-item v-for="note in notes" :key="note.title">
         <MetadataCard
           :title="note.title"
@@ -29,18 +30,18 @@ interface Props {
 const props = defineProps<Props>();
 
 import { computed } from "vue";
+import _ from "lodash";
 
 const store = useStore();
 
 const model = ref(null);
 
 const notes = computed(() => {
-  const sourceName = route.params.cdm;
-  const releaseName = route.params.release;
+  const { cdm, release, domain, concept } = route.params;
+  const path = [cdm, release, domain, concept, props.report].filter(Boolean);
+  const selections = _.get(store.getters.getNotes, path.join(".")) || [];
   const selectionId = store.getters.getSelectedRectangle?.item.id;
-  const data =
-    store.getters.getNotes[sourceName]?.[releaseName]?.[props.report] || [];
-  return data.filter((value) => value.id === selectionId)?.[0]?.notes;
+  return selections.filter((value) => value.id === selectionId)?.[0]?.notes;
 });
 </script>
 

@@ -29,6 +29,7 @@ import { useStore } from "vuex";
 import { watch, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import NewNote from "@/widgets/newNoteDialog/newNote.vue";
+import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
 
 const route = useRoute();
 const store = useStore();
@@ -63,7 +64,10 @@ onMounted(() => {
   });
   store
     .dispatch(explorerActions.FETCH_INDEX, { route: route.params })
-    .then(() => loadViewData());
+    .then(() => {
+      loadViewData();
+      store.dispatch(LOAD_NOTES);
+    });
 });
 </script>
 

@@ -1,4 +1,3 @@
-import { RouteLocation } from "vue-router";
 import {
   SET_CURRENT_SELECTION_AREA,
   SET_SELECTED_RECTANGLE,
@@ -12,7 +11,10 @@ import { debounce } from "lodash";
 
 export const setRectangleLocationClick = function (result, route, store) {
   return result.view.addEventListener("click", (event, item) => {
-    if (item.mark.name === "layer_1_marks") {
+    if (
+      item.mark.name === "layer_1_marks" ||
+      item.mark.name === "concat_0_layer_1_marks"
+    ) {
       store.commit(SET_SELECTED_RECTANGLE, {
         item: item.datum,
         report: event.srcElement.offsetParent.id,
@@ -21,57 +23,63 @@ export const setRectangleLocationClick = function (result, route, store) {
   });
 };
 
+const handleNotesBrush = (event, item, store) => {
+  const action = (e, i) => (title, description) => {
+    store.dispatch(CREATE_SELECTION, {
+      reportName: e.srcElement.offsetParent.id,
+      item: i.datum,
+      title,
+      description,
+    });
+  };
+
+  store.dispatch(SHOW_DIALOG, {
+    show: true,
+    data: null,
+    action: action(event, item),
+  });
+};
+
+const handleLayerMarks = (event, item, store) => {
+  store.commit(SET_SELECTED_RECTANGLE, {
+    item: item.datum,
+    report: event.srcElement.offsetParent.id,
+  });
+
+  store.dispatch(OPEN_MENU, {
+    visibility: true,
+    location: {
+      x: event.clientX,
+      y: event.clientY,
+      element: event.srcElement.offsetParent.id,
+      event,
+    },
+    clickEventData: {
+      reportName: event.srcElement.offsetParent.id,
+      date: new Date(),
+      item: item.datum,
+    },
+  });
+};
+
 export const showNotesEditDialogRightClick = function (result, store) {
-  console.log(store);
   return result.view.addEventListener("contextmenu", (event, item) => {
     event.preventDefault();
-    //Right click on brush
-    if (item.mark.name === "secondBrush_brush") {
-      const action = function (e, i) {
-        return (title, description) => {
-          store.dispatch(CREATE_SELECTION, {
-            reportName: e.srcElement.offsetParent.id,
-            date: new Date(),
-            item: i.datum,
-            title,
-            description,
-          });
-        };
-      };
-      store.dispatch(SHOW_DIALOG, {
-        show: true,
-        data: null,
-        action: action(event, item),
-      });
-    }
-    //Right click on existing rectangle
-    if (item.mark.name === "layer_1_marks") {
-      store.commit(SET_SELECTED_RECTANGLE, {
-        item: item.datum,
-        report: event.srcElement.offsetParent.id,
-      });
-      store.dispatch(OPEN_MENU, {
-        visibility: true,
-        location: {
-          x: event.clientX,
-          y: event.clientY,
-          element: event.srcElement.offsetParent.id,
-          event,
-        },
-        clickEventData: {
-          reportName: event.srcElement.offsetParent.id,
-          date: new Date(),
-          item: item.datum,
-          newSelection: true,
-        },
-      });
+
+    if (item.mark.name === "notesBrush_brush") {
+      handleNotesBrush(event, item, store);
+    } else if (
+      item.mark.name === "layer_1_marks" ||
+      item.mark.name === "concat_0_layer_1_marks"
+    ) {
+      handleLayerMarks(event, item, store);
     }
   });
 };
 
 export const setSelectionAreaSignal = function (result, store) {
   return result.view.addSignalListener(
-    "secondBrush",
+    "notesBrush",
     debounce((signalName, event) => {
       store.commit(SET_CURRENT_SELECTION_AREA, { signalName, event });
     }, 100)

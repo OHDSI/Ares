@@ -21,8 +21,8 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 import {
-  DELETE_METADATA_CARD,
-  EDIT_METADATA_CARD,
+  DELETE_NOTE,
+  EDIT_NOTE,
   SHOW_DIALOG,
 } from "@/widgets/notesPanel/model/store/actions.type";
 import { useStore } from "vuex";
@@ -36,12 +36,12 @@ interface Props {
 }
 
 const deleteCard = function () {
-  store.dispatch(DELETE_METADATA_CARD, { cardId: props.id });
+  store.dispatch(DELETE_NOTE, { cardId: props.id });
 };
 
 const editCard = function () {
   const action = function (title, description) {
-    store.dispatch(EDIT_METADATA_CARD, {
+    store.dispatch(EDIT_NOTE, {
       cardId: props.id,
       data: { title, description },
     });
