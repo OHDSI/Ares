@@ -10,6 +10,7 @@ import environment from "@/shared/api/environment";
 import { authActions } from "@/shared/api/webAPI";
 //todo: Think how to improve auth
 import { settingsActions } from "@/widgets/settings";
+import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
 // adds reactive router module to global state
 sync(store, router);
 

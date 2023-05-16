@@ -27,6 +27,12 @@
           <ToggleTheme></ToggleTheme>
           <ToggleDarkMode />
         </v-list>
+        <v-divider></v-divider>
+        <v-list>
+          <v-list-subheader>Notes</v-list-subheader>
+          <!--Features-->
+          <ExportNotes></ExportNotes>
+        </v-list>
       </v-card>
     </v-navigation-drawer>
   </v-row>
@@ -47,6 +53,7 @@ import ToggleTheme from "@/features/toggleTheme";
 
 import { computed } from "vue";
 import { useStore } from "vuex";
+import ExportNotes from "@/features/exportNotes/ExportNotes.vue";
 
 const store = useStore();
 

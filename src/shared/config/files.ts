@@ -2,6 +2,8 @@ export const INDEX = "index";
 export const CONCEPT = "concept";
 export const QUALITY_INDEX = "qualityIndex";
 export const QUALITY_RESULTS = "qualityResults";
+
+export const NOTES = "notes";
 export const DEATH = "death";
 export const SOURCE_HISTORY_INDEX = "sourceHistoryIndex";
 export const DENSITY_RECORDS_PERSON = "densityRecordsPerson";
