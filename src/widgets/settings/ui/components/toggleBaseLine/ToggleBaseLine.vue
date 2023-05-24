@@ -6,7 +6,7 @@
   >
     <template v-slot:prepend>
       <v-list-item-action>
-        <v-switch v-model="zeroBaseLine"></v-switch>
+        <v-switch class="mr-2" v-model="zeroBaseLine"></v-switch>
       </v-list-item-action>
     </template>
   </v-list-item>
@@ -21,6 +21,7 @@ export default {
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { TOGGLE_BASELINE_SETTING } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 
@@ -29,7 +30,7 @@ const zeroBaseLine = computed({
     return store.getters.getSettings.zeroBaseline;
   },
   set: function (value: boolean): void {
-    store.commit("setBaseline", value);
+    store.dispatch(TOGGLE_BASELINE_SETTING, value);
   },
 });
 </script>

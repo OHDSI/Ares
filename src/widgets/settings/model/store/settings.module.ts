@@ -1,18 +1,16 @@
 import localStorageService from "@/shared/api/localStorageService";
 import {
   LOAD_SETTINGS_FROM_STORAGE,
-  CHANGE_BASELINE_SETTING,
-  CHANGE_MINMAX_SETTING,
-  CHANGE_THEME_SETTING,
-  CHANGE_UI_VISIBILITY,
   TOGGLE_DARK_MODE,
+  TOGGLE_THEME_SETTING,
+  TOGGLE_MINMAX_SETTING,
+  TOGGLE_UI_VISIBILITY,
+  TOGGLE_DEFAULT_ANNOTATIONS_MODE,
+  TOGGLE_BASELINE_SETTING,
+  TOGGLE_DEFAULT_ALL_NOTES_MODE,
 } from "@/widgets/settings/model/store/actions.type";
 import {
-  SET_BASELINE,
-  SET_DARK_MODE,
-  SET_MINMAX,
   SET_SETTINGS,
-  SET_THEME,
   SET_VISIBILITY,
 } from "@/widgets/settings/model/store/mutations.type";
 
@@ -22,6 +20,8 @@ const state = {
     zeroBaseline: true,
     minMax: false,
     theme: "blue",
+    annotationsMode: false,
+    allNotesMode: false,
   },
   visible: false,
 };
@@ -38,45 +38,40 @@ const getters = {
 const actions = {
   [LOAD_SETTINGS_FROM_STORAGE]({ commit }) {
     if (localStorageService.get("settings")) {
-      commit(SET_SETTINGS, localStorageService.get("settings"));
+      commit(SET_SETTINGS, { data: localStorageService.get("settings") });
     }
   },
-  [CHANGE_BASELINE_SETTING]({ commit }, payload) {
-    commit(SET_BASELINE, payload);
+  [TOGGLE_BASELINE_SETTING]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "zeroBaseline" });
   },
   [TOGGLE_DARK_MODE]({ commit }, payload) {
-    commit(SET_DARK_MODE, payload);
+    commit(SET_SETTINGS, { data: payload, field: "darkMode" });
   },
-  [CHANGE_THEME_SETTING]({ commit }, payload) {
-    commit(SET_THEME, payload);
+  [TOGGLE_THEME_SETTING]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "theme" });
   },
-  [CHANGE_MINMAX_SETTING]({ commit }, payload) {
-    commit(SET_MINMAX, payload);
+  [TOGGLE_MINMAX_SETTING]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "minMax" });
   },
-  [CHANGE_UI_VISIBILITY]({ commit }, payload) {
+  [TOGGLE_UI_VISIBILITY]({ commit }, payload) {
     commit(SET_VISIBILITY, payload);
+  },
+  [TOGGLE_DEFAULT_ANNOTATIONS_MODE]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "annotationsMode" });
+  },
+  [TOGGLE_DEFAULT_ALL_NOTES_MODE]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "allNotesMode" });
   },
 };
 
 const mutations = {
-  [SET_DARK_MODE](state, payload) {
-    state.settings.darkMode = payload;
-    localStorageService.set("settings", state.settings);
-  },
-  [SET_THEME](state, payload) {
-    state.settings.theme = payload;
-    localStorageService.set("settings", state.settings);
-  },
-  [SET_BASELINE](state, payload) {
-    state.settings.zeroBaseline = payload;
-    localStorageService.set("settings", state.settings);
-  },
-  [SET_MINMAX](state, payload) {
-    state.settings.minMax = payload;
-    localStorageService.set("settings", state.settings);
-  },
   [SET_SETTINGS](state, payload) {
-    state.settings = { ...state.settings, ...payload };
+    if (payload.field) {
+      state.settings = { ...state.settings, [payload.field]: payload.data };
+    } else {
+      state.settings = payload.data;
+    }
+    localStorageService.set("settings", state.settings);
   },
   [SET_VISIBILITY](state, payload) {
     state.visible = payload;

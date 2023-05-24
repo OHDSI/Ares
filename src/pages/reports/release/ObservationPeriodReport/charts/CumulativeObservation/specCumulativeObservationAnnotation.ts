@@ -28,7 +28,7 @@ export function specCumulativeObservationAnnotation(zeroBaseline = false) {
         mark: { type: "line", interpolate: "linear" },
       },
       {
-        mark: { type: "rect", opacity: 0.1 },
+        mark: { type: "rect", opacity: 0.3 },
         data: {
           name: "notesData",
         },
@@ -40,6 +40,14 @@ export function specCumulativeObservationAnnotation(zeroBaseline = false) {
               on: "mousedown",
               encodings: ["x", "x2", "y", "y2"],
               value: { x: [55, 160], y: [13, 37] },
+            },
+          },
+          {
+            name: "justBrush",
+            select: {
+              type: "point",
+              on: "mouseup",
+              encodings: ["x", "x2", "y", "y2"],
             },
           },
           {

@@ -19,6 +19,11 @@ export const setRectangleLocationClick = function (result, route, store) {
         item: item.datum,
         report: event.srcElement.offsetParent.id,
       });
+    } else if (item.mark.name === "root") {
+      store.commit(SET_SELECTED_RECTANGLE, {
+        item: {},
+        report: event.srcElement.offsetParent.id,
+      });
     }
   });
 };
@@ -65,7 +70,6 @@ const handleLayerMarks = (event, item, store) => {
 export const showNotesEditDialogRightClick = function (result, store) {
   return result.view.addEventListener("contextmenu", (event, item) => {
     event.preventDefault();
-
     if (item.mark.name === "notesBrush_brush") {
       handleNotesBrush(event, item, store);
     } else if (

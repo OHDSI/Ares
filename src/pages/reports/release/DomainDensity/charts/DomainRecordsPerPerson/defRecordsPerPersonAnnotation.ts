@@ -55,7 +55,7 @@ export function defRecordsPerPersonAnnotation(zeroBaseline = false) {
             },
           },
           {
-            mark: { type: "rect", opacity: 0.1 },
+            mark: { type: "rect", opacity: 0.3 },
             data: {
               name: "notesData",
             },

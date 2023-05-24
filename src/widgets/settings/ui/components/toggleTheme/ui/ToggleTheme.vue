@@ -23,7 +23,7 @@ export default {
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
-import { CHANGE_THEME_SETTING } from "@/widgets/settings/model/store/actions.type";
+import { TOGGLE_THEME_SETTING } from "@/widgets/settings/model/store/actions.type";
 const themes = [
   { title: "Purple", value: "purple" },
   { title: "Blue", value: "blue" },
@@ -35,7 +35,7 @@ const activeTheme = computed({
     return store.getters.getSettings.theme;
   },
   set: function (value: string): void {
-    store.commit(CHANGE_THEME_SETTING, value);
+    store.dispatch(TOGGLE_THEME_SETTING, value);
   },
 });
 </script>

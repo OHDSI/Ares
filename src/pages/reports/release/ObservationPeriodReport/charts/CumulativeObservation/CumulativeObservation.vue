@@ -2,7 +2,7 @@
   <v-card
     :loading="!store.getters.dataInStore"
     elevation="10"
-    class="ma-4 pa-2"
+    class="ma-4 pa-4"
   >
     <Chart
       v-if="store.getters.dataInStore"

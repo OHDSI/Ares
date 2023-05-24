@@ -23,7 +23,8 @@
           </v-form>
         </v-sheet>
         <v-card-actions class="justify-space-between">
-          <v-btn block @click="submit">Save</v-btn>
+          <v-btn color="error" @click="cancel">Cancel</v-btn>
+          <v-btn @click="submit">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -33,10 +34,12 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, computed, watch } from "vue";
 interface Props {
-  action: (a, b) => void;
+  action: (a, b, c?, d?) => void;
   data?: {
     title: string;
     description: string;
+    selection: string;
+    report: string;
   };
   formTitle?: string;
   show: boolean;
@@ -78,7 +81,18 @@ watch(computedData, () => {
 });
 
 function submit() {
-  props.action(title.value, description.value);
+  props.action(
+    title.value,
+    description.value,
+    props.data?.selection,
+    props.data?.report
+  );
+  emit("close");
+  title.value = "";
+  description.value = "";
+}
+
+function cancel() {
   emit("close");
   title.value = "";
   description.value = "";

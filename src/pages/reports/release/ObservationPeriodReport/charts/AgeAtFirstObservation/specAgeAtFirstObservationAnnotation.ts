@@ -29,7 +29,7 @@ export function specAgeAtFirstObservationAnnotation(zeroBaseline = false) {
         mark: { type: "line", interpolate: "linear" },
       },
       {
-        mark: { type: "rect", opacity: 0.1 },
+        mark: { type: "rect", opacity: 0.3 },
         data: {
           name: "notesData",
         },

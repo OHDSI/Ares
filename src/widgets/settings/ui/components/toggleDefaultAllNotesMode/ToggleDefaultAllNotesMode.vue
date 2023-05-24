@@ -1,35 +1,29 @@
 <template>
   <v-list-item
-    :title="minMax ? 'MIN/MAX' : 'P10/P90'"
-    subtitle="Applicable to some reports. Determines whether to use Min/Max or P10/P90
-      values for chart rendering"
+    :title="allNotesMode ? 'On' : 'Off'"
+    subtitle="Switch default all notes mode"
   >
     <template v-slot:prepend>
       <v-list-item-action>
-        <v-switch v-model="minMax"></v-switch>
+        <v-switch class="mr-2" v-model="allNotesMode"></v-switch>
       </v-list-item-action>
     </template>
   </v-list-item>
 </template>
 
-<script lang="ts">
-export default {
-  name: "ToggleMinMax",
-};
-</script>
-
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { TOGGLE_DEFAULT_ALL_NOTES_MODE } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 
-const minMax = computed({
+const allNotesMode = computed({
   get: function (): boolean {
-    return store.getters.getSettings.minMax;
+    return store.getters.getSettings.allNotesMode;
   },
   set: function (value: boolean): void {
-    store.commit("setMinMax", value);
+    store.dispatch(TOGGLE_DEFAULT_ALL_NOTES_MODE, value);
   },
 });
 </script>

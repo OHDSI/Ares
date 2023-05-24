@@ -28,6 +28,7 @@ import {
 import apiService from "@/shared/api/apiService";
 import getFilePath from "@/shared/api/getFilePath";
 import { NOTES } from "@/shared/config/files";
+import chart from "@/widgets/chart/ui/Chart.vue";
 
 const state = {
   notes: {},
@@ -114,7 +115,6 @@ const actions = {
     commit(SET_NOTES, { data, cdm });
     localStorageService.set("notes", getters.getNotes);
   },
-
   [EDIT_SELECTION]({ commit, getters, rootState }, params) {
     const { cdm, release, domain, concept } = rootState.route.params;
     const chartName = getters.getSelectedRectangle.report;
@@ -147,8 +147,9 @@ const actions = {
   },
   [DELETE_NOTE]({ commit, getters, rootState }, params) {
     const { cdm, release, domain, concept } = rootState.route.params;
-    const chartName = getters.getSelectedRectangle.report;
-    const selectionId = getters.getSelectedRectangle.item.id;
+    const chartName = params.report;
+    const selectionId = params.selection;
+    console.log(chartName, selectionId);
 
     const data = { ...getters.getNotes };
     const path = [cdm, release, domain, concept, chartName].filter(Boolean);
@@ -178,8 +179,8 @@ const actions = {
   },
   [EDIT_NOTE]({ commit, getters, rootState }, params) {
     const { cdm, release, domain, concept } = rootState.route.params;
-    const chartName = getters.getSelectedRectangle.report;
-    const selectionId = getters.getSelectedRectangle.item.id;
+    const chartName = params.data.report;
+    const selectionId = params.data.selection;
 
     const data = { ...getters.getNotes };
     const path = [cdm, release, domain, concept, chartName].filter(Boolean);
