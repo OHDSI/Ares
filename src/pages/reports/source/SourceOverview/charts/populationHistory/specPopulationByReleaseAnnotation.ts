@@ -32,7 +32,7 @@ export function specPopulationByReleaseAnnotation(zeroBaseline = false) {
         mark: { type: "line", interpolate: "linear", point: true },
       },
       {
-        mark: { type: "rect", opacity: 0.1 },
+        mark: { type: "rect", opacity: 0.3 },
         data: {
           name: "notesData",
         },

@@ -29,8 +29,10 @@
         </v-list>
         <v-divider></v-divider>
         <v-list>
-          <v-list-subheader>Notes</v-list-subheader>
+          <v-list-subheader>Metadata</v-list-subheader>
           <!--Features-->
+          <ToggleDefaultAnnotatonsMode />
+          <ToggleDefaultAllNotesMode />
           <ExportNotes></ExportNotes>
         </v-list>
       </v-card>
@@ -45,15 +47,17 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { settingsActions } from "@/widgets/settings";
-import ToggleDarkMode from "@/features/toggleDarkMode";
-import ToggleBaseLine from "@/features/toggleBaseLine";
-import ToggleMinMax from "@/features/toggleMinMax";
-import ToggleTheme from "@/features/toggleTheme";
+import ToggleDarkMode from "./components/toggleDarkMode";
+import ToggleBaseLine from "./components/toggleBaseLine";
+import ToggleMinMax from "./components/toggleMinMax";
+import ToggleTheme from "./components/toggleTheme";
+import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode/ToggleDefaultAnnotatonsMode.vue";
 
 import { computed } from "vue";
 import { useStore } from "vuex";
-import ExportNotes from "@/features/exportNotes/ExportNotes.vue";
+import ExportNotes from "@/widgets/settings/ui/components/exportNotes/ExportNotes.vue";
+import { TOGGLE_UI_VISIBILITY } from "@/widgets/settings/model/store/actions.type";
+import ToggleDefaultAllNotesMode from "@/widgets/settings/ui/components/toggleDefaultAllNotesMode/ToggleDefaultAllNotesMode.vue";
 
 const store = useStore();
 
@@ -62,7 +66,7 @@ const showMenu = computed({
     return store.getters.getVisibility;
   },
   set: function (value: boolean): void {
-    store.dispatch(settingsActions.CHANGE_UI_VISIBILITY, value);
+    store.dispatch(TOGGLE_UI_VISIBILITY, value);
   },
 });
 </script>

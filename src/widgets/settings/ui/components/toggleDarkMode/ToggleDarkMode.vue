@@ -5,7 +5,7 @@
   >
     <template v-slot:prepend>
       <v-list-item-action>
-        <v-switch v-model="darkMode"></v-switch>
+        <v-switch class="mr-2" v-model="darkMode"></v-switch>
       </v-list-item-action>
     </template>
   </v-list-item>

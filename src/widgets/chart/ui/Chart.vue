@@ -1,14 +1,24 @@
 <template>
   <div>
-    <div class="title">
-      <v-card-title v-if="title">{{ title }}</v-card-title>
-      <v-btn
-        v-if="annotations"
-        variant="plain"
-        @click="annotationMode = !annotationMode"
-        >{{ annotationMode ? "Annotations on" : "Annotations off" }}</v-btn
-      >
-    </div>
+    <v-row justify="space-between" class="mb-2">
+      <v-col cols="auto">
+        <v-card-title v-if="title">{{ title }}</v-card-title>
+      </v-col>
+      <v-col cols="auto">
+        <v-switch
+          inset
+          color="primary"
+          v-if="annotations"
+          hide-details
+          v-model="annotationMode"
+        >
+          <template v-slot:label>
+            Annotations ({{ props.notes.length }}):
+            {{ annotationMode ? "On" : "Off" }}
+          </template>
+        </v-switch>
+      </v-col>
+    </v-row>
     <div :id="id" :style="style"></div>
     <ContextMenu v-if="annotations" :items="actions" />
   </div>
@@ -23,7 +33,14 @@ export default {
 <script setup lang="ts">
 import embed from "vega-embed";
 import { useStore } from "vuex";
-import { computed, watch, onBeforeMount, defineProps, ref } from "vue";
+import {
+  computed,
+  watch,
+  onBeforeMount,
+  defineProps,
+  ref,
+  onMounted,
+} from "vue";
 import { useRoute, RouteLocationNormalizedLoaded } from "vue-router";
 import { TopLevelSpec } from "vega-lite";
 import ContextMenu from "@/entities/contextMenu/contextMenu.vue";
@@ -98,6 +115,12 @@ const route = useRoute();
 const props = defineProps<Props>();
 
 const annotationMode = ref(false);
+
+onMounted(() => {
+  if (props.annotations) {
+    annotationMode.value = store.getters.getSettings.annotationsMode;
+  }
+});
 
 const processedConfig = computed(function (): TopLevelSpec {
   if (annotationMode.value) {
