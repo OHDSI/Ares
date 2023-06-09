@@ -133,6 +133,7 @@ export default function getFilesByView() {
           { name: DOMAIN_ISSUES, required: true },
           { name: DOMAIN_DRUG_STRATIFICATION, required: false },
           { name: DOMAIN_VISIT_STRATIFICATION, required: false },
+          { name: METADATA, required: false },
         ],
       },
     },
