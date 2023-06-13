@@ -3,7 +3,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-observationbymonth"
-      width="90"
+      width="95"
       :annotations-config="specObservationByMonthAnnotation"
       :notes="notes"
       :signal-listener="listeners.setSelectionAreaSignal"

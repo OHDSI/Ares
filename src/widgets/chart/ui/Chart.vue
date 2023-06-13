@@ -20,6 +20,7 @@
       </v-col>
     </v-row>
     <div :id="id" :style="style"></div>
+
     <ContextMenu v-if="annotations" :items="actions" />
   </div>
 </template>
@@ -31,8 +32,11 @@ export default {
 </script>
 
 <script setup lang="ts">
-import embed from "vega-embed";
+import embed, { vegaLite } from "vega-embed";
+import * as vega from "vega";
 import { useStore } from "vuex";
+
+import { darkTheme, lightTheme } from "@/widgets/chart/model/themes";
 import {
   computed,
   watch,
@@ -43,6 +47,7 @@ import {
 } from "vue";
 import { useRoute, RouteLocationNormalizedLoaded } from "vue-router";
 import { TopLevelSpec } from "vega-lite";
+import { Handler } from "vega-tooltip";
 import ContextMenu from "@/entities/contextMenu/contextMenu.vue";
 import {
   ADD_NEW_NOTE,
@@ -116,13 +121,23 @@ const props = defineProps<Props>();
 
 const annotationMode = ref(false);
 
+const updateValues = computed(() => {
+  return {
+    zeroBaseLine: store.getters.getSettings.zeroBaseline,
+    minMax: store.getters.getSettings.minMax,
+    darkMode: store.getters.getSettings.darkMode,
+    notes: props.notes ? [...props.notes] : [],
+    annotationMode: annotationMode.value,
+  };
+});
+
 onMounted(() => {
   if (props.annotations) {
     annotationMode.value = store.getters.getSettings.annotationsMode;
   }
 });
 
-const processedConfig = computed(function (): TopLevelSpec {
+const processedConfig = function (): TopLevelSpec {
   if (annotationMode.value) {
     return {
       ...props.annotationsConfig(
@@ -133,6 +148,7 @@ const processedConfig = computed(function (): TopLevelSpec {
         conceptData: props.data,
         notesData: props.notes ? [...props.notes] : [],
       },
+      config: store.getters.getSettings.darkMode ? darkTheme : lightTheme,
     };
   } else {
     return {
@@ -143,44 +159,44 @@ const processedConfig = computed(function (): TopLevelSpec {
       datasets: {
         conceptData: props.data,
       },
+      config: store.getters.getSettings.darkMode ? darkTheme : lightTheme,
     };
   }
-});
-
-const darkMode = computed(function (): boolean {
-  return store.getters.getSettings.darkMode;
-});
+};
 
 const style = computed(function (): string {
   return props.width ? "width: " + props.width + "%" : "width: 100%";
 });
 
-const load = function (): void {
-  embed(`#${props.id}`, processedConfig.value, {
-    theme: store.getters.getSettings.darkMode ? "dark" : undefined,
-  }).then((result) => {
+const load = function (config): void {
+  const vgSpec = vegaLite.compile(config, {}).spec;
+  function render(spec) {
+    const view = new vega.View(vega.parse(spec, {}), {
+      renderer: "svg",
+      container: `#${props.id}`,
+      hover: true,
+    }).tooltip(new Handler().call);
     if (props.clickListener) {
-      props.clickListener(result, route, store);
+      props.clickListener(view, route, store);
     }
     if (props.signalListener && annotationMode.value) {
-      props.signalListener(result, store);
+      props.signalListener(view, store);
     }
     if (props.contextMenuListener && annotationMode.value) {
-      props.contextMenuListener(result, store);
+      props.contextMenuListener(view, store);
     }
-  });
+    view.runAsync();
+  }
+
+  render(vgSpec);
 };
 
-watch(darkMode, (): void => {
-  load();
+watch(updateValues, (): void => {
+  load(processedConfig());
 });
 
-watch(processedConfig, (): void => {
-  load();
-});
-
-onBeforeMount((): void => {
-  load();
+onMounted((): void => {
+  load(processedConfig());
 });
 </script>
 

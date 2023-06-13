@@ -37,15 +37,6 @@ export function specCumulativeObservationAnnotation(zeroBaseline = false) {
             name: "justBrush",
             select: {
               type: "point",
-              on: "mousedown",
-              encodings: ["x", "x2", "y", "y2"],
-              value: { x: [55, 160], y: [13, 37] },
-            },
-          },
-          {
-            name: "justBrush",
-            select: {
-              type: "point",
               on: "mouseup",
               encodings: ["x", "x2", "y", "y2"],
             },
@@ -92,6 +83,18 @@ export function specCumulativeObservationAnnotation(zeroBaseline = false) {
             type: "quantitative",
           },
         },
+      },
+    ],
+    signals: [
+      {
+        name: "brushCoordinates",
+        value: [0, 0, 0, 0], // [x1, y1, x2, y2]
+      },
+    ],
+    on: [
+      {
+        events: { signal: "brushCoordinates" },
+        update: "notesBrush = brushCoordinates",
       },
     ],
   };

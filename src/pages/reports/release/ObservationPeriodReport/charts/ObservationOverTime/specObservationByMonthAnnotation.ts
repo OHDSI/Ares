@@ -76,6 +76,7 @@ export function specObservationByMonthAnnotation(zeroBaseline = false) {
                 select: {
                   type: "interval",
                   encodings: ["x", "y"],
+                  resolve: "global",
                 },
               },
             ],
@@ -123,7 +124,7 @@ export function specObservationByMonthAnnotation(zeroBaseline = false) {
         data: { name: "conceptData" },
 
         selection: {
-          brush: { type: "interval", encodings: ["x"] },
+          brush: { type: "interval", encodings: ["x"], resolve: "global" },
         },
         encoding: {
           x: { field: "DATE", type: "temporal", title: "Date" },
