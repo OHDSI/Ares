@@ -1,37 +1,35 @@
-import {
-  SET_CURRENT_SELECTION_AREA,
-  SET_SELECTED_RECTANGLE,
-} from "@/widgets/notesPanel/model/store/mutations.type";
+import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
 import {
   CREATE_SELECTION,
+  SHOW_DATUM_NOTES,
   SHOW_DIALOG,
 } from "@/widgets/notesPanel/model/store/actions.type";
 import { OPEN_MENU } from "@/entities/contextMenu/model/store/actions.type";
 import { debounce } from "lodash";
 
-export const setRectangleLocationClick = function (result, route, store) {
-  return result.view.addEventListener("click", (event, item) => {
+export const setRectangleLocationClick = function (view, route, store) {
+  return view.addEventListener("click", (event, item) => {
     if (
       item.mark.name === "layer_1_marks" ||
       item.mark.name === "concat_0_layer_1_marks"
     ) {
       store.commit(SET_SELECTED_RECTANGLE, {
         item: item.datum,
-        report: event.srcElement.offsetParent.id,
+        report: view.container().id,
       });
     } else if (item.mark.name === "root") {
       store.commit(SET_SELECTED_RECTANGLE, {
         item: {},
-        report: event.srcElement.offsetParent.id,
+        report: view.container().id,
       });
     }
   });
 };
 
-const handleNotesBrush = (event, item, store) => {
+const handleNotesBrush = (event, view, item, store) => {
   const action = (e, i) => (title, description) => {
     store.dispatch(CREATE_SELECTION, {
-      reportName: e.srcElement.offsetParent.id,
+      reportName: view.container().id,
       item: i.datum,
       title,
       description,
@@ -45,10 +43,10 @@ const handleNotesBrush = (event, item, store) => {
   });
 };
 
-const handleLayerMarks = (event, item, store) => {
+const handleLayerMarks = (event, view, item, store) => {
   store.commit(SET_SELECTED_RECTANGLE, {
     item: item.datum,
-    report: event.srcElement.offsetParent.id,
+    report: view.container().id,
   });
 
   store.dispatch(OPEN_MENU, {
@@ -56,36 +54,52 @@ const handleLayerMarks = (event, item, store) => {
     location: {
       x: event.clientX,
       y: event.clientY,
-      element: event.srcElement.offsetParent.id,
+      element: view.container().id,
       event,
     },
     clickEventData: {
-      reportName: event.srcElement.offsetParent.id,
+      reportName: view.container().id,
       date: new Date(),
       item: item.datum,
     },
   });
 };
 
-export const showNotesEditDialogRightClick = function (result, store) {
-  return result.view.addEventListener("contextmenu", (event, item) => {
+export const showNotesEditDialogRightClick = function (view, store) {
+  return view.addEventListener("contextmenu", (event, item) => {
     event.preventDefault();
     if (item.mark.name === "notesBrush_brush") {
-      handleNotesBrush(event, item, store);
+      handleNotesBrush(event, view, item, store);
     } else if (
       item.mark.name === "layer_1_marks" ||
       item.mark.name === "concat_0_layer_1_marks"
     ) {
-      handleLayerMarks(event, item, store);
+      handleLayerMarks(event, view, item, store);
     }
   });
 };
-
-export const setSelectionAreaSignal = function (result, store) {
-  return result.view.addSignalListener(
+export const setSelectionAreaSignal = function (view, store) {
+  return view.addSignalListener(
     "notesBrush",
     debounce((signalName, event) => {
-      store.commit(SET_CURRENT_SELECTION_AREA, { signalName, event });
-    }, 100)
+      if (Object.keys(event).length) {
+        store.dispatch(SHOW_DATUM_NOTES, { signalName, event }).then(() => {
+          const action = (view, store) => (title, description) => {
+            store.dispatch(CREATE_SELECTION, {
+              reportName: view.container().id,
+              item: "",
+              title,
+              description,
+            });
+          };
+
+          store.dispatch(SHOW_DIALOG, {
+            show: true,
+            data: null,
+            action: action(view, store),
+          });
+        });
+      }
+    }, 300)
   );
 };

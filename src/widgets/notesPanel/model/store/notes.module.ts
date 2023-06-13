@@ -212,6 +212,7 @@ const actions = {
     commit(SET_NOTES, { data, cdm });
     localStorageService.set("notes", getters.getNotes);
   },
+
   [ADD_NEW_NOTE]({ commit, getters, rootState }, params) {
     const { cdm, release, domain, concept } = rootState.route.params;
     const chartName = getters.getSelectedRectangle.report;
