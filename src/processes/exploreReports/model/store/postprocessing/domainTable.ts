@@ -3,6 +3,7 @@ import {
   DOMAIN_ISSUES,
   DOMAIN_SUMMARY,
   DOMAIN_VISIT_STRATIFICATION,
+  METADATA,
 } from "@/shared/config/files";
 import { DomainSummary } from "@/processes/exploreReports/model/interfaces/files/DomainSummary";
 import { DomainIssues } from "@/processes/exploreReports/model/interfaces/files/DomainIssues";
@@ -10,6 +11,7 @@ import { DomainDrugStratificationType } from "@/processes/exploreReports/model/i
 import { DomainVisitStratificationType } from "@/processes/exploreReports/model/interfaces/files/DomainVisitStratificationType";
 
 export default function domainTable(data) {
+  const metadataData = data[METADATA];
   const domainTable: DomainSummary[] = data[DOMAIN_SUMMARY];
   const domainIssues: DomainIssues[] = data[DOMAIN_ISSUES];
   const drugStratification: DomainDrugStratificationType[] =
@@ -22,5 +24,6 @@ export default function domainTable(data) {
     domainIssues,
     domainStratification,
     drugStratification,
+    metadataData,
   };
 }
