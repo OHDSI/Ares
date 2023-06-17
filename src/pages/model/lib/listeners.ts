@@ -27,12 +27,11 @@ export const setRectangleLocationClick = function (view, route, store) {
 };
 
 const handleNotesBrush = (event, view, item, store) => {
-  const action = (e, i) => (title, description) => {
+  const action = (e, i) => (selection) => {
     store.dispatch(CREATE_SELECTION, {
       reportName: view.container().id,
       item: i.datum,
-      title,
-      description,
+      selection,
     });
   };
 
@@ -83,23 +82,8 @@ export const setSelectionAreaSignal = function (view, store) {
     "notesBrush",
     debounce((signalName, event) => {
       if (Object.keys(event).length) {
-        store.dispatch(SHOW_DATUM_NOTES, { signalName, event }).then(() => {
-          const action = (view, store) => (title, description) => {
-            store.dispatch(CREATE_SELECTION, {
-              reportName: view.container().id,
-              item: "",
-              title,
-              description,
-            });
-          };
-
-          store.dispatch(SHOW_DIALOG, {
-            show: true,
-            data: null,
-            action: action(view, store),
-          });
-        });
+        store.dispatch(SHOW_DATUM_NOTES, { signalName, event });
       }
-    }, 300)
+    }, 100)
   );
 };

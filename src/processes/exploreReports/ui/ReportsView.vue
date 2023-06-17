@@ -28,7 +28,7 @@ import { useStore } from "vuex";
 
 import { watch, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import NewNote from "@/widgets/newNoteDialog/newNote.vue";
+import NewNote from "@/widgets/selectionEditDialog/newNote.vue";
 import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
 
 const route = useRoute();

@@ -90,16 +90,15 @@ const actions = {
   [FETCH_QUERY_INDEX]({ commit, dispatch }, params) {
     return apiService(getFilePath(params)[EXPORT_QUERY_INDEX], {
       required: false,
-    })
-      .then((response) => {
-        commit(LOAD_QUERY_INDEX, response.data);
-      })
-      .catch((error) => {
+    }).then((response) => {
+      commit(LOAD_QUERY_INDEX, response.data);
+    });
+    /* .catch((error) => {
         dispatch(errorActions.NEW_ERROR, {
           message: error.error.message,
           details: error.error.response.request.responseURL,
         });
-      });
+      });*/
   },
 };
 

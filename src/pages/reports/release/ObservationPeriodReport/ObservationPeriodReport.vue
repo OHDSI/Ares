@@ -13,6 +13,7 @@
       </v-responsive>
       <form-dialog
         @close="store.commit(SET_DIALOG, false)"
+        v-if="store.getters.getDialogData.show"
         :show="store.getters.getDialogData.show"
         :action="store.getters.getDialogData.action"
         :data="store.getters.getDialogData.data"
@@ -32,7 +33,7 @@ import AgeAtFirstObservation from "@/pages/reports/release/ObservationPeriodRepo
 import AgeAtFirstObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservationBySex/AgeAtFirstObservationBySex.vue";
 import { useStore } from "vuex";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/newNoteDialog/formDialog.vue";
+import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 
 const store = useStore();
 </script>

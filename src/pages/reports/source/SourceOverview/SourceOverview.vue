@@ -24,6 +24,7 @@
     </v-row>
     <form-dialog
       @close="store.commit(SET_DIALOG, false)"
+      v-if="store.getters.getDialogData.show"
       :show="store.getters.getDialogData.show"
       :action="store.getters.getDialogData.action"
       :data="store.getters.getDialogData.data"
@@ -39,7 +40,7 @@ import PopulationHistory from "@/pages/reports/source/SourceOverview/charts/popu
 import DataQualityIssuesHistory from "@/pages/reports/source/SourceOverview/charts/dataQualityIssuesHistory/DataQualityIssuesHistory.vue";
 import ReleaseListing from "@/pages/reports/source/SourceOverview/charts/releaseListing/ReleaseListing.vue";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/newNoteDialog/formDialog.vue";
+import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 
 const store = useStore();
 </script>

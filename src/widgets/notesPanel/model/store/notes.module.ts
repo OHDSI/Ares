@@ -28,7 +28,6 @@ import {
 import apiService from "@/shared/api/apiService";
 import getFilePath from "@/shared/api/getFilePath";
 import { NOTES } from "@/shared/config/files";
-import chart from "@/widgets/chart/ui/Chart.vue";
 
 const state = {
   notes: {},
@@ -88,30 +87,11 @@ const actions = {
   [CREATE_SELECTION]({ commit, getters, rootState }, params) {
     const { cdm, release, domain, concept } = rootState.route.params;
     const chartName = params.reportName;
-    const newSelection = createSelection(
-      getters.getCurrentSelectionArea.event,
-      params
-    );
+
     let data = { ...getters.getNotes };
     const path = [cdm, release, domain, concept, chartName].filter(Boolean);
     data = createNestedProperty(data, path);
-    _.get(data, path.join(".")).push(newSelection);
-    commit(SET_NOTES, { data, cdm });
-    localStorageService.set("notes", getters.getNotes);
-  },
-  [DELETE_SELECTION]({ commit, getters, rootState }) {
-    const { cdm, release, domain, concept } = rootState.route.params;
-    const chartName = getters.getSelectedRectangle.report;
-    const selectionId = getters.getSelectedRectangle.item.id;
-
-    const data = { ...getters.getNotes };
-    const path = [cdm, release, domain, concept, chartName].filter(Boolean);
-    const selections = _.get(data, path.join(".")).filter(
-      (selection) => selection.id !== selectionId
-    );
-
-    _.set(data, path.join("."), selections);
-
+    _.get(data, path.join(".")).push(params.selection);
     commit(SET_NOTES, { data, cdm });
     localStorageService.set("notes", getters.getNotes);
   },
@@ -123,88 +103,11 @@ const actions = {
     const data = { ...getters.getNotes };
     const path = [cdm, release, domain, concept, chartName].filter(Boolean);
     const selections = _.get(data, path.join("."));
-
-    const findSelectionById = (id, selections) =>
-      selections.find((selection) => selection.id === id);
-
     const selectionIndex = selections.findIndex(
       (selection) => selection.id === selectionId
     );
     if (selectionIndex !== -1) {
-      const selection = findSelectionById(selectionId, selections);
-      const updatedSelection = {
-        ...selection,
-        title: params.data.title,
-        description: params.data.description,
-      };
-      selections[selectionIndex] = updatedSelection;
-    }
-
-    _.set(data, path.join("."), selections);
-
-    commit(SET_NOTES, { data, cdm });
-    localStorageService.set("notes", getters.getNotes);
-  },
-  [DELETE_NOTE]({ commit, getters, rootState }, params) {
-    const { cdm, release, domain, concept } = rootState.route.params;
-    const chartName = params.report;
-    const selectionId = params.selection;
-    console.log(chartName, selectionId);
-
-    const data = { ...getters.getNotes };
-    const path = [cdm, release, domain, concept, chartName].filter(Boolean);
-    const selections = _.get(data, path.join("."));
-
-    const findSelectionById = (id, selections) =>
-      selections.find((selection) => selection.id === id);
-
-    const selectionIndex = selections.findIndex(
-      (selection) => selection.id === selectionId
-    );
-    if (selectionIndex !== -1) {
-      const selection = findSelectionById(selectionId, selections);
-      const updatedSelection = {
-        ...selection,
-        notes: [
-          ...selection.notes.filter((value) => value.id !== params.cardId),
-        ],
-      };
-      selections[selectionIndex] = updatedSelection;
-    }
-
-    _.set(data, path.join("."), selections);
-
-    commit(SET_NOTES, { data, cdm });
-    localStorageService.set("notes", getters.getNotes);
-  },
-  [EDIT_NOTE]({ commit, getters, rootState }, params) {
-    const { cdm, release, domain, concept } = rootState.route.params;
-    const chartName = params.data.report;
-    const selectionId = params.data.selection;
-
-    const data = { ...getters.getNotes };
-    const path = [cdm, release, domain, concept, chartName].filter(Boolean);
-    const selections = _.get(data, path.join("."));
-
-    const findSelectionById = (id, selections) =>
-      selections.find((selection) => selection.id === id);
-
-    const selectionIndex = selections.findIndex(
-      (selection) => selection.id === selectionId
-    );
-    if (selectionIndex !== -1) {
-      const selection = findSelectionById(selectionId, selections);
-      const updatedSelection = {
-        ...selection,
-        notes: [
-          ...selection.notes.map((value) =>
-            value.id === params.cardId
-              ? createNewNote(params.data.title, params.data.description)
-              : value
-          ),
-        ],
-      };
-      selections[selectionIndex] = updatedSelection;
+      selections[selectionIndex] = params.data;
     }
 
     _.set(data, path.join("."), selections);
@@ -213,28 +116,16 @@ const actions = {
     localStorageService.set("notes", getters.getNotes);
   },
 
-  [ADD_NEW_NOTE]({ commit, getters, rootState }, params) {
+  [DELETE_SELECTION]({ commit, getters, rootState }) {
     const { cdm, release, domain, concept } = rootState.route.params;
     const chartName = getters.getSelectedRectangle.report;
     const selectionId = getters.getSelectedRectangle.item.id;
 
     const data = { ...getters.getNotes };
     const path = [cdm, release, domain, concept, chartName].filter(Boolean);
-    const selections = _.get(data, path.join("."));
-
-    const findSelectionById = (id, selections) =>
-      selections.find((selection) => selection.id === id);
-
-    const selectionIndex = selections.findIndex(
-      (selection) => selection.id === selectionId
+    const selections = _.get(data, path.join(".")).filter(
+      (selection) => selection.id !== selectionId
     );
-    if (selectionIndex !== -1) {
-      const selection = findSelectionById(selectionId, selections);
-      selection.notes.push(
-        createNewNote(params.data.title, params.data.description)
-      );
-      selections[selectionIndex] = selection;
-    }
 
     _.set(data, path.join("."), selections);
 

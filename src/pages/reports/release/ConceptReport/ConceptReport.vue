@@ -109,6 +109,7 @@
       </v-responsive>
       <form-dialog
         @close="store.commit(SET_DIALOG, false)"
+        v-if="store.getters.getDialogData.show"
         :show="store.getters.getDialogData.show"
         :action="store.getters.getDialogData.action"
         :data="store.getters.getDialogData.data"
@@ -140,7 +141,7 @@ import QuantityDistribution from "@/pages/reports/release/ConceptReport/charts/Q
 import VisitDurationByType from "@/pages/reports/release/ConceptReport/charts/VisitDurationByType/VisitDurationByType.vue";
 import RecordCountProportionByAgeSexYear from "@/pages/reports/release/ConceptReport/charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/newNoteDialog/formDialog.vue";
+import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 
 const route = useRoute();
 const store = useStore();
