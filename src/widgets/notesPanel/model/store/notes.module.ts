@@ -1,10 +1,7 @@
 import localStorageService from "@/shared/api/localStorageService";
 import {
-  ADD_NEW_NOTE,
   CREATE_SELECTION,
-  DELETE_NOTE,
   DELETE_SELECTION,
-  EDIT_NOTE,
   EDIT_SELECTION,
   LOAD_NOTES,
   SHOW_DATUM_NOTES,
@@ -13,8 +10,6 @@ import {
 import _ from "lodash";
 import {
   createNestedProperty,
-  createNewNote,
-  createSelection,
   mergeAndCompareByDate,
 } from "@/widgets/notesPanel/model/lib/helpers";
 
@@ -142,6 +137,7 @@ const actions = {
   },
   [SHOW_DATUM_NOTES]({ commit }, params) {
     commit(SET_CURRENT_SELECTION_AREA, params);
+    commit(SET_SELECTED_RECTANGLE, null);
   },
 };
 
