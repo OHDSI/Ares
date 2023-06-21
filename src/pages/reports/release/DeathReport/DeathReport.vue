@@ -10,6 +10,7 @@
       </v-responsive>
       <form-dialog
         @close="store.commit(SET_DIALOG, false)"
+        v-if="store.getters.getDialogData.show"
         :show="store.getters.getDialogData.show"
         :action="store.getters.getDialogData.action"
         :data="store.getters.getDialogData.data"
@@ -27,7 +28,7 @@ import DeathByType from "@/pages/reports/release/DeathReport/charts/DeathByType/
 import RecordCountProportionByAgeSexYear from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
 import RecordCountProportionByMonth from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/newNoteDialog/formDialog.vue";
+import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 
 const route = useRoute();
 const store = useStore();

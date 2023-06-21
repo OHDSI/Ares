@@ -3,6 +3,7 @@
     <DomainDensity />
     <DomainRecordsPerPerson />
     <form-dialog
+      v-if="store.getters.getDialogData.show"
       @close="store.commit(SET_DIALOG, false)"
       :show="store.getters.getDialogData.show"
       :action="store.getters.getDialogData.action"
@@ -17,7 +18,7 @@ import { useStore } from "vuex";
 import DomainRecordsPerPerson from "@/pages/reports/release/DomainDensity/charts/DomainRecordsPerPerson/DomainRecordsPerPerson.vue";
 import DomainDensity from "@/pages/reports/release/DomainDensity/charts/DomainDensity/DomainDensity.vue";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/newNoteDialog/formDialog.vue";
+import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 const store = useStore();
 </script>
 

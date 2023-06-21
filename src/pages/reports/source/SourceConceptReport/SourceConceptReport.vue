@@ -38,6 +38,7 @@
       </v-responsive>
       <form-dialog
         @close="store.commit(SET_DIALOG, false)"
+        v-if="store.getters.getDialogData.show"
         :show="store.getters.getDialogData.show"
         :action="store.getters.getDialogData.action"
         :data="store.getters.getDialogData.data"
@@ -52,7 +53,7 @@ import ReturnButton from "@/features/returnToPreviousPage";
 import { useStore } from "vuex";
 import RecordProportionByMonth from "@/pages/reports/source/SourceConceptReport/charts/recordProportionByMonth/RecordProportionByMonth.vue";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/newNoteDialog/formDialog.vue";
+import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 const store = useStore();
 </script>
 

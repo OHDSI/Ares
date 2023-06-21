@@ -32,25 +32,17 @@ export default {
 </script>
 
 <script setup lang="ts">
-import embed, { vegaLite } from "vega-embed";
+import { vegaLite } from "vega-embed";
 import * as vega from "vega";
 import { useStore } from "vuex";
 
 import { darkTheme, lightTheme } from "@/widgets/chart/model/themes";
-import {
-  computed,
-  watch,
-  onBeforeMount,
-  defineProps,
-  ref,
-  onMounted,
-} from "vue";
+import { computed, watch, defineProps, ref, onMounted } from "vue";
 import { useRoute, RouteLocationNormalizedLoaded } from "vue-router";
 import { TopLevelSpec } from "vega-lite";
 import { Handler } from "vega-tooltip";
 import ContextMenu from "@/entities/contextMenu/contextMenu.vue";
 import {
-  ADD_NEW_NOTE,
   DELETE_SELECTION,
   EDIT_SELECTION,
   SHOW_DIALOG,
@@ -75,17 +67,16 @@ const actions = [
   {
     title: "Edit selection details",
     action: () => {
-      const action = function (title, description) {
+      const action = function (selection) {
         store.dispatch(EDIT_SELECTION, {
           report: props.id,
-          data: { title, description },
+          data: selection,
         });
       };
       store.dispatch(SHOW_DIALOG, {
         show: true,
         data: {
-          title: store.getters.getSelectedRectangle.item.title,
-          description: store.getters.getSelectedRectangle.item.description,
+          selection: store.getters.getSelectedRectangle.item,
         },
         action,
       });
@@ -95,22 +86,6 @@ const actions = [
     title: "Remove selection",
     action: () => {
       store.dispatch(DELETE_SELECTION, { report: props.id });
-    },
-  },
-  {
-    title: "Add note",
-    action: () => {
-      const action = function (title, description) {
-        store.dispatch(ADD_NEW_NOTE, {
-          report: props.id,
-          data: { title, description },
-        });
-      };
-      store.dispatch(SHOW_DIALOG, {
-        show: true,
-        data: null,
-        action,
-      });
     },
   },
 ];
