@@ -5,11 +5,28 @@
     max-width="400"
     max-height="300"
     elevation="5"
-    :title="props.note.title"
   >
+    <v-layout class="justify-space-between">
+      <v-card-title class="justify-space-between">
+        {{ props.note.title }}
+      </v-card-title>
+      <v-btn variant="plain" icon>
+        <v-icon> mdi-information-outline </v-icon>
+        <v-tooltip
+          content-class="custom-tooltip"
+          activator="parent"
+          location="end"
+        >
+          Created by {{ user || "unknown" }} at {{ dateTimeCreated }}
+          <br />
+          Last updated at {{ dateTimeUpdated }}</v-tooltip
+        ></v-btn
+      >
+    </v-layout>
     <v-card-text class="text-h7 py-2">
       {{ props.note.description }}
     </v-card-text>
+    <v-divider></v-divider>
   </v-card>
   <v-card v-else class="mb-2 card" width="400" elevation="6">
     <v-card-title>
@@ -53,7 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, defineEmits, onBeforeMount } from "vue";
+import { defineProps, ref, defineEmits, onBeforeMount, computed } from "vue";
+import { useStore } from "vuex";
 
 const emit = defineEmits(["editCard", "deleteCard"]);
 
@@ -61,14 +79,40 @@ interface Note {
   title: string;
   description: string;
   id: number;
+  lastUpdated: number;
   report?: string;
   selection?: string;
+  createdBy: string;
 }
 
 interface Props {
   note: Note;
   edit?: boolean;
 }
+
+const dateTimeCreated = computed(() => {
+  const isoDate = new Date(props.note.id);
+  return isoDate.toLocaleString(undefined, {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+});
+
+const dateTimeUpdated = computed(() => {
+  if (props.note.lastUpdated) {
+    const isoDate = new Date(props.note.lastUpdated);
+    return isoDate.toLocaleString(undefined, {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
+  } else {
+    return dateTimeCreated.value;
+  }
+});
+
+const user = computed(() => {
+  return props.note.createdBy;
+});
 
 const currentCard = ref(null);
 
@@ -81,7 +125,7 @@ const deleteCard = function () {
 };
 
 const editCard = function () {
-  emit("editCard", currentCard.value);
+  emit("editCard", { ...currentCard.value, lastUpdated: Date.now() });
 };
 
 const confirmDelete = ref(false);

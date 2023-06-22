@@ -63,4 +63,8 @@ a {
 a:visited {
   color: rgb(var(--v-theme-primary-lighten-2));
 }
+
+.v-tooltip .v-overlay__content {
+  background: rgba(var(--v-theme-surface-variant), 1) !important;
+}
 </style>

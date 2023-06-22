@@ -53,6 +53,7 @@ export function specRecordProportionByMonthAnnotation(zeroBaseline = false) {
                   field: "description",
                   title: "Description",
                 },
+                { field: "createdBy", title: "Author" },
               ],
               x: {
                 field: "start",

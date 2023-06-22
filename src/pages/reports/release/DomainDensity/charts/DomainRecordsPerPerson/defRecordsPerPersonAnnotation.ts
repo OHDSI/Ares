@@ -84,6 +84,7 @@ export function defRecordsPerPersonAnnotation(zeroBaseline = false) {
                   field: "description",
                   title: "Description",
                 },
+                { field: "createdBy", title: "Author" },
               ],
               x: {
                 field: "start",

@@ -13,15 +13,17 @@ export function createSelection(event, params) {
     y1: coordinates.y[1],
     title: params.title,
     description: params.description,
+    createdBy: params.createdBy,
     notes: params.notes,
     id: Date.now(),
   };
 }
 
-export const createNewNote = function (title, description) {
+export const createNewNote = function (title, description, createdBy) {
   return {
     title,
     description,
+    createdBy,
     id: Date.now(),
   };
 };
