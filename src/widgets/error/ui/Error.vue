@@ -1,6 +1,5 @@
 <template>
   <v-container fluid>
-    <v-alert elevation="4" prominent type="error" icon="mdi-cloud-alert">
       <v-card-title>An error has occurred</v-card-title>
       <ul>
         <li v-for="(error, index) in store.getters.getErrors" :key="index">
