@@ -18,4 +18,20 @@ export const authService = {
       );
     },
   },
+  user: {
+    get(token) {
+      return apiService(
+        {
+          url: `${environment.WEB_API_URL}user/me`,
+          baseURL: "/",
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : null,
+          },
+        },
+        {}
+      );
+    },
+  },
 };

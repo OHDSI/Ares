@@ -91,7 +91,11 @@ const sh = computed({
   },
 });
 
-const currentSelection = ref({ title: "", description: "", notes: [] });
+const currentSelection = ref({
+  title: "",
+  description: "",
+  notes: [],
+});
 
 const storeSelection = computed(() => {
   return store.getters.getSelectedRectangle?.item || {};
@@ -106,7 +110,15 @@ const removeNote = function (id) {
 
 const addNote = function () {
   currentSelection.value.notes = [
-    { title: "", description: "", id: Date.now() },
+    {
+      title: "",
+      description: "",
+      id: Date.now(),
+      createdBy:
+        store.getters.getWebApiUser?.name ||
+        store.getters.getSettings.user?.name ||
+        "unknown",
+    },
     ...currentSelection.value.notes,
   ];
 };
@@ -124,11 +136,15 @@ const editNote = function (event) {
 
 onBeforeMount(() => {
   currentSelection.value = Object.keys(storeSelection.value).length
-    ? { ...storeSelection.value }
+    ? { ...storeSelection.value, updatedAt: Date.now() }
     : createSelection(store.getters.getCurrentSelectionArea.event, {
         title: "",
         description: "",
         notes: [],
+        createdBy:
+          store.getters.getWebApiUser?.name ||
+          store.getters.getSettings.user?.name ||
+          "unknown",
       });
 });
 

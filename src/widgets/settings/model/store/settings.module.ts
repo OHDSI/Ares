@@ -8,6 +8,7 @@ import {
   TOGGLE_DEFAULT_ANNOTATIONS_MODE,
   TOGGLE_BASELINE_SETTING,
   TOGGLE_DEFAULT_ALL_NOTES_MODE,
+  EDIT_USER,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -22,6 +23,7 @@ const state = {
     theme: "blue",
     annotationsMode: false,
     allNotesMode: false,
+    user: null,
   },
   visible: false,
 };
@@ -61,6 +63,9 @@ const actions = {
   },
   [TOGGLE_DEFAULT_ALL_NOTES_MODE]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "allNotesMode" });
+  },
+  [EDIT_USER]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "user" });
   },
 };
 

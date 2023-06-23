@@ -60,6 +60,8 @@ export function specPopulationByReleaseAnnotation(zeroBaseline = false) {
               field: "description",
               title: "Description",
             },
+            { field: "createdBy", title: "Author" },
+            { field: "id", title: "Created at", timeUnit: "yearmonthdate" },
           ],
           x: {
             field: "start",

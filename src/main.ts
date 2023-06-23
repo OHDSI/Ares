@@ -10,14 +10,13 @@ import environment from "@/shared/api/environment";
 import { authActions } from "@/shared/api/webAPI";
 //todo: Think how to improve auth
 import { settingsActions } from "@/widgets/settings";
-import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
 // adds reactive router module to global state
 sync(store, router);
 
 environment.load().then(() => {
   store
     .dispatch(authActions.GET_AUTH_TOKEN)
-    .then()
+    .then(() => store.dispatch(authActions.GET_USER))
     .catch()
     .finally(() => {
       store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE).then(() => {
@@ -25,5 +24,3 @@ environment.load().then(() => {
       });
     });
 });
-
-//loads app settings from the local storage (if there are any saved)

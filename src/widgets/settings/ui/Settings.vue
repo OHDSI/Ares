@@ -14,6 +14,8 @@
           <v-toolbar-title>Settings</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
+        <User-account></User-account>
+        <v-divider></v-divider>
         <v-list lines="two">
           <v-list-subheader>Charts</v-list-subheader>
           <!--Features-->
@@ -58,6 +60,7 @@ import { useStore } from "vuex";
 import ExportNotes from "@/widgets/settings/ui/components/exportNotes/ExportNotes.vue";
 import { TOGGLE_UI_VISIBILITY } from "@/widgets/settings/model/store/actions.type";
 import ToggleDefaultAllNotesMode from "@/widgets/settings/ui/components/toggleDefaultAllNotesMode/ToggleDefaultAllNotesMode.vue";
+import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccount.vue";
 
 const store = useStore();
 

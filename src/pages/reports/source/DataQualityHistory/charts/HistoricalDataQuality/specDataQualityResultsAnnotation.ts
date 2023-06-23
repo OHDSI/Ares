@@ -52,6 +52,17 @@ export function specDataQualityResultsAnnotation(zeroBaseline = false) {
               field: "description",
               title: "Description",
             },
+            { field: "createdBy", title: "Author" },
+            {
+              field: "id",
+              title: "Created at",
+              timeUnit: "yearmonthdatehoursminutes",
+            },
+            {
+              field: "updatedAt",
+              title: "Updated at",
+              timeUnit: "yearmonthdatehoursminutes",
+            },
           ],
           x: {
             field: "start",
