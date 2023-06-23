@@ -16,6 +16,7 @@ export function createSelection(event, params) {
     createdBy: params.createdBy,
     notes: params.notes,
     id: Date.now(),
+    updatedAt: Date.now(),
   };
 }
 

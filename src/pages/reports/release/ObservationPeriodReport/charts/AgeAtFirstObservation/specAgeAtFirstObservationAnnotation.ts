@@ -59,6 +59,16 @@ export function specAgeAtFirstObservationAnnotation(zeroBaseline = false) {
               title: "Description",
             },
             { field: "createdBy", title: "Author" },
+            {
+              field: "id",
+              title: "Created at",
+              timeUnit: "yearmonthdatehoursminutes",
+            },
+            {
+              field: "updatedAt",
+              title: "Updated at",
+              timeUnit: "yearmonthdatehoursminutes",
+            },
           ],
           x: {
             field: "start",

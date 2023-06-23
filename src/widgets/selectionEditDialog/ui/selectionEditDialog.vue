@@ -136,7 +136,7 @@ const editNote = function (event) {
 
 onBeforeMount(() => {
   currentSelection.value = Object.keys(storeSelection.value).length
-    ? { ...storeSelection.value }
+    ? { ...storeSelection.value, updatedAt: Date.now() }
     : createSelection(store.getters.getCurrentSelectionArea.event, {
         title: "",
         description: "",
