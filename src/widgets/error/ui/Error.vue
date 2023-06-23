@@ -1,10 +1,10 @@
 <template>
   <v-container fluid>
-      <v-card-title>An error has occurred</v-card-title>
+    <v-alert elevation="4" prominent type="error" icon="mdi-cloud-alert" title="An error has occurred">
       <ul>
         <li v-for="(error, index) in store.getters.getErrors" :key="index">
-          <span style="color: crimson">{{ error.message }}</span> --
-          <span style="color: red">{ {{ error.details }} }</span>
+          <span style="color: white">{{ error.message }}</span> --
+          <span style="color: white">{ {{ error.details }} }</span>
         </li>
       </ul>
     </v-alert>
