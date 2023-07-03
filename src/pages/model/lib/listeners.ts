@@ -1,6 +1,8 @@
 import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
 import {
   CREATE_SELECTION,
+  EDIT_SELECTION,
+  MOVE_SELECTION,
   SHOW_DATUM_NOTES,
   SHOW_DIALOG,
 } from "@/widgets/notesPanel/model/store/actions.type";
@@ -66,9 +68,39 @@ const handleLayerMarks = (event, view, item, store) => {
 
 export const showNotesEditDialogRightClick = function (view, store) {
   return view.addEventListener("contextmenu", (event, item) => {
+    const coordinates = store.getters.getCurrentSelectionArea.event;
+    const currentSelection = store.getters.getResizeSelection;
     event.preventDefault();
     if (item.mark.name === "notesBrush_brush") {
-      handleNotesBrush(event, view, item, store);
+      if (
+        store.getters.getResizeSelection &&
+        store.getters.getResizeSelection?.report == view.container().id
+      ) {
+        store.dispatch(EDIT_SELECTION, {
+          report: view.container().id,
+          save: true,
+          data: {
+            title: currentSelection.title,
+            description: currentSelection.description,
+            createdBy: currentSelection.createdBy,
+            notes: currentSelection.notes,
+            id: currentSelection.id,
+            updatedAt: Date.now(),
+            start:
+              coordinates.start?.[0] ||
+              coordinates.yearmonth_start?.[0] ||
+              coordinates.yearmonthdate_start?.[0],
+            end:
+              coordinates.start?.[1] ||
+              coordinates.yearmonth_start?.[1] ||
+              coordinates.yearmonthdate_start?.[0],
+            y: coordinates.y[0],
+            y1: coordinates.y[1],
+          },
+        });
+      } else {
+        handleNotesBrush(event, view, item, store);
+      }
     } else if (
       item.mark.name === "layer_1_marks" ||
       item.mark.name === "concat_0_layer_1_marks"

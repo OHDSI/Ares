@@ -4,6 +4,7 @@ import {
   DELETE_SELECTION,
   EDIT_SELECTION,
   LOAD_NOTES,
+  MOVE_SELECTION,
   SHOW_DATUM_NOTES,
   SHOW_DIALOG,
 } from "@/widgets/notesPanel/model/store/actions.type";
@@ -19,6 +20,8 @@ import {
   SET_SELECTED_RECTANGLE,
   SET_DIALOG,
   SET_CLICK_EVENT_DATA,
+  SET_RESIZE_SELECTION,
+  SET_TEMP_NOTES,
 } from "@/widgets/notesPanel/model/store/mutations.type";
 import apiService from "@/shared/api/apiService";
 import getFilePath from "@/shared/api/getFilePath";
@@ -26,18 +29,27 @@ import { NOTES } from "@/shared/config/files";
 
 const state = {
   notes: {},
+  tempNotes: null,
   dialog: { show: false, data: {}, action: null },
   clickEventData: {},
   currentSelectionArea: "",
   selectedRectangle: null,
+  selectionForResize: null,
 };
 
 const getters = {
   getNotes: function (state) {
-    return state.notes;
+    if (state.tempNotes) {
+      return state.tempNotes;
+    } else {
+      return state.notes;
+    }
   },
   getDialogData: function (state) {
     return state.dialog;
+  },
+  getResizeSelection: function (state) {
+    return state.selectionForResize;
   },
   getCurrentSelectionArea: function (state) {
     return state.currentSelectionArea;
@@ -90,25 +102,48 @@ const actions = {
     commit(SET_NOTES, { data, cdm });
     localStorageService.set("notes", getters.getNotes);
   },
-  [EDIT_SELECTION]({ commit, getters, rootState }, params) {
-    const { cdm, release, domain, concept } = rootState.route.params;
-    const chartName = getters.getSelectedRectangle.report;
-    const selectionId = getters.getSelectedRectangle.item.id;
 
-    const data = { ...getters.getNotes };
+  [EDIT_SELECTION]({ commit, state, getters, rootState }, params) {
+    if (!params.save) {
+      commit(SET_TEMP_NOTES, { data: { ...state.notes } });
+      commit(SET_RESIZE_SELECTION, {
+        ...getters.getSelectedRectangle.item,
+        report: getters.getSelectedRectangle.report,
+      });
+    }
+    const { cdm, release, domain, concept } = rootState.route.params;
+    const chartName = getters.getSelectedRectangle?.report || params.report;
+    const selectionId =
+      getters.getSelectedRectangle?.item?.id || params.data.id;
+
+    const data = _.cloneDeep(state.notes);
     const path = [cdm, release, domain, concept, chartName].filter(Boolean);
-    const selections = _.get(data, path.join("."));
+    const selections = [..._.get(data, path.join("."))];
+    let newSelections = [];
     const selectionIndex = selections.findIndex(
       (selection) => selection.id === selectionId
     );
     if (selectionIndex !== -1) {
-      selections[selectionIndex] = params.data;
+      newSelections = selections.map((selection, index) => {
+        if (index === selectionIndex) {
+          return params.data;
+        } else {
+          return selection;
+        }
+      });
     }
 
-    _.set(data, path.join("."), selections);
+    _.set(data, path.join("."), newSelections);
+    if (!params.save) {
+      commit(SET_TEMP_NOTES, { data, cdm });
+    }
 
-    commit(SET_NOTES, { data, cdm });
-    localStorageService.set("notes", getters.getNotes);
+    if (params.save) {
+      commit(SET_NOTES, { data, cdm });
+      commit(SET_TEMP_NOTES, { data: null });
+      commit(SET_RESIZE_SELECTION, null);
+      localStorageService.set("notes", state.notes);
+    }
   },
 
   [DELETE_SELECTION]({ commit, getters, rootState }) {
@@ -152,11 +187,24 @@ const mutations = {
       state.notes = payload.data;
     }
   },
+  [SET_TEMP_NOTES](state, payload) {
+    if (payload.cdm) {
+      state.tempNotes = {
+        ...payload.data,
+        [payload.cdm]: { ...payload.data[payload.cdm], date: Date.now() },
+      };
+    } else {
+      state.tempNotes = payload.data;
+    }
+  },
   [SET_DIALOG](state, payload) {
     state.dialog = payload;
   },
   [SET_CLICK_EVENT_DATA](state, payload) {
     state.clickEventData = payload;
+  },
+  [SET_RESIZE_SELECTION](state, payload) {
+    state.selectionForResize = payload;
   },
   [SET_CURRENT_SELECTION_AREA](state, payload) {
     state.currentSelectionArea = payload;

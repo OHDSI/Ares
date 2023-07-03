@@ -65,12 +65,23 @@ interface Props {
 
 const actions = [
   {
+    title: "Move/Resize",
+    action: () => {
+      store.dispatch(EDIT_SELECTION, {
+        data: {
+          ...store.getters.getSelectedRectangle.item,
+          resize: true,
+        },
+      });
+    },
+  },
+  {
     title: "Edit selection details",
     action: () => {
       const action = function (selection) {
         store.dispatch(EDIT_SELECTION, {
-          report: props.id,
           data: selection,
+          save: true,
         });
       };
       store.dispatch(SHOW_DIALOG, {
@@ -85,7 +96,7 @@ const actions = [
   {
     title: "Remove selection",
     action: () => {
-      store.dispatch(DELETE_SELECTION, { report: props.id });
+      store.dispatch(DELETE_SELECTION);
     },
   },
 ];

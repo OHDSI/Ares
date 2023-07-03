@@ -66,7 +66,7 @@ watch(coordinates, () => {
   open();
 });
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .context-menu {
   position: fixed;
   z-index: 999;
