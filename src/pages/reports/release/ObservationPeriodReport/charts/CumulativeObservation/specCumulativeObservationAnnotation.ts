@@ -28,7 +28,7 @@ export function specCumulativeObservationAnnotation(zeroBaseline = false) {
         mark: { type: "line", interpolate: "linear" },
       },
       {
-        mark: { type: "rect", opacity: 0.3 },
+        mark: { type: "rect" },
         data: {
           name: "notesData",
         },
@@ -37,8 +37,9 @@ export function specCumulativeObservationAnnotation(zeroBaseline = false) {
             name: "justBrush",
             select: {
               type: "point",
-              on: "mouseup",
+              on: "mousedown",
               encodings: ["x", "x2", "y", "y2"],
+              value: { x: [55, 160], y: [13, 37] },
             },
           },
           {
@@ -72,14 +73,34 @@ export function specCumulativeObservationAnnotation(zeroBaseline = false) {
             field: "start",
             type: "quantitative",
           },
+          stroke: {
+            condition: [
+              {
+                test: "datum['resize'] === true",
+                value: "black",
+              },
+            ],
+            value: null,
+          },
+          strokeWidth: {
+            condition: [
+              {
+                test: "datum['resize'] === true",
+                value: 2,
+              },
+            ],
+            value: 0, // Set strokeWidth value to 0 for other cases
+          },
           color: {
-            condition: {
-              param: "justBrush",
-              field: "CONCEPT_NAME",
-              type: "ordinal",
-              legend: null,
-            },
+            condition: [
+              { test: "datum['resize'] === true", value: "red" },
+              { test: { param: "justBrush" } },
+            ],
             value: "grey",
+          },
+          opacity: {
+            condition: { test: "datum['resize'] === true", value: 0.2 },
+            value: 0.3,
           },
           x2: {
             field: "end",
