@@ -55,7 +55,7 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Number of Observation Periods",
     sortable: true,
-    key: "CONCEPT_ID",
+    key: "CONCEPT_NAME",
     align: "start",
   },
   {
