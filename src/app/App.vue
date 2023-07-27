@@ -60,6 +60,14 @@ a {
   color: rgb(var(--v-theme-primary));
 }
 
+.v-autocomplete__selection {
+  max-width: 100% !important;
+}
+
+.v-checkbox .v-selection-control {
+  min-height: 1rem !important;
+}
+
 a:visited {
   color: rgb(var(--v-theme-primary-lighten-2));
 }
