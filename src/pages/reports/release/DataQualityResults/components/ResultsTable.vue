@@ -60,7 +60,7 @@
     :footer-props="{
       'items-per-page-options': [5, 10, 25],
     }"
-    item-key="checkId"
+    item-value="checkId"
     :items-per-page="10"
     :search="route.query.search"
     density="compact"
