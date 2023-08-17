@@ -24,7 +24,7 @@
     <Chart
       id="viz-networkmeasurementvaluedistribution"
       ref="measurementvalue"
-      :config="specMeasurementValueDistribution"
+      :chartSpec="specMeasurementValueDistribution"
       :data="getSelectedMeasurementUnits ? getSelectedMeasurementUnits : []"
     />
     <infopanel

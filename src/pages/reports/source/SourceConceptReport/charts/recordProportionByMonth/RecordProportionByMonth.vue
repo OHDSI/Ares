@@ -3,7 +3,7 @@
     <Chart
       v-if="store.getters.getData"
       id="viz-sourcerecordproportionbymonth"
-      :config="specRecordProportionByMonth"
+      :chartSpec="specRecordProportionByMonth"
       :data="store.getters.getData.conceptData"
       :annotations-config="specRecordProportionByMonthAnnotation"
       width="99"
@@ -11,7 +11,7 @@
       :signal-listener="listeners.setSelectionAreaSignal"
       :context-menu-listener="listeners.showNotesEditDialogRightClick"
       :notes="notes"
-      annotations
+      showAnnotations
       title="Record Proportion by Month"
     />
     <info-panel

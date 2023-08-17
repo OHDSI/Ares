@@ -8,7 +8,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-visitdurationbytype"
-      :config="specVisitDurationByType"
+      :chartSpec="specVisitDurationByType"
       :data="store.getters.getData.conceptData.VISIT_DURATION_BY_TYPE"
       title="Visit Duration By Type"
     />

@@ -1,16 +1,18 @@
 <template>
-  <div
+  <v-card
     v-if="show"
     class="context-menu"
     :style="style"
     ref="context"
     tabindex="1"
-    v-on:blur="close"
+    v-click-outside="{
+      handler: onClickOutside,
+    }"
   >
     <ul v-for="item in props.items" :key="item.title">
       <li @click="clickAction(item)">{{ item.title }}</li>
     </ul>
-  </div>
+  </v-card>
 </template>
 <script setup lang="ts">
 import { nextTick, defineProps, computed, watch, ref, Ref } from "vue";
@@ -28,6 +30,10 @@ const props = defineProps<Props>();
 const context = ref(null);
 
 const store = useStore();
+
+function onClickOutside() {
+  close();
+}
 
 const left: Ref<number> = ref(0);
 const top: Ref<number> = ref(0);
@@ -59,7 +65,6 @@ function open() {
   left.value = e.pageX || e.clientX;
   top.value = (e.pageY || e.clientY) - window.pageYOffset;
   show.value = true;
-  nextTick(() => context.value.focus());
 }
 
 watch(coordinates, () => {

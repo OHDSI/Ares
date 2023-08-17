@@ -13,7 +13,7 @@
         store.getters.dataInStore && store.getters.getData.drugStratification
       "
       id="viz-stratificationbydrugtype"
-      :config="specDrugTypeStratification"
+      :chartSpec="specDrugTypeStratification"
       :data="store.getters.getData.drugStratification"
       title="Drug Domain Stratification by Drug Type"
     />

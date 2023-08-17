@@ -9,14 +9,18 @@
       id="viz-recordsperperson"
       width="80"
       title="Domain Records per Person"
-      :config="defRecordsPerPerson"
-      :annotations-config="defRecordsPerPersonAnnotation"
+      :chartSpec="defRecordsPerPerson"
+      :annotations-config="{
+        chartSpec: defRecordsPerPersonAnnotation,
+        annotationsParentElement: 'g g',
+        brushParentElement: 'g g g',
+      }"
       :data="store.getters.getData.domainRecords"
       :click-listener="listeners.setRectangleLocationClick"
       :signal-listener="listeners.setSelectionAreaSignal"
       :context-menu-listener="listeners.showNotesEditDialogRightClick"
       :notes="notes"
-      annotations
+      showAnnotations
     />
     <NotesPanel report="viz-recordsperperson" />
 
@@ -45,6 +49,7 @@ import { defRecordsPerPersonAnnotation } from "./defRecordsPerPersonAnnotation";
 import { computed } from "vue";
 import * as listeners from "@/pages/model/lib/listeners";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
+import { defOverviewAnnotation } from "@/pages/reports/release/DomainDensity/charts/DomainDensity/defOverviewAnnotation";
 
 const store = useStore();
 

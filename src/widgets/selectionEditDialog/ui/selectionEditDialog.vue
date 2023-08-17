@@ -66,6 +66,7 @@ import { ref, defineProps, defineEmits, computed, onBeforeMount } from "vue";
 import MetadataCard from "@/entities/chartMetadataCard/metadataCard.vue";
 import { useStore } from "vuex";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
+import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
 interface Props {
   action: (a) => void;
   data?: {
@@ -137,7 +138,7 @@ const editNote = function (event) {
 onBeforeMount(() => {
   currentSelection.value = Object.keys(storeSelection.value).length
     ? { ...storeSelection.value, updatedAt: Date.now() }
-    : createSelection(store.getters.getCurrentSelectionArea.event, {
+    : createSelection(store.getters.getDialogData.position, {
         title: "",
         description: "",
         notes: [],
@@ -156,6 +157,7 @@ function submit() {
 }
 
 function cancel() {
+  store.commit(SET_SELECTED_RECTANGLE, null);
   emit("close");
 }
 

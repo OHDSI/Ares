@@ -9,7 +9,7 @@
       <Chart
         id="viz-continuity"
         title="Domain Continuity"
-        :config="specOverview"
+        :chartSpec="specOverview"
         :data="store.getters.getData.domainRecords"
         :listener="eventListener"
       />

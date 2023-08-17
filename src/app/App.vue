@@ -56,6 +56,60 @@ onBeforeMount((): void => {
   width: 95%;
 }
 
+.hidden {
+  display: none;
+}
+
+.annotation-subject path {
+  fill: #e8336d;
+}
+
+.annotation path {
+  stroke: #e8336d;
+}
+
+.annotation text {
+  fill: #e8336d;
+}
+
+.annotation-subject .handle:nth-child(2) {
+  cursor: col-resize !important;
+}
+.annotation-subject .handle:nth-child(3) {
+  cursor: row-resize !important;
+}
+
+.annotation.above path {
+  stroke: #e8336d;
+}
+
+.annotation.above text {
+  fill: #e8336d;
+}
+
+.annotation.anomaly path {
+  stroke: #e8336d;
+  stroke-width: 2px;
+}
+
+.annotation.anomaly text {
+  fill: #e8336d;
+}
+
+.tooltip-field-title {
+  font-weight: bold;
+}
+
+.annotation-note-bg path {
+  fill: red;
+}
+
+.tooltip {
+  background: rgba(var(--v-theme-surface-variant), 1) !important;
+  color: rgb(var(--v-theme-on-surface-variant));
+  z-index: 1000;
+}
+
 a {
   color: rgb(var(--v-theme-primary));
 }

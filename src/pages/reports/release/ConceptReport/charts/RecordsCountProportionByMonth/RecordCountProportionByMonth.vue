@@ -8,15 +8,18 @@
       v-if="store.getters.dataInStore"
       id="viz-recordproportionbymonth"
       width="99"
-      :config="specRecordProportionByMonth"
-      :annotations-config="specRecordProportionByMonthAnnotation"
+      :chartSpec="specRecordProportionByMonth"
+      :annotations-config="{
+        chartSpec: specRecordProportionByMonthAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g ',
+      }"
       :data="store.getters.getData.conceptData.PREVALENCE_BY_MONTH"
       title="Record Count Proportion by Month"
       :click-listener="listeners.setRectangleLocationClick"
       :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
       :notes="notes"
-      annotations
+      showAnnotations
     />
     <NotesPanel report="viz-recordproportionbymonth" />
     <info-panel

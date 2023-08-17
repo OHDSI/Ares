@@ -6,11 +6,19 @@
   >
     <Chart
       v-if="store.getters.dataInStore"
-      id="viz-dataqualityresultsbycategory"
+      id="viz-sourcedataqualityresultsbycategory"
       title="Historical Data Quality by Category"
       :data="store.getters.getData[QUALITY_INDEX].dataQualityRecordsStratified"
-      :config="specDataQualityResultsByCategory"
+      :chartSpec="specDataQualityResultsByCategory"
+      :notes="notes"
+      show-annotations
+      :annotations-config="{
+        chartSpec: specDataQualityResultsByCategoryAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
     />
+    <NotesPanel report="viz-sourcedataqualityresultsbycategory" />
   </v-card>
 </template>
 
@@ -20,7 +28,15 @@ import { Chart } from "@/widgets/chart";
 import { specDataQualityResultsByCategory } from "./specDataQualityResultsByCategory";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
+import { specDataQualityResultsByCategoryAnnotation } from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByCategory/specDataQualityResultsByCategoryAnnotation";
+
 const store = useStore();
+const notes = computed(() => {
+  const sourceName = store.getters.getSelectedSource.cdm_source_key;
+  const sourceContainer = store.getters.getNotes[sourceName] || {};
+  return sourceContainer["viz-sourcedataqualityresultsbycategory"] || [];
+});
 </script>
 
 <style scoped></style>

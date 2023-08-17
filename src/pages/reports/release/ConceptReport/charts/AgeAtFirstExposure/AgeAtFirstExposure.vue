@@ -8,7 +8,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ageatfirstexposure"
-      :config="specAgeAtFirstExposure"
+      :chartSpec="specAgeAtFirstExposure"
       :data="store.getters.getData.conceptData.AGE_AT_FIRST_EXPOSURE"
       title="Age At First Exposure"
     />

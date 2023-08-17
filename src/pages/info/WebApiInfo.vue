@@ -19,7 +19,7 @@
       </v-container>
       <v-card v-else
         ><v-card-title
-          >WebAPI server is unavailabe at the time</v-card-title
+          >WebAPI server is unavailable at the time</v-card-title
         ></v-card
       >
     </v-card>

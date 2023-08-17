@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row justify="space-between" class="mb-2">
+    <v-row v-resize="load" justify="space-between" class="mb-2">
       <v-col cols="auto">
         <v-card-title v-if="title">{{ title }}</v-card-title>
       </v-col>
@@ -8,7 +8,7 @@
         <v-switch
           inset
           color="primary"
-          v-if="annotations"
+          v-if="showAnnotations"
           hide-details
           v-model="annotationMode"
         >
@@ -21,7 +21,7 @@
     </v-row>
     <div :id="id" :style="style"></div>
 
-    <ContextMenu v-if="annotations" :items="actions" />
+    <ContextMenu v-if="showAnnotations" :items="actions" />
   </div>
 </template>
 
@@ -35,46 +35,60 @@ export default {
 import { vegaLite } from "vega-embed";
 import * as vega from "vega";
 import { useStore } from "vuex";
+import _ from "lodash";
+
+import * as d3 from "d3";
+import * as d3_annotations from "d3-svg-annotation";
 
 import { darkTheme, lightTheme } from "@/widgets/chart/model/themes";
-import { computed, watch, defineProps, ref, onMounted } from "vue";
+import {
+  computed,
+  watch,
+  defineProps,
+  ref,
+  onMounted,
+  withDefaults,
+} from "vue";
 import { useRoute, RouteLocationNormalizedLoaded } from "vue-router";
 import { TopLevelSpec } from "vega-lite";
 import { Handler } from "vega-tooltip";
 import ContextMenu from "@/entities/contextMenu/contextMenu.vue";
 import {
+  CREATE_SELECTION,
   DELETE_SELECTION,
   EDIT_SELECTION,
   SHOW_DIALOG,
 } from "@/widgets/notesPanel/model/store/actions.type";
+import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
+import { OPEN_MENU } from "@/entities/contextMenu/model/store/actions.type";
 
-//Find a way to type function props
 interface Props {
   title?: string;
   data: object[] | string[];
   id: string;
   width?: string;
-  config: (a?: boolean, b?: boolean) => TopLevelSpec;
-  annotationsConfig?: (a?: boolean, b?: boolean) => TopLevelSpec;
+  chartSpec: (a?: boolean, b?: boolean) => TopLevelSpec;
+  showAnnotations?: boolean;
+  annotationsConfig?: {
+    chartSpec: (a?: boolean, b?: boolean) => TopLevelSpec;
+    annotationsParentElement: string;
+    brushParentElement: string;
+  };
   clickListener?: (a: any, b: RouteLocationNormalizedLoaded, c: any) => void;
-  signalListener?: (a: any, b: any) => void;
+  signalListener?: (
+    a: any,
+    b: any,
+    c: any,
+    d: any,
+    e: any,
+    f: any,
+    g: any,
+    h: any
+  ) => void;
   notes?: [];
-  contextMenuListener?: (a: any, b: any) => void;
-  annotations?: boolean;
 }
 
 const actions = [
-  {
-    title: "Move/Resize",
-    action: () => {
-      store.dispatch(EDIT_SELECTION, {
-        data: {
-          ...store.getters.getSelectedRectangle.item,
-          resize: true,
-        },
-      });
-    },
-  },
   {
     title: "Edit selection details",
     action: () => {
@@ -102,8 +116,9 @@ const actions = [
 ];
 
 const store = useStore();
-const route = useRoute();
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  notes: [],
+});
 
 const annotationMode = ref(false);
 
@@ -112,21 +127,18 @@ const updateValues = computed(() => {
     zeroBaseLine: store.getters.getSettings.zeroBaseline,
     minMax: store.getters.getSettings.minMax,
     darkMode: store.getters.getSettings.darkMode,
-    notes: props.notes ? [...props.notes] : [],
     annotationMode: annotationMode.value,
   };
 });
 
-onMounted(() => {
-  if (props.annotations) {
-    annotationMode.value = store.getters.getSettings.annotationsMode;
-  }
+const computedNotes = computed(() => {
+  return props.notes ? [...props.notes] : [];
 });
 
 const processedConfig = function (): TopLevelSpec {
   if (annotationMode.value) {
     return {
-      ...props.annotationsConfig(
+      ...props.annotationsConfig.chartSpec(
         store.getters.getSettings.zeroBaseline,
         store.getters.getSettings.minMax
       ),
@@ -138,7 +150,7 @@ const processedConfig = function (): TopLevelSpec {
     };
   } else {
     return {
-      ...props.config(
+      ...props.chartSpec(
         store.getters.getSettings.zeroBaseline,
         store.getters.getSettings.minMax
       ),
@@ -150,39 +162,330 @@ const processedConfig = function (): TopLevelSpec {
   }
 };
 
+const vgSpec = computed(() => {
+  return vegaLite.compile(processedConfig(), {}).spec;
+});
+
+let view;
+
+onMounted(() => {
+  if (props.showAnnotations) {
+    annotationMode.value = store.getters.getSettings.annotationsMode;
+  }
+});
+
 const style = computed(function (): string {
   return props.width ? "width: " + props.width + "%" : "width: 100%";
 });
 
-const load = function (config): void {
-  const vgSpec = vegaLite.compile(config, {}).spec;
-  function render(spec) {
-    const view = new vega.View(vega.parse(spec, {}), {
-      renderer: "svg",
-      container: `#${props.id}`,
-      hover: true,
-    }).tooltip(new Handler().call);
-    if (props.clickListener) {
-      props.clickListener(view, route, store);
-    }
-    if (props.signalListener && annotationMode.value) {
-      props.signalListener(view, store);
-    }
-    if (props.contextMenuListener && annotationMode.value) {
-      props.contextMenuListener(view, store);
-    }
-    view.runAsync();
-  }
+function rerenderAnnotationsOnClick(view, makeAnnotations, parentContainer) {
+  view.addEventListener("click", function () {
+    renderAnnotations(view, makeAnnotations(view), parentContainer);
+    initializeTooltip();
+  });
+}
 
-  render(vgSpec);
+const load = function (): void {
+  view = new vega.View(vega.parse(vgSpec.value, {}), {
+    renderer: "svg",
+    container: `#${props.id}`,
+    hover: true,
+  }).tooltip(new Handler().call);
+
+  if (props.signalListener && annotationMode.value && props.showAnnotations) {
+    props.signalListener(
+      view,
+      store,
+      props.annotationsConfig.annotationsParentElement,
+      props.annotationsConfig.brushParentElement,
+      renderAnnotations,
+      initializeAnnotationsInstance,
+      initializeTooltip,
+      initializeBrush
+    );
+    if (props.showAnnotations && annotationMode.value) {
+      rerenderAnnotationsOnClick(
+        view,
+        initializeAnnotationsInstance,
+        props.annotationsConfig.annotationsParentElement
+      );
+    }
+  }
+  view.error = () => {
+    return;
+  };
+  view.runAsync().then(() => {
+    const annotations = initializeAnnotationsInstance(view);
+
+    if (annotationMode.value) {
+      renderAnnotations(
+        view,
+        annotations,
+        props.annotationsConfig.annotationsParentElement
+      );
+      initializeTooltip();
+      initializeBrush(view);
+    }
+  });
 };
 
+function getD3AnnotationObject(note, type, xScale, yScale) {
+  return {
+    type: type,
+    disable: ["note", "connector"],
+    data: {
+      x: note.xAxis || note.start,
+      y: note.yAxis || note.y1,
+      report: view.container().id,
+      originalNote: note,
+    },
+    id: note.id,
+    subject: {
+      width: note.x1Axis
+        ? xScale(note.x1Axis) - xScale(note.xAxis)
+        : xScale(note.end) - xScale(note.start),
+      height: note.height
+        ? yScale(note.height)
+        : yScale(note.y) - yScale(note.y1),
+    },
+  };
+}
+
+function getAnnotationsArray(view) {
+  const type = d3_annotations.annotationCalloutRect;
+
+  const xScale =
+    view._runtime?.scales?.x?.value || view._runtime?.scales?.concat_0_x?.value;
+
+  const yScale =
+    view._runtime.scales?.y?.value || view._runtime?.scales?.concat_0_y?.value;
+
+  return props.notes.map((note) =>
+    getD3AnnotationObject(note, type, xScale, yScale)
+  );
+}
+
+function editSelection(xScale, yScale) {
+  return function (annotation) {
+    const x = xScale.invert(annotation._x);
+    const x1 = xScale.invert(annotation.subject.width + annotation._x);
+    const y = yScale.invert(annotation._y);
+    const width = xScale.invert(annotation.subject.width);
+    const height = yScale.invert(annotation.subject.height);
+    const note = annotation.data.originalNote;
+
+    const newData = {
+      title: note.title,
+      description: note.description,
+      createdBy: note.createdBy,
+      notes: note.notes,
+      id: note.id,
+      updatedAt: Date.now(),
+      xAxis: x,
+      x1Axis: x1,
+      yAxis: y,
+      width,
+      height,
+    };
+    store.dispatch(EDIT_SELECTION, {
+      report: view.container().id,
+      save: true,
+      data: newData,
+    });
+  };
+}
+
+function setSelectedAnnotation(annotation) {
+  store.commit(SET_SELECTED_RECTANGLE, {
+    item: annotation.data.originalNote,
+    report: annotation.report,
+  });
+}
+
+function initializeAnnotationsInstance(view) {
+  const xScale =
+    view._runtime?.scales?.x?.value || view._runtime?.scales?.concat_0_x?.value;
+
+  const yScale =
+    view._runtime.scales?.y?.value || view._runtime?.scales?.concat_0_y?.value;
+  return d3_annotations
+    .annotation()
+    .editMode(true)
+    .notePadding(15)
+    .accessors({
+      x: (d) => xScale(d.x),
+      y: (d) => yScale(d.y),
+    })
+    .accessorsInverse({
+      x: (d) => xScale.invert(d.x),
+      y: (d) => yScale.invert(d.y),
+    })
+    .on("subjectclick", setSelectedAnnotation)
+    .on("dragend", editSelection(xScale, yScale))
+    .annotations(getAnnotationsArray(view));
+}
+
+function handleContextMenu(event) {
+  event.preventDefault();
+  const originalNote = event.target.__data__.data.originalNote;
+  store.commit(SET_SELECTED_RECTANGLE, {
+    item: originalNote,
+    report: view.container().id,
+  });
+
+  const menuData = {
+    visibility: true,
+    location: {
+      x: event.clientX,
+      y: event.clientY,
+      element: view.container().id,
+      event,
+    },
+    clickEventData: {
+      reportName: view.container().id,
+      date: new Date(),
+      item: originalNote,
+    },
+  };
+
+  store.dispatch(OPEN_MENU, menuData);
+}
+
+function initializeTooltip() {
+  const svg = d3.select(`#${props.id}`);
+  svg.select(".tooltip").remove();
+  const parseTime = d3.timeFormat("%B %d, %Y, %I:%M %p");
+  const Tooltip = createTooltipContainer();
+
+  const annotations = d3
+    .select(`#${props.id} svg g .annotation-group .annotations`)
+    .selectAll(".annotation");
+
+  function createTooltipContainer() {
+    return svg
+      .append("div")
+      .attr("class", "tooltip")
+      .style("display", "none")
+      .style("border-radius", "10px")
+      .style("position", "absolute")
+      .style("padding", "8px");
+  }
+
+  function getTooltipMarkup(data, parseTime) {
+    return `<span class="tooltip-field-title">Title:</span> ${
+      data.originalNote.title
+    }<br><span class="tooltip-field-title">Description:</span> ${
+      data.originalNote.description
+    }<br><span class="tooltip-field-title">Author</span>: ${
+      data.originalNote.createdBy
+    }<br><span class="tooltip-field-title">Created at:</span> ${parseTime(
+      data.originalNote.id
+    )}<br><span class="tooltip-field-title">Updated at:</span> ${parseTime(
+      data.originalNote.updatedAt
+    )}`;
+  }
+  const handleMouseOver = function () {
+    Tooltip.style("display", "initial");
+    d3.select(this).style("stroke", "black").style("opacity", 1);
+  };
+
+  const handleMouseMove = function (event, d) {
+    Tooltip.html(getTooltipMarkup(d.data, parseTime))
+      .style("left", event.layerX + 10 + "px")
+      .style("top", event.layerY + 10 + "px");
+  };
+  const handleMouseLeave = function () {
+    Tooltip.style("display", "none");
+    d3.select(this).style("stroke", "none").style("opacity", 0.7);
+  };
+
+  annotations
+    .on("contextmenu", handleContextMenu)
+    .on("mouseover", handleMouseOver)
+    .on("mousemove", handleMouseMove)
+    .on("mouseleave", handleMouseLeave);
+}
+
+function createAnnotation(xScale, yScale) {
+  return function (event) {
+    if (!event.selection) {
+      return;
+    }
+    const action = (event) => (selection) => {
+      store.dispatch(CREATE_SELECTION, {
+        reportName: view.container().id,
+        event,
+        selection,
+      });
+    };
+    store.commit(SET_SELECTED_RECTANGLE, null);
+    store.dispatch(SHOW_DIALOG, {
+      show: true,
+      data: null,
+      position: {
+        xAxis: xScale.invert(event.selection[1][0]),
+        yAxis: yScale.invert(event.selection[0][1]),
+        x1Axis: xScale.invert(event.selection[0][0]),
+        width: xScale.invert(event.selection[0][0] - event.selection[1][0]),
+        height: yScale.invert(event.selection[1][1] - event.selection[0][1]),
+      },
+      action: action(event.selection),
+    });
+  };
+}
+
+function initializeBrush(view) {
+  const xScale =
+    view._runtime?.scales?.x?.value || view._runtime?.scales?.concat_0_x?.value;
+
+  const yScale =
+    view._runtime.scales?.y?.value || view._runtime?.scales?.concat_0_y?.value;
+  const parentContainer = props.annotationsConfig.brushParentElement;
+  const svg = d3.select(`#${props.id} svg ${parentContainer}`);
+
+  svg.selectAll(".brush").remove();
+
+  d3.select(`#${props.id} svg ${parentContainer}`)
+    .append("g")
+    .attr("class", "brush")
+    .call(
+      d3
+        .brush()
+        .extent([
+          [xScale.range()[0], yScale.range()[1]],
+          [xScale.range()[1], yScale.range()[0]],
+        ])
+        .on("end", createAnnotation(xScale, yScale))
+    );
+}
+
+function renderAnnotations(view, makeAnnotations, parentContainer) {
+  const svg = d3.select(`#${props.id} svg ${parentContainer}`);
+
+  svg.selectAll(".annotation-group").remove();
+
+  svg.append("g").attr("class", "annotation-group").call(makeAnnotations);
+}
+
 watch(updateValues, (): void => {
-  load(processedConfig());
+  load();
+});
+
+watch(computedNotes, (): void => {
+  if (computedNotes.value.length) {
+    const parentContainer = props.annotationsConfig.annotationsParentElement;
+    renderAnnotations(
+      view,
+      initializeAnnotationsInstance(view),
+      parentContainer
+    );
+    initializeTooltip();
+    initializeBrush(view);
+  }
 });
 
 onMounted((): void => {
-  load(processedConfig());
+  load();
 });
 </script>
 

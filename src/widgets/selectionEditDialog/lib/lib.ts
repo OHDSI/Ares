@@ -1,16 +1,11 @@
-export function createSelection(event, params) {
-  const coordinates = event;
+export function createSelection(selection, params) {
+  const coordinates = selection;
   return {
-    start:
-      coordinates.start?.[0] ||
-      coordinates.yearmonth_start?.[0] ||
-      coordinates.yearmonthdate_start?.[0],
-    end:
-      coordinates.start?.[1] ||
-      coordinates.yearmonth_start?.[1] ||
-      coordinates.yearmonthdate_start?.[0],
-    y: coordinates.y[0],
-    y1: coordinates.y[1],
+    xAxis: coordinates.xAxis,
+    x1Axis: coordinates.x1Axis,
+    yAxis: coordinates.yAxis,
+    width: coordinates.width,
+    height: coordinates.height,
     title: params.title,
     description: params.description,
     createdBy: params.createdBy,

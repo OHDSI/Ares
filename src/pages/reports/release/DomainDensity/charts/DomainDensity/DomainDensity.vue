@@ -10,14 +10,17 @@
       width="80"
       title="Domain
       Density"
-      :config="defOverview"
-      :annotations-config="defOverviewAnnotation"
+      :chartSpec="defOverview"
+      :annotations-config="{
+        chartSpec: defOverviewAnnotation,
+        annotationsParentElement: 'g g',
+        brushParentElement: 'g g g',
+      }"
       :data="store.getters.getData.domainDensity"
       :click-listener="listeners.setRectangleLocationClick"
       :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
       :notes="notes"
-      annotations
+      showAnnotations
     />
     <NotesPanel report="viz-overview" />
 

@@ -10,7 +10,7 @@
         store.getters.dataInStore && store.getters.getData.domainStratification
       "
       id="viz-stratificationbyvisit"
-      :config="specVisitStratification"
+      :chartSpec="specVisitStratification"
       :data="store.getters.getData.domainStratification"
       title="Domain Data Stratification by Visit"
     />

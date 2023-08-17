@@ -3,7 +3,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-race"
-      :config="specRace"
+      :chartSpec="specRace"
       :data="store.getters.getData.personData.RACE_DATA"
       title="Population by Race"
     />

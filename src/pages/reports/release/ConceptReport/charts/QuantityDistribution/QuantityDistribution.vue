@@ -8,7 +8,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-quantity"
-      :config="specQuantity"
+      :chartSpec="specQuantity"
       :data="store.getters.getData.conceptData.QUANTITY_DISTRIBUTION"
       title="Quantity"
     />

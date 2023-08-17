@@ -8,7 +8,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-lengthofera"
-      :config="specLengthOfEra"
+      :chartSpec="specLengthOfEra"
       :data="store.getters.getData.conceptData.LENGTH_OF_ERA"
       title="Length of Era"
     />

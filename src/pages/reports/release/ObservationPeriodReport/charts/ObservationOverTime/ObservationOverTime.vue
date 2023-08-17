@@ -4,13 +4,15 @@
       v-if="store.getters.dataInStore"
       id="viz-observationbymonth"
       width="95"
-      :annotations-config="specObservationByMonthAnnotation"
+      :annotations-config="{
+        chartSpec: specObservationByMonthAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
       :notes="notes"
       :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
-      :click-listener="listeners.setRectangleLocationClick"
-      annotations
-      :config="specObservationByMonth"
+      showAnnotations
+      :chartSpec="specObservationByMonth"
       :data="store.getters.getData.observationPeriodData.OBSERVED_BY_MONTH"
       title="Observation over Time"
     />

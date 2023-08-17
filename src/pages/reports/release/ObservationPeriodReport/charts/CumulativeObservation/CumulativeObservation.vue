@@ -7,15 +7,17 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-cumulativeobservation"
-      :config="specCumulativeObservation"
-      :annotations-config="specCumulativeObservationAnnotation"
+      :chartSpec="specCumulativeObservation"
+      :annotations-config="{
+        chartSpec: specCumulativeObservationAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
       :data="store.getters.getData.observationPeriodData.CUMULATIVE_DURATION"
       :notes="notes"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
       :click-listener="listeners.setRectangleLocationClick"
       title="Cumulative Observation"
-      annotations
+      showAnnotations
     />
     <NotesPanel report="viz-cumulativeobservation" />
     <info-panel

@@ -15,8 +15,10 @@
     "@mdi/font": "^7.0.96",
     "axios": "^1.2.3",
     "codemirror-editor-vue3": "^2.1.7",
+    "d3": "^7.8.5",
     "d3-dsv": "^3.0.1",
     "d3-format": "^3.0.1",
+    "d3-svg-annotation": "^2.5.1",
     "d3-time-format": "^4.0.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
@@ -35,6 +37,7 @@
     "yorkie": "^2.0.0"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.0",
     "@types/d3-format": "^3.0.1",
     "@types/d3-time-format": "^4.0.0",
     "@types/file-saver": "^2.0.5",
