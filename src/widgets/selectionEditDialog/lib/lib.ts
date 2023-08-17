@@ -1,11 +1,11 @@
 export function createSelection(selection, params) {
   const coordinates = selection;
   return {
-    xAxis: coordinates.xAxis,
-    x1Axis: coordinates.x1Axis,
-    yAxis: coordinates.yAxis,
-    width: coordinates.width,
-    height: coordinates.height,
+    xAxis: coordinates?.xAxis,
+    x1Axis: coordinates?.x1Axis,
+    yAxis: coordinates?.yAxis,
+    width: coordinates?.width,
+    height: coordinates?.height,
     title: params.title,
     description: params.description,
     createdBy: params.createdBy,

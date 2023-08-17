@@ -22,10 +22,28 @@ export function specAgeAtFirstObservation(zeroBaseline = false) {
           zero: zeroBaseline,
         },
       },
+      color: {
+        field: "DATA_SOURCE_KEY",
+        type: "nominal",
+        title: "Data Source",
+      },
     },
     layer: [
       {
         mark: { type: "line", interpolate: "linear" },
+        params: [
+          {
+            name: "source",
+            select: { type: "point", fields: ["DATA_SOURCE_KEY"] },
+            bind: "legend",
+          },
+        ],
+        encoding: {
+          opacity: {
+            condition: { param: "source", value: 1 },
+            value: 0.2,
+          },
+        },
       },
       {
         selection: {
