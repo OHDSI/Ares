@@ -472,16 +472,10 @@ watch(updateValues, (): void => {
 });
 
 watch(computedNotes, (): void => {
-  if (computedNotes.value.length) {
-    const parentContainer = props.annotationsConfig.annotationsParentElement;
-    renderAnnotations(
-      view,
-      initializeAnnotationsInstance(view),
-      parentContainer
-    );
-    initializeTooltip();
-    initializeBrush(view);
-  }
+  const parentContainer = props.annotationsConfig.annotationsParentElement;
+  renderAnnotations(view, initializeAnnotationsInstance(view), parentContainer);
+  initializeTooltip();
+  initializeBrush(view);
 });
 
 onMounted((): void => {
