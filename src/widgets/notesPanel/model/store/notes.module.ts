@@ -4,7 +4,6 @@ import {
   DELETE_SELECTION,
   EDIT_SELECTION,
   LOAD_NOTES,
-  MOVE_SELECTION,
   SHOW_DATUM_NOTES,
   SHOW_DIALOG,
 } from "@/widgets/notesPanel/model/store/actions.type";
@@ -15,13 +14,9 @@ import {
 } from "@/widgets/notesPanel/model/lib/helpers";
 
 import {
-  SET_CURRENT_SELECTION_AREA,
   SET_NOTES,
   SET_SELECTED_RECTANGLE,
   SET_DIALOG,
-  SET_CLICK_EVENT_DATA,
-  SET_RESIZE_SELECTION,
-  SET_TEMP_NOTES,
 } from "@/widgets/notesPanel/model/store/mutations.type";
 import apiService from "@/shared/api/apiService";
 import getFilePath from "@/shared/api/getFilePath";
@@ -29,30 +24,16 @@ import { NOTES } from "@/shared/config/files";
 
 const state = {
   notes: {},
-  tempNotes: null,
-  dialog: { show: false, data: {}, action: null },
-  clickEventData: {},
-  currentSelectionArea: "",
+  dialog: { show: false, data: {}, action: null, position: null },
   selectedRectangle: null,
-  selectionForResize: null,
 };
 
 const getters = {
   getNotes: function (state) {
-    if (state.tempNotes) {
-      return state.tempNotes;
-    } else {
-      return state.notes;
-    }
+    return state.notes;
   },
   getDialogData: function (state) {
     return state.dialog;
-  },
-  getResizeSelection: function (state) {
-    return state.selectionForResize;
-  },
-  getCurrentSelectionArea: function (state) {
-    return state.currentSelectionArea;
   },
   getSelectedRectangle: function (state) {
     return state.selectedRectangle;
@@ -100,17 +81,11 @@ const actions = {
     data = createNestedProperty(data, path);
     _.get(data, path.join(".")).push(params.selection);
     commit(SET_NOTES, { data, cdm });
+    commit(SET_SELECTED_RECTANGLE, null);
     localStorageService.set("notes", getters.getNotes);
   },
 
   [EDIT_SELECTION]({ commit, state, getters, rootState }, params) {
-    if (!params.save) {
-      commit(SET_TEMP_NOTES, { data: { ...state.notes } });
-      commit(SET_RESIZE_SELECTION, {
-        ...getters.getSelectedRectangle.item,
-        report: getters.getSelectedRectangle.report,
-      });
-    }
     const { cdm, release, domain, concept } = rootState.route.params;
     const chartName = getters.getSelectedRectangle?.report || params.report;
     const selectionId =
@@ -132,18 +107,10 @@ const actions = {
         }
       });
     }
-
     _.set(data, path.join("."), newSelections);
-    if (!params.save) {
-      commit(SET_TEMP_NOTES, { data, cdm });
-    }
-
-    if (params.save) {
-      commit(SET_NOTES, { data, cdm });
-      commit(SET_TEMP_NOTES, { data: null });
-      commit(SET_RESIZE_SELECTION, null);
-      localStorageService.set("notes", state.notes);
-    }
+    commit(SET_SELECTED_RECTANGLE, null);
+    commit(SET_NOTES, { data, cdm });
+    localStorageService.set("notes", state.notes);
   },
 
   [DELETE_SELECTION]({ commit, getters, rootState }) {
@@ -158,20 +125,19 @@ const actions = {
     );
 
     _.set(data, path.join("."), selections);
-
+    commit(SET_SELECTED_RECTANGLE, null);
     commit(SET_NOTES, { data, cdm });
     localStorageService.set("notes", getters.getNotes);
   },
   [SHOW_DIALOG]({ commit }, params) {
-    commit(SET_CLICK_EVENT_DATA, params.clickEventData);
     commit(SET_DIALOG, {
       show: params.show,
       data: params.data,
+      position: params.position,
       action: params.action,
     });
   },
-  [SHOW_DATUM_NOTES]({ commit }, params) {
-    commit(SET_CURRENT_SELECTION_AREA, params);
+  [SHOW_DATUM_NOTES]({ commit }) {
     commit(SET_SELECTED_RECTANGLE, null);
   },
 };
@@ -187,27 +153,8 @@ const mutations = {
       state.notes = payload.data;
     }
   },
-  [SET_TEMP_NOTES](state, payload) {
-    if (payload.cdm) {
-      state.tempNotes = {
-        ...payload.data,
-        [payload.cdm]: { ...payload.data[payload.cdm], date: Date.now() },
-      };
-    } else {
-      state.tempNotes = payload.data;
-    }
-  },
   [SET_DIALOG](state, payload) {
     state.dialog = payload;
-  },
-  [SET_CLICK_EVENT_DATA](state, payload) {
-    state.clickEventData = payload;
-  },
-  [SET_RESIZE_SELECTION](state, payload) {
-    state.selectionForResize = payload;
-  },
-  [SET_CURRENT_SELECTION_AREA](state, payload) {
-    state.currentSelectionArea = payload;
   },
   [SET_SELECTED_RECTANGLE](state, payload) {
     state.selectedRectangle = payload;

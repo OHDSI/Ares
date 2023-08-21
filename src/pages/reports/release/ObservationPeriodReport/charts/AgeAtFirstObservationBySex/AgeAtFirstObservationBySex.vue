@@ -3,7 +3,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-agebysex"
-      :config="specAgeBySex"
+      :chartSpec="specAgeBySex"
       :data="store.getters.getData.observationPeriodData.AGE_BY_GENDER"
       title="Age at First Observation by Sex"
     />

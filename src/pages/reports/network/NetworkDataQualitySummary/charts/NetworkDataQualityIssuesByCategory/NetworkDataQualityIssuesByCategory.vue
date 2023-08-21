@@ -5,7 +5,7 @@
       id="viz-category"
       title="Network Data Quality Issues By Category"
       :data="store.getters.getData[NETWORK_QUALITY_SUMMARY]"
-      :config="specIssueStratificationByCategory"
+      :chartSpec="specIssueStratificationByCategory"
     />
   </v-card>
 </template>

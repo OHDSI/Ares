@@ -3,7 +3,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-observationbyage"
-      :config="specObservationByAge"
+      :chartSpec="specObservationByAge"
       :data="
         store.getters.getData.observationPeriodData
           .OBSERVATION_PERIOD_LENGTH_BY_AGE

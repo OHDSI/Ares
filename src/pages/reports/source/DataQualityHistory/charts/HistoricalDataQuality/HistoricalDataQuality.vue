@@ -10,13 +10,14 @@
       id="viz-dataqualityresults"
       title="Historical Data Quality"
       :notes="notes"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
-      :click-listener="listeners.setRectangleLocationClick"
-      annotations
+      showAnnotations
       :data="store.getters.getData[QUALITY_INDEX].dataQualityRecords"
-      :config="specDataQualityResults"
-      :annotations-config="specDataQualityResultsAnnotation"
+      :chartSpec="specDataQualityResults"
+      :annotations-config="{
+        chartSpec: specDataQualityResultsAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
     />
     <NotesPanel report="viz-dataqualityresults" />
     <v-data-table

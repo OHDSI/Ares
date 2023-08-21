@@ -9,7 +9,7 @@
       id="viz-ageatdeath"
       width="100"
       title="Age at Death"
-      :config="specAgeAtDeath"
+      :chartSpec="specAgeAtDeath"
       :data="store.getters.getData.AGE_AT_DEATH"
     />
     <infopanel

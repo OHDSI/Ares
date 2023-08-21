@@ -7,7 +7,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-networkageatfirstobservation"
-      :config="specAgeAtFirstObservation"
+      :chartSpec="specAgeAtFirstObservation"
       :data="store.getters.getData.allAgeAtFirstObservationData"
       title="Age at First Observation"
     />

@@ -8,7 +8,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-drugsbytype"
-      :config="specDrugsByType"
+      :chartSpec="specDrugsByType"
       :data="store.getters.getData.conceptData.DRUGS_BY_TYPE"
       title="Drugs by Type"
     />

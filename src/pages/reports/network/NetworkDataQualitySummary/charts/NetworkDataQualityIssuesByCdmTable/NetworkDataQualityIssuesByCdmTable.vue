@@ -5,7 +5,7 @@
       id="viz-table"
       title="Network Data Quality Issues by CDM Table"
       :data="store.getters.getData[NETWORK_QUALITY_SUMMARY]"
-      :config="specIssueStratificationByTable"
+      :chartSpec="specIssueStratificationByTable"
     />
   </v-card>
 </template>

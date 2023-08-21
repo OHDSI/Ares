@@ -8,7 +8,7 @@
       v-if="store.getters.dataInStore"
       id="viz-recordproportionbyagesexyear"
       width="90"
-      :config="specRecordProportionByAgeSexYear"
+      :chartSpec="specRecordProportionByAgeSexYear"
       :data="store.getters.getData.PREVALENCE_BY_GENDER_AGE_YEAR"
       title="Record Count Proportion by Age, Sex, and Year"
     />

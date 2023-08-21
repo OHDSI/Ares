@@ -3,7 +3,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-observationbysex"
-      :config="specObservationBySex"
+      :chartSpec="specObservationBySex"
       :data="
         store.getters.getData.observationPeriodData
           .OBSERVATION_PERIOD_LENGTH_BY_GENDER

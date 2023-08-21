@@ -9,7 +9,7 @@
       id="viz-deathbytype"
       width="100"
       title="Death By Type"
-      :config="specDeathByType"
+      :chartSpec="specDeathByType"
       :data="store.getters.getData.DEATH_BY_TYPE"
     />
     <infopanel

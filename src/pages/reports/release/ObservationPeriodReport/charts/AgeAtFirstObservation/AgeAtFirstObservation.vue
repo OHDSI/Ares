@@ -3,13 +3,15 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ageatfirstobservation"
-      :config="specAgeAtFirstObservation"
-      :annotations-config="specAgeAtFirstObservationAnnotation"
+      :chartSpec="specAgeAtFirstObservation"
+      :annotations-config="{
+        chartSpec: specAgeAtFirstObservationAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
       :notes="notes"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
       :click-listener="listeners.setRectangleLocationClick"
-      annotations
+      showAnnotations
       :data="
         store.getters.getData.observationPeriodData.AGE_AT_FIRST_OBSERVATION
       "

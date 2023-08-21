@@ -8,7 +8,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-conditionsbytype"
-      :config="specConditionsByType"
+      :chartSpec="specConditionsByType"
       :data="store.getters.getData.conceptData.CONDITIONS_BY_TYPE"
       title="Conditions by Type"
     />

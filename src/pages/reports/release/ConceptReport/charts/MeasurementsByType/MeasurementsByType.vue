@@ -8,7 +8,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-measurementsbytype"
-      :config="specMeasurementsByType"
+      :chartSpec="specMeasurementsByType"
       :data="store.getters.getData.conceptData.MEASUREMENTS_BY_TYPE"
       title="Measurements by Type"
     />

@@ -3,7 +3,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ethnicity"
-      :config="specEthnicity"
+      :chartSpec="specEthnicity"
       :data="store.getters.getData.personData.ETHNICITY_DATA"
       title="Population by Ethnicity"
     />

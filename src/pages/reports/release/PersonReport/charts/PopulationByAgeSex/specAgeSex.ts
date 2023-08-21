@@ -7,12 +7,7 @@ export function specAgeSex(zeroBaseline = false) {
     width: "container",
     height: 75,
     data: { name: "conceptData" },
-    params: [
-      {
-        name: "paintbrush",
-        select: { type: "point", on: "mouseover", nearest: true },
-      },
-    ],
+    params: [],
     mark: "bar",
     transform: [{ filter: "datum.AGE >= 0" }],
     encoding: {
@@ -21,15 +16,7 @@ export function specAgeSex(zeroBaseline = false) {
         { field: "AGE", title: "Age" },
         { field: "COUNT_VALUE", title: "# of People", format: "," },
       ],
-      color: {
-        condition: {
-          param: "paintbrush",
-          field: "CONCEPT_NAME",
-          type: "ordinal",
-          legend: null,
-        },
-        value: "grey",
-      },
+      color: {},
       /* color: {
         field: "CONCEPT_NAME",
         legend: null,

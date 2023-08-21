@@ -5,12 +5,13 @@
       title="Data Quality Issues History"
       width="95"
       :notes="notes"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
-      :click-listener="listeners.setRectangleLocationClick"
-      annotations
-      :config="specIssuesByRelease"
-      :annotations-config="specIssuesByReleaseAnnotation"
+      showAnnotations
+      :chartSpec="specIssuesByRelease"
+      :annotations-config="{
+        chartSpec: specIssuesByReleaseAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
       :data="store.getters.getSelectedSource.releases"
     />
     <NotesPanel report="issues_releases" />

@@ -10,11 +10,13 @@
       width="90"
       :notes="notes"
       :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
-      :click-listener="listeners.setRectangleLocationClick"
-      annotations
-      :annotations-config="specRecordProportionByMonthAnnotation"
-      :config="specRecordProportionByMonth"
+      showAnnotations
+      :annotations-config="{
+        chartSpec: specRecordProportionByMonthAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
+      :chartSpec="specRecordProportionByMonth"
       :data="store.getters.getData.PREVALENCE_BY_MONTH"
       title="Record Count Proportion by Month"
     />

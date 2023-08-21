@@ -4,14 +4,16 @@
       v-if="store.getters.dataInStore"
       id="viz-birthyearnote"
       title="Population by Year of Birth"
-      :config="specBirthYear"
-      :annotations-config="specBirthYearAnnotation"
+      :chartSpec="specBirthYear"
+      :annotations-config="{
+        chartSpec: specBirthYearAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
       :data="store.getters.getData.personData.BIRTH_YEAR_DATA"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
       :click-listener="listeners.setRectangleLocationClick"
       :notes="notes"
-      annotations
+      showAnnotations
     >
     </Chart>
     <NotesPanel report="viz-birthyearnote" />

@@ -7,7 +7,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-networkcumulativeobservation"
-      :config="specCumulativeObservation"
+      :chartSpec="specCumulativeObservation"
       :data="store.getters.getData.allCumulativeDurationData"
       title="Cumulative Observation"
     />

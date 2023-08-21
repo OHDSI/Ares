@@ -24,7 +24,7 @@
       v-if="store.getters.dataInStore"
       id="viz-measurementvaluedistribution"
       ref="measurementvalue"
-      :config="specMeasurementValueDistribution"
+      :chartSpec="specMeasurementValueDistribution"
       :data="getSelectedMeasurementUnits"
     />
     <info-panel

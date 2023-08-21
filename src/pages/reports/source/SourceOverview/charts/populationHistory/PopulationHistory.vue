@@ -5,12 +5,13 @@
       title="Population History"
       width="95"
       :notes="notes"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :context-menu-listener="listeners.showNotesEditDialogRightClick"
-      :click-listener="listeners.setRectangleLocationClick"
-      annotations
-      :config="specPopulationByRelease"
-      :annotations-config="specPopulationByReleaseAnnotation"
+      showAnnotations
+      :chartSpec="specPopulationByRelease"
+      :annotations-config="{
+        chartSpec: specPopulationByReleaseAnnotation,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
       :data="releases"
     />
     <NotesPanel report="population_releases" />

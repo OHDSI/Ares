@@ -6,7 +6,7 @@
       title="Population by Age &amp; Sex"
       width="90"
       :data="store.getters.getData.personData.AGE_GENDER_DATA"
-      :config="specAgeSex"
+      :chartSpec="specAgeSex"
     />
     <v-divider inset class="pa-1"></v-divider>
     <info-panel
@@ -30,8 +30,16 @@ import { specAgeSex } from "./specAgeSex";
 import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
+import { computed } from "vue";
 
 const store = useStore();
+const notes = computed(() => {
+  const sourceName = store.getters.getSelectedSource.cdm_source_key;
+  const releaseName = store.getters.getSelectedRelease.release_id;
+  const sourceContainer = store.getters.getNotes[sourceName] || {};
+  const releaseContainer = sourceContainer[releaseName] || {};
+  return releaseContainer["viz-populationbyageandsex"] || [];
+});
 </script>
 
 <style scoped></style>

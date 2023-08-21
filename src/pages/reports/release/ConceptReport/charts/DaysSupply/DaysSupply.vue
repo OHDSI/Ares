@@ -8,7 +8,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-dayssupply"
-      :config="specDaysSupply"
+      :chartSpec="specDaysSupply"
       :data="store.getters.getData.conceptData.DAYS_SUPPLY_DISTRIBUTION"
       title="Days Supply"
     />
