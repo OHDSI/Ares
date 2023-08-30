@@ -7,6 +7,12 @@ export default function person(data) {
   const personData: PersonData = data[PERSON];
   let genderMaleCount;
   let genderFemaleCount;
+  const maleAgeSex = personData.AGE_GENDER_DATA.filter(
+    (value) => value.CONCEPT_NAME === "MALE"
+  );
+  const femaleAgeSex = personData.AGE_GENDER_DATA.filter(
+    (value) => value.CONCEPT_NAME === "FEMALE"
+  );
   const numPersons = parseInt(personData.SUMMARY[1].ATTRIBUTE_VALUE);
   personData.BIRTH_YEAR_DATA.forEach((v, i) => {
     if (typeof v.YEAR === "string") {
@@ -28,5 +34,7 @@ export default function person(data) {
     genderFemaleCount,
     genderMalePct: genderMaleCount / numPersons,
     genderFemalePct: genderFemaleCount / numPersons,
+    maleAgeSex,
+    femaleAgeSex,
   };
 }

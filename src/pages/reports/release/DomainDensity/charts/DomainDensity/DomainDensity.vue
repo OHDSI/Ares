@@ -4,12 +4,16 @@
     elevation="10"
     class="ma-4 pa-2"
   >
-    <Chart
-      v-if="store.getters.dataInStore"
-      id="viz-overview"
-      width="80"
+    <ChartHeader
       title="Domain
       Density"
+      :notes-count="annotations.length"
+      @mode-toggled="toggleMode"
+    />
+    <Chart
+      v-if="store.getters.dataInStore"
+      :id="reportId"
+      width="80"
       :chartSpec="defOverview"
       :annotations-config="{
         chartSpec: defOverviewAnnotation,
@@ -17,12 +21,11 @@
         brushParentElement: 'g g g',
       }"
       :data="store.getters.getData.domainDensity"
-      :click-listener="listeners.setRectangleLocationClick"
       :signal-listener="listeners.setSelectionAreaSignal"
-      :notes="notes"
-      showAnnotations
+      :annotations="annotations"
+      :annotation-mode="annotationsMode"
     />
-    <NotesPanel report="viz-overview" />
+    <NotesPanel :notes="notes" />
 
     <info-panel
       v-if="store.getters.getQueryIndex"
@@ -48,16 +51,44 @@ import { useStore } from "vuex";
 import { defOverview } from "./defOverview";
 import { defOverviewAnnotation } from "./defOverviewAnnotation";
 import * as listeners from "@/pages/model/lib/listeners";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import _ from "lodash";
+import { useRoute } from "vue-router";
 
 const store = useStore();
+
+const route = useRoute();
+
+const annotationsMode = ref(false);
+function toggleMode(mode) {
+  annotationsMode.value = mode;
+}
+
+const reportId = "viz-overview";
+const annotations = computed(() => {
+  const { cdm, release, domain } = route.params;
+  const path = [cdm, release, domain].filter(Boolean);
+  const selections = _.get(store.getters.getNotes, path.join(".")) || {};
+  return selections[reportId] || [];
+});
+
 const notes = computed(() => {
-  const sourceName = store.getters.getSelectedSource.cdm_source_key;
-  const releaseName = store.getters.getSelectedRelease.release_id;
-  const sourceContainer = store.getters.getNotes[sourceName] || {};
-  const releaseContainer = sourceContainer[releaseName] || {};
-  return releaseContainer["viz-overview"] || [];
+  if (annotations.value.length) {
+    return annotations.value.reduce((acc, val) => {
+      return [
+        ...acc,
+        ...val.notes.map((note) => ({
+          ...note,
+          report: reportId,
+          selection: val.id,
+        })),
+      ];
+    }, []);
+  } else {
+    return [];
+  }
 });
 </script>
 

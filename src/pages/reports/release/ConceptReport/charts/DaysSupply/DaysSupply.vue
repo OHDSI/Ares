@@ -5,12 +5,13 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Days Supply" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-dayssupply"
       :chartSpec="specDaysSupply"
       :data="store.getters.getData.conceptData.DAYS_SUPPLY_DISTRIBUTION"
-      title="Days Supply"
     />
     <info-panel
       details="Learn how to interpret this plot"
@@ -39,6 +40,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { specDaysSupply } from "./specDaysSupply";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

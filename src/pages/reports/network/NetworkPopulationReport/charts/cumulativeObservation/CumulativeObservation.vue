@@ -4,12 +4,12 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Cumulative Observation" />
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-networkcumulativeobservation"
       :chartSpec="specCumulativeObservation"
       :data="store.getters.getData.allCumulativeDurationData"
-      title="Cumulative Observation"
     />
     <info-panel
       v-if="store.getters.getQueryIndex"
@@ -32,6 +32,7 @@ import { links } from "@/shared/config/links";
 import InfoPanel from "@/widgets/infoPanel/ui/InfoPanel.vue";
 import { specCumulativeObservation } from "./specCumulativeObservation";
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 </script>

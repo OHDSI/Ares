@@ -5,12 +5,16 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader
+      title="Historical Data Quality"
+      :notes-count="annotations.length"
+      @mode-toggled="toggleMode"
+    />
     <Chart
       v-if="store.getters.dataInStore"
-      id="viz-dataqualityresults"
-      title="Historical Data Quality"
-      :notes="notes"
-      showAnnotations
+      :id="reportId"
+      :annotations="annotations"
+      :annotation-mode="annotationsMode"
       :data="store.getters.getData[QUALITY_INDEX].dataQualityRecords"
       :chartSpec="specDataQualityResults"
       :annotations-config="{
@@ -19,7 +23,7 @@
         brushParentElement: 'g g',
       }"
     />
-    <NotesPanel report="viz-dataqualityresults" />
+    <NotesPanel :notes="notes" />
     <v-data-table
       v-if="store.getters.dataInStore"
       class="viz-container"
@@ -69,7 +73,8 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import * as listeners from "@/pages/model/lib/listeners";
+import _ from "lodash";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();
@@ -112,10 +117,36 @@ const historyColumns = ref([
     key: "vocabulary_version",
   },
 ]);
+
+const annotationsMode = ref(false);
+function toggleMode(mode) {
+  annotationsMode.value = mode;
+}
+
+const reportId = "viz-dataqualityresults";
+
+const annotations = computed(() => {
+  const { cdm, release } = route.params;
+  const path = [cdm, release].filter(Boolean);
+  const selections = _.get(store.getters.getNotes, path.join(".")) || {};
+  return selections[reportId] || [];
+});
+
 const notes = computed(() => {
-  const sourceName = store.getters.getSelectedSource.cdm_source_key;
-  const sourceContainer = store.getters.getNotes[sourceName] || {};
-  return sourceContainer["viz-dataqualityresults"] || [];
+  if (annotations.value.length) {
+    return annotations.value.reduce((acc, val) => {
+      return [
+        ...acc,
+        ...val.notes.map((note) => ({
+          ...note,
+          report: reportId,
+          selection: val.id,
+        })),
+      ];
+    }, []);
+  } else {
+    return [];
+  }
 });
 </script>
 

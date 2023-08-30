@@ -1,27 +1,8 @@
 <template>
   <div>
-    <v-row v-resize="load" justify="space-between" class="mb-2">
-      <v-col cols="auto">
-        <v-card-title v-if="title">{{ title }}</v-card-title>
-      </v-col>
-      <v-col cols="auto">
-        <v-switch
-          inset
-          color="primary"
-          v-if="showAnnotations"
-          hide-details
-          v-model="annotationMode"
-        >
-          <template v-slot:label>
-            Annotations ({{ props.notes.length }}):
-            {{ annotationMode ? "On" : "Off" }}
-          </template>
-        </v-switch>
-      </v-col>
-    </v-row>
-    <div :id="id" :style="style"></div>
-
-    <ContextMenu v-if="showAnnotations" :items="actions" />
+    <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
+    <div v-resize="load" :id="id" :style="style"></div>
+    <ContextMenu v-if="annotationMode" :items="actions" />
   </div>
 </template>
 
@@ -68,7 +49,7 @@ interface Props {
   id: string;
   width?: string;
   chartSpec: (a?: boolean, b?: boolean) => TopLevelSpec;
-  showAnnotations?: boolean;
+  annotationMode?: boolean;
   annotationsConfig?: {
     chartSpec: (a?: boolean, b?: boolean) => TopLevelSpec;
     annotationsParentElement: string;
@@ -85,7 +66,7 @@ interface Props {
     g: any,
     h: any
   ) => void;
-  notes?: [];
+  annotations?: [];
 }
 
 const actions = [
@@ -117,26 +98,24 @@ const actions = [
 
 const store = useStore();
 const props = withDefaults(defineProps<Props>(), {
-  notes: [],
+  annotations: [],
 });
-
-const annotationMode = ref(false);
 
 const updateValues = computed(() => {
   return {
     zeroBaseLine: store.getters.getSettings.zeroBaseline,
     minMax: store.getters.getSettings.minMax,
     darkMode: store.getters.getSettings.darkMode,
-    annotationMode: annotationMode.value,
+    annotationMode: props.annotationMode,
   };
 });
 
 const computedNotes = computed(() => {
-  return props.notes ? [...props.notes] : [];
+  return props.annotations ? [...props.annotations] : [];
 });
 
 const processedConfig = function (): TopLevelSpec {
-  if (annotationMode.value) {
+  if (props.annotationMode) {
     return {
       ...props.annotationsConfig.chartSpec(
         store.getters.getSettings.zeroBaseline,
@@ -144,7 +123,7 @@ const processedConfig = function (): TopLevelSpec {
       ),
       datasets: {
         conceptData: props.data,
-        notesData: props.notes ? [...props.notes] : [],
+        notesData: props.annotations ? [...props.annotations] : [],
       },
       config: store.getters.getSettings.darkMode ? darkTheme : lightTheme,
     };
@@ -168,12 +147,6 @@ const vgSpec = computed(() => {
 
 let view;
 
-onMounted(() => {
-  if (props.showAnnotations) {
-    annotationMode.value = store.getters.getSettings.annotationsMode;
-  }
-});
-
 const style = computed(function (): string {
   return props.width ? "width: " + props.width + "%" : "width: 100%";
 });
@@ -192,7 +165,7 @@ const load = function (): void {
     hover: true,
   }).tooltip(new Handler().call);
 
-  if (props.signalListener && annotationMode.value && props.showAnnotations) {
+  if (props.signalListener && props.annotationMode) {
     props.signalListener(
       view,
       store,
@@ -203,7 +176,7 @@ const load = function (): void {
       initializeTooltip,
       initializeBrush
     );
-    if (props.showAnnotations && annotationMode.value) {
+    if (props.annotationMode) {
       rerenderAnnotationsOnClick(
         view,
         initializeAnnotationsInstance,
@@ -217,7 +190,7 @@ const load = function (): void {
   view.runAsync().then(() => {
     const annotations = initializeAnnotationsInstance(view);
 
-    if (annotationMode.value) {
+    if (props.annotationMode) {
       renderAnnotations(
         view,
         annotations,
@@ -260,7 +233,7 @@ function getAnnotationsArray(view) {
   const yScale =
     view._runtime.scales?.y?.value || view._runtime?.scales?.concat_0_y?.value;
 
-  return props.notes.map((note) =>
+  return props.annotations.map((note) =>
     getD3AnnotationObject(note, type, xScale, yScale)
   );
 }
@@ -472,10 +445,16 @@ watch(updateValues, (): void => {
 });
 
 watch(computedNotes, (): void => {
-  const parentContainer = props.annotationsConfig.annotationsParentElement;
-  renderAnnotations(view, initializeAnnotationsInstance(view), parentContainer);
-  initializeTooltip();
-  initializeBrush(view);
+  if (props.annotationMode) {
+    const parentContainer = props.annotationsConfig.annotationsParentElement;
+    renderAnnotations(
+      view,
+      initializeAnnotationsInstance(view),
+      parentContainer
+    );
+    initializeTooltip();
+    initializeBrush(view);
+  }
 });
 
 onMounted((): void => {

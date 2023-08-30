@@ -4,11 +4,12 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Age at Death" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ageatdeath"
       width="100"
-      title="Age at Death"
       :chartSpec="specAgeAtDeath"
       :data="store.getters.getData.AGE_AT_DEATH"
     />
@@ -34,6 +35,7 @@ import { links } from "@/shared/config/links";
 import Infopanel from "@/widgets/infoPanel";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

@@ -4,11 +4,12 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Death By Type" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-deathbytype"
       width="100"
-      title="Death By Type"
       :chartSpec="specDeathByType"
       :data="store.getters.getData.DEATH_BY_TYPE"
     />
@@ -34,6 +35,7 @@ import { links } from "@/shared/config/links";
 import { specDeathByType } from "./specDeathByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

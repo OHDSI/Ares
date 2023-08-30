@@ -4,13 +4,14 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Record Count Proportion by Age, Sex, and Year" />
+
     <Chart
       v-if="store.getters.getData"
       id="viz-recordproportionbyagesexyear"
       width="90"
       :chartSpec="specRecordProportionByAgeSexYear"
       :data="store.getters.getData.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR"
-      title="Record Count Proportion by Age, Sex, and Year"
     />
     <info-panel
       details="Proportion of people with at least one record per 1000 people."
@@ -39,6 +40,7 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 
 import { specRecordProportionByAgeSexYear } from "./specRecordProportionByAgeSexYear";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

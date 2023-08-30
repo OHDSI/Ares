@@ -1,7 +1,7 @@
 import { VEGA_SCHEMA } from "@/shared/config/links";
 import { TopLevelSpec } from "vega-lite";
 
-export function specAgeSex(zeroBaseline = false) {
+export function specAgeSexAnnotation(zeroBaseline = false) {
   return {
     $schema: VEGA_SCHEMA,
     width: "container",

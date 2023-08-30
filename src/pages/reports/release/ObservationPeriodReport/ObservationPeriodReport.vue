@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-container v-if="!store.getters.getErrors" fluid>
+    <v-container
+      v-if="!store.getters.getErrors && store.getters.dataInStore"
+      fluid
+    >
       <v-responsive min-width="900">
         <div class="text-uppercase text-h6">Observation Period Report</div>
         <CumulativeObservation />

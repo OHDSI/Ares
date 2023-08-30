@@ -7,7 +7,6 @@ export function specAgeSex(zeroBaseline = false) {
     width: "container",
     height: 75,
     data: { name: "conceptData" },
-    params: [],
     mark: "bar",
     transform: [{ filter: "datum.AGE >= 0" }],
     encoding: {
@@ -21,7 +20,7 @@ export function specAgeSex(zeroBaseline = false) {
         field: "CONCEPT_NAME",
         legend: null,
       },*/
-      row: {
+      /*row: {
         field: "CONCEPT_NAME",
         title: null,
         header: {
@@ -32,7 +31,7 @@ export function specAgeSex(zeroBaseline = false) {
           labelPadding: 2,
           labelFontWeight: "bold",
         },
-      },
+      },*/
       x: {
         field: "AGE",
         title: "Age at First Observation",
@@ -42,7 +41,7 @@ export function specAgeSex(zeroBaseline = false) {
       y: {
         aggregate: "sum",
         field: "COUNT_VALUE",
-        title: null,
+        title: "Number of People",
         scale: {
           zero: zeroBaseline,
         },

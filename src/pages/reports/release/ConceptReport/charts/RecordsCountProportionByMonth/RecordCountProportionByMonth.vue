@@ -4,9 +4,14 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader
+      title="Record Count Proportion by Month"
+      :notes-count="annotations.length"
+      @mode-toggled="toggleMode"
+    />
     <Chart
       v-if="store.getters.dataInStore"
-      id="viz-recordproportionbymonth"
+      :id="reportId"
       width="99"
       :chartSpec="specRecordProportionByMonth"
       :annotations-config="{
@@ -15,13 +20,11 @@
         brushParentElement: 'g g ',
       }"
       :data="store.getters.getData.conceptData.PREVALENCE_BY_MONTH"
-      title="Record Count Proportion by Month"
-      :click-listener="listeners.setRectangleLocationClick"
       :signal-listener="listeners.setSelectionAreaSignal"
-      :notes="notes"
-      showAnnotations
+      :annotations="annotations"
+      :annotation-mode="annotationsMode"
     />
-    <NotesPanel report="viz-recordproportionbymonth" />
+    <NotesPanel :notes="notes" />
     <info-panel
       details="Proportion of people with at least one record per 1000 people."
     ></info-panel>
@@ -69,13 +72,21 @@ import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import * as listeners from "@/pages/model/lib/listeners";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import _ from "lodash";
+
+const annotationsMode = ref(false);
+function toggleMode(mode) {
+  annotationsMode.value = mode;
+}
 
 const store = useStore();
 const route = useRoute();
+
+const reportId = "viz-recordproportionbymonth";
 
 const getSourceConceptReportLink = function () {
   return {
@@ -86,11 +97,29 @@ const getSourceConceptReportLink = function () {
     },
   };
 };
-const notes = computed(() => {
+
+const annotations = computed(() => {
   const { cdm, release, domain, concept } = route.params;
   const path = [cdm, release, domain, concept].filter(Boolean);
   const selections = _.get(store.getters.getNotes, path.join(".")) || {};
-  return selections["viz-recordproportionbymonth"] || [];
+  return selections[reportId] || [];
+});
+
+const notes = computed(() => {
+  if (annotations.value.length) {
+    return annotations.value.reduce((acc, val) => {
+      return [
+        ...acc,
+        ...val.notes.map((note) => ({
+          ...note,
+          report: reportId,
+          selection: val.id,
+        })),
+      ];
+    }, []);
+  } else {
+    return [];
+  }
 });
 </script>
 

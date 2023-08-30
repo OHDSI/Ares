@@ -5,6 +5,7 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Domain Data Stratification by Visit" />
     <Chart
       v-if="
         store.getters.dataInStore && store.getters.getData.domainStratification
@@ -12,7 +13,6 @@
       id="viz-stratificationbyvisit"
       :chartSpec="specVisitStratification"
       :data="store.getters.getData.domainStratification"
-      title="Domain Data Stratification by Visit"
     />
     <info-panel
       details="Any domain data categorized as a Visit of 'No matching concept' implies
@@ -34,6 +34,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { specVisitStratification } from "./specVisitStratification";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

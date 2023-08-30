@@ -1,11 +1,11 @@
 <template>
   <v-card :loading="!store.getters.getData" elevation="2" class="ma-4 pa-2">
+    <ChartHeader title="Population by Ethnicity" />
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ethnicity"
       :chartSpec="specEthnicity"
       :data="store.getters.getData.personData.ETHNICITY_DATA"
-      title="Population by Ethnicity"
     />
     <info-panel
       v-if="store.getters.getQueryIndex"
@@ -26,6 +26,7 @@ import { specEthnicity } from "./specEthnicity";
 import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 </script>

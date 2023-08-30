@@ -4,13 +4,13 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Record Count Proportion by Age, Sex, and Year" />
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-recordproportionbyagesexyear"
       width="90"
       :chartSpec="specRecordProportionByAgeSexYear"
       :data="store.getters.getData.PREVALENCE_BY_GENDER_AGE_YEAR"
-      title="Record Count Proportion by Age, Sex, and Year"
     />
     <infopanel
       v-if="store.getters.getQueryIndex"
@@ -35,6 +35,7 @@ import { links } from "@/shared/config/links";
 import { specRecordProportionByAgeSexYear } from "./specRecordProportionByAgeSexYear";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();
