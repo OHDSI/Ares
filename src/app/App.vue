@@ -19,6 +19,8 @@ const route = useRoute();
 import { computed, watch, onBeforeMount } from "vue";
 import { useTheme } from "vuetify";
 
+const favicon = document.getElementById("faviconTag");
+
 const theme = useTheme();
 
 const darkMode = computed(function (): boolean {
@@ -29,9 +31,13 @@ const activeTheme = computed(function (): boolean {
   return store.getters.getSettings.theme;
 });
 watch(darkMode, (): void => {
+  const mode = store.getters.getSettings.darkMode;
   theme.global.name.value = `${store.getters.getSettings.theme}${
-    store.getters.getSettings.darkMode ? "Dark" : "Light"
+    mode ? "Dark" : "Light"
   }`;
+  mode
+    ? favicon.setAttribute("href", "./favicon-inverted.png")
+    : favicon.setAttribute("href", "./ares_32x32.png");
 });
 watch(activeTheme, (): void => {
   theme.global.name.value = `${store.getters.getSettings.theme}${
@@ -45,9 +51,13 @@ watch(route, (): void => {
 });
 
 onBeforeMount((): void => {
+  const mode = store.getters.getSettings.darkMode;
   theme.global.name.value = `${store.getters.getSettings.theme}${
-    store.getters.getSettings.darkMode ? "Dark" : "Light"
+    mode ? "Dark" : "Light"
   }`;
+  mode
+    ? favicon.setAttribute("href", "./favicon-dark.png")
+    : favicon.setAttribute("href", "./favicon-light.png");
 });
 </script>
 
@@ -58,6 +68,10 @@ onBeforeMount((): void => {
 
 .hidden {
   display: none;
+}
+
+.favicon {
+  filter: invert(1);
 }
 
 .annotation-subject path {
