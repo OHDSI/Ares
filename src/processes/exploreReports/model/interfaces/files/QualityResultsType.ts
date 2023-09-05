@@ -8,23 +8,23 @@ export interface QualityResultsType {
 }
 
 export interface CheckResults {
-  CATEGORY: string;
-  CDM_FIELD_NAME: string;
-  CDM_TABLE_NAME: string;
-  CHECK_DESCRIPTION: string;
-  CHECK_LEVEL: string;
-  CHECK_NAME: string;
-  CONTEXT: string;
-  EXECUTION_TIME: string;
-  FAILED: string;
-  NOTES_EXIST: string;
-  NUM_DENOMINATOR_ROWS: number;
-  NUM_VIOLATED_ROWS: number;
-  PCT_VIOLATED_ROWS: number;
-  QUERY_TEXT: string;
-  SQL_FILE: string;
-  SUBCATEGORY: string;
-  THRESHOLD_VALUE: number;
+  category: string;
+  cdmFieldName: string;
+  cdmTableName: string;
+  checkDescription: string;
+  checkLevel: string;
+  checkName: string;
+  context: string;
+  executionTime: string;
+  failed: string;
+  notesExist: string;
+  numDenominatorRows: number;
+  numViolatedRows: number;
+  pctViolatedRows: number;
+  queryText: string;
+  sqlFile: string;
+  subcategory: string;
+  thresholdValue: number;
   _row: string;
   checkId: string;
 }
@@ -49,16 +49,16 @@ export interface Overview {
 }
 
 export interface Metadata {
-  CDM_ETL_REFERENCE: string;
-  CDM_HOLDER: string;
-  CDM_RELEASE_DATE: string;
-  CDM_SOURCE_ABBREVIATION: string;
-  CDM_SOURCE_NAME: string;
-  CDM_VERSION: string;
-  CDM_VERSION_CONCEPT_ID: number;
-  DQD_VERSION: string;
-  SOURCE_DESCRIPTION: string;
-  SOURCE_DOCUMENTATION_REFERENCE: string;
-  SOURCE_RELEASE_DATE: string;
-  VOCABULARY_VERSION: string;
+  cdmEtlReference: string;
+  cdmHolder: string;
+  cdmReleaseDate: string;
+  cdmSourceAbbreviation: string;
+  cdmSourceName: string;
+  cdmVersion: string;
+  cdmVersionConceptId: number;
+  dqdVersion: string;
+  sourceDescription: string;
+  sourceDocumentationReference: string;
+  sourceReleaseDate: string;
+  vocabularyVersion: string;
 }

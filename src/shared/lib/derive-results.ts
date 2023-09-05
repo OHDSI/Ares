@@ -2,20 +2,20 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   // Verification Plausibility
   const VerificationPlausibilityPass = data.filter(
     (c) =>
-      c.FAILED == 0 &&
-      c.CONTEXT == "Verification" &&
-      c.CATEGORY == "Plausibility"
+      c.failed == 0 &&
+      c.context == "Verification" &&
+      c.category == "Plausibility"
   ).length;
 
   const VerificationPlausibilityFail = data.filter(
     (c) =>
-      c.FAILED == 1 &&
-      c.CONTEXT == "Verification" &&
-      c.CATEGORY == "Plausibility"
+      c.failed == 1 &&
+      c.context == "Verification" &&
+      c.category == "Plausibility"
   ).length;
 
   const VerificationPlausibilityTotal = data.filter(
-    (c) => c.CONTEXT == "Verification" && c.CATEGORY == "Plausibility"
+    (c) => c.context == "Verification" && c.category == "Plausibility"
   ).length;
 
   const VerificationPlausibilityPercentPass =
@@ -29,20 +29,20 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   // Verification Conformance
   const VerificationConformancePass = data.filter(
     (c) =>
-      c.FAILED == 0 &&
-      c.CONTEXT == "Verification" &&
-      c.CATEGORY == "Conformance"
+      c.failed == 0 &&
+      c.context == "Verification" &&
+      c.category == "Conformance"
   ).length;
 
   const VerificationConformanceFail = data.filter(
     (c) =>
-      c.FAILED == 1 &&
-      c.CONTEXT == "Verification" &&
-      c.CATEGORY == "Conformance"
+      c.failed == 1 &&
+      c.context == "Verification" &&
+      c.category == "Conformance"
   ).length;
 
   const VerificationConformanceTotal = data.filter(
-    (c) => c.CONTEXT == "Verification" && c.CATEGORY == "Conformance"
+    (c) => c.context == "Verification" && c.category == "Conformance"
   ).length;
 
   const VerificationConformancePercentPass =
@@ -56,20 +56,20 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   // Verification Completeness
   const VerificationCompletenessPass = data.filter(
     (c) =>
-      c.FAILED == 0 &&
-      c.CONTEXT == "Verification" &&
-      c.CATEGORY == "Completeness"
+      c.failed == 0 &&
+      c.context == "Verification" &&
+      c.category == "Completeness"
   ).length;
 
   const VerificationCompletenessFail = data.filter(
     (c) =>
-      c.FAILED == 1 &&
-      c.CONTEXT == "Verification" &&
-      c.CATEGORY == "Completeness"
+      c.failed == 1 &&
+      c.context == "Verification" &&
+      c.category == "Completeness"
   ).length;
 
   const VerificationCompletenessTotal = data.filter(
-    (c) => c.CONTEXT == "Verification" && c.CATEGORY == "Completeness"
+    (c) => c.context == "Verification" && c.category == "Completeness"
   ).length;
 
   const VerificationCompletenessPercentPass =
@@ -82,15 +82,15 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   // Verification Totals
   const VerificationPass = data.filter(
-    (c) => c.FAILED == 0 && c.CONTEXT == "Verification"
+    (c) => c.failed == 0 && c.context == "Verification"
   ).length;
 
   const VerificationFail = data.filter(
-    (c) => c.FAILED == 1 && c.CONTEXT == "Verification"
+    (c) => c.failed == 1 && c.context == "Verification"
   ).length;
 
   const VerificationTotal = data.filter(
-    (c) => c.CONTEXT == "Verification"
+    (c) => c.context == "Verification"
   ).length;
 
   const VerificationPercentPass =
@@ -101,16 +101,16 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   // Validation Plausibility
   const ValidationPlausibilityPass = data.filter(
     (c) =>
-      c.FAILED == 0 && c.CONTEXT == "Validation" && c.CATEGORY == "Plausibility"
+      c.failed == 0 && c.context == "Validation" && c.category == "Plausibility"
   ).length;
 
   const ValidationPlausibilityFail = data.filter(
     (c) =>
-      c.FAILED == 1 && c.CONTEXT == "Validation" && c.CATEGORY == "Plausibility"
+      c.failed == 1 && c.context == "Validation" && c.category == "Plausibility"
   ).length;
 
   const ValidationPlausibilityTotal = data.filter(
-    (c) => c.CONTEXT == "Validation" && c.CATEGORY == "Plausibility"
+    (c) => c.context == "Validation" && c.category == "Plausibility"
   ).length;
 
   const ValidationPlausibilityPercentPass =
@@ -124,16 +124,16 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   // Validation Conformance
   const ValidationConformancePass = data.filter(
     (c) =>
-      c.FAILED == 0 && c.CONTEXT == "Validation" && c.CATEGORY == "Conformance"
+      c.failed == 0 && c.context == "Validation" && c.category == "Conformance"
   ).length;
 
   const ValidationConformanceFail = data.filter(
     (c) =>
-      c.FAILED == 1 && c.CONTEXT == "Validation" && c.CATEGORY == "Conformance"
+      c.failed == 1 && c.context == "Validation" && c.category == "Conformance"
   ).length;
 
   const ValidationConformanceTotal = data.filter(
-    (c) => c.CONTEXT == "Validation" && c.CATEGORY == "Conformance"
+    (c) => c.context == "Validation" && c.category == "Conformance"
   ).length;
 
   const ValidationConformancePercentPass =
@@ -147,16 +147,16 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   // Validation Completeness
   const ValidationCompletenessPass = data.filter(
     (c) =>
-      c.FAILED == 0 && c.CONTEXT == "Validation" && c.CATEGORY == "Completeness"
+      c.failed == 0 && c.context == "Validation" && c.category == "Completeness"
   ).length;
 
   const ValidationCompletenessFail = data.filter(
     (c) =>
-      c.FAILED == 1 && c.CONTEXT == "Validation" && c.CATEGORY == "Completeness"
+      c.failed == 1 && c.context == "Validation" && c.category == "Completeness"
   ).length;
 
   const ValidationCompletenessTotal = data.filter(
-    (c) => c.CONTEXT == "Validation" && c.CATEGORY == "Completeness"
+    (c) => c.context == "Validation" && c.category == "Completeness"
   ).length;
 
   const ValidationCompletenessPercentPass =
@@ -169,14 +169,14 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   // Validation
   const ValidationPass = data.filter(
-    (c) => c.FAILED == 0 && c.CONTEXT == "Validation"
+    (c) => c.failed == 0 && c.context == "Validation"
   ).length;
 
   const ValidationFail = data.filter(
-    (c) => c.FAILED == 1 && c.CONTEXT == "Validation"
+    (c) => c.failed == 1 && c.context == "Validation"
   ).length;
 
-  const ValidationTotal = data.filter((c) => c.CONTEXT == "Validation").length;
+  const ValidationTotal = data.filter((c) => c.context == "Validation").length;
 
   const ValidationPercentPass =
     ValidationTotal == 0
@@ -185,15 +185,15 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   // Plausibility
   const PlausibilityPass = data.filter(
-    (c) => c.FAILED == 0 && c.CATEGORY == "Plausibility"
+    (c) => c.failed == 0 && c.category == "Plausibility"
   ).length;
 
   const PlausibilityFail = data.filter(
-    (c) => c.FAILED == 1 && c.CATEGORY == "Plausibility"
+    (c) => c.failed == 1 && c.category == "Plausibility"
   ).length;
 
   const PlausibilityTotal = data.filter(
-    (c) => c.CATEGORY == "Plausibility"
+    (c) => c.category == "Plausibility"
   ).length;
 
   const PlausibilityPercentPass =
@@ -203,15 +203,15 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   // Conformance
   const ConformancePass = data.filter(
-    (c) => c.FAILED == 0 && c.CATEGORY == "Conformance"
+    (c) => c.failed == 0 && c.category == "Conformance"
   ).length;
 
   const ConformanceFail = data.filter(
-    (c) => c.FAILED == 1 && c.CATEGORY == "Conformance"
+    (c) => c.failed == 1 && c.category == "Conformance"
   ).length;
 
   const ConformanceTotal = data.filter(
-    (c) => c.CATEGORY == "Conformance"
+    (c) => c.category == "Conformance"
   ).length;
 
   const ConformancePercentPass =
@@ -221,15 +221,15 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   // Completeness
   const CompletenessPass = data.filter(
-    (c) => c.FAILED == 0 && c.CATEGORY == "Completeness"
+    (c) => c.failed == 0 && c.category == "Completeness"
   ).length;
 
   const CompletenessFail = data.filter(
-    (c) => c.FAILED == 1 && c.CATEGORY == "Completeness"
+    (c) => c.failed == 1 && c.category == "Completeness"
   ).length;
 
   const CompletenessTotal = data.filter(
-    (c) => c.CATEGORY == "Completeness"
+    (c) => c.category == "Completeness"
   ).length;
 
   const CompletenessPercentPass =
@@ -238,9 +238,9 @@ export default function deriveResults(data /*: CheckResults[]*/) {
       : ((CompletenessPass / CompletenessTotal) * 100).toFixed(1) + "%";
 
   // All
-  const AllPass = data.filter((c) => c.FAILED == 0).length;
+  const AllPass = data.filter((c) => c.failed == 0).length;
 
-  const AllFail = data.filter((c) => c.FAILED == 1).length;
+  const AllFail = data.filter((c) => c.failed == 1).length;
 
   const AllTotal = data.length;
 
@@ -248,10 +248,10 @@ export default function deriveResults(data /*: CheckResults[]*/) {
     AllTotal == 0 ? "-" : ((AllPass / AllTotal) * 100).toFixed(1) + "%";
 
   for (let i = 0; i < data.length; i++) {
-    if (data[i].FAILED == 0) {
-      data[i].FAILED = "PASS";
+    if (data[i].failed == 0) {
+      data[i].failed = "PASS";
     } else {
-      data[i].FAILED = "FAIL";
+      data[i].failed = "FAIL";
     }
 
     if (data[i].NOTES == undefined) {

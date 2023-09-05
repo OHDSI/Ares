@@ -4,15 +4,15 @@
       :data="store.getters.getData.rawData.CheckResults"
       :event-listener="pivotRedirectToResultsTab"
       :attributes="[
-        'CATEGORY',
-        'CDM_FIELD_NAME',
-        'CHECK_LEVEL',
-        'CHECK_NAME',
-        'CONTEXT',
-        'NOTES_EXIST',
-        'SUBCATEGORY',
-        'CDM_TABLE_NAME',
-        'FAILED',
+        'category',
+        'cdmFieldName',
+        'checkLevel',
+        'checkName',
+        'context',
+        'notesExist',
+        'subcategory',
+        'cdmTableName',
+        'failed',
       ]"
       :aggregator-names-list="['Count']"
     >
