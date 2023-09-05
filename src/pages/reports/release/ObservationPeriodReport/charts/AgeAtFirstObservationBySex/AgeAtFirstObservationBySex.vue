@@ -1,11 +1,11 @@
 <template>
   <v-card :loading="!store.getters.getData" elevation="10" class="ma-4 pa-2">
+    <ChartHeader title="Age at First Observation by Sex" />
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-agebysex"
       :chartSpec="specAgeBySex"
       :data="store.getters.getData.observationPeriodData.AGE_BY_GENDER"
-      title="Age at First Observation by Sex"
     />
     <info-panel
       v-if="store.getters.getQueryIndex"
@@ -28,6 +28,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { specAgeBySex } from "./specAgeBySex";
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 </script>

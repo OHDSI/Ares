@@ -5,12 +5,13 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Visit Duration By Type" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-visitdurationbytype"
       :chartSpec="specVisitDurationByType"
       :data="store.getters.getData.conceptData.VISIT_DURATION_BY_TYPE"
-      title="Visit Duration By Type"
     />
     <info-panel
       v-if="store.getters.getQueryIndex"
@@ -35,6 +36,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { specVisitDurationByType } from "./specVisitDurationByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

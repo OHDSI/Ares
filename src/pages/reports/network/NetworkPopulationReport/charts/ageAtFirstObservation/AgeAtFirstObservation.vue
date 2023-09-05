@@ -4,12 +4,12 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Age at First Observation" />
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-networkageatfirstobservation"
       :chartSpec="specAgeAtFirstObservation"
       :data="store.getters.getData.allAgeAtFirstObservationData"
-      title="Age at First Observation"
     />
     <InfoPanel
       v-if="store.getters.getQueryIndex"
@@ -34,6 +34,7 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 
 import { specAgeAtFirstObservation } from "./specAgeAtFirstObservation";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 </script>

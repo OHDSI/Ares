@@ -5,12 +5,13 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Drugs by Type" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-drugsbytype"
       :chartSpec="specDrugsByType"
       :data="store.getters.getData.conceptData.DRUGS_BY_TYPE"
-      title="Drugs by Type"
     />
     <info-panel
       details="Learn about Drug types."
@@ -42,6 +43,7 @@ import { links } from "@/shared/config/links";
 import { specDrugsByType } from "./specDrugsByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 const store = useStore();
 const route = useRoute();
 </script>

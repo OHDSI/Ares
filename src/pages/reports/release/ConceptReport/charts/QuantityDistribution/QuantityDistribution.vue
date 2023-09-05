@@ -5,12 +5,13 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Quantity" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-quantity"
       :chartSpec="specQuantity"
       :data="store.getters.getData.conceptData.QUANTITY_DISTRIBUTION"
-      title="Quantity"
     />
     <info-panel
       details="Learn how to interpret this plot"
@@ -39,6 +40,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { specQuantity } from "./specQuantity";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 const store = useStore();
 const route = useRoute();
 </script>

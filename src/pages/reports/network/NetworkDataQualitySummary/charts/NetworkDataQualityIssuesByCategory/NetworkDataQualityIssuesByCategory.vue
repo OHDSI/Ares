@@ -1,9 +1,9 @@
 <template>
   <v-card :loading="!store.getters.getData" elevation="10" class="ma-4 pa-2">
+    <ChartHeader title="Network Data Quality Issues By Category" />
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-category"
-      title="Network Data Quality Issues By Category"
       :data="store.getters.getData[NETWORK_QUALITY_SUMMARY]"
       :chartSpec="specIssueStratificationByCategory"
     />
@@ -15,6 +15,7 @@ import { NETWORK_QUALITY_SUMMARY } from "@/shared/config/files";
 import { Chart } from "@/widgets/chart";
 import { specIssueStratificationByCategory } from "./specIssueStratificationByCategory";
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 </script>

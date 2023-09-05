@@ -1,11 +1,11 @@
 <template>
   <v-card :loading="!store.getters.getData" elevation="2" class="ma-4 pa-2">
+    <ChartHeader title="Population by Race" />
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-race"
       :chartSpec="specRace"
       :data="store.getters.getData.personData.RACE_DATA"
-      title="Population by Race"
     />
     <info-panel
       v-if="store.getters.getQueryIndex"
@@ -26,6 +26,7 @@ import { specRace } from "./specRace";
 import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 </script>

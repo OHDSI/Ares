@@ -5,12 +5,12 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Measurements by Type" />
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-measurementsbytype"
       :chartSpec="specMeasurementsByType"
       :data="store.getters.getData.conceptData.MEASUREMENTS_BY_TYPE"
-      title="Measurements by Type"
     />
     <info-panel
       details="Learn about Measurement types."
@@ -42,6 +42,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { specMeasurementsByType } from "./specMeasurementsByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

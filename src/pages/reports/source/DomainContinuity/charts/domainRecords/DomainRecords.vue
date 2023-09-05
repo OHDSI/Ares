@@ -6,9 +6,9 @@
     class="ma-4 pa-2"
   >
     <div v-if="store.getters.dataInStore">
+      <ChartHeader title="Domain Continuity" />
       <Chart
         id="viz-continuity"
-        title="Domain Continuity"
         :chartSpec="specOverview"
         :data="store.getters.getData.domainRecords"
         :listener="eventListener"
@@ -40,6 +40,7 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { RouteLocation, useRouter } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const router = useRouter();

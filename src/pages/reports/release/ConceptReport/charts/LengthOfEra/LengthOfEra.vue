@@ -5,12 +5,13 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Length of Era" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-lengthofera"
       :chartSpec="specLengthOfEra"
       :data="store.getters.getData.conceptData.LENGTH_OF_ERA"
-      title="Length of Era"
     />
     <info-panel
       v-if="store.getters.getQueryIndex"
@@ -35,6 +36,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { specLengthOfEra } from "./specLengthOfEra";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 const store = useStore();
 const route = useRoute();
 </script>

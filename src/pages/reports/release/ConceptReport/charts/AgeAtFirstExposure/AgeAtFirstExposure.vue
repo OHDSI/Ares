@@ -5,12 +5,13 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Age At First Exposure" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ageatfirstexposure"
       :chartSpec="specAgeAtFirstExposure"
       :data="store.getters.getData.conceptData.AGE_AT_FIRST_EXPOSURE"
-      title="Age At First Exposure"
     />
     <info-panel
       details="Learn how
@@ -43,6 +44,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { specAgeAtFirstExposure } from "./specAgeAtFirstExposure";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

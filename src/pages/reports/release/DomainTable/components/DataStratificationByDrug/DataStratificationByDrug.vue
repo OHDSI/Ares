@@ -8,6 +8,7 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Drug Domain Stratification by Drug Type" />
     <Chart
       v-if="
         store.getters.dataInStore && store.getters.getData.drugStratification
@@ -15,7 +16,6 @@
       id="viz-stratificationbydrugtype"
       :chartSpec="specDrugTypeStratification"
       :data="store.getters.getData.drugStratification"
-      title="Drug Domain Stratification by Drug Type"
     />
     <info-panel
       v-if="store.getters.getQueryIndex"
@@ -39,6 +39,7 @@ import InfoPanel from "@/widgets/infoPanel";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { specDrugTypeStratification } from "./specDrugTypeStratification";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

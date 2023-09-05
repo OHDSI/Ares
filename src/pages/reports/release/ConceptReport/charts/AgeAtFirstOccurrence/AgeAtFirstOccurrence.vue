@@ -5,12 +5,13 @@
     elevation="10"
     class="ma-4 pa-2"
   >
+    <ChartHeader title="Age at First Occurrence" />
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ageatfirstoccurrence"
       :chartSpec="specAgeAtFirstOccurrence"
       :data="store.getters.getData.conceptData.AGE_AT_FIRST_OCCURRENCE"
-      title="Age at First Occurrence"
     />
     <info-panel
       details="Learn how to interpret this plot"
@@ -38,6 +39,7 @@ import { links } from "@/shared/config/links";
 import { specAgeAtFirstOccurrence } from "./specAgeAtFirstOccurrence";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 const store = useStore();
 const route = useRoute();
 </script>

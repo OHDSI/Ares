@@ -35,16 +35,13 @@ import MetadataCard from "@/entities/chartMetadataCard/metadataCard.vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 
-const route = useRoute();
-
 interface Props {
-  report: string;
+  notes: [];
 }
 
 const props = defineProps<Props>();
 
 import { computed } from "vue";
-import _ from "lodash";
 
 const store = useStore();
 
@@ -55,33 +52,13 @@ onMounted(() => {
   showAllMode.value = store.getters.getSettings.allNotesMode;
 });
 
-const { cdm, release, domain, concept } = route.params;
-const path = [cdm, release, domain, concept, props.report].filter(Boolean);
-
 const notes = computed(() => {
-  const selections = _.get(store.getters.getNotes, path.join(".")) || [];
   const selectionId = store.getters.getSelectedRectangle?.item?.id;
-  return selections
-    .filter((value) => value.id === selectionId)?.[0]
-    ?.notes.map((note) => ({
-      ...note,
-      report: props.report,
-      selection: selectionId,
-    }));
+  return props.notes.filter((note) => note.selection === selectionId);
 });
 
 const allNotes = computed(() => {
-  const selections = _.get(store.getters.getNotes, path.join(".")) || [];
-  return selections.reduce((acc, current) => {
-    return [
-      ...acc,
-      ...current.notes.map((note) => ({
-        ...note,
-        report: props.report,
-        selection: current.id,
-      })),
-    ];
-  }, []);
+  return props.notes;
 });
 </script>
 
