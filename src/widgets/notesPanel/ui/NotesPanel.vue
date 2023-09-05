@@ -1,17 +1,4 @@
 <template>
-  <v-row dense class="bg-message justify-space-between">
-    <v-col cols="auto">
-      <v-card-title class="font-weight-bold">Notes</v-card-title>
-    </v-col>
-    <v-col cols="auto">
-      <v-switch inset hide-details color="primary" v-model="showAllMode">
-        <template v-slot:label>
-          All notes ({{ allNotes.length }}):
-          {{ showAllMode ? "On" : "Off" }}
-        </template>
-      </v-switch>
-    </v-col>
-  </v-row>
   <v-slide-group
     v-if="!showAllMode"
     v-model="model"
@@ -40,17 +27,13 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const showAllMode = ref(true);
 
 import { computed } from "vue";
 
 const store = useStore();
 
 const model = ref(null);
-const showAllMode = ref(false);
-
-onMounted(() => {
-  showAllMode.value = store.getters.getSettings.allNotesMode;
-});
 
 const notes = computed(() => {
   const selectionId = store.getters.getSelectedRectangle?.item?.id;
