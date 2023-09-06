@@ -14,13 +14,6 @@
       </v-badge>
       <v-tooltip activator="parent" location="top">Toggle Annotations</v-tooltip>
     </v-btn>
-    <v-btn v-if="store.getters.getQueryIndex" icon density="comfortable" target="_blank" :link-details="true" :href="links.getSqlQueryLink(
-      store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
-    )
-      ">
-      <v-icon>mdi-database-search</v-icon>
-      <v-tooltip activator="parent" location="top">View Export Query</v-tooltip>
-    </v-btn>
   </v-toolbar>
 </template>
 <script setup lang="ts">

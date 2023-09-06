@@ -1,9 +1,8 @@
 <template>
   <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
-    <ChartHeader title="Population by Age &amp; Sex" 
-      :notes-count="notesMaleFemale.length"
-      :annotations-count="notesFemale.length + notesMale.length"
-      @annotations-mode-toggled="toggleAnnotationMode" @notes-mode-toggled="toggleNoteMode"/>
+    <ChartHeader title="Population by Age &amp; Sex" :notes-count="notesMaleFemale.length"
+      :annotations-count="notesFemale.length + notesMale.length" @annotations-mode-toggled="toggleAnnotationMode"
+      @notes-mode-toggled="toggleNoteMode" />
     <Chart v-if="store.getters.dataInStore" :id="maleReportId" title="Male" :annotations-config="{
       chartSpec: specAgeSex,
       annotationsParentElement: 'g',
@@ -17,6 +16,9 @@
     }" :data="store.getters.getData.femaleAgeSex" :chartSpec="specAgeSex" :annotations="notesFemale"
       :annotation-mode="annotationsMode" />
     <NotesPanel v-if="notesMode" :notes="notesMaleFemale" />
+    <v-toolbar density="compact" class="mt-6">
+      <ExportQueryLink :query-index="store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA" />
+    </v-toolbar>    
   </v-card>
 </template>
 
@@ -29,6 +31,7 @@ import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ExportQueryLink from "@/widgets/exportQueryLink/ui/ExportQueryLink.vue";
 
 const annotationsMode = ref(false);
 const notesMode = ref(false);

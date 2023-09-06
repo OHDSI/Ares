@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pa-6">
     <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
     <div v-resize="load" :id="id" :style="style"></div>
     <ContextMenu v-if="annotationMode" :items="actions" />

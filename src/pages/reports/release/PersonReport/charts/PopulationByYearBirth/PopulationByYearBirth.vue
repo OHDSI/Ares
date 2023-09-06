@@ -1,37 +1,18 @@
 <template>
-  <v-card :loading="!store.getters.getData" elevation="2" class="ma-4 pa-2">
-    <ChartHeader
-      title="Population by Year of Birth"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
-    />
-    <Chart
-      v-if="store.getters.dataInStore"
-      id="viz-birthyearnote"
-      :chartSpec="specBirthYear"
-      :annotations-config="{
-        chartSpec: specBirthYearAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-      :data="store.getters.getData.personData.BIRTH_YEAR_DATA"
-      :annotations="annotations"
-      :annotation-mode="annotationsMode"
-    >
+  <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
+    <ChartHeader title="Population by Year of Birth" :notes-count="notes.length" :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationMode" @notes-mode-toggled="toggleNoteMode" />
+    <Chart v-if="store.getters.dataInStore" id="viz-birthyearnote" :chartSpec="specBirthYear" :annotations-config="{
+      chartSpec: specBirthYearAnnotation,
+      annotationsParentElement: 'g',
+      brushParentElement: 'g g',
+    }" :data="store.getters.getData.personData.BIRTH_YEAR_DATA" :annotations="annotations"
+      :annotation-mode="annotationsMode">
     </Chart>
-    <NotesPanel :notes="notes" />
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
-        )
-      "
-      :divider="true"
-    ></info-panel>
+    <NotesPanel v-if="notesMode" :notes="notes" />
+    <v-toolbar density="compact" class="mt-6">
+      <ExportQueryLink :query-index="store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA" />
+    </v-toolbar>    
   </v-card>
 </template>
 
@@ -40,13 +21,20 @@ import { Chart } from "@/widgets/chart";
 import { specBirthYear } from "./specBirthYear";
 import { specBirthYearAnnotation } from "./specBirthYearAnnotation";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
+import ExportQueryLink from "@/widgets/exportQueryLink/ui/ExportQueryLink.vue";
 import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+
+function toggleAnnotationMode(mode) {
   annotationsMode.value = mode;
+}
+
+function toggleNoteMode(mode) {
+  notesMode.value = mode;
 }
 
 import { computed } from "vue";

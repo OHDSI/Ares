@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="store.getters.dataInStore" elevation="10" class="ma-4 pa-2">
+  <v-card v-if="store.getters.dataInStore" elevation="10" class="ma-4">
     <v-card-title>Temporal Characterization</v-card-title>
     <!--Table controls-->
     <v-row>

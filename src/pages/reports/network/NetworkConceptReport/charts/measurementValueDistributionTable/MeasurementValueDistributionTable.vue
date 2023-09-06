@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="store.getters.getData.table" elevation="10" class="ma-4 pa-2">
+  <v-card v-if="store.getters.getData.table" elevation="10" class="ma-4">
     <v-data-table
       density="compact"
       :headers="headers"

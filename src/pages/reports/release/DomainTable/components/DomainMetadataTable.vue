@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="items.length" elevation="10" class="ma-4 pa-2">
+  <v-card v-if="items.length" elevation="10" class="ma-4">
     <v-card-title>Domain metadata</v-card-title>
     <v-data-table :headers="headers" :items="items"></v-data-table>
   </v-card>

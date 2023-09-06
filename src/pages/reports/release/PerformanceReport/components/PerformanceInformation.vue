@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="10" class="ma-4 pa-2">
+  <v-card elevation="10" class="ma-4">
     <v-card-title>Performance</v-card-title>
     <v-row>
       <v-col cols="3">

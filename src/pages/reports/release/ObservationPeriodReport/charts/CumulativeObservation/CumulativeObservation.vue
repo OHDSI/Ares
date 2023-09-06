@@ -1,40 +1,18 @@
 <template>
-  <v-card
-    :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-4"
-  >
-    <ChartHeader
-      title="Cumulative Observation"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
-    />
-    <Chart
-      v-if="store.getters.dataInStore"
-      :id="reportId"
-      :chartSpec="specCumulativeObservation"
-      :annotations-config="{
-        chartSpec: specCumulativeObservationAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-      :data="store.getters.getData.observationPeriodData.CUMULATIVE_DURATION"
-      :annotations="annotations"
-      :annotation-mode="annotationsMode"
-    />
+  <v-card :loading="!store.getters.dataInStore" elevation="10" class="ma-4">
+    <ChartHeader title="Cumulative Observation" :notes-count="annotations.length" @mode-toggled="toggleMode" />
+    <Chart v-if="store.getters.dataInStore" :id="reportId" :chartSpec="specCumulativeObservation" :annotations-config="{
+      chartSpec: specCumulativeObservationAnnotation,
+      annotationsParentElement: 'g',
+      brushParentElement: 'g g',
+    }" :data="store.getters.getData.observationPeriodData.CUMULATIVE_DURATION" :annotations="annotations"
+      :annotation-mode="annotationsMode" />
     <NotesPanel :notes="notes" />
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex.OBSERVATION_PERIOD.CUMULATIVE_DURATION[0]
-        )
-      "
-      :divider="true"
-    ></info-panel>
+    <info-panel v-if="store.getters.getQueryIndex" icon="mdi-code-braces" details="View export query."
+      :link-details="true" :link="links.getSqlQueryLink(
+        store.getters.getQueryIndex.OBSERVATION_PERIOD.CUMULATIVE_DURATION[0]
+      )
+        " :divider="true"></info-panel>
   </v-card>
 </template>
 
