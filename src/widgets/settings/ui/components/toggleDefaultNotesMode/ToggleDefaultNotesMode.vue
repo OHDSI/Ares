@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
-import { TOGGLE_DEFAULT_NOTES_MODE } from "@/widgets/settings/model/store/actions.type";
+import { TOGGLE_DEFAULT_ALL_NOTES_MODE } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 

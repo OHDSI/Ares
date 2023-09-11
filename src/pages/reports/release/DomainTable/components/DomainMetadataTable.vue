@@ -23,12 +23,8 @@ const store = useStore();
 const route = useRoute();
 
 const items = computed(() => {
-  console.log(route);
-  console.log(props.data);
-
   if (props.data) {
     const domain = route.params.domain || route.name;
-    console.log(domain);
     return props.data.filter((row) => {
       return row.NAME === domainMap[domain as string];
     });

@@ -5,6 +5,6 @@ export const TOGGLE_BASELINE_SETTING = "setBaseline";
 export const TOGGLE_MINMAX_SETTING = "setMinMax";
 export const TOGGLE_UI_VISIBILITY = "setVisibility";
 export const TOGGLE_DEFAULT_ANNOTATIONS_MODE = "changeDefaultAnnotationsMode";
-export const TOGGLE_DEFAULT_NOTES_MODE = "toggleDefaultNotesMode";
+export const TOGGLE_DEFAULT_ALL_NOTES_MODE = "toggleDefaultNotesMode";
 
 export const EDIT_USER = "editUser";

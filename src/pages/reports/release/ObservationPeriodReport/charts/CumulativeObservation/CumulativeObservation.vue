@@ -1,24 +1,48 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="10" class="ma-4">
-    <ChartHeader title="Cumulative Observation" :notes-count="annotations.length" @mode-toggled="toggleMode" />
-    <Chart v-if="store.getters.dataInStore" :id="reportId" :chartSpec="specCumulativeObservation" :annotations-config="{
-      chartSpec: specCumulativeObservationAnnotation,
-      annotationsParentElement: 'g',
-      brushParentElement: 'g g',
-    }" :data="store.getters.getData.observationPeriodData.CUMULATIVE_DURATION" :annotations="annotations"
-      :annotation-mode="annotationsMode" />
-    <NotesPanel :notes="notes" />
-    <info-panel v-if="store.getters.getQueryIndex" icon="mdi-code-braces" details="View export query."
-      :link-details="true" :link="links.getSqlQueryLink(
-        store.getters.getQueryIndex.OBSERVATION_PERIOD.CUMULATIVE_DURATION[0]
-      )
-        " :divider="true"></info-panel>
+  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
+    <ChartHeader
+      title="Cumulative Observation"
+      :notes-count="notes.length"
+      :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationsMode"
+      @notes-mode-toggled="toggleNotesMode"
+    />
+    <Chart
+      v-if="store.getters.dataInStore"
+      :id="reportId"
+      :chartSpec="specCumulativeObservation"
+      :annotations-config="{
+        chartSpec: specCumulativeObservationAnnotation,
+        annotationsParentElement: 'g',
+
+        brushParentElement: 'g g',
+      }"
+      :data="store.getters.getData.observationPeriodData.CUMULATIVE_DURATION"
+      :annotations="annotations"
+      :annotation-mode="annotationsMode"
+    />
+    <NotesPanel v-if="notesMode" :notes="notes" />
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.OBSERVATION_PERIOD
+                .CUMULATIVE_DURATION[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
-import InfoPanel from "@/widgets/infoPanel";
+
 import { links } from "@/shared/config/links";
 import { specCumulativeObservation } from "./specCumulativeObservation";
 import { specCumulativeObservationAnnotation } from "./specCumulativeObservationAnnotation";
@@ -26,14 +50,20 @@ import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 
 const reportId = "viz-cumulativeobservation";
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+function toggleAnnotationsMode(mode) {
   annotationsMode.value = mode;
+}
+function toggleNotesMode(mode) {
+  notesMode.value = mode;
 }
 
 const annotations = computed(() => {

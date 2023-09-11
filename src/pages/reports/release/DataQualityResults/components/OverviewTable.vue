@@ -187,19 +187,23 @@
         </tr>
       </tbody>
     </table>
-    <info-panel
-      details="The Data Quality Overview provides a summary
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        icon="mdi-help-circle"
+        tooltip="The Data Quality Overview provides a summary
               of the results of the Data Quality assessment performed by the
               Data Quality Dashboard package."
-      :link="links.getDataQualityDashboardLink()"
-    ></info-panel>
+        @iconClicked="helpers.openNewTab(links.getDataQualityDashboardLink())"
+      />
+    </v-toolbar>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import InfoPanel from "@/widgets/infoPanel/ui/InfoPanel.vue";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 </script>

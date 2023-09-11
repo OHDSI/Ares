@@ -1,8 +1,8 @@
 <template>
   <v-card
     v-if="store.getters.getData.measurementTable"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
     <v-data-table
       density="compact"

@@ -1,13 +1,15 @@
 <template>
   <v-card
     v-if="!store.getErrors && store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
     <ChartHeader
       title="Record Proportion by Month"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
+      :notes-count="notes.length"
+      :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationsMode"
+      @notes-mode-toggled="toggleNotesMode"
     />
     <Chart
       v-if="store.getters.getData"
@@ -24,26 +26,27 @@
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
-    <NotesPanel :notes="notes" />
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-            .PREVALENCE_BY_MONTH[0]
-        )
-      "
-      :divider="true"
-    ></info-panel>
+    <NotesPanel v-if="notesMode" :notes="notes" />
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                .PREVALENCE_BY_MONTH[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
-import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
@@ -55,13 +58,19 @@ import _ from "lodash";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { specDataQualityResultsAnnotation } from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQuality/specDataQualityResultsAnnotation";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 const route = useRoute();
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+function toggleAnnotationsMode(mode) {
   annotationsMode.value = mode;
+}
+function toggleNotesMode(mode) {
+  notesMode.value = mode;
 }
 
 const reportId = "viz-sourcerecordproportionbymonth";

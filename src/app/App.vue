@@ -36,8 +36,8 @@ watch(darkMode, (): void => {
     mode ? "Dark" : "Light"
   }`;
   mode
-    ? favicon.setAttribute("href", "./favicon-inverted.png")
-    : favicon.setAttribute("href", "./ares_32x32.png");
+    ? favicon.setAttribute("href", "./favicon-dark.png")
+    : favicon.setAttribute("href", "./favicon-light.png");
 });
 watch(activeTheme, (): void => {
   theme.global.name.value = `${store.getters.getSettings.theme}${

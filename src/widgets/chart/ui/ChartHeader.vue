@@ -2,18 +2,25 @@
   <v-toolbar density="compact" class="mb-6">
     <v-card-title v-if="title">{{ title }}</v-card-title>
     <v-spacer></v-spacer>
-    <v-btn v-if="props.notesCount !== undefined" icon density="comfortable" @click="noteMode = !noteMode">
-      <v-badge :content=props.notesCount :color="noteMode ? 'primary' : 'default'">
-        <v-icon :color="noteMode ? 'primary' : 'default'">mdi-note-text</v-icon>
-      </v-badge>
-      <v-tooltip activator="parent" location="top">Toggle Notes</v-tooltip>
-    </v-btn>
-    <v-btn v-if="props.annotationsCount !== undefined" icon density="comfortable" @click="annotationMode = !annotationMode">
-      <v-badge :content=props.annotationsCount :color="annotationMode ? 'primary' : 'default'">
-        <v-icon :color="annotationMode ? 'primary' : 'default'">mdi-selection-marker</v-icon>
-      </v-badge>
-      <v-tooltip activator="parent" location="top">Toggle Annotations</v-tooltip>
-    </v-btn>
+    <ChartActionIcon
+      v-if="props.notesCount !== undefined"
+      icon="mdi-note-text"
+      tooltip="Toggle Notes"
+      :count="props.notesCount"
+      show-state
+      :default-state="store.getters.getSettings.notesMode"
+      @iconClicked="toggleNotesMode"
+    />
+    <ChartActionIcon
+      v-if="props.annotationsCount !== undefined"
+      icon="mdi-selection-marker"
+      tooltip="Toggle Annotations"
+      :count="props.annotationsCount"
+      show-state
+      :default-state="store.getters.getSettings.annotationsMode"
+      @iconClicked="toggleAnnotationMode"
+    />
+    <slot></slot>
   </v-toolbar>
 </template>
 <script setup lang="ts">
@@ -22,6 +29,7 @@ import { links } from "@/shared/config/links";
 import { onMounted } from "vue";
 import { useStore } from "vuex";
 import { TOGGLE_DEFAULT_ANNOTATIONS_MODE } from "@/widgets/settings/model/store/actions.type";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const annotationMode = ref(false);
 const noteMode = ref(false);
@@ -30,6 +38,7 @@ const store = useStore();
 interface Props {
   notesCount?: number;
   annotationsCount?: number;
+  issueCount?: number;
   title?: string;
 }
 
@@ -42,12 +51,20 @@ onMounted(() => {
   noteMode.value = store.getters.getSettings.notesMode;
 });
 
-watch(annotationMode, () => {
+function toggleAnnotationMode(val) {
+  emits("annotationsModeToggled", val);
+}
+
+function toggleNotesMode(val) {
+  emits("notesModeToggled", val);
+}
+
+/*watch(annotationMode, () => {
   emits("annotationsModeToggled", annotationMode.value);
-});
-watch(noteMode, () => {
+});*/
+/*watch(noteMode, () => {
   emits("notesModeToggled", noteMode.value);
-});
+});*/
 </script>
 
 <style scoped></style>

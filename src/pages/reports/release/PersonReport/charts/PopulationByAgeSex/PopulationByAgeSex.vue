@@ -1,37 +1,69 @@
 <template>
   <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
-    <ChartHeader title="Population by Age &amp; Sex" :notes-count="notesMaleFemale.length"
-      :annotations-count="notesFemale.length + notesMale.length" @annotations-mode-toggled="toggleAnnotationMode"
-      @notes-mode-toggled="toggleNoteMode" />
-    <Chart v-if="store.getters.dataInStore" :id="maleReportId" title="Male" :annotations-config="{
-      chartSpec: specAgeSex,
-      annotationsParentElement: 'g',
-      brushParentElement: 'g g',
-    }" :data="store.getters.getData.maleAgeSex" :chartSpec="specAgeSex" :annotations="notesMale"
-      :annotation-mode="annotationsMode" />
-    <Chart v-if="store.getters.dataInStore" :id="femaleReportId" title="Female" :annotations-config="{
-      chartSpec: specAgeSex,
-      annotationsParentElement: 'g',
-      brushParentElement: 'g g',
-    }" :data="store.getters.getData.femaleAgeSex" :chartSpec="specAgeSex" :annotations="notesFemale"
-      :annotation-mode="annotationsMode" />
+    <ChartHeader
+      title="Population by Age &amp; Sex"
+      :notes-count="notesMaleFemale.length"
+      :annotations-count="notesFemale.length + notesMale.length"
+      @annotations-mode-toggled="toggleAnnotationMode"
+      @notes-mode-toggled="toggleNoteMode"
+    />
+    <Chart
+      v-if="store.getters.dataInStore"
+      :id="maleReportId"
+      title="Male"
+      :annotations-config="{
+        chartSpec: specAgeSex,
+
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
+      :data="store.getters.getData.maleAgeSex"
+      :chartSpec="specAgeSex"
+      :annotations="notesMale"
+      :annotation-mode="annotationsMode"
+    />
+    <Chart
+      v-if="store.getters.dataInStore"
+      :id="femaleReportId"
+      title="Female"
+      :annotations-config="{
+        chartSpec: specAgeSex,
+        annotationsParentElement: 'g',
+        brushParentElement: 'g g',
+      }"
+      :data="store.getters.getData.femaleAgeSex"
+      :chartSpec="specAgeSex"
+      :annotations="notesFemale"
+      :annotation-mode="annotationsMode"
+    />
     <NotesPanel v-if="notesMode" :notes="notesMaleFemale" />
     <v-toolbar density="compact" class="mt-6">
-      <ExportQueryLink :query-index="store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA" />
-    </v-toolbar>    
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { specAgeSex } from "./specAgeSex";
-import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import ExportQueryLink from "@/widgets/exportQueryLink/ui/ExportQueryLink.vue";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { helpers } from "@/shared/lib/mixins";
 
 const annotationsMode = ref(false);
 const notesMode = ref(false);
@@ -39,7 +71,6 @@ const notesMode = ref(false);
 function toggleAnnotationMode(mode) {
   annotationsMode.value = mode;
 }
-
 function toggleNoteMode(mode) {
   notesMode.value = mode;
 }

@@ -1,6 +1,6 @@
 <template>
-  <v-card elevation="10" class="mx-auto pb-6" outlined>
-    <v-card-title>Release Listing</v-card-title>
+  <v-card elevation="2" class="mx-auto pb-6" outlined>
+    <ChartHeader title="Release Listing" />
     <v-card-text>
       <v-data-table
         density="compact"
@@ -31,6 +31,7 @@ import { VDataTable } from "vuetify/labs/VDataTable";
 import { helpers } from "@/shared/lib/mixins";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 

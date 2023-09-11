@@ -1,9 +1,11 @@
 <template>
-  <v-card :loading="!store.getters.getData" elevation="10" class="ma-4">
+  <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
     <ChartHeader
       title="Observation over Time"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
+      :notes-count="notes.length"
+      :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationsMode"
+      @notes-mode-toggled="toggleNotesMode"
     />
     <Chart
       v-if="store.getters.dataInStore"
@@ -20,26 +22,28 @@
       :chartSpec="specObservationByMonth"
       :data="store.getters.getData.observationPeriodData.OBSERVED_BY_MONTH"
     />
-    <NotesPanel :notes="notes" />
-
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex.OBSERVATION_PERIOD.OBSERVED_BY_MONTH[0]
-        )
-      "
-      :divider="true"
-    ></info-panel>
+    <NotesPanel v-if="notesMode" :notes="notes" />
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.OBSERVATION_PERIOD
+                .OBSERVED_BY_MONTH[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
-import InfoPanel from "@/widgets/infoPanel";
+
 import { links } from "@/shared/config/links";
 import { specObservationByMonth } from "./specObservationByMonth";
 import { specObservationByMonthAnnotation } from "./specObservationByMonthAnnotation";
@@ -48,12 +52,18 @@ import * as listeners from "@/pages/model/lib/listeners";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+function toggleAnnotationsMode(mode) {
   annotationsMode.value = mode;
+}
+function toggleNotesMode(mode) {
+  notesMode.value = mode;
 }
 
 const reportId = "viz-observationbymonth";

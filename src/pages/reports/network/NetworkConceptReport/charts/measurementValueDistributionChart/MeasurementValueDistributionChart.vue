@@ -2,12 +2,10 @@
   <v-card
     v-if="store.getters.getData.chart"
     :loading="!store.getters.getData"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
-    <v-card-title
-      >Measurement Value Distributions by Database and Unit</v-card-title
-    >
+    <ChartHeader title="Measurement Value Distributions by Database and Unit" />
     <v-layout class="pa-4">
       <v-select
         v-model="selectedMeasurementUnits"
@@ -27,38 +25,43 @@
       :chartSpec="specMeasurementValueDistribution"
       :data="getSelectedMeasurementUnits ? getSelectedMeasurementUnits : []"
     />
-    <infopanel
-      details="Learn how
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        icon="mdi-help-circle"
+        tooltip="Learn how
               to interpret this plot."
-      route-link="/help"
-      :divider="true"
-      :link-details="true"
-    ></infopanel>
-    <infopanel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex.MEASUREMENT
-            .MEASUREMENT_VALUE_DISTRIBUTION[0]
-        )
-      "
-      :divider="false"
-    ></infopanel>
+        @iconClicked="router.push({ name: 'help' })"
+      />
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.MEASUREMENT
+                .MEASUREMENT_VALUE_DISTRIBUTION[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
-import Infopanel from "@/widgets/infoPanel/ui/InfoPanel.vue";
 import { specMeasurementValueDistribution } from "./specMeasurementValueDistribution";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref, Ref } from "vue";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { useRouter } from "vue-router";
 
 const store = useStore();
+const router = useRouter();
 
 const getMeasurementUnits = computed(function () {
   return [

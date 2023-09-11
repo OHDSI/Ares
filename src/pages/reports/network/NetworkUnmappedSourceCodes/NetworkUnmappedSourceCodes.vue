@@ -2,10 +2,10 @@
   <div>
     <v-card
       v-if="!store.getters.getErrors && store.getters.dataInStore"
-      elevation="10"
-      class="ma-4 pa-2"
+      elevation="2"
+      class="ma-4"
     >
-      <v-card-title>Unmapped Source Codes</v-card-title>
+      <ChartHeader title="Unmapped Source Codes" />
       <v-row>
         <v-col cols="3">
           <v-text-field
@@ -81,6 +81,7 @@ import { helpers } from "@/shared/lib/mixins";
 
 import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 

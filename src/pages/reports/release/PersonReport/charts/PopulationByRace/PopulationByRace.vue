@@ -8,19 +8,30 @@
       :data="store.getters.getData.personData.RACE_DATA"
     />
     <v-toolbar density="compact" class="mt-6">
-      <ExportQueryLink :query-index="store.getters.getQueryIndex.PERSON.RACE_DATA" />
-    </v-toolbar>   
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(store.getters.getQueryIndex.PERSON.RACE_DATA)
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { specRace } from "./specRace";
-import InfoPanel from "@/widgets/infoPanel";
+
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import ExportQueryLink from "@/widgets/exportQueryLink/ui/ExportQueryLink.vue";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { helpers } from "@/shared/lib/mixins";
 
 const store = useStore();
 </script>

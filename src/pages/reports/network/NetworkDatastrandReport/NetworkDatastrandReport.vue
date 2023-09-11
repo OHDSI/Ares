@@ -1,35 +1,34 @@
 <template>
   <v-container v-if="!store.getters.getErrors" fluid min-width="900">
-    <v-card
-      :loading="!store.getters.dataInStore"
-      elevation="10"
-      class="ma-4 pa-2"
-    >
-      <v-card-title>Data Strands</v-card-title>
+    <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
+      <ChartHeader title="Data Strands" />
       <div
         v-if="store.getters.getData"
         id="viz-datastrand"
         class="viz-container"
       ></div>
-      <info-panel
-        details="Data strands are simple visualizations that describe the composition of
+      <v-toolbar density="compact" class="mt-6">
+        <ChartActionIcon
+          icon="mdi-help-circle"
+          tooltip="Data strands are simple visualizations that describe the composition of
         a data source across the various CDM domain tables. Each individual
         strand shows the percentage of the data source comprised of data from a
         particular domain table. Across the network, the strands can be visually
         compared and contrasted."
-      ></info-panel>
-      <InfoPanel
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        details="View export query."
-        :link-details="true"
-        :link="
-          links.getSqlQueryLink(
-            store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
-          )
-        "
-        :divider="false"
-      ></InfoPanel>
+        />
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          icon="mdi-code-braces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
+              )
+            )
+          "
+        />
+      </v-toolbar>
     </v-card>
   </v-container>
 </template>
@@ -42,13 +41,15 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const store = useStore();
 
-import InfoPanel from "../../../../widgets/infoPanel";
 import { specDatastrand } from "./specDatastrand";
 import { links } from "@/shared/config/links";
 
 const config = specDatastrand;
 
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const renderChart = function () {
   embed("#viz-datastrand", config, {
