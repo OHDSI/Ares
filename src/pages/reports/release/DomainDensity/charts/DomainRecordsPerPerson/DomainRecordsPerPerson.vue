@@ -1,13 +1,11 @@
 <template>
-  <v-card
-    :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
-  >
+  <v-card :loading="!store.getters.dataInStore" elevation="10" class="ma-4">
     <ChartHeader
       title="Domain Records per Person"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
+      :notes-count="notes.length"
+      :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationsMode"
+      @notes-mode-toggled="toggleNotesMode"
     />
     <Chart
       v-if="store.getters.dataInStore"
@@ -25,26 +23,27 @@
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
-    <NotesPanel :notes="notes" />
+    <NotesPanel v-if="notesMode" :notes="notes" />
 
-    <InfoPanel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex.DATA_DENSITY.DATADENSITY_TOTAL[0]
-        )
-      "
-      :divider="true"
-    ></InfoPanel>
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.DATA_DENSITY.DATADENSITY_TOTAL[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
-import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { defRecordsPerPerson } from "./defRecordsPerPerson";
@@ -55,14 +54,20 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import _ from "lodash";
 import { useRoute } from "vue-router";
 import * as listeners from "@/pages/model/lib/listeners";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 
 const route = useRoute();
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+function toggleAnnotationsMode(mode) {
   annotationsMode.value = mode;
+}
+function toggleNotesMode(mode) {
+  notesMode.value = mode;
 }
 
 const reportId = "viz-recordsperperson";

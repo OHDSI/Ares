@@ -1,6 +1,6 @@
 <template>
-  <v-card elevation="10" class="mx-auto pb-6" outlined>
-    <v-card-title>Data Network Overview</v-card-title>
+  <v-card elevation="2" class="mx-auto pb-6" outlined>
+    <ChartHeader title="Data Network Overview" />
     <v-card-text>
       <v-container fluid>
         <v-row justify="space-around"
@@ -44,6 +44,7 @@
 import { useStore } from "vuex";
 import { computed } from "vue";
 import * as d3 from "d3-format";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 

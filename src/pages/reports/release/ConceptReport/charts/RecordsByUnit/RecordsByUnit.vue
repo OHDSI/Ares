@@ -2,8 +2,8 @@
   <v-card
     v-if="store.getters.getData.conceptData.RECORDS_BY_UNIT"
     :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
     <ChartHeader title="Records by Unit" />
 
@@ -13,30 +13,33 @@
       :chartSpec="specRecordsByUnit"
       :data="store.getters.getData.conceptData.RECORDS_BY_UNIT"
     />
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      link-details
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-            .RECORDS_BY_UNIT[0]
-        )
-      "
-      :divider="true"
-    ></info-panel>
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                .RECORDS_BY_UNIT[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import InfoPanel from "@/widgets/infoPanel";
 import { specRecordsByUnit } from "./specRecordsByUnit";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 const route = useRoute();

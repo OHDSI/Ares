@@ -1,13 +1,11 @@
 <template>
-  <v-card
-    :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
-  >
+  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
     <ChartHeader
       title="Record Count Proportion by Month"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
+      :notes-count="notes.length"
+      :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationsMode"
+      @notes-mode-toggled="toggleNotesMode"
     />
     <Chart
       v-if="store.getters.dataInStore"
@@ -24,67 +22,72 @@
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
-    <NotesPanel :notes="notes" />
-    <info-panel
-      details="Proportion of people with at least one record per 1000 people."
-    ></info-panel>
-    <info-panel
-      v-if="store.getters.getData.isNotStationary"
-      icon="mdi-clock-alert"
-      details="This time series has been deemed non-stationary by temporal characterization."
-      divider
-    ></info-panel>
-    <info-panel
-      v-if="store.getters.getData.seasonalityScore"
-      icon="mdi-clock-alert"
-      :details="store.getters.getData.seasonalityComment"
-      divider
-      :link="links.getCastorLink()"
-    ></info-panel>
-    <info-panel
-      icon="mdi-database-clock"
-      divider
-      link-details
-      :route-link="getSourceConceptReportLink()"
-      details="Review this Time-Series across data source releases."
-    ></info-panel>
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      link-details
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-            .PREVALENCE_BY_MONTH[0]
-        )
-      "
-      divider
-    ></info-panel>
+    <NotesPanel v-if="notesMode" :notes="notes" />
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        icon="mdi-help-circle"
+        tooltip="Proportion of people with at least one record per 1000 people."
+      />
+      <ChartActionIcon
+        v-if="store.getters.getData.isNotStationary"
+        icon="mdi-clock-alert"
+        tooltip="This time series has been deemed non-stationary by temporal characterization."
+      />
+      <ChartActionIcon
+        v-if="store.getters.getData.isNotStationary"
+        icon="mdi-clock-alert"
+        :tooltip="store.getters.getData.seasonalityComment"
+        @iconClicked="helpers.openNewTab(links.getCastorLink())"
+      />
+      <ChartActionIcon
+        icon="mdi-database-clock"
+        tooltip="Review this Time-Series across data source releases."
+        @iconClicked="router.push(getSourceConceptReportLink())"
+      />
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                .PREVALENCE_BY_MONTH[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import InfoPanel from "@/widgets/infoPanel";
 import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import * as listeners from "@/pages/model/lib/listeners";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import _ from "lodash";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+function toggleAnnotationsMode(mode) {
   annotationsMode.value = mode;
+}
+function toggleNotesMode(mode) {
+  notesMode.value = mode;
 }
 
 const store = useStore();
 const route = useRoute();
+const router = useRouter();
 
 const reportId = "viz-recordproportionbymonth";
 

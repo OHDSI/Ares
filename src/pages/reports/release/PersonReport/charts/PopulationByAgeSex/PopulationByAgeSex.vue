@@ -2,8 +2,10 @@
   <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
     <ChartHeader
       title="Population by Age &amp; Sex"
-      :notes-count="notesFemale.length + notesMale.length"
-      @mode-toggled="toggleMode"
+      :notes-count="notesMaleFemale.length"
+      :annotations-count="notesFemale.length + notesMale.length"
+      @annotations-mode-toggled="toggleAnnotationMode"
+      @notes-mode-toggled="toggleNoteMode"
     />
     <Chart
       v-if="store.getters.dataInStore"
@@ -11,6 +13,7 @@
       title="Male"
       :annotations-config="{
         chartSpec: specAgeSex,
+
         annotationsParentElement: 'g',
         brushParentElement: 'g g',
       }"
@@ -33,38 +36,45 @@
       :annotations="notesFemale"
       :annotation-mode="annotationsMode"
     />
-    <NotesPanel :notes="notesMaleFemale" />
-
-    <v-divider inset class="pa-1"></v-divider>
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
-        )
-      "
-      :divider="true"
-    ></info-panel>
+    <NotesPanel v-if="notesMode" :notes="notesMaleFemale" />
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { specAgeSex } from "./specAgeSex";
-import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { helpers } from "@/shared/lib/mixins";
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+
+function toggleAnnotationMode(mode) {
   annotationsMode.value = mode;
 }
+function toggleNoteMode(mode) {
+  notesMode.value = mode;
+}
+
 const store = useStore();
 const releaseContainer = computed(() => {
   const sourceName = store.getters.getSelectedSource.cdm_source_key;

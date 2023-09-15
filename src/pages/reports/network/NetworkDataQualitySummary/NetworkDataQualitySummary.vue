@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="!store.getters.getErrors"
-    id="network-data-quality-summary"
-    class="pa-2"
-  >
+  <div v-if="!store.getters.getErrors" id="network-data-quality-summary">
     <NetworkDataQualityIssuesByCategory />
     <NetworkDataQualityIssuesByCdmTable />
   </div>

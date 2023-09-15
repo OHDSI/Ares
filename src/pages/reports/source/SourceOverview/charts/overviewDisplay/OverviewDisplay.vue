@@ -1,6 +1,6 @@
 <template>
   <v-card elevation="10" class="mx-auto pb-6" outlined>
-    <v-card-title>Source Overview</v-card-title>
+    <ChartHeader title="Source Overview" />
     <v-card-text>
       <v-container fluid>
         <v-row justify="space-around"
@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 

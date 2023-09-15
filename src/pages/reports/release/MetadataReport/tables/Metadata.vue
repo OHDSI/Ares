@@ -1,10 +1,10 @@
 <template>
   <v-card
     :loading="!store.getters.getData.metadataData"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
-    <v-card-title>Metadata</v-card-title>
+    <ChartHeader title="Metadata" />
     <v-container v-if="store.getters.getData.metadataData" fluid>
       <v-data-table
         v-if="store.getters.getData"
@@ -15,29 +15,36 @@
       >
       </v-data-table>
     </v-container>
-    <info-panel
-      details="Metadata is
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        icon="mdi-help-circle"
+        tooltip="Metadata is
         derived from the METADATA table."
-      :divider="true"
-    ></info-panel>
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="links.getSqlQueryLink(store.getters.getQueryIndex.METADATA[0])"
-      :divider="false"
-    ></info-panel>
+      />
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(store.getters.getQueryIndex.METADATA[0])
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
 import { VDataTable } from "vuetify/labs/VDataTable";
-import InfoPanel from "@/widgets/infoPanel";
+
 import { useStore } from "vuex";
 import { ref, Ref } from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { helpers } from "@/shared/lib/mixins";
 
 const store = useStore();
 

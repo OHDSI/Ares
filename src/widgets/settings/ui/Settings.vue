@@ -34,7 +34,7 @@
           <v-list-subheader>Metadata</v-list-subheader>
           <!--Features-->
           <ToggleDefaultAnnotatonsMode />
-          <ToggleDefaultAllNotesMode />
+          <ToggleDefaultNotesMode />
           <ExportNotes></ExportNotes>
         </v-list>
       </v-card>
@@ -59,7 +59,7 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 import ExportNotes from "@/widgets/settings/ui/components/exportNotes/ExportNotes.vue";
 import { TOGGLE_UI_VISIBILITY } from "@/widgets/settings/model/store/actions.type";
-import ToggleDefaultAllNotesMode from "@/widgets/settings/ui/components/toggleDefaultAllNotesMode/ToggleDefaultAllNotesMode.vue";
+import ToggleDefaultNotesMode from "@/widgets/settings/ui/components/toggleDefaultNotesMode/ToggleDefaultNotesMode.vue";
 import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccount.vue";
 
 const store = useStore();

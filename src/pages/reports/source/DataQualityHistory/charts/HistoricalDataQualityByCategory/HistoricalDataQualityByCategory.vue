@@ -1,13 +1,11 @@
 <template>
-  <v-card
-    :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
-  >
+  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
     <ChartHeader
       title="Historical Data Quality by Category"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
+      :notes-count="notes.length"
+      :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationsMode"
+      @notes-mode-toggled="toggleNotesMode"
     />
     <Chart
       v-if="store.getters.dataInStore"
@@ -23,7 +21,7 @@
         brushParentElement: 'g g',
       }"
     />
-    <NotesPanel :notes="notes" />
+    <NotesPanel v-if="notesMode" :notes="notes" />
   </v-card>
 </template>
 
@@ -42,8 +40,12 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 const store = useStore();
 const route = useRoute();
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+function toggleAnnotationsMode(mode) {
   annotationsMode.value = mode;
+}
+function toggleNotesMode(mode) {
+  notesMode.value = mode;
 }
 
 const reportId = "viz-sourcedataqualityresultsbycategory";

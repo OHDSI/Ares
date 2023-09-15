@@ -1,6 +1,6 @@
 <template>
-  <v-card elevation="10" class="ma-4 pa-2">
-    <v-card-title>Performance</v-card-title>
+  <v-card elevation="2" class="ma-4">
+    <ChartHeader title="Performance" />
     <v-row>
       <v-col cols="3">
         <v-text-field
@@ -64,35 +64,41 @@
       </template>
     </v-data-table>
 
-    <info-panel
-      details="This report
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        icon="mdi-help-circle"
+        tooltip="Proportion of people with at least one record per 1000 people."
+      />
+      <ChartActionIcon
+        icon="mdi-open-in-new"
+        tooltip="This report
           describes how long each analysis executed during Achilles characterization took to run in seconds."
-      :link="links.getAchillesLink"
-    >
-    </info-panel>
-
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex.ACHILLES_PERFORMANCE[0]
-        )
-      "
-      :divider="false"
-    ></info-panel>
+        @iconClicked="helpers.openNewTab(links.getAchillesLink())"
+      />
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.ACHILLES_PERFORMANCE[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { VDataTable } from "vuetify/labs/VDataTable";
-import InfoPanel from "@/widgets/infoPanel";
 import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 

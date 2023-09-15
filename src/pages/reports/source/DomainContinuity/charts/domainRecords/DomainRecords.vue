@@ -2,8 +2,8 @@
   <v-card
     v-if="!store.getters.getErrors"
     :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
     <div v-if="store.getters.dataInStore">
       <ChartHeader title="Domain Continuity" />
@@ -13,21 +13,24 @@
         :data="store.getters.getData.domainRecords"
         :listener="eventListener"
       />
-      <info-panel
-        details="Domain continuity shows the number of records in each domain table for multiple releases of data from a specific vendor or data source. This is NOT the number of records that occur at specific times within a CDM, but a count of the number of records in a release of a data source, graphed over time. This visualization allows one to see how the data is changing across updates for a single data source."
-      ></info-panel>
-      <info-panel
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        details="View export query."
-        :link-details="true"
-        :link="
-          links.getSqlQueryLink(
-            store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
-          )
-        "
-        :divider="false"
-      ></info-panel>
+      <v-toolbar density="compact" class="mt-6">
+        <ChartActionIcon
+          icon="mdi-help-circle"
+          tooltip="Domain continuity shows the number of records in each domain table for multiple releases of data from a specific vendor or data source. This is NOT the number of records that occur at specific times within a CDM, but a count of the number of records in a release of a data source, graphed over time. This visualization allows one to see how the data is changing across updates for a single data source."
+        />
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          icon="mdi-code-braces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
+              )
+            )
+          "
+        />
+      </v-toolbar>
     </div>
   </v-card>
 </template>
@@ -35,12 +38,12 @@
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { specOverview } from "./specOverview";
-import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { RouteLocation, useRouter } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 const router = useRouter();

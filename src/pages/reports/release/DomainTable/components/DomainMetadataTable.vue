@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="items.length" elevation="10" class="ma-4 pa-2">
+  <v-card v-if="items.length" elevation="10" class="ma-4">
     <v-card-title>Domain metadata</v-card-title>
     <v-data-table :headers="headers" :items="items"></v-data-table>
   </v-card>
@@ -23,12 +23,8 @@ const store = useStore();
 const route = useRoute();
 
 const items = computed(() => {
-  console.log(route);
-  console.log(props.data);
-
   if (props.data) {
     const domain = route.params.domain || route.name;
-    console.log(domain);
     return props.data.filter((row) => {
       return row.NAME === domainMap[domain as string];
     });

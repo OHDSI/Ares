@@ -1,6 +1,6 @@
 <template>
-  <v-card v-if="store.getters.dataInStore" elevation="10" class="ma-4 pa-2">
-    <v-card-title>Temporal Characterization</v-card-title>
+  <v-card v-if="store.getters.dataInStore" elevation="2" class="ma-4">
+    <ChartHeader title="Temporal Characterization" />
     <!--Table controls-->
     <v-row>
       <v-col cols="3">
@@ -66,32 +66,35 @@
         </tr>
       </template>
     </v-data-table>
-    <info-panel
-      v-if="
-        store.getters.getQueryIndex &&
-        store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION
-      "
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
-        )
-      "
-      :divider="true"
-    ></info-panel>
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        v-if="
+          store.getters.getQueryIndex &&
+          store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION
+        "
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import InfoPanel from "@/widgets/infoPanel";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
 import { computed, ref, Ref } from "vue";
 import { useStore } from "vuex";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 

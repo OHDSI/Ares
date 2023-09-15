@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-card elevation="10" class="ma-4 pa-2">
+    <v-card elevation="10" class="ma-4">
       <div class="text-h4 pl-4 pr-4 pt-4">
         A data ingestion analysis of COVID-19 vaccine related source data.
       </div>

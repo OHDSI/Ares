@@ -1,6 +1,6 @@
 <template>
-  <v-card elevation="10" class="mx-auto pb-6" outlined>
-    <v-card-title>Data Sources</v-card-title>
+  <v-card elevation="2" class="mx-auto pb-6" outlined>
+    <ChartHeader title="Data Sources" />
     <v-card-text>
       <v-container fluid>
         <v-row>
@@ -71,6 +71,7 @@ import { useStore } from "vuex";
 import SelectColumns from "@/features/selectColumns";
 import { debounce } from "lodash";
 import { helpers } from "@/shared/lib/mixins";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 

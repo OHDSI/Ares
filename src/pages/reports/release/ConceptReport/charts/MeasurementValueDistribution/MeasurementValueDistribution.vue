@@ -2,10 +2,11 @@
   <v-card
     v-if="store.getters.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION"
     :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
-    <v-card-title>Measurement Value Distributions</v-card-title>
+    <ChartHeader title="Measurement Value Distributions" />
+
     <v-layout class="pa-4">
       <v-select
         v-model="selectedMeasurementUnits"
@@ -27,45 +28,46 @@
       :chartSpec="specMeasurementValueDistribution"
       :data="getSelectedMeasurementUnits"
     />
-    <info-panel
-      details="Check measurement value distributions across the network"
-      icon="mdi-check-network"
-      link-details
-      :route-link="getNetworkConceptRoute()"
-      :divider="true"
-    ></info-panel>
-    <info-panel
-      details="Learn how
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        icon="mdi-check-network"
+        tooltip="Check measurement value distributions across the network"
+        @iconClicked="router.push(getNetworkConceptRoute())"
+      />
+      <ChartActionIcon
+        icon="mdi-help-circle"
+        tooltip="Learn how
               to interpret this plot."
-      icon="mdi-help-circle"
-      link-details
-      :route-link="{ name: 'help' }"
-      divider
-    ></info-panel>
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      details="View export query."
-      icon="mdi-code-braces"
-      link-details
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-            .MEASUREMENT_VALUE_DISTRIBUTION[0]
-        )
-      "
-      divider
-    ></info-panel>
+        @iconClicked="router.push({ name: 'help' })"
+      />
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                .MEASUREMENT_VALUE_DISTRIBUTION[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
-import InfoPanel from "@/widgets/infoPanel";
+
 import { links } from "@/shared/config/links";
 import { specMeasurementValueDistribution } from "./specMeasurementValueDistribution";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { computed, ref, Ref } from "vue";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const selectedMeasurementUnits: Ref<string[]> = ref([]);
 
@@ -103,6 +105,7 @@ const getNetworkConceptRoute = function (): object {
 
 const store = useStore();
 const route = useRoute();
+const router = useRouter();
 </script>
 
 <style scoped></style>

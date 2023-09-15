@@ -1,9 +1,11 @@
 <template>
-  <v-card elevation="10" class="mx-auto pb-6">
+  <v-card elevation="2" class="mx-auto pb-6">
     <ChartHeader
       title="Data Quality Issues History"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
+      :notes-count="notes.length"
+      :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationsMode"
+      @notes-mode-toggled="toggleNotesMode"
     />
     <Chart
       :id="reportId"
@@ -18,21 +20,24 @@
       }"
       :data="store.getters.getSelectedSource.releases"
     />
-    <NotesPanel :notes="notes" />
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      :link-details="true"
-      :link="links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])"
-      :divider="true"
-    ></info-panel>
+    <NotesPanel v-if="notesMode" :notes="notes" />
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
-import InfoPanel from "@/widgets/infoPanel";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { specIssuesByRelease } from "./specIssuesByRelease";
@@ -42,13 +47,19 @@ import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import _ from "lodash";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 const route = useRoute();
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+function toggleAnnotationsMode(mode) {
   annotationsMode.value = mode;
+}
+function toggleNotesMode(mode) {
+  notesMode.value = mode;
 }
 
 const reportId = "issues_releases";

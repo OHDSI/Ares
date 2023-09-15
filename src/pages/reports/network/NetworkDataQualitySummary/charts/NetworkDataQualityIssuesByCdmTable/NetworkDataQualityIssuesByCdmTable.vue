@@ -1,5 +1,5 @@
 <template>
-  <v-card :loading="!store.getters.getData" elevation="10" class="ma-4 pa-2">
+  <v-card :loading="!store.getters.getData" elevation="10" class="ma-4">
     <ChartHeader title="Network Data Quality Issues by CDM Table" />
     <Chart
       v-if="store.getters.dataInStore"

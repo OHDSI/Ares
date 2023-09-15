@@ -69,82 +69,82 @@
       <td class="text-left pa-4" :colspan="columns.length">
         <v-row dense>
           <v-col cols="2">Check Name</v-col>
-          <v-col>{{ item.raw.CHECK_NAME }}</v-col>
+          <v-col>{{ item.raw.checkName }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">Description</v-col>
           <v-col
-            >{{ item.raw.CHECK_DESCRIPTION }} (threshold
-            {{ item.raw.THRESHOLD_VALUE }}%)</v-col
+            >{{ item.raw.checkDescription }} (threshold
+            {{ item.raw.thresholdValue }}%)</v-col
           >
         </v-row>
         <v-row dense>
           <v-col cols="2">Threshold</v-col>
-          <v-col>{{ item.raw.THRESHOLD_VALUE }}</v-col>
+          <v-col>{{ item.raw.thresholdValue }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">Notes</v-col>
-          <v-col>{{ item.raw.NOTE_VALUE }}</v-col>
+          <v-col>{{ item.raw.noteValue }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">Level</v-col>
-          <v-col>{{ item.raw.CHECK_LEVEL }}</v-col>
+          <v-col>{{ item.raw.checkLevel }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">Table</v-col>
           <v-col>
             <a
-              :href="links.getDocsLink(item.raw.CDM_TABLE_NAME)"
+              :href="links.getDocsLink(item.raw.cdmTableName)"
               target="_blank"
             >
-              {{ item.raw.CDM_TABLE_NAME }}
+              {{ item.raw.cdmTableName }}
               <v-icon small>mdi-open-in-new</v-icon>
             </a>
           </v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">Field</v-col>
-          <v-col>{{ item.raw.CDM_FIELD_NAME }}</v-col>
+          <v-col>{{ item.raw.cdmFieldName }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">Concept Id</v-col>
           <v-col>
             <router-link
-              v-if="item.raw.CONCEPT_ID != undefined"
+              v-if="item.raw.conceptId != undefined"
               :to="getConceptDrilldown(item)"
               color="primary"
             >
-              {{ item.raw.CONCEPT_ID }}
+              {{ item.raw.conceptId }}
               <v-icon small>mdi-open-in-new</v-icon>
             </router-link>
           </v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">Unit Concept Id</v-col>
-          <v-col>{{ item.raw.UNIT_CONCEPT_ID }}</v-col>
+          <v-col>{{ item.raw.UNIT_conceptId }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2"># Rows Violated</v-col>
-          <v-col>{{ item.raw.NUM_VIOLATED_ROWS }}</v-col>
+          <v-col>{{ item.raw.numViolatedRows }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2"># Rows Total</v-col>
-          <v-col>{{ item.raw.NUM_DENOMINATOR_ROWS }}</v-col>
+          <v-col>{{ item.raw.numDenominatorRows }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">% Rows Violated</v-col>
-          <v-col>{{ (item.raw.PCT_VIOLATED_ROWS * 100).toFixed(2) }} %</v-col>
+          <v-col>{{ (item.raw.pctViolatedRows * 100).toFixed(2) }} %</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">Execution Time</v-col>
-          <v-col>{{ item.raw.EXECUTION_TIME }}</v-col>
+          <v-col>{{ item.raw.executionTime }}</v-col>
         </v-row>
         <v-row dense>
           <v-col cols="2">SQL Query</v-col>
           <v-col>
             <Codemirror
               ref="myCm"
-              :value="item.raw.QUERY_TEXT"
+              :value="item.raw.queryText"
               :options="cmOptions"
             ></Codemirror>
           </v-col>
@@ -155,23 +155,23 @@
         </v-row>
       </td>
     </template>
-    <template #item.SUBCATEGORY="{ item }">{{
-      item.raw.SUBCATEGORY == undefined ? item.raw.SUBCATEGORY : "None"
+    <template #item.subcategory="{ item }">{{
+      item.raw.subcategory == undefined ? item.raw.subcategory : "None"
     }}</template>
-    <template #item.CHECK_DESCRIPTION="{ item }">{{
+    <template #item.checkDescription="{ item }">{{
       renderDescription(item.raw)
     }}</template>
-    <template #item.PCT_VIOLATED_ROWS="{ item }">
+    <template #item.pctViolatedRows="{ item }">
       <div class="text-right">{{ renderPercentPassed(item.raw) }} %</div>
     </template>
-    <template #item.NUM_VIOLATED_ROWS="{ item }">
+    <template #item.numViolatedRows="{ item }">
       <div class="text-right">
-        {{ helpers.formatComma(item.raw.NUM_VIOLATED_ROWS) }}
+        {{ helpers.formatComma(item.raw.numViolatedRows) }}
       </div>
     </template>
-    <template #item.NUM_DENOMINATOR_ROWS="{ item }">
+    <template #item.numDenominatorRows="{ item }">
       <div class="text-right">
-        {{ helpers.formatComma(item.raw.NUM_DENOMINATOR_ROWS) }}
+        {{ helpers.formatComma(item.raw.numDenominatorRows) }}
       </div>
     </template>
   </v-data-table>
@@ -200,43 +200,43 @@ const helpfulFilters = ref([
     text: "Failed Checks",
     key: "failed",
     preset: {
-      FAILED: ["FAIL"],
-      CDM_TABLE_NAME: [],
-      CDM_FIELD_NAME: [],
-      CHECK_NAME: [],
-      NOTES_EXIST: [],
-      CATEGORY: [],
-      SUBCATEGORY: [],
-      CONTEXT: [],
-      CHECK_LEVEL: [],
+      failed: ["FAIL"],
+      cdmTableName: [],
+      cdmTableName: [],
+      checkName: [],
+      notesExist: [],
+      category: [],
+      subcategory: [],
+      context: [],
+      checkLevel: [],
     },
   },
   {
     text: "No Filters",
     key: "noFilters",
     preset: {
-      FAILED: [],
-      CDM_TABLE_NAME: [],
-      CDM_FIELD_NAME: [],
-      CHECK_NAME: [],
-      NOTES_EXIST: [],
-      CATEGORY: [],
-      SUBCATEGORY: [],
-      CONTEXT: [],
-      CHECK_LEVEL: [],
+      failed: [],
+      cdmTableName: [],
+      cdmFieldName: [],
+      checkName: [],
+      notesExist: [],
+      category: [],
+      subcategory: [],
+      context: [],
+      checkLevel: [],
     },
   },
 ]);
 const filters = ref({
   FAILED: [],
-  CDM_TABLE_NAME: [],
+  cdmTableName: [],
   CDM_FIELD_NAME: [],
   CHECK_NAME: [],
   NOTES_EXIST: [],
   CATEGORY: [],
-  SUBCATEGORY: [],
+  subcategory: [],
   CONTEXT: [],
-  CHECK_LEVEL: [],
+  checkLevel: [],
 });
 const selectedFilter = ref([]);
 const headers: Ref<DataTableHeader[]> = ref([
@@ -250,7 +250,7 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Table",
     sortable: true,
-    key: "CDM_TABLE_NAME",
+    key: "cdmTableName",
     show: true,
     default: true,
   },
@@ -276,9 +276,9 @@ const headers: Ref<DataTableHeader[]> = ref([
     default: false,
   },
   {
-    title: "Subcategory",
+    title: "subcategory",
     sortable: true,
-    key: "SUBCATEGORY",
+    key: "subcategory",
     show: false,
     default: false,
   },
@@ -292,7 +292,7 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Level",
     sortable: true,
-    key: "CHECK_LEVEL",
+    key: "checkLevel",
     show: false,
     default: false,
   },
@@ -306,35 +306,35 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Description",
     sortable: true,
-    key: "CHECK_DESCRIPTION",
+    key: "checkDescription",
     show: true,
     default: true,
   },
   {
     title: "% Records Failed",
     sortable: true,
-    key: "PCT_VIOLATED_ROWS",
+    key: "pctViolatedRows",
     show: true,
     default: true,
   },
   {
     title: "# Records Failed",
     sortable: true,
-    key: "NUM_VIOLATED_ROWS",
+    key: "numViolatedRows",
     show: true,
     default: true,
   },
   {
     title: "# Total Records",
     sortable: true,
-    key: "NUM_DENOMINATOR_ROWS",
+    key: "numDenominatorRows",
     show: false,
     default: false,
   },
   {
     title: "Execution Duration",
     sortable: true,
-    key: "EXECUTION_TIME",
+    key: "executionTime",
     show: false,
     default: false,
   },
@@ -343,8 +343,8 @@ const getConceptDrilldown = function (item) {
   return {
     name: "networkConcept",
     params: {
-      domain: item.CDM_TABLE_NAME.toLowerCase(),
-      concept: item.CONCEPT_ID.toString().trim(),
+      domain: item.cdmTableName.toLowerCase(),
+      concept: item.conceptId.toString().trim(),
     },
   };
 };
@@ -377,13 +377,13 @@ const helpfulFilterUpdate = function (filter): void {
 };
 const renderDescription = function (d) {
   let thresholdMessage = "";
-  if (d.THRESHOLD_VALUE != undefined) {
-    thresholdMessage = " (Threshold=" + d.THRESHOLD_VALUE + "%).";
+  if (d.thresholdValue != undefined) {
+    thresholdMessage = " (Threshold=" + d.thresholdValue + "%).";
   }
-  return d.CHECK_DESCRIPTION + thresholdMessage;
+  return d.checkDescription + thresholdMessage;
 };
 const renderPercentPassed = function (d): string | number {
-  return d.PCT_VIOLATED_ROWS ? (d.PCT_VIOLATED_ROWS * 100).toFixed(2) : 0;
+  return d.pctViolatedRows ? (d.pctViolatedRows * 100).toFixed(2) : 0;
 };
 const showHeaders = computed((): DataTableHeader[] => {
   return headers.value.filter((header) => header.show);

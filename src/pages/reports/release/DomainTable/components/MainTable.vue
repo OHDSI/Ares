@@ -1,33 +1,18 @@
 <template>
-  <v-card
-    :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
-  >
+  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
     <div v-if="store.getters.dataInStore">
-      <v-row
-        ><v-col cols="8">
-          <v-layout justify-start align-center class="ml-4 mr-4">
-            <v-card-title>{{
-              route.params.domain.toUpperCase().replace("_", " ")
-            }}</v-card-title>
-          </v-layout>
-        </v-col>
-        <v-col cols="4">
-          <v-layout class="ml-4 mr-4 justify-end align-center">
-            <v-tooltip v-if="issueCount > 0" left nudge-left="15">
-              <template v-slot:activator="{ props }">
-                <v-btn variant="flat" icon @click="navigateToDataQuality">
-                  <v-badge icon color="error" :content="issueCount">
-                    <v-icon size="large" v-bind="props">mdi-database</v-icon>
-                  </v-badge>
-                </v-btn>
-              </template>
-              <span>Data quality issues were identified for this domain. </span>
-            </v-tooltip>
-          </v-layout>
-        </v-col>
-      </v-row>
+      <ChartHeader :title="route.params.domain.toUpperCase().replace('_', ' ')">
+        <ChartActionIcon
+          icon="mdi-database"
+          :tooltip="
+            issueCount > 0
+              ? 'Data quality issues were identified for this domain'
+              : ''
+          "
+          :count="issueCount"
+          @iconClicked="navigateToDataQuality"
+        />
+      </ChartHeader>
       <v-container fluid>
         <v-row>
           <v-col>
@@ -149,29 +134,30 @@
           </v-layout>
         </template>
       </v-data-table>
-      <info-panel
-        details="A summary of concepts in the domain including the percentage of people with at least one occurrence of the concept, the total number of people with at least one occurrence of the concept, and the average records per person."
-      >
-      </info-panel>
-      <info-panel
-        :divider="false"
-        details="This table uses a preattentive processing visualization technique to highlight values in the top deciles by displaying the values in descending levels of font weight.  Darker values occur in the top 3 deciles of all values appearing in the column."
-        icon="mdi-eye"
-      ></info-panel>
-      <info-panel
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        details="View export query."
-        :link-details="true"
-        :divider="false"
-        :link="
-          links.getSqlQueryLink(
-            store.getters.getQueryIndex.DOMAIN_SUMMARY[
-              route.params.domain.toUpperCase()
-            ]
-          )
-        "
-      ></info-panel>
+      <v-toolbar density="compact" class="mt-6">
+        <ChartActionIcon
+          icon="mdi-help-circle"
+          tooltip="A summary of concepts in the domain including the percentage of people with at least one occurrence of the concept, the total number of people with at least one occurrence of the concept, and the average records per person."
+        />
+        <ChartActionIcon
+          icon="mdi-eye"
+          tooltip="This table uses a preattentive processing visualization technique to highlight values in the top deciles by displaying the values in descending levels of font weight.  Darker values occur in the top 3 deciles of all values appearing in the column."
+        />
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          icon="mdi-code-braces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.DOMAIN_SUMMARY[
+                  route.params.domain.toUpperCase()
+                ]
+              )
+            )
+          "
+        />
+      </v-toolbar>
     </div>
   </v-card>
 </template>
@@ -179,7 +165,7 @@
 <script setup lang="ts">
 import { VDataTable } from "vuetify/labs/VDataTable";
 import SelectColumns from "@/features/selectColumns";
-import InfoPanel from "@/widgets/infoPanel";
+
 import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
 import { computed, ref } from "vue";
@@ -187,6 +173,8 @@ import { debounce } from "lodash";
 import { DomainIssues } from "@/processes/exploreReports/model/interfaces/files/DomainIssues";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const store = useStore();
 const route = useRoute();

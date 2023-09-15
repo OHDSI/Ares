@@ -2,13 +2,15 @@
   <v-card
     v-if="!store.getters.getErrors"
     :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
     <ChartHeader
       title="Historical Data Quality"
-      :notes-count="annotations.length"
-      @mode-toggled="toggleMode"
+      :notes-count="notes.length"
+      :annotations-count="annotations.length"
+      @annotations-mode-toggled="toggleAnnotationsMode"
+      @notes-mode-toggled="toggleNotesMode"
     />
     <Chart
       v-if="store.getters.dataInStore"
@@ -23,7 +25,7 @@
         brushParentElement: 'g g',
       }"
     />
-    <NotesPanel :notes="notes" />
+    <NotesPanel v-if="notesMode" :notes="notes" />
     <v-data-table
       v-if="store.getters.dataInStore"
       class="viz-container"
@@ -119,8 +121,12 @@ const historyColumns = ref([
 ]);
 
 const annotationsMode = ref(false);
-function toggleMode(mode) {
+const notesMode = ref(false);
+function toggleAnnotationsMode(mode) {
   annotationsMode.value = mode;
+}
+function toggleNotesMode(mode) {
+  notesMode.value = mode;
 }
 
 const reportId = "viz-dataqualityresults";

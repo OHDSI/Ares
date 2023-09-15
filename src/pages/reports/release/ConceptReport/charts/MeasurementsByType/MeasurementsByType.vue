@@ -2,8 +2,8 @@
   <v-card
     v-if="store.getters.getData.conceptData.MEASUREMENTS_BY_TYPE"
     :loading="!store.getters.dataInStore"
-    elevation="10"
-    class="ma-4 pa-2"
+    elevation="2"
+    class="ma-4"
   >
     <ChartHeader title="Measurements by Type" />
     <Chart
@@ -12,37 +12,38 @@
       :chartSpec="specMeasurementsByType"
       :data="store.getters.getData.conceptData.MEASUREMENTS_BY_TYPE"
     />
-    <info-panel
-      details="Learn about Measurement types."
-      icon="mdi-help-circle"
-      link-details
-      :link="links.getDocsLink('MEASUREMENT')"
-      :divider="true"
-    ></info-panel>
-    <info-panel
-      v-if="store.getters.getQueryIndex"
-      icon="mdi-code-braces"
-      details="View export query."
-      link-details
-      :link="
-        links.getSqlQueryLink(
-          store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-            .MEASUREMENTS_BY_TYPE[0]
-        )
-      "
-      divider
-    ></info-panel>
+    <v-toolbar density="compact" class="mt-6">
+      <ChartActionIcon
+        icon="mdi-help-circle"
+        tooltip="Learn about Measurement types."
+        @iconClicked="helpers.openNewTab(links.getDocsLink('MEASUREMENT'))"
+      />
+      <ChartActionIcon
+        v-if="store.getters.getQueryIndex"
+        icon="mdi-code-braces"
+        tooltip="View Export Query"
+        @iconClicked="
+          helpers.openNewTab(
+            links.getSqlQueryLink(
+              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                .MEASUREMENTS_BY_TYPE[0]
+            )
+          )
+        "
+      />
+    </v-toolbar>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import InfoPanel from "@/widgets/infoPanel";
 import { specMeasurementsByType } from "./specMeasurementsByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 const route = useRoute();
