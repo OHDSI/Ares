@@ -1,10 +1,6 @@
 <template>
   <v-card v-if="store.getters.getData.table" elevation="10" class="ma-4">
-    <v-data-table
-      density="compact"
-      :headers="headers"
-      :items="store.getters.getData.table.measurementValueDistribution"
-    >
+    <v-data-table density="compact" :headers="headers" :items="props.data">
     </v-data-table>
   </v-card>
 </template>
@@ -12,9 +8,16 @@
 <script setup lang="ts">
 import { VDataTable } from "vuetify/labs/VDataTable";
 import { useStore } from "vuex";
-import { ref, Ref } from "vue";
+import { ref, Ref, defineProps } from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 const store = useStore();
+
+interface Props {
+  data: DistributionType[];
+}
+
+const props = defineProps<Props>();
 
 const headers: Ref<DataTableHeader[]> = ref([
   {

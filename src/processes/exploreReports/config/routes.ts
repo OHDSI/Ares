@@ -27,6 +27,7 @@ import domainContinuity from "@/pages/reports/source/DomainContinuity/DomainCont
 import sourceConceptReport from "@/pages/reports/source/SourceConceptReport/SourceConceptReport.vue";
 import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 import networkConceptDashboard from "@/pages/reports/network/NetworkConceptDashboard/NetworkConceptDashboard.vue";
+import NetworkConceptReport from "@/pages/reports/network/NetworkConceptReport/NetworkConceptReport.vue";
 
 import { RouteRecordRaw } from "vue-router";
 
@@ -57,6 +58,12 @@ export const routes: RouteRecordRaw[] = [
         path: "network_data_quality",
         name: "networkDataQuality",
         components: { reportsView: networkDataQualitySummary },
+      },
+
+      {
+        path: "network_concept/:domain?/:concept?",
+        name: "networkConcept",
+        components: { reportsView: NetworkConceptReport },
       },
       {
         path: "network_concept_dashboard",
@@ -98,11 +105,11 @@ export const routes: RouteRecordRaw[] = [
         name: "overview",
         components: { reportsView: networkOverview },
       },
-      {
+      /*{
         path: "concept/:domain/:concept/summary",
         name: "networkConcept",
         components: { reportsView: networkConceptReport },
-      },
+      },*/
     ],
   },
   {

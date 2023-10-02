@@ -2,9 +2,30 @@ import { CONCEPT } from "@/shared/config/files";
 import _ from "lodash";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/interfaces/MultipleFilesRawInterface";
+import * as d3 from "d3-time-format";
+
+function augmentReport(concept, dataField) {
+  return concept.filter((value) => value.data[dataField]?.length).length
+    ? concept.reduce(
+        (prevValue, current) => [
+          ...prevValue,
+          ...current.data[dataField].map((value) => ({
+            ...value,
+            SOURCE: current.source.cdm_source_key,
+          })),
+        ],
+        []
+      )
+    : null;
+}
 
 export default function networkConcept(data) {
+  const dateParse = d3.timeParse("%Y%m");
+
   const concept: MultipleFilesRawInterface<ConceptType>[] = data[CONCEPT];
+  if (!concept[0]) {
+    return;
+  }
   return {
     metadata: {
       conceptName: concept[0].data.CONCEPT_NAME[0],
@@ -21,6 +42,27 @@ export default function networkConcept(data) {
               ...current.data.MEASUREMENT_VALUE_DISTRIBUTION.map((value) => ({
                 ...value,
                 SOURCE_UNIT_KEY: `${current.source.cdm_source_key} - ${value.CATEGORY}`,
+              })),
+            ],
+            []
+          )
+        : null,
+      ageAtFirstExposure: augmentReport(concept, "AGE_AT_FIRST_EXPOSURE"),
+      drugsByType: augmentReport(concept, "DRUGS_BY_TYPE"),
+      daysSupply: augmentReport(concept, "DAYS_SUPPLY_DISTRIBUTION"),
+      quantityDistribution: augmentReport(concept, "QUANTITY_DISTRIBUTION"),
+      ageAtFirstDiagnosis: augmentReport(concept, "AGE_AT_FIRST_DIAGNOSIS"),
+      conditionsByType: augmentReport(concept, "CONDITIONS_BY_TYPE"),
+      recordCountProportionByMonth: concept.filter(
+        (value) => value.data.PREVALENCE_BY_MONTH?.length
+      ).length
+        ? concept.reduce(
+            (prevValue, current) => [
+              ...prevValue,
+              ...current.data.PREVALENCE_BY_MONTH.map((value) => ({
+                ...value,
+                SOURCE: current.source.cdm_source_key,
+                date: dateParse(value.X_CALENDAR_MONTH.toString()),
               })),
             ],
             []
