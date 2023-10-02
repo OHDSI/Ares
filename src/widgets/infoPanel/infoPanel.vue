@@ -97,6 +97,17 @@
       ></v-badge>
       <p class="text-caption">Proportion by Sex</p>
     </v-col>
+    <v-col v-if="props.networkPopulation" cols="2" align="center">
+      <v-icon left color="info">mdi-account-group</v-icon>
+      <v-badge
+        tile
+        inline
+        dark
+        color="info"
+        :content="props.networkPopulation"
+      ></v-badge>
+      <p class="text-caption">Number of People in Network</p>
+    </v-col>
   </v-row>
 </template>
 
@@ -122,6 +133,7 @@ interface Props {
   };
   countFailed?: { value: string; action: () => void };
   notStationary?: boolean;
+  networkPopulation?: number;
 }
 
 const props = defineProps<Props>();
