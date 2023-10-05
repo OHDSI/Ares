@@ -15,34 +15,6 @@
       <v-col cols="auto">
         <SelectColumns :headers="headers" />
       </v-col>
-      <v-col cols="auto">
-        <v-menu
-          attach
-          v-model="chooseFilter"
-          bottom
-          :close-on-content-click="false"
-          :offset-y="true"
-        >
-          <template #activator="{ props }">
-            <v-btn color="primary" v-bind="props">
-              <v-icon dark left>mdi-filter</v-icon>
-              Helpful Filters
-            </v-btn>
-          </template>
-          <v-list density="compact">
-            <v-list-item v-for="(item, index) in helpfulFilters" :key="index">
-              <v-checkbox-btn
-                v-model="selectedFilter"
-                :label="item.text"
-                :value="item"
-                :multiple="false"
-                hide-details="auto"
-                @update:modelValue="helpfulFilterUpdate(item.preset)"
-              ></v-checkbox-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-col>
       <v-col>
         <NestedMenu
           :data="store.getters.getData.checkResults"
@@ -195,47 +167,15 @@ const router = useRouter();
 
 const expanded = ref([]);
 const chooseFilter: Ref<boolean> = ref(false);
-const helpfulFilters = ref([
-  {
-    text: "Failed Checks",
-    key: "failed",
-    preset: {
-      failed: ["FAIL"],
-      cdmTableName: [],
-      cdmTableName: [],
-      checkName: [],
-      notesExist: [],
-      category: [],
-      subcategory: [],
-      context: [],
-      checkLevel: [],
-    },
-  },
-  {
-    text: "No Filters",
-    key: "noFilters",
-    preset: {
-      failed: [],
-      cdmTableName: [],
-      cdmFieldName: [],
-      checkName: [],
-      notesExist: [],
-      category: [],
-      subcategory: [],
-      context: [],
-      checkLevel: [],
-    },
-  },
-]);
 const filters = ref({
-  FAILED: [],
+  failed: [],
   cdmTableName: [],
-  CDM_FIELD_NAME: [],
-  CHECK_NAME: [],
-  NOTES_EXIST: [],
-  CATEGORY: [],
+  cdmFieldName: [],
+  checkName: [],
+  notesExist: [],
+  category: [],
   subcategory: [],
-  CONTEXT: [],
+  context: [],
   checkLevel: [],
 });
 const selectedFilter = ref([]);
@@ -243,7 +183,7 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Status",
     sortable: true,
-    key: "FAILED",
+    key: "failed",
     show: true,
     default: true,
   },
@@ -257,26 +197,26 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Field",
     sortable: true,
-    key: "CDM_FIELD_NAME",
+    key: "cdmFieldName",
     show: false,
     default: false,
   },
   {
     title: "Check",
     sortable: true,
-    key: "CHECK_NAME",
+    key: "checkName",
     show: false,
     default: false,
   },
   {
     title: "Category",
     sortable: true,
-    key: "CATEGORY",
+    key: "category",
     show: false,
     default: false,
   },
   {
-    title: "subcategory",
+    title: "Subcategory",
     sortable: true,
     key: "subcategory",
     show: false,
@@ -285,7 +225,7 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Context",
     sortable: true,
-    key: "CONTEXT",
+    key: "contexts",
     show: false,
     default: false,
   },
@@ -299,7 +239,7 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Notes",
     sortable: true,
-    key: "NOTES_EXIST",
+    key: "notesExist",
     show: false,
     default: false,
   },
@@ -366,15 +306,6 @@ const cmOptions = computed(function () {
     autoRefresh: true,
   };
 });
-const helpfulFilterUpdate = function (filter): void {
-  filters.value = Object.keys(filters.value).reduce(
-    (acc, key) => ({
-      ...acc,
-      [key]: filter[key] ? filter[key] : [],
-    }),
-    {}
-  );
-};
 const renderDescription = function (d) {
   let thresholdMessage = "";
   if (d.thresholdValue != undefined) {
@@ -421,28 +352,12 @@ const updateColumnsList = function (): void {
     }
   });
 };
-const updateFiltersFromUrl = function (): void {
-  const parsedParams = JSON.parse(filterParams.value);
-  helpfulFilterUpdate(
-    Object.keys(parsedParams).reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: Array.isArray(parsedParams[key])
-          ? [...parsedParams[key]]
-          : [parsedParams[key]],
-      }),
-      {}
-    )
-  );
-};
 
 watch(filterParams, (): void => {
-  updateFiltersFromUrl();
   updateColumnsList();
 });
 
 onBeforeMount((): void => {
-  updateFiltersFromUrl();
   updateColumnsList();
 });
 </script>
