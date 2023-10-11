@@ -65,10 +65,7 @@
         <v-row dense>
           <v-col cols="2">Table</v-col>
           <v-col>
-            <a
-              :href="links.getDocsLink(item.raw.cdmTableName)"
-              target="_blank"
-            >
+            <a :href="links.getDocsLink(item.raw.cdmTableName)" target="_blank">
               {{ item.raw.cdmTableName }}
               <v-icon small>mdi-open-in-new</v-icon>
             </a>
@@ -166,8 +163,8 @@ const route = useRoute();
 const router = useRouter();
 
 const expanded = ref([]);
-const chooseFilter: Ref<boolean> = ref(false);
-const filters = ref({
+const filters = ref({});
+const defaultFilters = {
   failed: [],
   cdmTableName: [],
   cdmFieldName: [],
@@ -177,8 +174,7 @@ const filters = ref({
   subcategory: [],
   context: [],
   checkLevel: [],
-});
-const selectedFilter = ref([]);
+};
 const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Status",
@@ -353,12 +349,31 @@ const updateColumnsList = function (): void {
   });
 };
 
+const updateFiltersFromUrl = function (): void {
+  const parsedParams = JSON.parse(filterParams.value);
+
+  filters.value = {
+    ...defaultFilters,
+    ...Object.keys(parsedParams).reduce(
+      (acc, key) => ({
+        ...acc,
+        [key]: Array.isArray(parsedParams[key])
+          ? [...parsedParams[key]]
+          : [parsedParams[key]],
+      }),
+      {}
+    ),
+  };
+};
+
 watch(filterParams, (): void => {
   updateColumnsList();
+  updateFiltersFromUrl();
 });
 
 onBeforeMount((): void => {
   updateColumnsList();
+  updateFiltersFromUrl();
 });
 </script>
 

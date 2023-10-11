@@ -338,8 +338,8 @@ const navigateToDataQuality = function () {
     },
     query: {
       tab: "results",
-      CDM_TABLE_NAME: route.params.domain.toUpperCase(),
-      FAILED: "FAIL",
+      cdmTableName: route.params.domain.toUpperCase(),
+      failed: "FAIL",
     },
   });
 };
