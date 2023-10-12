@@ -8,89 +8,26 @@
           </h2>
           <ReturnButton />
         </v-layout>
-        <v-row v-if="store.getters.dataInStore" justify="start"
-          ><v-col cols="2" align="center">
-            <v-icon left color="primary">mdi-identifier</v-icon>
-            <v-badge
-              tile
-              inline
-              color="primary"
-              :content="store.getters.getData.conceptId"
-            ></v-badge>
-            <p class="text-caption">Concept Identifier</p></v-col
-          ><v-col cols="2" align="center">
-            <v-icon left color="primary">mdi-account-group</v-icon>
-            <v-badge
-              tile
-              inline
-              dark
-              color="primary"
-              :content="store.getters.getData.numPersons"
-            ></v-badge>
-            <p class="text-caption">Number of People</p></v-col
-          ><v-col cols="2" align="center">
-            <v-icon small left color="primary">mdi-percent</v-icon>
-            <v-badge
-              tile
-              inline
-              dark
-              color="primary"
-              :content="
-                helpers.formatPercent(store.getters.getData.percentPersons)
-              "
-            ></v-badge>
-            <p class="text-caption">% of People</p></v-col
-          ><v-col cols="2" align="center">
-            <v-icon left color="primary">mdi-table-row</v-icon>
-            <v-badge
-              tile
-              inline
-              dark
-              color="primary"
-              :content="store.getters.getData.recordsPerPerson"
-            ></v-badge>
-            <p class="text-caption">Records per Person</p></v-col
-          >
-          <v-col
-            v-if="route.params.domain === 'measurement'"
-            cols="2"
-            align="center"
-          >
-            <v-icon left color="primary">mdi-database-check-outline</v-icon>
-            <v-badge
-              tile
-              inline
-              dark
-              color="primary"
-              :content="getPercentWithValues"
-            ></v-badge>
-            <p class="text-caption">% with Values</p></v-col
-          >
-          <v-col
-            v-if="store.getters.getData.conceptData.COUNT_FAILED"
-            cols="2"
-            align="center"
-          >
-            <v-icon left color="error" @click="navigateToDataQuality()"
-              >mdi-database-alert</v-icon
-            >
-            <v-badge
-              tile
-              inline
-              dark
-              color="error"
-              :content="store.getters.getData.countFailed"
-            ></v-badge>
-            <p class="text-caption">Data Quality Issues</p></v-col
-          ><v-col
-            v-if="store.getters.getData.isNotStationary"
-            cols="2"
-            align="center"
-          >
-            <v-icon left color="error">mdi-clock-alert</v-icon>
-            <p class="text-caption">Non-Stationary Time Series</p></v-col
-          ></v-row
-        >
+        <InfoPanel
+          :concept="store.getters.getData.conceptId"
+          :population="store.getters.getData.numPersons"
+          :percent-people="store.getters.getData.percentPersons"
+          :records-per-person="store.getters.getData.recordsPerPerson"
+          :percent-values="
+            route.params.domain === 'measurement'
+              ? getPercentWithValues
+              : undefined
+          "
+          :count-failed="
+            store.getters.getData.countFailed
+              ? {
+                  value: store.getters.getData.countFailed,
+                  action: navigateToDataQuality,
+                }
+              : undefined
+          "
+          :not-stationary="store.getters.getData.isNotStationary"
+        />
         <MeasurementTable />
         <MeasurementValueDistribution />
         <AgeAtFirstDiagnosis />
@@ -122,7 +59,6 @@
 <script setup lang="ts">
 import ReturnButton from "@/features/returnToPreviousPage";
 import { useRoute } from "vue-router";
-import { helpers } from "@/shared/lib/mixins";
 import { computed } from "vue";
 import { useStore } from "vuex";
 import MeasurementTable from "@/pages/reports/release/ConceptReport/charts/MeasurementTable/MeasurementTable.vue";
@@ -142,6 +78,7 @@ import VisitDurationByType from "@/pages/reports/release/ConceptReport/charts/Vi
 import RecordCountProportionByAgeSexYear from "@/pages/reports/release/ConceptReport/charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
 import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
+import InfoPanel from "@/widgets/infoPanel";
 
 const route = useRoute();
 const store = useStore();

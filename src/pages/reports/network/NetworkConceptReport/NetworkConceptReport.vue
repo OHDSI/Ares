@@ -111,6 +111,7 @@ import DaysSupply from "@/pages/reports/network/NetworkConceptReport/charts/days
 import QuantityDistribution from "@/pages/reports/network/NetworkConceptReport/charts/quantityDistribution/QuantityDistribution.vue";
 import AgeAtFirstDiagnosis from "@/pages/reports/network/NetworkConceptReport/charts/ageAtFirstDiagnosis/AgeAtFirstDiagnosis.vue";
 import ConditionsByType from "@/pages/reports/network/NetworkConceptReport/charts/conditionsByType/ConditionsByType.vue";
+import InfoPanel from "@/widgets/infoPanel";
 
 const store = useStore();
 const router = useRouter();

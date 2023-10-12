@@ -1,9 +1,11 @@
 <template>
+
   <v-card
     v-if="store.getters.getData.measurementTable"
     elevation="2"
     class="ma-4"
   >
+    <ChartHeader title="Measurement Value Distributions by Unit"></ChartHeader>    
     <v-data-table
       density="compact"
       :headers="headers"
@@ -17,6 +19,7 @@
 import { VDataTable } from "vuetify/labs/VDataTable";
 import { ref, Ref } from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { useStore } from "vuex";
 
 const store = useStore();

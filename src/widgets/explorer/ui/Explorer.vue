@@ -1,9 +1,9 @@
 <template>
   <div v-if="store.getters.explorerLoaded" id="explorer" class="pa-2">
     <v-row>
-      <v-col cols="1">
+      <v-col cols="1" class="d-flex justify-center align-center">
         <v-btn to="/home" icon variant="plain">
-          <v-img :class="iconClass" :src="icon" width="32"></v-img> </v-btn
+          <v-img :class="iconClass" :src="icon" width="42"></v-img> </v-btn
       ></v-col>
       <v-col cols="auto">
         <v-autocomplete
@@ -13,7 +13,7 @@
           prepend-icon="mdi-folder"
           return-object
           density="compact"
-          variant="outlined"
+          variant="underlined"
           :items="config.folders"
           item-title="name"
           item-value="name"
@@ -31,14 +31,13 @@
       <v-col v-if="showSourceSelector" cols="auto">
         <v-autocomplete
           class="mt-2"
-          variant="outlined"
-          label="Data Source"
+          variant="underlined"
+          label="Source"
           density="compact"
           :model-value="store.getters.getSelectedSource"
           return-object
           prepend-icon="mdi-database"
           auto-select-first
-          dense
           :items="store.getters.getSources"
           item-title="cdm_source_abbreviation"
           item-value="cdm_source_key"
@@ -49,7 +48,7 @@
       <v-col v-if="showReleaseSelector" cols="auto">
         <v-autocomplete
           class="mt-2"
-          variant="outlined"
+          variant="underlined"
           density="compact"
           label="Data Source Release"
           :model-value="store.getters.getSelectedRelease"
@@ -68,7 +67,7 @@
           class="mt-2"
           label="Report"
           density="compact"
-          variant="outlined"
+          variant="underlined"
           :model-value="store.getters.getSelectedReport"
           return-object
           prepend-icon="mdi-file-chart"
@@ -89,7 +88,7 @@
       <v-col v-if="showConceptSelector" cols="auto">
         <v-autocomplete
           readonly
-          variant="outlined"
+          variant="underlined"
           density="compact"
           class="mt-2"
           label="Concept ID"
@@ -191,4 +190,7 @@ tr:hover {
 .inverted {
   filter: invert(1);
 }
+ .v-list-item{
+   min-height: 30px !important;
+ }
 </style>
