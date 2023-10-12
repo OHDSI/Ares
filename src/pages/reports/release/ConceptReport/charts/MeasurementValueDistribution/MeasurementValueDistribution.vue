@@ -5,7 +5,7 @@
     elevation="2"
     class="ma-4"
   >
-    <ChartHeader title="Measurement Value Distributions" />
+    <ChartHeader title="Measurement Value Distributions by Unit" />
 
     <v-layout class="pa-4">
       <v-select
