@@ -1,18 +1,14 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-    <ChartHeader title="Record Count Proportion by Month" />
+  <v-card elevation="2" class="ma-4">
+    <ChartHeader title="Length of Era" />
+
     <Chart
-      v-if="store.getters.dataInStore"
-      :id="reportId"
-      width="85"
-      :chartSpec="specRecordProportionByMonth"
+      id="viz-lengthofera"
+      :chartSpec="specLengthOfEra"
       :data="props.data"
+      width="80"
     />
     <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        icon="mdi-help-circle"
-        tooltip="Proportion of people with at least one record per 1000 people."
-      />
       <ChartActionIcon
         v-if="store.getters.getQueryIndex"
         icon="mdi-code-braces"
@@ -21,7 +17,7 @@
           helpers.openNewTab(
             links.getSqlQueryLink(
               store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                .PREVALENCE_BY_MONTH[0]
+                .LENGTH_OF_ERA[0]
             )
           )
         "
@@ -33,24 +29,22 @@
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
+import { specLengthOfEra } from "./specLengthOfEra";
 import { useStore } from "vuex";
+import { useRoute } from "vue-router";
 import { defineProps } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 
 interface Props {
-  data: [];
+  data: DistributionType[];
 }
 
 const props = defineProps<Props>();
-
 const store = useStore();
 const route = useRoute();
-
-const reportId = "viz-networkrecordproportionbymonth";
 </script>
 
 <style scoped></style>

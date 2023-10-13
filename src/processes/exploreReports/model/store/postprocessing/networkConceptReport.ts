@@ -49,10 +49,15 @@ export default function networkConcept(data) {
         : null,
       ageAtFirstExposure: augmentReport(concept, "AGE_AT_FIRST_EXPOSURE"),
       drugsByType: augmentReport(concept, "DRUGS_BY_TYPE"),
+      visitDurationByType: augmentReport(concept, "VISIT_DURATION_BY_TYPE"),
       daysSupply: augmentReport(concept, "DAYS_SUPPLY_DISTRIBUTION"),
       quantityDistribution: augmentReport(concept, "QUANTITY_DISTRIBUTION"),
       ageAtFirstDiagnosis: augmentReport(concept, "AGE_AT_FIRST_DIAGNOSIS"),
       conditionsByType: augmentReport(concept, "CONDITIONS_BY_TYPE"),
+      recordsByUnit: augmentReport(concept, "RECORDS_BY_UNIT"),
+      measurementsByType: augmentReport(concept, "MEASUREMENTS_BY_TYPE"),
+      lengthOfEra: augmentReport(concept, "LENGTH_OF_ERA"),
+      ageAtFirstOccurrence: augmentReport(concept, "AGE_AT_FIRST_OCCURRENCE"),
       recordCountProportionByMonth: concept.filter(
         (value) => value.data.PREVALENCE_BY_MONTH?.length
       ).length

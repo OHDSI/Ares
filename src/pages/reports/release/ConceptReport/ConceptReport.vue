@@ -9,6 +9,7 @@
           <ReturnButton />
         </v-layout>
         <InfoPanel
+          :network-concept-report="navigateToNetworkConcept"
           :concept="store.getters.getData.conceptId"
           :population="store.getters.getData.numPersons"
           :percent-people="store.getters.getData.percentPersons"
@@ -58,7 +59,7 @@
 
 <script setup lang="ts">
 import ReturnButton from "@/features/returnToPreviousPage";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
 import { useStore } from "vuex";
 import MeasurementTable from "@/pages/reports/release/ConceptReport/charts/MeasurementTable/MeasurementTable.vue";
@@ -81,6 +82,7 @@ import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue
 import InfoPanel from "@/widgets/infoPanel";
 
 const route = useRoute();
+const router = useRouter();
 const store = useStore();
 
 const getPercentWithValues = computed((): string => {
@@ -95,6 +97,15 @@ const navigateToDataQuality = function () {
     name: "dataQuality",
     query: { tab: "results", search: route.params.concept },
   };
+};
+const navigateToNetworkConcept = function () {
+  router.push({
+    name: "networkConcept",
+    params: {
+      domain: route.params.domain,
+      concept: route.params.concept,
+    },
+  });
 };
 </script>
 
