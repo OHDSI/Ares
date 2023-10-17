@@ -29,7 +29,7 @@
             ></v-select>
           </v-col>
           <v-col cols="3">
-            <v-btn variant="flat" @click="atClick"> Show report </v-btn>
+            <v-btn color="primary" @click="atClick">Update report </v-btn>
           </v-col>
         </v-row>
         <div v-if="store.getters.getData">

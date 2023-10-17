@@ -2,33 +2,32 @@
   <div>
     <v-container v-if="!store.getErrors && store.getters.dataInStore" fluid>
       <v-responsive min-width="900">
-        <v-layout class="ma-0 mb-6 d-flex justify-md-space-between">
-          <h2 class="text-uppercase">
-            {{ store.getters.getData.conceptName }}
-          </h2>
-          <ReturnButton />
+        <v-layout class="ma-0 mb-2 align-center d-flex">
+          <v-col class="justify-start align-center d-flex">
+            <h2 class="text-uppercase">
+              {{ store.getters.getData.conceptName }}
+            </h2>
+          </v-col>
+          <v-col class="justify-end align-center d-flex">
+            <v-btn class="ma-4" color="primary" density="comfortable" prepend-icon="mdi-check-network"
+              @click="navigateToNetworkConcept">
+              Network Report
+            </v-btn>
+            <ReturnButton />
+          </v-col>
         </v-layout>
-        <InfoPanel
-          :network-concept-report="navigateToNetworkConcept"
-          :concept="store.getters.getData.conceptId"
-          :population="store.getters.getData.numPersons"
-          :percent-people="store.getters.getData.percentPersons"
-          :records-per-person="store.getters.getData.recordsPerPerson"
-          :percent-values="
-            route.params.domain === 'measurement'
-              ? getPercentWithValues
-              : undefined
-          "
-          :count-failed="
-            store.getters.getData.countFailed
-              ? {
-                  value: store.getters.getData.countFailed,
-                  action: navigateToDataQuality,
-                }
-              : undefined
-          "
-          :not-stationary="store.getters.getData.isNotStationary"
-        />
+        <InfoPanel :network-concept-report="navigateToNetworkConcept" :concept="store.getters.getData.conceptId"
+          :population="store.getters.getData.numPersons" :percent-people="store.getters.getData.percentPersons"
+          :records-per-person="store.getters.getData.recordsPerPerson" :percent-values="route.params.domain === 'measurement'
+            ? getPercentWithValues
+            : undefined
+            " :count-failed="store.getters.getData.countFailed
+    ? {
+      value: store.getters.getData.countFailed,
+      action: navigateToDataQuality,
+    }
+    : undefined
+    " :not-stationary="store.getters.getData.isNotStationary" />
         <MeasurementTable />
         <MeasurementValueDistribution />
         <AgeAtFirstDiagnosis />
@@ -45,14 +44,9 @@
         <VisitDurationByType />
         <RecordCountProportionByAgeSexYear />
       </v-responsive>
-      <form-dialog
-        @close="store.commit(SET_DIALOG, false)"
-        v-if="store.getters.getDialogData.show"
-        :show="store.getters.getDialogData.show"
-        :action="store.getters.getDialogData.action"
-        :data="store.getters.getDialogData.data"
-        :form-title="'Edit selection'"
-      />
+      <form-dialog @close="store.commit(SET_DIALOG, false)" v-if="store.getters.getDialogData.show"
+        :show="store.getters.getDialogData.show" :action="store.getters.getDialogData.action"
+        :data="store.getters.getDialogData.data" :form-title="'Edit selection'" />
     </v-container>
   </div>
 </template>

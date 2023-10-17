@@ -108,12 +108,6 @@
       ></v-badge>
       <p class="text-caption">Number of People in Network</p>
     </v-col>
-    <v-col v-if="props.networkConceptReport" cols="2" align="center">
-      <v-icon class="btn" @click="props.networkConceptReport()">
-        mdi-check-network
-      </v-icon>
-      <p class="text-caption">See results across the network</p>
-    </v-col>
   </v-row>
 </template>
 
