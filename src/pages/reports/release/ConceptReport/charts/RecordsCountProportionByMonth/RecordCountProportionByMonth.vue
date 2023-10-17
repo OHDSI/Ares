@@ -10,7 +10,7 @@
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
-      width="99"
+      width="98"
       :chartSpec="specRecordProportionByMonth"
       :annotations-config="{
         chartSpec: specRecordProportionByMonthAnnotation,

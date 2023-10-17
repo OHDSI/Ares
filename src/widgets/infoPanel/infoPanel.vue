@@ -1,5 +1,5 @@
 <template>
-  <v-row class="ma-4" justify="start">
+  <v-row class="ma-4 align-baseline" justify="start" align="baseline">
     <v-col v-if="props.concept" cols="2">
       <v-icon left color="primary">mdi-identifier</v-icon>
       <v-badge tile inline color="primary" :content="props.concept"></v-badge>
@@ -134,9 +134,20 @@ interface Props {
   countFailed?: { value: string; action: () => void };
   notStationary?: boolean;
   networkPopulation?: number;
+  networkConceptReport?: () => void;
 }
 
 const props = defineProps<Props>();
 </script>
 
-<style scoped></style>
+<style scoped>
+.btn:hover {
+  opacity: 1;
+  transition-duration: 0.5s;
+}
+
+.btn {
+  opacity: 0.7;
+  transition-duration: 0.5s;
+}
+</style>

@@ -19,6 +19,12 @@ export const reports = [
   },
   {
     folder: "Data Network",
+    icon: "mdi-check-network",
+    name: "Network Concept Report",
+    routeName: "networkConcept",
+  },
+  {
+    folder: "Data Network",
     icon: "mdi-database-search",
     name: "Network Concept Dashboard",
     routeName: "networkConceptDashboard",

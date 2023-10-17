@@ -1,10 +1,5 @@
 <template>
-  <v-card
-    v-if="store.getters.getData.chart"
-    :loading="!store.getters.getData"
-    elevation="2"
-    class="ma-4"
-  >
+  <v-card elevation="2" class="ma-4">
     <ChartHeader title="Measurement Value Distributions by Database and Unit" />
     <v-layout class="pa-4">
       <v-select
@@ -54,33 +49,34 @@ import { Chart } from "@/widgets/chart";
 import { specMeasurementValueDistribution } from "./specMeasurementValueDistribution";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { computed, ref, Ref } from "vue";
+import { computed, ref, Ref, defineProps } from "vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 import { useRouter } from "vue-router";
+import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 
 const store = useStore();
 const router = useRouter();
 
+interface Props {
+  data: DistributionType[];
+}
+
+const props = defineProps<Props>();
+
 const getMeasurementUnits = computed(function () {
-  return [
-    ...new Set(
-      store.getters.getData?.chart?.measurementValueDistribution.map(
-        (value) => value.CATEGORY
-      )
-    ),
-  ];
+  return [...new Set(props.data.map((value) => value.CATEGORY))];
 });
 
 const selectedMeasurementUnits: Ref<string[]> = ref([]);
 
 const getSelectedMeasurementUnits = computed(function () {
   return selectedMeasurementUnits.value.length
-    ? store.getters.getData?.chart?.measurementValueDistribution.filter(
-        (value) => selectedMeasurementUnits.value.includes(value.CATEGORY)
+    ? props.data.filter((value) =>
+        selectedMeasurementUnits.value.includes(value.CATEGORY)
       )
-    : store.getters.getData?.chart?.measurementValueDistribution;
+    : props.data;
 });
 </script>
 
