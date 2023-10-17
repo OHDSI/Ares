@@ -14,27 +14,26 @@ export function specConditionsByType(zeroBaseline = false) {
       type: "nominal",
       title: null,
     },
+    transform: [
+      {
+        window: [
+          {
+            op: "sum",
+            field: "COUNT_VALUE",
+            as: "TOTAL_VALUE",
+          },
+        ],
+        frame: [null, null],
+      },
+      {
+        calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
+        as: "PERCENT",
+      },
+    ],
     spec: {
       width: "container",
       height: 75,
       mark: "bar",
-      data: { name: "conceptData" },
-      transform: [
-        {
-          window: [
-            {
-              op: "sum",
-              field: "COUNT_VALUE",
-              as: "TOTAL_VALUE",
-            },
-          ],
-          frame: [null, null],
-        },
-        {
-          calculate: "datum.COUNT_VALUE/datum.TOTAL_VALUE",
-          as: "PERCENT",
-        },
-      ],
       encoding: {
         tooltip: [
           { field: "CONCEPT_NAME", title: "Condition Type" },

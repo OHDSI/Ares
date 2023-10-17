@@ -20,7 +20,6 @@ export function specAgeAtFirstExposure(
     spec: {
       height: 100,
       width: "container",
-      data: { name: "conceptData" },
       encoding: {
         y: {
           field: "CATEGORY",

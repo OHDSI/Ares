@@ -21,7 +21,6 @@ export function specDaysSupply(
     spec: {
       height: 100,
       width: "container",
-      data: { name: "conceptData" },
       layer: [
         {
           mark: { type: "rule" },
