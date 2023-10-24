@@ -24,7 +24,13 @@
       >
     </v-layout>
     <v-card-text class="text-h7 py-2">
-      {{ props.note.description }}
+      <Markdown
+        v-if="props.note.description"
+        html
+        breaks
+        :source="props.note.description"
+      ></Markdown>
+      <!--      {{ props.note.description }}-->
     </v-card-text>
     <v-divider></v-divider>
   </v-card>
@@ -40,14 +46,14 @@
       ></v-text-field>
     </v-card-title>
     <v-card-text class="text-h8 py-2">
-      <v-textarea
-        label="Description"
-        variant="plain"
-        hide-details
-        density="compact"
+      <Codemirror
+        :style="{ height: '150px' }"
         v-model="currentCard.description"
+        :indent-with-tab="true"
+        :tab-size="2"
+        :extensions="extensions"
         @update:modelValue="editCard()"
-      ></v-textarea>
+      ></Codemirror>
     </v-card-text>
 
     <v-card-actions class="justify-space-between">
@@ -72,8 +78,15 @@
 <script setup lang="ts">
 import { defineProps, ref, defineEmits, onBeforeMount, computed } from "vue";
 import { useStore } from "vuex";
+import { Codemirror } from "vue-codemirror";
+import { markdown } from "@codemirror/lang-markdown";
+import { oneDark } from "@codemirror/theme-one-dark";
+import Markdown from "vue3-markdown-it";
 
 const emit = defineEmits(["editCard", "deleteCard"]);
+
+const store = useStore();
+const extensions = [markdown(), oneDark];
 
 interface Note {
   title: string;
@@ -133,10 +146,17 @@ const confirmDelete = ref(false);
 const props = defineProps<Props>();
 </script>
 
-<style scoped>
+<style lang="scss">
 .card {
   display: flex;
   align-content: space-between;
   flex-direction: column;
+}
+
+.cm-editor {
+  background-color: rgba(var(--v-theme-surface));
+}
+.cm-gutters {
+  background-color: rgba(var(--v-theme-accent)) !important;
 }
 </style>

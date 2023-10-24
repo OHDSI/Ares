@@ -112,9 +112,9 @@
           <v-col cols="2">SQL Query</v-col>
           <v-col>
             <Codemirror
-              ref="myCm"
-              :value="item.raw.queryText"
-              :options="cmOptions"
+              :model-value="item.raw.queryText"
+              :extensions="extensions"
+              disabled
             ></Codemirror>
           </v-col>
         </v-row>
@@ -150,7 +150,6 @@
 import { VDataTable } from "vuetify/labs/VDataTable";
 import SelectColumns from "@/features/selectColumns";
 import NestedMenu from "@/features/nestedMenu/NestedMenu.vue";
-import Codemirror from "codemirror-editor-vue3";
 import { links } from "@/shared/config/links";
 import { helpers } from "@/shared/lib/mixins";
 import { useStore } from "vuex";
@@ -158,9 +157,14 @@ import { computed, onBeforeMount, Ref, ref, watch } from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { debounce } from "lodash";
 import { useRoute, useRouter } from "vue-router";
+import { Codemirror } from "vue-codemirror";
+import { sql } from "@codemirror/lang-sql";
+import { oneDark } from "@codemirror/theme-one-dark";
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
+
+const extensions = [sql(), oneDark];
 
 const expanded = ref([]);
 const filters = ref({});
@@ -290,17 +294,6 @@ const filteredChecks = computed(() => {
       return filters.value[f].length < 1 || filters.value[f].includes(d[f]);
     });
   });
-});
-const cmOptions = computed(function () {
-  return {
-    theme: store.getters.getSettings.darkMode ? "base16-dark" : "neat",
-    lineWrapping: true,
-    tabSize: 2,
-    mode: "text/x-sql",
-    viewportMargin: Infinity,
-    lineNumbers: true,
-    autoRefresh: true,
-  };
 });
 const renderDescription = function (d) {
   let thresholdMessage = "";
