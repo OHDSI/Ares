@@ -3,7 +3,8 @@ import { TopLevelSpec } from "vega-lite";
 
 export function specAgeAtFirstOccurrence(
   zeroBaseline = false,
-  minMax = false
+  minMax = false,
+  labelColor
 ): TopLevelSpec {
   return {
     $schema: VEGA_SCHEMA,
@@ -12,6 +13,10 @@ export function specAgeAtFirstOccurrence(
       row: {
         field: "SOURCE",
         title: "Source",
+        header: {
+          labelColor: labelColor,
+          titleColor: labelColor,
+        },
       },
       field: "Source",
       type: "nominal",

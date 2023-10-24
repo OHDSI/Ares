@@ -111,6 +111,7 @@ export function specRecordProportionByMonth(zeroBaseline = false) {
         width: "container",
         height: 25,
         mark: "line",
+        data: { name: "conceptData" },
         selection: {
           brush: { type: "interval", encodings: ["x"] },
         },

@@ -16,21 +16,13 @@ export default {
 import { vegaLite } from "vega-embed";
 import * as vega from "vega";
 import { useStore } from "vuex";
-import _ from "lodash";
 
 import * as d3 from "d3";
 import * as d3_annotations from "d3-svg-annotation";
 
 import { darkTheme, lightTheme } from "@/widgets/chart/model/themes";
-import {
-  computed,
-  watch,
-  defineProps,
-  ref,
-  onMounted,
-  withDefaults,
-} from "vue";
-import { useRoute, RouteLocationNormalizedLoaded } from "vue-router";
+import { computed, watch, defineProps, onMounted, withDefaults } from "vue";
+import { RouteLocationNormalizedLoaded } from "vue-router";
 import { TopLevelSpec } from "vega-lite";
 import { Handler } from "vega-tooltip";
 import ContextMenu from "@/entities/contextMenu/contextMenu.vue";
@@ -48,10 +40,10 @@ interface Props {
   data: object[] | string[];
   id: string;
   width?: string;
-  chartSpec: (a?: boolean, b?: boolean) => TopLevelSpec;
+  chartSpec: (a?: boolean, b?: boolean, c?: string) => TopLevelSpec;
   annotationMode?: boolean;
   annotationsConfig?: {
-    chartSpec: (a?: boolean, b?: boolean) => TopLevelSpec;
+    chartSpec: (a?: boolean, b?: boolean, c?: string) => TopLevelSpec;
     annotationsParentElement: string;
     brushParentElement: string;
   };
@@ -119,7 +111,8 @@ const processedConfig = function (): TopLevelSpec {
     return {
       ...props.annotationsConfig.chartSpec(
         store.getters.getSettings.zeroBaseline,
-        store.getters.getSettings.minMax
+        store.getters.getSettings.minMax,
+        store.getters.getSettings.darkMode ? "white" : "black"
       ),
       datasets: {
         conceptData: props.data,
@@ -131,7 +124,8 @@ const processedConfig = function (): TopLevelSpec {
     return {
       ...props.chartSpec(
         store.getters.getSettings.zeroBaseline,
-        store.getters.getSettings.minMax
+        store.getters.getSettings.minMax,
+        store.getters.getSettings.darkMode ? "white" : "black"
       ),
       datasets: {
         conceptData: props.data,

@@ -1,7 +1,11 @@
 import { VEGA_SCHEMA } from "@/shared/config/links";
 import { TopLevelSpec } from "vega-lite";
 
-export function specRecordProportionByAgeSexYear(zeroBaseline = false) {
+export function specRecordProportionByAgeSexYear(
+  zeroBaseline = false,
+  minMax,
+  labelColor
+) {
   return {
     $schema: VEGA_SCHEMA,
     spacing: 10,
@@ -12,6 +16,10 @@ export function specRecordProportionByAgeSexYear(zeroBaseline = false) {
         field: "TRELLIS_NAME",
         title: "Age Deciles",
         sort: { field: "trellisOrder" },
+        header: {
+          labelColor: labelColor,
+          titleColor: labelColor,
+        },
       },
       field: "TRELLIS_NAME",
       type: "nominal",

@@ -1,13 +1,17 @@
 import { VEGA_SCHEMA } from "@/shared/config/links";
 import { TopLevelSpec, Config } from "vega-lite";
 
-export function specRecordsByUnit(zeroBaseline = false) {
+export function specRecordsByUnit(zeroBaseline = false, minNax, labelColor) {
   return {
     $schema: VEGA_SCHEMA,
     facet: {
       row: {
         field: "SOURCE",
         title: "Source",
+        header: {
+          labelColor: labelColor,
+          titleColor: labelColor,
+        },
       },
       field: "Source",
       type: "nominal",
