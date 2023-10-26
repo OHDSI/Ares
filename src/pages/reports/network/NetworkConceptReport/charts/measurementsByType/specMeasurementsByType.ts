@@ -1,7 +1,11 @@
 import { VEGA_SCHEMA } from "@/shared/config/links";
 import { TopLevelSpec } from "vega-lite";
 
-export function specMeasurementsByType(zeroBaseline = false) {
+export function specMeasurementsByType(
+  zeroBaseline = false,
+  minMax,
+  labelColor
+) {
   return {
     $schema: VEGA_SCHEMA,
     data: { name: "conceptData" },
@@ -9,6 +13,10 @@ export function specMeasurementsByType(zeroBaseline = false) {
       row: {
         field: "SOURCE",
         title: "Source",
+        header: {
+          labelColor: labelColor,
+          titleColor: labelColor,
+        },
       },
       field: "Source",
       type: "nominal",

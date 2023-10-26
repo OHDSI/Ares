@@ -3,7 +3,8 @@ import { TopLevelSpec } from "vega-lite";
 
 export function specDaysSupply(
   zeroBaseline = false,
-  minMax = false
+  minMax = false,
+  labelColor
 ): TopLevelSpec {
   return {
     $schema: VEGA_SCHEMA,
@@ -13,6 +14,10 @@ export function specDaysSupply(
       row: {
         field: "SOURCE",
         title: "Source",
+        header: {
+          labelColor: labelColor,
+          titleColor: labelColor,
+        },
       },
       field: "SOURCE",
       type: "nominal",
