@@ -377,4 +377,11 @@ onBeforeMount((): void => {
 });
 </script>
 
-<style scoped></style>
+<style>
+td {
+  max-width: 300px;
+  overflow: auto;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+</style>
