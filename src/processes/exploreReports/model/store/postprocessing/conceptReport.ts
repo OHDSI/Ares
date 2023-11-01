@@ -11,7 +11,7 @@ export default function concept(data) {
   const domainSummary: DomainSummary = data[DOMAIN_SUMMARY];
   const conceptName: string = conceptData.CONCEPT_NAME[0];
   const conceptId: number = conceptData.CONCEPT_ID[0];
-  const numPersons: string = d3Format.format(",")(conceptData.NUM_PERSONS[0]);
+  const numPersons: number = conceptData.NUM_PERSONS[0];
   const percentPersons: string = conceptData.PERCENT_PERSONS[0];
   const recordsPerPerson: string = conceptData.RECORDS_PER_PERSON[0];
   let countFailed: string;
