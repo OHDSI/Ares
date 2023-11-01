@@ -12,9 +12,12 @@
     "lint:fix": "eslint src --fix"
   },
   "dependencies": {
+    "@codemirror/lang-markdown": "^6.2.2",
+    "@codemirror/lang-sql": "^6.5.4",
+    "@codemirror/theme-one-dark": "^6.1.2",
     "@mdi/font": "^7.0.96",
     "axios": "^1.2.3",
-    "codemirror-editor-vue3": "^2.1.7",
+    "codemirror": "^6.0.1",
     "d3": "^7.8.5",
     "d3-dsv": "^3.0.1",
     "d3-format": "^3.0.1",
@@ -27,6 +30,7 @@
     "vega-embed": "^6.20.2",
     "vega-lite": "^5.6.0",
     "vue": "^3.2.45",
+    "vue-codemirror": "^6.1.1",
     "vue-google-charts": "^1.1.0",
     "vue-pivottable": "github:Mikhail-iontsev/vue-pivottable",
     "vue-router": "^4.0.3",

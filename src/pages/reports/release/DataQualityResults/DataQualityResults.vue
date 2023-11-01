@@ -28,11 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import "codemirror/lib/codemirror.css";
-import "codemirror/mode/sql/sql";
-import "codemirror/theme/neat.css";
-import "codemirror/theme/base16-dark.css";
-
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 import { computed } from "vue";
