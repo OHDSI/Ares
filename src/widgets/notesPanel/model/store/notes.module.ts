@@ -18,8 +18,8 @@ import {
   SET_SELECTED_RECTANGLE,
   SET_DIALOG,
 } from "@/widgets/notesPanel/model/store/mutations.type";
-import apiService from "@/shared/api/apiService";
-import getFilePath from "@/shared/api/getFilePath";
+import apiService from "@/shared/api/axios/apiService";
+import getFilePath from "@/shared/api/axios/files";
 import { NOTES } from "@/shared/config/files";
 
 const state = {

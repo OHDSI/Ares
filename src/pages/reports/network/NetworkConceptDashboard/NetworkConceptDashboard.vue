@@ -55,6 +55,9 @@ import { useStore } from "vuex";
 const store = useStore();
 
 import { helpers } from "@/shared/lib/mixins";
+import environment from "@/shared/api/environment";
+import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
+import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 
 const addedConcepts = ref({});
 const conceptData = ref([]);
@@ -63,8 +66,44 @@ const errors: Ref<string> = ref("");
 const conceptsData = ref([]);
 const dialog: Ref<boolean> = ref(false);
 
+function combineObjectsBySource(inputObject) {
+  const resultArray = [];
+  const sources = inputObject[CONCEPT_METADATA].map((data) => data.source);
+
+  sources.forEach((source) => {
+    const combinedData = {};
+
+    for (const key in inputObject) {
+      if (key !== "domainSummary") {
+        const fieldArray = inputObject[key];
+        const matchingItem = fieldArray.find(
+          (item) => item.source.cdm_source_key === source.cdm_source_key
+        );
+        combinedData[key] = matchingItem ? matchingItem.data : null;
+      } else {
+        combinedData[key] = inputObject[key];
+      }
+    }
+
+    resultArray.push({ source: source, data: combinedData });
+  });
+
+  return resultArray;
+}
+
 const getConceptsForRequest = function () {
   return conceptsData.value.map((value) => {
+    if (environment.DUCKDB_ENABLED === "true") {
+      return {
+        concept_id: value?.data[CONCEPT_METADATA][0].CONCEPT_ID,
+        concept_name: value?.data[CONCEPT_METADATA][0].CONCEPT_NAME,
+        countPeople: value?.data[CONCEPT_METADATA][0].NUM_PERSONS,
+        percentPeople: (
+          value?.data[CONCEPT_METADATA][0].PERCENT_PERSONS * 100
+        ).toFixed(2),
+        cdm_name: value?.source.cdm_source_abbreviation,
+      };
+    }
     return {
       concept_id: value?.data.CONCEPT_ID[0],
       concept_name: value?.data.CONCEPT_NAME[0],
@@ -102,21 +141,33 @@ const save = function (item) {
   }
   store
     .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-      files: [
-        {
-          name: CONCEPT,
-          instanceParams: [
-            {
+      files:
+        environment.DUCKDB_ENABLED === "true"
+          ? getDuckDBTables({
               domain: webApiKeyMap.domains[item.DOMAIN_ID],
               concept: item.CONCEPT_ID,
-            },
-          ],
-        },
-      ],
+            })[webApiKeyMap.domains[item.DOMAIN_ID]]
+          : [
+              {
+                name: CONCEPT,
+                instanceParams: [
+                  {
+                    domain: webApiKeyMap.domains[item.DOMAIN_ID],
+                    concept: item.CONCEPT_ID,
+                  },
+                ],
+              },
+            ],
       criticalError: false,
+      duckdb_supported: true,
     })
     .then(() => {
-      conceptsData.value = store.getters.getData.concept;
+      if (environment.DUCKDB_ENABLED === "true") {
+        conceptsData.value = combineObjectsBySource(store.getters.getData);
+      } else {
+        conceptsData.value = store.getters.getData.concept;
+      }
+
       if (!conceptsData.value.length) {
         errors.value = "Requested concept is not found across data sources";
         addedConcepts.value = {

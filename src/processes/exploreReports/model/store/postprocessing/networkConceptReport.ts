@@ -3,6 +3,8 @@ import _ from "lodash";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/interfaces/MultipleFilesRawInterface";
 import * as d3 from "d3-time-format";
+import environment from "@/shared/api/environment";
+import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 
 function augmentReport(concept, dataField) {
   return concept.filter((value) => value.data[dataField]?.length).length
@@ -19,18 +21,60 @@ function augmentReport(concept, dataField) {
     : null;
 }
 
+function combineObjectsBySource(inputObject) {
+  const resultArray = [];
+  const sources = inputObject[CONCEPT_METADATA].map((data) => data.source);
+
+  sources.forEach((source) => {
+    const combinedData = {};
+
+    for (const key in inputObject) {
+      if (key !== "domainSummary") {
+        const fieldArray = inputObject[key];
+        const matchingItem = fieldArray.find(
+          (item) => item.source.cdm_source_key === source.cdm_source_key
+        );
+        combinedData[key] = matchingItem ? matchingItem.data : null;
+      } else {
+        combinedData[key] = inputObject[key];
+      }
+    }
+
+    resultArray.push({ source: source, data: combinedData });
+  });
+
+  return resultArray;
+}
+
 export default function networkConcept(data) {
   const dateParse = d3.timeParse("%Y%m");
+  let concept: MultipleFilesRawInterface<ConceptType>[];
+  let conceptName;
+  let conceptId;
+  let numPersons;
+  if (environment.DUCKDB_ENABLED === "true") {
+    concept = combineObjectsBySource(data);
+    conceptName = concept[0].data[CONCEPT_METADATA][0].CONCEPT_NAME;
+    conceptId = concept[0].data[CONCEPT_METADATA][0].CONCEPT_ID;
+    numPersons = _.sumBy(
+      concept[0],
+      (r) => r.data[CONCEPT_METADATA][0].NUM_PERSONS
+    );
+  } else {
+    concept = data[CONCEPT];
+    conceptName = concept[0].data.CONCEPT_NAME[0];
+    conceptId = concept[0].data.CONCEPT_ID[0];
+    numPersons = _.sumBy(concept[0], (r) => r.data.NUM_PERSONS[0]);
+  }
 
-  const concept: MultipleFilesRawInterface<ConceptType>[] = data[CONCEPT];
-  if (!concept[0]) {
+  if (!concept) {
     return;
   }
   return {
     metadata: {
-      conceptName: concept[0].data.CONCEPT_NAME[0],
-      conceptId: concept[0].data.CONCEPT_ID[0],
-      numPersons: _.sumBy(concept, (r) => r.data.NUM_PERSONS[0]),
+      conceptName: conceptName,
+      conceptId: conceptId,
+      numPersons: numPersons,
     },
     chart: {
       measurementValueDistribution: concept.filter(
@@ -88,8 +132,8 @@ export default function networkConcept(data) {
                 UNIT_COUNT: current.data.RECORDS_BY_UNIT.filter(
                   (val) => val.CONCEPT_NAME === value.CATEGORY
                 )[0].COUNT_VALUE,
-                CONCEPT_NAME: concept[0].data.CONCEPT_NAME[0],
-                CONCEPT_ID: concept[0].data.CONCEPT_ID[0],
+                CONCEPT_NAME: conceptName,
+                CONCEPT_ID: conceptId,
               })),
             ],
             []

@@ -30,6 +30,7 @@ import { watch, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import NewNote from "@/widgets/selectionEditDialog/newNote.vue";
 import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
+import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 
 const route = useRoute();
 const store = useStore();
@@ -47,7 +48,9 @@ const showExplorer = computed(function () {
 });
 
 const loadViewData = function () {
-  const view = getFilesByView()[route.name];
+  const view = getFilesByView({
+    files: getDuckDBTables()[route.params.domain],
+  })[route.name];
   if (view) {
     store.dispatch(view.loadMethod, view.payload);
   }

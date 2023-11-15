@@ -101,6 +101,9 @@ import { VDataTable } from "vuetify/labs/VDataTable";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import { webApiActions } from "@/shared/api/webAPI";
+import environment from "@/shared/api/environment";
+import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
+import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 
 const store = useStore();
 
@@ -239,19 +242,35 @@ const getConceptsForRequest = function (measurement = []) {
               summaryReport.CONCEPT_ID == value?.data.CONCEPT_ID[0]
           )[0].PERCENT_MISSING_VALUES
       : [];
-    return {
-      concept_id: value?.data.CONCEPT_ID[0],
-      concept_name: value?.data.CONCEPT_NAME[0],
-      domain: value?.data.CDM_TABLE_NAME[0],
-      population: value?.data.NUM_PERSONS[0],
-      percentage: value?.data.PERCENT_PERSONS[0],
-      cdm_name: value?.source.cdm_source_abbreviation,
-      time_series: value?.data.IS_STATIONARY,
-      issues: value?.data.COUNT_FAILED,
-      measurement: measurement.length
-        ? (1 - missingData) * (100).toFixed(2)
-        : null,
-    };
+    if (environment.DUCKDB_ENABLED === "true") {
+      return {
+        concept_id: value?.data[CONCEPT_METADATA][0].CONCEPT_ID,
+        concept_name: value?.data[CONCEPT_METADATA][0].CONCEPT_NAME,
+        domain: value?.data[CONCEPT_METADATA][0].CDM_TABLE_NAME,
+        population: value?.data[CONCEPT_METADATA][0].NUM_PERSONS,
+        percentage: value?.data[CONCEPT_METADATA][0].PERCENT_PERSONS,
+        cdm_name: value?.source.cdm_source_abbreviation,
+        time_series: value?.data[CONCEPT_METADATA][0].IS_STATIONARY,
+        issues: value?.data[CONCEPT_METADATA][0].COUNT_FAILED,
+        measurement: measurement.length
+          ? (1 - missingData) * (100).toFixed(2)
+          : null,
+      };
+    } else {
+      return {
+        concept_id: value?.data.CONCEPT_ID[0],
+        concept_name: value?.data.CONCEPT_NAME[0],
+        domain: value?.data.CDM_TABLE_NAME[0],
+        population: value?.data.NUM_PERSONS[0],
+        percentage: value?.data.PERCENT_PERSONS[0],
+        cdm_name: value?.source.cdm_source_abbreviation,
+        time_series: value?.data.IS_STATIONARY,
+        issues: value?.data.COUNT_FAILED,
+        measurement: measurement.length
+          ? (1 - missingData) * (100).toFixed(2)
+          : null,
+      };
+    }
   });
 };
 const close = function () {
@@ -264,23 +283,34 @@ const save = function (item) {
     errors.value = "This concept has already been loaded";
     return;
   }
+  console.log(environment.DUCKDB_ENABLED);
   store
     .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-      files: [
-        {
-          name: CONCEPT,
-          instanceParams: [
-            {
+      files:
+        environment.DUCKDB_ENABLED === "true"
+          ? getDuckDBTables({
               domain: webApiKeyMap.domains[item.DOMAIN_ID],
               concept: item.CONCEPT_ID,
-            },
-          ],
-        },
-      ],
+            })[webApiKeyMap.domains[item.DOMAIN_ID]]
+          : [
+              {
+                name: CONCEPT,
+                instanceParams: [
+                  {
+                    domain: webApiKeyMap.domains[item.DOMAIN_ID],
+                    concept: item.CONCEPT_ID,
+                  },
+                ],
+              },
+            ],
       criticalError: false,
+      duckdb_supported: true,
     })
     .then(() => {
+      console.log(store.getters.getData);
+      let withMeasurement;
       conceptsData.value = store.getters.getData.concept;
+      console.log(conceptsData.value);
       if (!conceptsData.value.length) {
         errors.value = "Requested concept is not found across data sources";
         addedConcepts.value = {
@@ -289,9 +319,16 @@ const save = function (item) {
         };
         return;
       }
-      const withMeasurement = conceptsData.value.filter(
-        (value) => value.data.CDM_TABLE_NAME[0] === "MEASUREMENT"
-      );
+      if (environment.DUCKDB_ENABLED === "true") {
+        withMeasurement = conceptsData.value.filter(
+          (value) =>
+            value.data[CONCEPT_METADATA].CDM_TABLE_NAME === "MEASUREMENT"
+        );
+      } else {
+        withMeasurement = conceptsData.value.filter(
+          (value) => value.data.CDM_TABLE_NAME[0] === "MEASUREMENT"
+        );
+      }
       if (withMeasurement.length) {
         getDomainSummary().then((value) => {
           addConceptToList(getConceptsForRequest(value));
