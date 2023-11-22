@@ -1,12 +1,15 @@
 <template>
-  <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
-    <ChartHeader
-      title="Observation over Time"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+  <Panel header="Observation over Time" :loading="!store.getters.getData">
+    <template #icons>
+      <ChartHeader
+        title="Observation over Time"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-observationbymonth"
@@ -23,22 +26,24 @@
       :data="store.getters.getData.observationPeriodData.OBSERVED_BY_MONTH"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex.OBSERVATION_PERIOD
-                .OBSERVED_BY_MONTH[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
+                  .OBSERVED_BY_MONTH[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -54,6 +59,8 @@ import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces } from "@mdi/js";
 
 const store = useStore();
 

@@ -1,9 +1,9 @@
 <template>
-  <v-app>
-    <v-container main fluid class="pt-4 pl-2 pr-2 mb-16 main">
+  <div class="p-3 min-w-[840px]">
+    <div class="flex flex-col justify-center px-14 md:px-20 lg:px-24">
       <router-view name="main" />
-    </v-container>
-  </v-app>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -17,32 +17,24 @@ const store = useStore();
 const route = useRoute();
 
 import { computed, watch, onBeforeMount } from "vue";
-import { useTheme } from "vuetify";
 
 const favicon = document.getElementById("faviconTag");
-
-const theme = useTheme();
 
 const darkMode = computed(function (): boolean {
   return store.getters.getSettings.darkMode;
 });
 
-const activeTheme = computed(function (): boolean {
-  return store.getters.getSettings.theme;
-});
-watch(darkMode, (): void => {
+function setColorMode() {
   const mode = store.getters.getSettings.darkMode;
-  theme.global.name.value = `${store.getters.getSettings.theme}${
-    mode ? "Dark" : "Light"
-  }`;
+  mode
+    ? document.documentElement.classList.add("dark")
+    : document.documentElement.classList.remove("dark");
   mode
     ? favicon.setAttribute("href", "./favicon-dark.png")
     : favicon.setAttribute("href", "./favicon-light.png");
-});
-watch(activeTheme, (): void => {
-  theme.global.name.value = `${store.getters.getSettings.theme}${
-    store.getters.getSettings.darkMode ? "Dark" : "Light"
-  }`;
+}
+watch(darkMode, (): void => {
+  setColorMode();
 });
 
 watch(route, (): void => {
@@ -51,17 +43,22 @@ watch(route, (): void => {
 });
 
 onBeforeMount((): void => {
-  const mode = store.getters.getSettings.darkMode;
-  theme.global.name.value = `${store.getters.getSettings.theme}${
-    mode ? "Dark" : "Light"
-  }`;
-  mode
-    ? favicon.setAttribute("href", "./favicon-dark.png")
-    : favicon.setAttribute("href", "./favicon-light.png");
+  setColorMode();
 });
 </script>
 
 <style lang="scss">
+html {
+  font-size: 14px;
+}
+
+a {
+  @apply text-primary-500 dark:text-primary-400 #{!important};
+}
+
+a:visited {
+  @apply text-primary-400 dark:text-primary-300 #{!important};
+}
 .main {
   width: 95%;
 }
@@ -119,13 +116,9 @@ onBeforeMount((): void => {
 }
 
 .tooltip {
-  background: rgba(var(--v-theme-surface-variant), 1) !important;
-  color: rgb(var(--v-theme-on-surface-variant));
+  background: rgba(var(--surface-900), 1) !important;
+  color: rgb(var(--surface-200));
   z-index: 1000;
-}
-
-a {
-  color: rgb(var(--v-theme-primary));
 }
 
 .v-autocomplete__selection {
@@ -134,10 +127,6 @@ a {
 
 .v-checkbox .v-selection-control {
   min-height: 1rem !important;
-}
-
-a:visited {
-  color: rgb(var(--v-theme-primary-lighten-2));
 }
 
 .v-tooltip .v-overlay__content {

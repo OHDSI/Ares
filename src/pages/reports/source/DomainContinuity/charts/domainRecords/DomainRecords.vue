@@ -1,26 +1,23 @@
 <template>
-  <v-card
-    v-if="!store.getters.getErrors"
-    :loading="!store.getters.dataInStore"
-    elevation="2"
-    class="ma-4"
+  <Panel
+    header="Domain Continuity"
+    v-if="!store.getters.getErrors & store.getters.dataInStore"
   >
-    <div v-if="store.getters.dataInStore">
-      <ChartHeader title="Domain Continuity" />
-      <Chart
-        id="viz-continuity"
-        :chartSpec="specOverview"
-        :data="store.getters.getData.domainRecords"
-        :listener="eventListener"
-      />
-      <v-toolbar density="compact" class="mt-6">
+    <Chart
+      id="viz-continuity"
+      :chartSpec="specOverview"
+      :data="store.getters.getData.domainRecords"
+      :listener="eventListener"
+    />
+    <template #footer>
+      <div class="flex flex-row gap-2">
         <ChartActionIcon
-          icon="mdi-help-circle"
+          :icon="mdiHelpCircle"
           tooltip="Domain continuity shows the number of records in each domain table for multiple releases of data from a specific vendor or data source. This is NOT the number of records that occur at specific times within a CDM, but a count of the number of records in a release of a data source, graphed over time. This visualization allows one to see how the data is changing across updates for a single data source."
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
-          icon="mdi-code-braces"
+          :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
             helpers.openNewTab(
@@ -30,9 +27,9 @@
             )
           "
         />
-      </v-toolbar>
-    </div>
-  </v-card>
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -42,8 +39,9 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { RouteLocation, useRouter } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 
 const store = useStore();
 const router = useRouter();

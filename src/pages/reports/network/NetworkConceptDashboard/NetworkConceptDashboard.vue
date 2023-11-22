@@ -1,60 +1,71 @@
 <template>
-  <v-container fluid>
-    <v-card class="elevation-10 pa-3">
-      <v-card-actions class="flex justify-space-between">
-        <v-card-title>Network Concept Dashboard</v-card-title>
-        <v-dialog v-model="dialog" max-width="1000px">
-          <template #activator="{ props }">
-            <v-btn dark color="grey darken-4" class="mb-2" v-bind="props">
-              Add concepts
-            </v-btn>
+  <Panel header="Network Concept Dashboard">
+    <template #icons>
+      <Button @click="dialog = !dialog" plain>
+        <span class="uppercase font-thin text-grey">Add concepts </span></Button
+      >
+    </template>
+    <div class="table-container">
+      <DataTable
+        removable-sort
+        rowGroupMode="subheader"
+        groupRowsBy="CONCEPT_NAME"
+        class="table"
+        v-if="conceptData.length"
+        size="small"
+        paginator
+        :value="conceptData"
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Source" field="CDM_NAME"></Column>
+        <Column sortable header="Concept Name" field="CONCEPT_NAME"></Column>
+
+        <Column sortable header="Concept ID" field="CONCEPT_ID"></Column>
+        <Column sortable header="# People" field="PEOPLE_COUNT">
+          <template #body="slotProps">
+            {{ helpers.formatComma(slotProps.data.PEOPLE_COUNT) }}
           </template>
-          <ConceptSearchForm
-            :added-concepts="addedConcepts"
-            :success-message="successMessage"
-            :errors="errors"
-            @close="close"
-            @save="(item) => save(item)"
-            @inputChanged="clearMessages"
-          />
-        </v-dialog>
-      </v-card-actions>
-      <v-row class="table-container">
-        <v-data-table
-          v-if="conceptData.length"
-          :group-by="[{ key: 'CONCEPT_NAME' }]"
-          density="compact"
-          :headers="headers"
-          :items="conceptData"
-        >
-          <template v-slot:item.PEOPLE_COUNT="{ item }">
-            {{ helpers.formatComma(item.raw.PEOPLE_COUNT) }}
+        </Column>
+        <Column sortable header="% People" field="PEOPLE_PERCENT">
+          <template #body="slotProps">
+            {{ slotProps.data.PEOPLE_PERCENT }}%
           </template>
-          <template v-slot:item.PEOPLE_PERCENT="{ item }">
-            {{ item.raw.PEOPLE_PERCENT }}%
-          </template>
-        </v-data-table>
-        <v-card-text v-else class="placeholder table-placeholder"
-          >Add at least one concept to display the results</v-card-text
-        >
-      </v-row>
-    </v-card>
-  </v-container>
+        </Column>
+      </DataTable>
+      <div v-else class="placeholder table-placeholder">
+        Add at least one concept to display the results
+      </div>
+    </div>
+  </Panel>
+  <ConceptSearchForm
+    :added-concepts="addedConcepts"
+    :success-message="successMessage"
+    :errors="errors"
+    @close="close"
+    @save="(item) => save(item)"
+    @inputChanged="clearMessages"
+    :show="dialog"
+  />
 </template>
 
 <script setup lang="ts">
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
 import { CONCEPT } from "@/shared/config/files";
-import { VDataTable } from "vuetify/labs/VDataTable";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import "./index.css";
 
 import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
+import Panel from "primevue/panel";
+import Button from "primevue/button";
 const store = useStore();
 
 import { helpers } from "@/shared/lib/mixins";
+import { links } from "@/shared/config/links";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 const addedConcepts = ref({});
 const conceptData = ref([]);
@@ -138,29 +149,6 @@ const save = function (item) {
 const close = function () {
   dialog.value = false;
 };
-const headers = computed(function () {
-  return [
-    {
-      key: "CDM_NAME",
-      title: "Source",
-    },
-    {
-      key: "CONCEPT_ID",
-      title: "Concept ID",
-      align: "end",
-    },
-    {
-      key: `PEOPLE_COUNT`,
-      title: "# People",
-      align: "end",
-    },
-    {
-      key: "PEOPLE_PERCENT",
-      title: "% People",
-      align: "end",
-    },
-  ];
-});
 </script>
 <script lang="ts">
 export default {
@@ -169,6 +157,9 @@ export default {
 </script>
 
 <style scoped>
+.table {
+  flex-grow: 1;
+}
 .table-card {
   padding: 10px;
   width: 100%;
@@ -176,9 +167,10 @@ export default {
 }
 .table-container {
   display: flex;
+  flex-grow: 1;
   justify-content: center;
   padding: 10px;
-  min-height: 70vh;
+  min-height: 60vh;
 }
 .placeholder {
   text-align: center;

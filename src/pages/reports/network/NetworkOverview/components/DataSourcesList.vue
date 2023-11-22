@@ -1,160 +1,142 @@
 <template>
-  <v-card elevation="2" class="mx-auto pb-6" outlined>
-    <ChartHeader title="Data Sources" />
-    <v-card-text>
-      <v-container fluid>
-        <v-row>
-          <v-col>
-            <v-text-field
-              prepend-icon="mdi-magnify"
-              label="Search in Table"
-              single-line
-              density="compact"
-              variant="outlined"
-              hide-details
-              @update:modelValue="debouncedSearch"
-            ></v-text-field>
-          </v-col>
-          <v-col>
-            <SelectColumns :headers="dataSourceColumns" />
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <v-data-table
-        density="compact"
-        :items="store.getters.getSources"
-        :headers="showHeaders"
-        :search="search"
-        hide-default-footer
+  <Panel header="Data Sources">
+    <DataTable
+      size="small"
+      showGridlines
+      :value="store.getters.getSources"
+      v-model:filters="newFilters"
+      :globalFilterFields="['cdm_source_name', 'releases[0].release_name', '']"
+      paginator
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
+      tableStyle="min-width: 50rem"
+    >
+      <template #header>
+        <InputGroup unstyled>
+          <InputGroupAddon>
+            <i class="pi pi-search"></i>
+          </InputGroupAddon>
+          <InputText
+            class="rounded-r-lg"
+            style="width: 45rem"
+            unstyled
+            :value="route.query.search"
+            @update:modelValue="debouncedSearch"
+            placeholder="Search in Table"
+          />
+        </InputGroup>
+      </template>
+      <Column field="cdm_source_name" header="Data quality issues">
+        <template #body="slotProps">
+          <router-link
+            class="text-blue-400 hover:underline"
+            :to="getDataSourceRoute(slotProps.data.cdm_source_name)"
+            >{{ slotProps.data.cdm_source_name }}</router-link
+          >
+        </template>
+      </Column>
+      <Column field="releases[0].count_person" header="Person Count">
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].count_person }}
+        </template>
+      </Column>
+      <Column field="releases[0].obs_period_start" header="Start Observed">
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].obs_period_start }}
+        </template>
+      </Column>
+      <Column field="releases[0].obs_period_end" header="End Observed">
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].obs_period_end }}
+        </template>
+      </Column>
+      <Column field="releases[0].release_name" header="Latest Release">
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].release_name }}
+        </template>
+      </Column>
+      <Column
+        field="releases[0].count_data_quality_issues"
+        header="Data Quality Issues"
       >
-        <template v-slot:item.cdm_source_name="{ item }">
-          <v-row>
-            <v-col cols="10">
-              <router-link
-                :to="getDataSourceRoute(item.raw)"
-                :title="item.raw.cdm_source_name"
-                >{{ item.raw.cdm_source_name }}
-              </router-link>
-            </v-col>
-          </v-row>
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].count_data_quality_issues }}
         </template>
-        <template v-slot:item.releases[0].count_person="{ item }">
-          {{ helpers.formatComma(item.raw.releases[0].count_person) }}
+      </Column>
+      <Column
+        field="releases[0].count_data_quality_issues"
+        header="Person Count"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].count_data_quality_issues }}
         </template>
+      </Column>
+      <Column field="count_releases" header="Data Source Releases"></Column>
 
-        <template v-slot:item.releases[0].release_name="{ item }">
-          {{ item.raw.releases[0].release_name }}
+      <Column
+        field="releases[0].vocabulary_version"
+        header="Vocabulary Version"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].vocabulary_version }}
         </template>
-        <template v-slot:item.releases[0].obs_period_start="{ item }">
-          {{ item.raw.releases[0].obs_period_start }}
+      </Column>
+      <Column
+        field="average_update_interval_days"
+        header="Average Update Frequency (days)"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.average_update_interval_days }}
         </template>
-        <template v-slot:item.releases[0].obs_period_end="{ item }">
-          {{ item.raw.releases[0].obs_period_end }}
+      </Column>
+      <Column
+        field="releases[0].count_data_quality_issues"
+        header="Person Count"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].count_data_quality_issues }}
         </template>
-        <template v-slot:item.releases[0].count_data_quality_issues="{ item }">
-          {{ item.raw.releases[0].count_data_quality_issues }}
-        </template>
-        <template v-slot:item.releases[0].vocabulary_version="{ item }">
-          {{ item.raw.releases[0].vocabulary_version }}
-        </template>
-      </v-data-table>
-    </v-card-text>
-  </v-card>
+      </Column>
+    </DataTable>
+  </Panel>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
-import { computed, ref, Ref } from "vue";
+import { computed } from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { useStore } from "vuex";
-import SelectColumns from "@/features/selectColumns";
 import { debounce } from "lodash";
 import { helpers } from "@/shared/lib/mixins";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import Panel from "primevue/panel";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import InputText from "primevue/inputtext";
+import MultiSelect from "primevue/multiselect";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import InputGroup from "primevue/inputgroup";
+import { useRoute, useRouter } from "vue-router";
+import { FilterMatchMode } from "primevue/api";
 
 const store = useStore();
+const route = useRoute();
+const router = useRouter();
 
-const search = ref("");
-
-const dataSourceColumns: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Data Source",
-    align: "start",
-    sortable: true,
-    show: true,
-    key: "cdm_source_name",
-  },
-  {
-    title: "Person Count",
-    align: "end",
-    sortable: true,
-    show: true,
-    key: "releases[0].count_person",
-  },
-  {
-    title: "Start Observed",
-    align: "end",
-    show: true,
-    key: "releases[0].obs_period_start",
-    sortable: false,
-  },
-  {
-    title: "End Observed",
-    align: "end",
-    show: true,
-    key: "releases[0].obs_period_end",
-    sortable: false,
-  },
-  {
-    title: "Latest Release",
-    align: "end",
-    show: true,
-    sortable: false,
-    key: "releases[0].release_name",
-  },
-  {
-    title: "Data Quality Issues",
-    align: "end",
-    show: false,
-    sortable: true,
-    key: "releases[0].count_data_quality_issues",
-  },
-  {
-    title: "Data Source Releases",
-    align: "end",
-    show: true,
-    sortable: true,
-    key: "count_releases",
-  },
-  {
-    title: "Vocabulary Version",
-    align: "end",
-    show: false,
-    sortable: true,
-    key: "releases[0].vocabulary_version",
-  },
-  {
-    title: "Average Update Frequency (days)",
-    align: "end",
-    show: true,
-    sortable: true,
-    key: "average_update_interval_days",
-  },
-]);
-
-const showHeaders = computed(() => {
-  return dataSourceColumns.value.filter((header) => header.show);
-});
+const newFilters = computed(() => ({
+  global: { value: route.query.search, matchMode: FilterMatchMode.CONTAINS },
+}));
 
 const debouncedSearch = debounce(function (data: string): void {
-  search.value = data;
+  router.push({
+    query: {
+      search: data,
+    },
+  });
 }, 300);
 
-function getDataSourceRoute(item: { cdm_source_key: string }) {
+function getDataSourceRoute(cdm_source_key) {
   return {
     name: "dataSourceOverview",
-    params: { cdm: item.cdm_source_key },
+    params: { cdm: cdm_source_key },
   };
 }
 </script>

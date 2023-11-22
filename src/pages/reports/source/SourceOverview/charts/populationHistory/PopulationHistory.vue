@@ -1,12 +1,14 @@
 <template>
-  <v-card elevation="2" class="mx-auto pb-6">
-    <ChartHeader
-      title="Population History"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+  <Panel header="Population History">
+    <template #icons>
+      <ChartHeader
+        title="Population History"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
     <Chart
       :id="reportId"
       width="95"
@@ -21,19 +23,21 @@
       :data="releases"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
+            )
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -45,10 +49,12 @@ import { specPopulationByReleaseAnnotation } from "./specPopulationByReleaseAnno
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import _ from "lodash";
+import Panel from "primevue/panel";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { mdiCodeBraces } from "@mdi/js";
 
 const store = useStore();
 const route = useRoute();

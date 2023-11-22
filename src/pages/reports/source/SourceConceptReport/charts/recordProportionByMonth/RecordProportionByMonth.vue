@@ -1,16 +1,17 @@
 <template>
-  <v-card
+  <Panel
+    header="Record Proportion by Month"
     v-if="!store.getErrors && store.getters.dataInStore"
-    elevation="2"
-    class="ma-4"
   >
-    <ChartHeader
-      title="Record Proportion by Month"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+    <template #icons>
+      <ChartHeader
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
+
     <Chart
       v-if="store.getters.getData"
       :id="reportId"
@@ -27,22 +28,24 @@
       :annotation-mode="annotationsMode"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                .PREVALENCE_BY_MONTH[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                  .PREVALENCE_BY_MONTH[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -57,9 +60,10 @@ import { computed, ref } from "vue";
 import _ from "lodash";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import { specDataQualityResultsAnnotation } from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQuality/specDataQualityResultsAnnotation";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { mdiCodeBraces } from "@mdi/js";
+import Panel from "primevue/panel";
 
 const store = useStore();
 const route = useRoute();

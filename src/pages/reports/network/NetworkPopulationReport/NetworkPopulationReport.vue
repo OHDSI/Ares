@@ -1,21 +1,10 @@
 <template>
-  <div v-if="!store.getters.getErrors">
-    <v-container fluid>
-      <v-responsive min-width="900">
-        <v-layout class="ma-0 mb-6 text-uppercase text-h6"
-          >NETWORK POPULATION OVERVIEW</v-layout
-        >
-        <AgeAtFirstObservation />
-        <CumulativeObservation />
-      </v-responsive>
-      <form-dialog
-        @close="store.commit(SET_DIALOG, false)"
-        :show="store.getters.getDialogData.show"
-        :action="store.getters.getDialogData.action"
-        :data="store.getters.getDialogData.data"
-        :form-title="'Edit selection'"
-      />
-    </v-container>
+  <div v-if="!store.getters.getErrors" class="flex flex-col gap-10">
+    <PageHeader title="Network Population Overview" />
+    <div class="flex flex-col gap-5">
+      <AgeAtFirstObservation />
+      <CumulativeObservation />
+    </div>
   </div>
 </template>
 
@@ -24,8 +13,7 @@ import { useStore } from "vuex";
 
 import AgeAtFirstObservation from "@/pages/reports/network/NetworkPopulationReport/charts/ageAtFirstObservation/AgeAtFirstObservation.vue";
 import CumulativeObservation from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation/CumulativeObservation.vue";
-import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
+import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 
 const store = useStore();
 </script>

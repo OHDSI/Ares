@@ -1,21 +1,19 @@
 <template>
-  <v-card
+  <div
     v-if="show"
-    class="context-menu"
+    class="context-menu bg-white dark:bg-surface-700"
     :style="style"
     ref="context"
     tabindex="1"
-    v-click-outside="{
-      handler: onClickOutside,
-    }"
+    v-click-outside="onClickOutside"
   >
     <ul v-for="item in props.items" :key="item.title">
       <li @click="clickAction(item)">{{ item.title }}</li>
     </ul>
-  </v-card>
+  </div>
 </template>
 <script setup lang="ts">
-import { nextTick, defineProps, computed, watch, ref, Ref } from "vue";
+import { defineProps, computed, watch, ref, Ref } from "vue";
 import { useStore } from "vuex";
 
 interface Item {
@@ -75,7 +73,6 @@ watch(coordinates, () => {
 .context-menu {
   position: fixed;
   z-index: 999;
-  background: rgb(var(--v-theme-surface));
   outline: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   cursor: pointer;

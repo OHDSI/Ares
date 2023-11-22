@@ -1,22 +1,48 @@
 <template>
-  <v-btn icon density="comfortable" @click="activate">
-    <v-badge
-      v-if="props.count !== undefined"
-      :content="props.count"
-      :color="activated ? 'primary' : 'default'"
+  <div>
+    <Button
+      v-tooltip.top="{
+        value: props.tooltip,
+        pt: {
+          root: '',
+          arrow: {
+            style: {
+              borderRightColor: 'var(--primary-color)',
+            },
+          },
+          text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-light p-2',
+        },
+      }"
+      @click="activate"
+      text
+      rounded
+      size="icon"
+      label="Search"
+      plain
+      :class="`${
+        activated ? 'text-primary-500' : 'text-black dark:text-primary-50'
+      }`"
     >
-      <v-icon :color="activated ? 'primary' : 'default'">{{
-        props.icon
-      }}</v-icon>
-    </v-badge>
-    <v-icon v-else color="primary">{{ props.icon }}</v-icon>
-
-    <v-tooltip activator="parent" location="top">{{ props.tooltip }}</v-tooltip>
-  </v-btn>
+      <span
+        v-if="!isUndefined(props.count)"
+        :class="`${
+          activated ? 'bg-primary-50 text-black' : 'bg-primary-500 text-white'
+        } px-2 py-1 rounded-full z-10 top-0 right-0 absolute indent-0 text-xs`"
+        :style="{ right: '-3px' }"
+      >
+        {{ props.count }}
+      </span>
+      <svg-icon type="mdi" :path="props.icon"></svg-icon>
+    </Button>
+  </div>
 </template>
 <script setup lang="ts">
 import { defineProps, onMounted } from "vue";
 import { defineEmits, ref } from "vue";
+import Button from "primevue/button";
+import SvgIcon from "@jamescoyle/vue-icon";
+import { isUndefined } from "lodash";
+
 const emit = defineEmits(["iconClicked"]);
 
 interface Props {

@@ -1,6 +1,5 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-    <ChartHeader title="Record Count Proportion by Age, Sex, and Year" />
+  <Panel header="Record Count Proportion by Age, Sex, and Year">
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-recordproportionbyagesexyear"
@@ -8,22 +7,24 @@
       :chartSpec="specRecordProportionByAgeSexYear"
       :data="store.getters.getData.PREVALENCE_BY_GENDER_AGE_YEAR"
     />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex[route.name.toUpperCase()]
-                .PREVALENCE_BY_GENDER_AGE_YEAR[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.name.toUpperCase()]
+                  .PREVALENCE_BY_GENDER_AGE_YEAR[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -35,6 +36,8 @@ import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces } from "@mdi/js";
 
 const store = useStore();
 const route = useRoute();

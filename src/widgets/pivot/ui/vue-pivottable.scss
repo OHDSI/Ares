@@ -1,14 +1,15 @@
 
-* {
-    box-sizing: border-box;
-    font-family: inherit;
-    font-weight: normal;
-}
+/** {*/
+/*    box-sizing: border-box;*/
+/*    font-family: inherit;*/
+/*    font-weight: normal;*/
+/*}*/
 
 .pvtUi {
     table-layout: fixed;
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 2px;
 }
 .pvtUi select {
     user-select: none;
@@ -31,13 +32,14 @@
 table.pvtTable {
     text-align: left;
     border-spacing: 2px;
+    border-collapse: separate;
     width: 100%;
 
 }
 
 table.pvtTable thead tr th,
 table.pvtTable tbody tr th {
-    background-color: rgb(var(--v-theme-accent));
+    @apply bg-surface-200 dark:bg-surface-700 #{!important};
     padding: 5px;
 }
 

@@ -1,12 +1,15 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-    <ChartHeader
-      title="Record Count Proportion by Month"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+  <Panel header="Record Count Proportion by Month">
+    <template #icons>
+      <ChartHeader
+        title="Record Count Proportion by Month"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
+
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-deathrecordproportionbymonth"
@@ -23,26 +26,28 @@
       :data="store.getters.getData.PREVALENCE_BY_MONTH"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        icon="mdi-help-circle"
-        tooltip="Proportion of people with at least one record per 1000 people."
-      />
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex[route.name.toUpperCase()]
-                .PREVALENCE_BY_MONTH[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          :icon="mdiHelpCircle"
+          tooltip="Proportion of people with at least one record per 1000 people."
+        />
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.name.toUpperCase()]
+                  .PREVALENCE_BY_MONTH[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -59,6 +64,9 @@ import _ from "lodash";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
+
 const store = useStore();
 const route = useRoute();
 

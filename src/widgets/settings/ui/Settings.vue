@@ -1,45 +1,40 @@
 <template>
-  <v-row justify="center">
-    <v-navigation-drawer
-      location="right"
-      v-model="showMenu"
-      width="512"
-      temporary
-    >
-      <v-card class="overflow-y: auto">
-        <v-toolbar color="primary">
-          <v-btn icon @click="showMenu = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title>Settings</v-toolbar-title>
-          <v-spacer></v-spacer>
-        </v-toolbar>
-        <User-account></User-account>
-        <v-divider></v-divider>
-        <v-list lines="two">
-          <v-list-subheader>Charts</v-list-subheader>
-          <!--Features-->
+  <Sidebar class="w-2/6" v-model:visible="showMenu" position="right">
+    <template #header>
+      <div>
+        <h2 class="font-bold">Settings</h2>
+      </div>
+    </template>
+    <div class="flex flex-col">
+      <div>
+        <UserAccount />
+        <Divider />
+      </div>
+      <div class="flex flex-col">
+        <div class="flex flex-col gap-5">
+          <h3 class="text-left font-thin text-md">Charts</h3>
           <ToggleBaseLine />
           <ToggleMinMax />
-        </v-list>
-        <v-divider></v-divider>
-        <v-list>
-          <v-list-subheader>Appearance</v-list-subheader>
-          <!--Features-->
-          <ToggleTheme></ToggleTheme>
+        </div>
+        <Divider></Divider>
+
+        <div class="flex flex-col gap-5">
+          <h3 class="text-left font-thin text-md">Appearance</h3>
           <ToggleDarkMode />
-        </v-list>
-        <v-divider></v-divider>
-        <v-list>
-          <v-list-subheader>Metadata</v-list-subheader>
-          <!--Features-->
+        </div>
+        <Divider></Divider>
+
+        <div class="flex flex-col gap-5">
+          <h3 class="text-left font-thin text-md">Annotations</h3>
           <ToggleDefaultAnnotatonsMode />
           <ToggleDefaultNotesMode />
+        </div>
+        <div class="relative bottom-0 mt-4">
           <ExportNotes></ExportNotes>
-        </v-list>
-      </v-card>
-    </v-navigation-drawer>
-  </v-row>
+        </div>
+      </div>
+    </div>
+  </Sidebar>
 </template>
 
 <script lang="ts">
@@ -52,7 +47,7 @@ export default {
 import ToggleDarkMode from "./components/toggleDarkMode";
 import ToggleBaseLine from "./components/toggleBaseLine";
 import ToggleMinMax from "./components/toggleMinMax";
-import ToggleTheme from "./components/toggleTheme";
+import Divider from "primevue/divider";
 import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode/ToggleDefaultAnnotatonsMode.vue";
 
 import { computed } from "vue";
@@ -61,6 +56,7 @@ import ExportNotes from "@/widgets/settings/ui/components/exportNotes/ExportNote
 import { TOGGLE_UI_VISIBILITY } from "@/widgets/settings/model/store/actions.type";
 import ToggleDefaultNotesMode from "@/widgets/settings/ui/components/toggleDefaultNotesMode/ToggleDefaultNotesMode.vue";
 import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccount.vue";
+import Sidebar from "primevue/sidebar";
 
 const store = useStore();
 

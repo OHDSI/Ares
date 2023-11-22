@@ -1,12 +1,22 @@
 <template>
-  <v-container fluid>
-    <Explorer v-if="showExplorer" />
-    <Error v-if="store.getters.getErrors" />
-    <router-view v-if="!store.getters.getErrors" name="reportsView" />
-    <Snackbar />
-    <Settings />
-    <BottomNav />
-  </v-container>
+  <Explorer v-if="showExplorer" />
+  <div v-if="!store.getters.getErrors" class="my-20">
+    <router-view name="reportsView" />
+  </div>
+  <BottomNav />
+
+  <!-- Conditional components />-->
+  <Snackbar />
+  <Error v-if="store.getters.getErrors" />
+  <Settings />
+  <SelectionEditDialog
+    @close="store.commit(SET_DIALOG, false)"
+    v-if="store.getters.getDialogData.show"
+    :show="store.getters.getDialogData.show"
+    :action="store.getters.getDialogData.action"
+    :data="store.getters.getDialogData.data"
+    :form-title="'Edit selection'"
+  />
 </template>
 
 <script lang="ts">
@@ -28,8 +38,9 @@ import { useStore } from "vuex";
 
 import { watch, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import NewNote from "@/widgets/selectionEditDialog/newNote.vue";
 import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
+import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
+import SelectionEditDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 
 const route = useRoute();
 const store = useStore();

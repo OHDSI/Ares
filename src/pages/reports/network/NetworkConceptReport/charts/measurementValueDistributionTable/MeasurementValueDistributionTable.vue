@@ -1,16 +1,40 @@
 <template>
-  <v-card v-if="store.getters.getData.table" elevation="10" class="ma-4">
-    <v-data-table density="compact" :headers="headers" :items="props.data">
-    </v-data-table>
-  </v-card>
+  <Panel
+    header="Measurement Value Distribution Table"
+    v-if="store.getters.getData.table"
+    elevation="10"
+    class="ma-4"
+  >
+    <DataTable
+      removable-sort
+      size="small"
+      paginator
+      :value="props.data"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
+    >
+      <Column sortable header="Source" field="SOURCE"></Column>
+      <Column sortable header="Unit" field="CATEGORY"></Column>
+      <Column sortable header="Release" field="RELEASE"></Column>
+      <Column sortable header="Count Value" field="UNIT_COUNT"></Column>
+      <Column sortable header="Min Value" field="MIN_VALUE"></Column>
+      <Column sortable header="P10 Value" field="P10_VALUE"></Column>
+      <Column sortable header="P25 Value" field="P25_VALUE"></Column>
+      <Column sortable header="Median Value" field="MEDIAN_VALUE"></Column>
+      <Column sortable header="P75 Value" field="P75_VALUE"></Column>
+      <Column sortable header="P90 Value" field="P90_VALUE"></Column>
+      <Column sortable header="Max Value" field="MAX_VALUE"></Column>
+    </DataTable>
+  </Panel>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
 import { useStore } from "vuex";
-import { ref, Ref, defineProps } from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import { defineProps } from "vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Panel from "primevue/panel";
 const store = useStore();
 
 interface Props {
@@ -18,75 +42,6 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
-const headers: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Source",
-    sortable: true,
-    key: "SOURCE",
-    align: "start",
-  },
-  {
-    title: "Unit",
-    sortable: true,
-    key: "CATEGORY",
-    align: "start",
-  },
-  {
-    title: "Release",
-    sortable: true,
-    key: "RELEASE",
-    align: "start",
-  },
-  {
-    title: "Count value",
-    sortable: true,
-    key: "UNIT_COUNT",
-    align: "start",
-  },
-  {
-    title: "Min Value",
-    sortable: true,
-    key: "MIN_VALUE",
-    align: "start",
-  },
-  {
-    title: "P10 Value",
-    sortable: true,
-    key: "P10_VALUE",
-    align: "start",
-  },
-  {
-    title: "P25 Value",
-    sortable: true,
-    key: "P25_VALUE",
-    align: "start",
-  },
-  {
-    title: "Median Value",
-    sortable: true,
-    key: "MEDIAN_VALUE",
-    align: "start",
-  },
-  {
-    title: "P75 Value",
-    sortable: true,
-    key: "P75_VALUE",
-    align: "start",
-  },
-  {
-    title: "P90 Value",
-    sortable: true,
-    key: "P90_VALUE",
-    align: "start",
-  },
-  {
-    title: "Max Value",
-    sortable: true,
-    key: "MAX_VALUE",
-    align: "start",
-  },
-]);
 </script>
 
 <style scoped></style>

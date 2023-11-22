@@ -1,24 +1,23 @@
 <template>
-  <v-container v-if="!store.getters.getErrors" fluid min-width="900">
-    <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-      <ChartHeader title="Data Strands" />
-      <div
-        v-if="store.getters.getData"
-        id="viz-datastrand"
-        class="viz-container"
-      ></div>
-      <v-toolbar density="compact" class="mt-6">
+  <Panel header="Data Strands">
+    <div
+      v-if="store.getters.getData"
+      id="viz-datastrand"
+      class="viz-container"
+    ></div>
+    <template #footer>
+      <div class="flex flex-row gap-2">
         <ChartActionIcon
-          icon="mdi-help-circle"
+          :icon="mdiHelpCircle"
           tooltip="Data strands are simple visualizations that describe the composition of
-        a data source across the various CDM domain tables. Each individual
-        strand shows the percentage of the data source comprised of data from a
-        particular domain table. Across the network, the strands can be visually
-        compared and contrasted."
+            a data source across the various CDM domain tables. Each individual
+            strand shows the percentage of the data source comprised of data from a
+            particular domain table. Across the network, the strands can be visually
+            compared and contrasted."
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
-          icon="mdi-code-braces"
+          :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
             helpers.openNewTab(
@@ -28,9 +27,9 @@
             )
           "
         />
-      </v-toolbar>
-    </v-card>
-  </v-container>
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -47,9 +46,10 @@ import { links } from "@/shared/config/links";
 const config = specDatastrand;
 
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 
 const renderChart = function () {
   embed("#viz-datastrand", config, {

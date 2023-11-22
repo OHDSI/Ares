@@ -1,75 +1,54 @@
 <template>
-  <v-container>
-    <v-card
+  <div>
+    <Panel
+      header="WebAPI details"
       v-if="store.getters.getApiData.serviceDetails"
-      :loading="store.getters.getApiData.loading"
-      elevation="10"
-      class="ma-4 pa-2"
     >
-      <v-card-title>WebAPI details</v-card-title>
-      <v-container v-if="store.getters.getApiData.serviceDetails" fluid>
-        <v-layout> </v-layout>
-        <v-layout
+      <div
+        class="flex flex-col gap-10"
+        v-if="store.getters.getApiData.serviceDetails"
+      >
+        <div
           v-for="(value, propertyName) in getApiMetadata()"
           :key="propertyName"
           class="pl-8"
         >
           {{ propertyName }}: {{ value }}
-        </v-layout>
-      </v-container>
-      <v-card v-else
-        ><v-card-title
-          >WebAPI server is unavailable at the time</v-card-title
-        ></v-card
-      >
-    </v-card>
+        </div>
+      </div>
+      <div v-else>
+        <h3 class="text-xl">WebAPI server is unavailable at the time</h3>
+      </div>
+    </Panel>
 
-    <v-card
-      v-if="store.getters.getApiData.apiSources"
-      elevation="10"
-      class="ma-4 pa-2"
-    >
-      <v-data-table
-        :loading="store.getters.getApiData.loading"
-        :items="store.getters.getApiData.apiSources"
-        :headers="sourceHeaders"
-      ></v-data-table>
-    </v-card>
-    <h1 v-else class="text-center">No data available</h1>
-  </v-container>
+    <Panel header="Sources" v-if="store.getters.getApiData.apiSources">
+      <DataTable
+        size="small"
+        paginator
+        :value="store.getters.getApiData.apiSources"
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column header="Source" field="sourceKey"> </Column>
+        <Column header="Source Dialect" field="sourceDialect"></Column>
+        <Column header="Source Name" field="sourceName"></Column>
+        <Column field="sourceId" header="Source ID"> </Column>
+      </DataTable>
+    </Panel>
+    <h1 v-else class="text-center text-black dark:text-white">
+      No data available
+    </h1>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { VDataTable } from "vuetify/labs/VDataTable";
+import Panel from "primevue/panel";
+
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 const store = useStore();
-const sourceHeaders = [
-  {
-    title: "Source",
-    align: "start",
-    sortable: false,
-    key: "sourceKey",
-  },
-  {
-    title: "Source dialect",
-    align: "start",
-    sortable: false,
-    key: "sourceDialect",
-  },
-  {
-    title: "Source name",
-    align: "start",
-    sortable: false,
-    key: "sourceName",
-  },
-  {
-    title: "Source ID",
-    align: "start",
-    sortable: false,
-    key: "sourceId",
-  },
-];
 
 const getApiMetadata = function () {
   const data = store.getters.getApiData.serviceDetails;

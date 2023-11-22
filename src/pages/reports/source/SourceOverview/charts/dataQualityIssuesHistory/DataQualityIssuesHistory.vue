@@ -1,12 +1,14 @@
 <template>
-  <v-card elevation="2" class="mx-auto pb-6">
-    <ChartHeader
-      title="Data Quality Issues History"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+  <Panel header="Data Quality Issues History">
+    <template #icons>
+      <ChartHeader
+        title="Data Quality Issues History"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
     <Chart
       :id="reportId"
       width="95"
@@ -21,19 +23,21 @@
       :data="store.getters.getSelectedSource.releases"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
+            )
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -49,6 +53,8 @@ import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces } from "@mdi/js";
 
 const store = useStore();
 const route = useRoute();

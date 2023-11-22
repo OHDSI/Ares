@@ -1,91 +1,103 @@
 <template>
-  <v-card
+  <div
     v-if="!props.edit"
-    class="ma-2 card"
-    max-width="400"
-    max-height="300"
-    elevation="5"
+    class="flex flex-col gap-5 shadow-xl px-3 py-5 bg-white dark:bg-surface-800 m-4"
   >
-    <v-layout class="justify-space-between">
-      <v-card-title class="justify-space-between">
-        {{ props.note.title }}
-      </v-card-title>
-      <v-btn variant="plain" icon>
-        <v-icon> mdi-information-outline </v-icon>
-        <v-tooltip
-          content-class="custom-tooltip"
-          activator="parent"
-          location="end"
+    <div class="flex flex-g gap-10 justify-between">
+      <h3 class="font-bold text-xl">{{ props.note.title }}</h3>
+      <span>
+        <button
+          v-tooltip.top="{
+            value: `Created By: ${user}\n Last updated: ${dateTimeUpdated}`,
+            pt: {
+              root: '',
+              arrow: {
+                style: {
+                  borderRightColor: 'var(--primary-color)',
+                },
+              },
+              text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-light p-2',
+            },
+          }"
+          text
+          rounded
         >
-          Created by {{ user || "unknown" }} at {{ dateTimeCreated }}
-          <br />
-          Last updated at {{ dateTimeUpdated }}</v-tooltip
-        ></v-btn
-      >
-    </v-layout>
-    <v-card-text class="text-h7 py-2">
-      <Markdown
-        v-if="props.note.description"
-        html
-        breaks
-        :source="props.note.description"
-      ></Markdown>
-      <!--      {{ props.note.description }}-->
-    </v-card-text>
-    <v-divider></v-divider>
-  </v-card>
-  <v-card v-else class="mb-2 card" width="400" elevation="6">
-    <v-card-title>
-      <v-text-field
-        density="compact"
-        label="Title"
-        hide-details
-        variant="underlined"
-        v-model="currentCard.title"
-        @update:modelValue="editCard()"
-      ></v-text-field>
-    </v-card-title>
-    <v-card-text class="text-h8 py-2">
+          <svg-icon type="mdi" :path="mdiInformationOutline"></svg-icon>
+        </button>
+      </span>
+    </div>
+    <p>{{ props.note.description }}</p>
+  </div>
+  <div v-else class="card shadow-md rounded bg-white dark:bg-surface-800">
+    <InputText
+      size="small"
+      placeholder="Title"
+      v-model="currentCard.title"
+      @update:modelValue="editCard()"
+    />
+    <div class="py-1">
       <Codemirror
-        :style="{ height: '150px' }"
+        :style="{ height: '190px' }"
         v-model="currentCard.description"
         :indent-with-tab="true"
         :tab-size="2"
         :extensions="extensions"
         @update:modelValue="editCard()"
       ></Codemirror>
-    </v-card-text>
-
-    <v-card-actions class="justify-space-between">
-      <v-btn block @click="confirmDelete = true" color="info" class="me-1"
-        >Delete</v-btn
+    </div>
+    <div class="relative bottom-0">
+      <Button @click="showTemplate()" severity="danger" plain size="block" text
+        >DELETE</Button
       >
-    </v-card-actions>
-  </v-card>
-  <div class="text-center">
-    <v-dialog v-model="confirmDelete" width="auto">
-      <v-card>
-        <v-card-text> Are you sure you want to delete this note? </v-card-text>
-        <v-card-actions class="justify-space-between">
-          <v-btn color="primary" @click="confirmDelete = false">Cancel</v-btn>
-          <v-btn color="error" @click="deleteCard">Delete</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    </div>
   </div>
+  <ConfirmDialog group="templating">
+    <template #message="slotProps">
+      <div
+        class="flex flex-column align-items-center w-full gap-3 border-bottom-1 surface-border"
+      >
+        <i
+          :class="slotProps.message.icon"
+          class="text-6xl text-primary-500"
+        ></i>
+        <p>{{ slotProps.message.message }}</p>
+      </div>
+    </template>
+  </ConfirmDialog>
 </template>
 
 <script setup lang="ts">
 import { defineProps, ref, defineEmits, onBeforeMount, computed } from "vue";
-import { useStore } from "vuex";
 import { Codemirror } from "vue-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { oneDark } from "@codemirror/theme-one-dark";
-import Markdown from "vue3-markdown-it";
+import { mdiInformationOutline } from "@mdi/js";
+import SvgIcon from "@jamescoyle/vue-icon";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import ConfirmDialog from "primevue/confirmdialog";
 
 const emit = defineEmits(["editCard", "deleteCard"]);
 
-const store = useStore();
+import { useConfirm } from "primevue/useconfirm";
+
+const confirm = useConfirm();
+const showTemplate = () => {
+  confirm.require({
+    group: "templating",
+    header: "Confirmation",
+    message: "Please confirm to proceed moving forward.",
+    icon: "pi pi-exclamation-circle",
+    acceptIcon: "pi pi-check",
+    rejectIcon: "pi pi-times",
+    rejectClass: "p-button-sm",
+    acceptClass: "p-button-outlined p-button-sm",
+    accept: () => {
+      deleteCard();
+    },
+    reject: () => {},
+  });
+};
 const extensions = [markdown(), oneDark];
 
 interface Note {
@@ -141,8 +153,6 @@ const editCard = function () {
   emit("editCard", { ...currentCard.value, lastUpdated: Date.now() });
 };
 
-const confirmDelete = ref(false);
-
 const props = defineProps<Props>();
 </script>
 
@@ -151,6 +161,10 @@ const props = defineProps<Props>();
   display: flex;
   align-content: space-between;
   flex-direction: column;
+  max-width: 400px;
+  max-height: 300px;
+
+  transform: translateY(-5px);
 }
 
 .cm-editor {

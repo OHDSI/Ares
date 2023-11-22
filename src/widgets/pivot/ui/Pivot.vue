@@ -1,245 +1,221 @@
 <template>
-  <v-row v-if="data">
-    <v-col cols="3">
-      <v-card>
-        <v-tabs v-model="tab" fixed-tabs>
-          <v-tab value="table">
-            <v-icon left> mdi-table </v-icon>
-            Table
-          </v-tab>
-          <v-tab value="manipulation">
-            <v-icon left> mdi-database-cog </v-icon>
-            Settings
-          </v-tab>
-        </v-tabs>
-        <v-window v-model="tab" class="my-2">
-          <v-window-item value="table">
-            <v-card class="attr-box">
-              <v-list class="pa-3">
-                <v-select
-                  v-model="selectedRows"
-                  variant="solo"
-                  :menu-props="{ bottom: true, offsetY: true }"
-                  menu-icon="mdi-plus-box"
-                  persistent-placeholder
-                  prefix="Row attributes"
-                  hide-selected
-                  multiple
-                  :items="getDisplayedAttributes"
-                >
-                  <template #selection="{}"></template>
-                  filter
-                </v-select>
-                <draggable
-                  item-key="id"
-                  v-model="selectedRows"
-                  v-if="selectedRows.length"
-                >
-                  <template #item="{ element }">
-                    <v-list-item class="list-item">
-                      <v-list-item-title>
-                        <v-list-item-title>{{ element }}</v-list-item-title>
-                      </v-list-item-title>
-                      <template v-slot:append="{}">
-                        <v-list-item-action end>
-                          <v-btn
-                            variant="plain"
-                            density="compact"
-                            icon
-                            @click="removeRows(element)"
-                            ><v-icon>mdi-close</v-icon></v-btn
-                          >
-                        </v-list-item-action>
-                      </template>
-                    </v-list-item>
-                  </template>
-                </draggable>
-                <v-card-text v-else class="placeholder"
-                  >Select attributes to display</v-card-text
-                >
-              </v-list>
-            </v-card>
-            <v-card class="attr-box">
-              <v-list class="pa-3">
-                <v-select
-                  v-model="selectedCols"
-                  variant="solo"
-                  persistent-placeholder
-                  menu-icon="mdi-plus-box"
-                  :menu-props="{ bottom: true, offsetY: true }"
-                  prefix="Column attributes"
-                  hide-selected
-                  multiple
-                  :items="getDisplayedAttributes"
-                >
-                  <template #selection="{}"> </template>
-                </v-select>
-                <draggable
-                  item-key="id"
-                  v-model="selectedCols"
-                  v-if="selectedCols.length"
-                >
-                  <template #item="{ element }">
-                    <v-list-item class="list-item">
-                      <v-list-item-title>
-                        <v-list-item-title>{{ element }}</v-list-item-title>
-                      </v-list-item-title>
-                      <template v-slot:append="{}">
-                        <v-list-item-action end>
-                          <v-btn
-                            variant="plain"
-                            density="compact"
-                            icon
-                            @click="removeCols(element)"
-                            ><v-icon>mdi-close</v-icon></v-btn
-                          >
-                        </v-list-item-action>
-                      </template>
-                    </v-list-item>
-                  </template>
-                </draggable>
-
-                <v-card-text v-else class="placeholder align-self-center"
-                  >Select attributes to display</v-card-text
-                >
-              </v-list>
-            </v-card>
-          </v-window-item>
-          <v-window-item value="manipulation">
-            <v-card>
-              <v-select
-                v-model="selectedFilterAttributes"
-                hide-details
-                variant="outlined"
-                class="pa-3 pb-6"
-                :menu-props="{ bottom: true, offsetY: true }"
-                hide-selected
-                clearable
-                :items="getDisplayedAttributes"
-                multiple
-                label="Filters"
-                @click:clear="removeFilterAttributes()"
-              >
-                <template v-slot:selection="{ item, select, selected }">
-                  <v-menu
-                    allow-overflow
-                    offset-y
-                    bottom
-                    max-height="500"
-                    :close-on-content-click="false"
-                  >
-                    <template v-slot:activator="{ props }">
-                      <v-chip
-                        closable
-                        :input-value="selected"
-                        v-bind="props"
-                        @click="select"
-                        @click:close="removeFilterAttributes(item.raw)"
-                      >
-                        {{ item.raw }} ({{
-                          selectedFilterValues[item.raw]
-                            ? Object.keys(selectedFilterValues[item.raw]).length
-                            : 0
-                        }})
-                      </v-chip>
-                    </template>
-
-                    <v-list>
-                      <v-list-item
-                        v-for="value in getUniqueAttributeValues[item.raw]"
-                        :key="value"
-                      >
-                        <v-checkbox-btn
-                          :model-value="
-                            selectedFilterValues[item.raw]
-                              ? !selectedFilterValues[item.raw][value]
-                              : true
-                          "
-                          :label="value ? value.toString() : value"
-                          @update:modelValue="
-                            changeFilterValues(item.raw, value, $event)
-                          "
-                        ></v-checkbox-btn>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </template>
-              </v-select>
-              <div>
-                <v-select
-                  v-model="aggregateFunction"
-                  hide-details
-                  variant="outlined"
-                  class="px-3"
-                  label="Aggregate function"
-                  :menu-props="{ bottom: true, offsetY: true }"
-                  :items="aggregatorNamesList"
-                ></v-select>
-                <v-select
-                  v-if="aggregateFunction === 'Sum'"
-                  v-model="aggregateValue[0]"
-                  hide-details
-                  outlined
-                  class="pa-3"
-                  label="Aggregate attribute"
-                  :menu-props="{ bottom: true, offsetY: true }"
-                  :items="getAggregateValues"
-                ></v-select>
-              </div>
-            </v-card>
-          </v-window-item>
-        </v-window>
-      </v-card>
-    </v-col>
-    <v-col class="overflow-hidden">
-      <v-card class="pa-3 table-card">
-        <div
-          v-if="selectedCols.length || selectedRows.length"
-          class="table-container"
-        >
-          <v-row>
-            <VuePivottable
-              v-if="selectedCols.length || selectedRows.length"
-              class="align-self-start"
-              :data="data"
-              :rows="selectedRows"
-              :cols="selectedCols"
-              :aggregators="aggregators"
-              :attributes="getDisplayedAttributes"
-              :value-filter="selectedFilterValues"
-              :aggregator-name="aggregateFunction"
-              :vals="aggregateValue"
-              :table-options="
-                eventListener
-                  ? eventListener(router, route, getUniqueAttributeValues)
-                  : {}
-              "
+  <div
+    class="flex flex-row gap-5 bg-white dark:bg-surface-800 w-full h-[650px]"
+    v-if="data"
+  >
+    <div style="width: 25%; height: 100%">
+      <TabView
+        :pt="{
+          navContent: {
+            class: [''],
+          },
+          nav: {
+            class: [
+              'flex flex-row justify-around flex-1',
+              'bg-surface-0 dark:bg-surface-800',
+              'border-b-2 border-surface-200 dark:border-surface-700',
+              'text-surface-900 dark:text-surface-0/80',
+            ],
+          },
+        }"
+      >
+        <div class="flex flex-row justify-between">
+          <TabPanel
+            :pt="{
+              header: {
+                class: ['flex-1 basis-0'],
+              },
+              headerAction: {
+                class: ['justify-center'],
+              },
+            }"
+          >
+            <template #header>
+              <svg-icon type="mdi" :path="mdiTable"></svg-icon>
+              <h3 class="uppercase">Table</h3></template
             >
-            </VuePivottable>
-          </v-row>
+            <div class="flex flex-col gap-3">
+              <Card class="attr-box">
+                <template #content>
+                  <div class="flex flex-col gap-5 h-[275px]">
+                    <MultiSelect
+                      style="width: 100%; height: 50px"
+                      placeholder="Row Attributes"
+                      v-model="selectedRows"
+                      :options="getDisplayedAttributes"
+                      :pt="{
+                        label: { class: ['self-center pl-4 font-light'] },
+                      }"
+                    >
+                      <template #value>Row Attributes</template>
+                      <template #dropdownicon>
+                        <svg-icon type="mdi" :path="mdiPlusBox"></svg-icon>
+                      </template>
+                    </MultiSelect>
+
+                    <draggable
+                      class="overflow-scroll"
+                      item-key="id"
+                      v-model="selectedRows"
+                      v-if="selectedRows.length"
+                    >
+                      <template #item="{ element }">
+                        <div
+                          class="p-5 list-item bg-surface-200 dark:bg-surface-700"
+                        >
+                          <h3>{{ element }}</h3>
+
+                          <Button plain text @click="removeRows(element)">
+                            <svg-icon type="mdi" :path="mdiClose"></svg-icon>
+                          </Button>
+                        </div>
+                      </template>
+                    </draggable>
+                    <h3 v-else class="placeholder">
+                      Select attributes to display
+                    </h3>
+                  </div>
+                </template>
+              </Card>
+              <Card class="attr-box">
+                <template #content>
+                  <div class="flex flex-col gap-5 h-[275px]">
+                    <MultiSelect
+                      style="width: 100%; height: 50px"
+                      placeholder="Column Attributes"
+                      v-model="selectedCols"
+                      :options="getDisplayedAttributes"
+                      :pt="{
+                        label: { class: ['self-center pl-4 font-light'] },
+                      }"
+                    >
+                      <template #value>Column Attributes</template>
+                      <template #dropdownicon>
+                        <svg-icon type="mdi" :path="mdiPlusBox"></svg-icon>
+                      </template>
+                    </MultiSelect>
+
+                    <draggable
+                      class="overflow-scroll"
+                      item-key="id"
+                      v-model="selectedCols"
+                      v-if="selectedCols.length"
+                    >
+                      <template #item="{ element }">
+                        <div
+                          class="p-5 list-item bg-surface-200 dark:bg-surface-700"
+                        >
+                          <h3>{{ element }}</h3>
+
+                          <Button plain text @click="removeCols(element)">
+                            <svg-icon type="mdi" :path="mdiClose"></svg-icon>
+                          </Button>
+                        </div>
+                      </template>
+                    </draggable>
+                    <h3 v-else class="placeholder">
+                      Select attributes to display
+                    </h3>
+                  </div>
+                </template>
+              </Card>
+            </div>
+          </TabPanel>
+          <TabPanel
+            :pt="{
+              header: {
+                class: ['flex-1 basis-0'],
+              },
+              headerAction: {
+                class: ['justify-center'],
+              },
+            }"
+          >
+            <template #header>
+              <svg-icon type="mdi" :path="mdiDatabaseCog"></svg-icon>
+              <h3 class="uppercase">Settings</h3>
+            </template>
+            <Card>
+              <template #content>
+                <div class="flex flex-col gap-5">
+                  <TreeSelect
+                    v-model="selectedFilterAttributes"
+                    :options="getDisplayedAttributes"
+                    selectionMode="checkbox"
+                    placeholder="Select Item"
+                    class="md:w-20rem w-full"
+                  />
+                  <Dropdown
+                    v-model="aggregateFunction"
+                    class="px-3 w-full"
+                    placeholder="Aggregate function"
+                    :options="aggregatorNamesList"
+                  ></Dropdown>
+                  <Dropdown
+                    v-if="aggregateFunction === 'Sum'"
+                    v-model="aggregateValue[0]"
+                    hide-details
+                    outlined
+                    class="pa-3 w-full"
+                    placeholder="Aggregate attribute"
+                    :options="getAggregateValues"
+                  ></Dropdown>
+                </div>
+              </template>
+            </Card>
+          </TabPanel>
         </div>
-        <v-card-text v-else class="placeholder table-placeholder"
-          >Choose at least one attribute to display the results</v-card-text
+      </TabView>
+    </div>
+    <div style="width: 75%; height: 100%" class="table-card overflow-scroll">
+      <div
+        v-if="selectedCols.length || selectedRows.length"
+        style="width: 100%"
+        class="table-container"
+      >
+        <VuePivottable
+          v-if="selectedCols.length || selectedRows.length"
+          class="align-self-start"
+          :data="data"
+          :rows="selectedRows"
+          :cols="selectedCols"
+          :aggregators="aggregators"
+          :attributes="getDisplayedAttributes"
+          :value-filter="selectedFilterValues"
+          :aggregator-name="aggregateFunction"
+          :vals="aggregateValue"
+          :table-options="
+            eventListener
+              ? eventListener(router, route, getUniqueAttributeValues)
+              : {}
+          "
         >
-      </v-card>
-    </v-col>
-  </v-row>
+        </VuePivottable>
+      </div>
+      <div class="placeholder-container h-full" v-else>
+        <h2 class="placeholder table-placeholder text-black dark:text-white">
+          Choose at least one attribute to display the results
+        </h2>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script lang="ts">
-import draggable from "vuedraggable";
-
-export default {
-  name: "PivotTable",
-  components: {
-    draggable,
-  },
-};
-</script>
 <script setup lang="ts">
 import { VuePivottable } from "vue-pivottable";
-import "./vue-pivottable.css";
+import "./vue-pivottable.scss";
 import { computed, defineProps, Ref, ref, onBeforeMount } from "vue";
+import draggable from "vuedraggable";
+
+import SvgIcon from "@jamescoyle/vue-icon";
+import { mdiClose, mdiDatabaseCog, mdiPlusBox, mdiTable } from "@mdi/js";
+
+import Card from "primevue/card";
+import Dropdown from "primevue/dropdown";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
+import Button from "primevue/button";
+import MultiSelect from "primevue/multiselect";
 
 import {
   useRouter,
@@ -247,6 +223,7 @@ import {
   Router,
   RouteLocationNormalizedLoaded,
 } from "vue-router";
+import TreeSelect from "primevue/treeselect";
 
 const router = useRouter();
 const route = useRoute();
@@ -277,8 +254,6 @@ interface Props {
     ) => void;
   };
 }
-
-const tab: Ref<string> = ref("");
 
 const props = defineProps<Props>();
 
@@ -342,6 +317,12 @@ const removeFilterAttributes = function (attribute = null) {
     selectedFilterValues.value = {};
   }
 };
+
+const menu = ref();
+
+const toggle = (event) => {
+  menu.value.toggle(event);
+};
 const changeFilterValues = function (
   attribute: string | number,
   attrValue: string | number,
@@ -397,9 +378,9 @@ onBeforeMount(() => {
 </script>
 
 <style lang="scss">
-@import "./vue-pivottable.css";
+@import "vue-pivottable";
 .attr-box {
-  min-height: 300px;
+  min-height: 270px;
   min-width: 200px;
 }
 
@@ -408,10 +389,8 @@ onBeforeMount(() => {
 }
 
 .table-card {
-  padding: 10px;
   width: 100%;
   height: 100%;
-  display: flex !important;
   align-items: center;
   justify-content: center;
 }
@@ -428,10 +407,13 @@ onBeforeMount(() => {
   background-color: inherit;
 }
 .list-item {
-  background-color: rgb(var(--v-theme-accent));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(var(--surface-300));
   margin: 0px 8px;
   border-radius: 5px;
-  height: 20px;
+  height: 40px;
   cursor: move;
 }
 
@@ -440,16 +422,25 @@ onBeforeMount(() => {
 }
 
 .table-container {
-  padding: 10px;
   width: 100%;
   height: 100%;
 }
-:deep(.v-text-field__prefix) {
-  font-size: 0.875rem !important;
-  color: white;
+
+.placeholder-container {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  height: 100%;
 }
 
-:deep(.v-list-item__title) {
-  font-size: 0.875rem !important;
-}
+//:deep(.v-text-field__prefix) {
+//  font-size: 0.875rem !important;
+//  color: white;
+//}
+//
+//:deep(.v-list-item__title) {
+//  font-size: 0.875rem !important;
+//}
 </style>

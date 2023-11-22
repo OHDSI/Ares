@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-6">
+  <div class="p-4">
     <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
     <div v-resize="load" :id="id" :style="style"></div>
     <ContextMenu v-if="annotationMode" :items="actions" />
@@ -40,10 +40,10 @@ interface Props {
   data: object[] | string[];
   id: string;
   width?: string;
-  chartSpec: (a?: boolean, b?: boolean, c?: string) => TopLevelSpec;
+  chartSpec: (a?: boolean, b?: boolean, c?: string) => any;
   annotationMode?: boolean;
   annotationsConfig?: {
-    chartSpec: (a?: boolean, b?: boolean, c?: string) => TopLevelSpec;
+    chartSpec: (a?: boolean, b?: boolean, c?: string) => any;
     annotationsParentElement: string;
     brushParentElement: string;
   };

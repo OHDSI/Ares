@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!store.getters.getErrors">
+  <div class="flex flex-col gap-5" v-if="!store.getters.getErrors">
     <SourceDetails />
     <Metadata />
   </div>

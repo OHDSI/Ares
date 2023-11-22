@@ -1,15 +1,13 @@
 <template>
-  <v-list-item
-    :title="minMax ? 'MIN/MAX' : 'P10/P90'"
-    subtitle="Applicable to some reports. Determines whether to use Min/Max or P10/P90
-      values for chart rendering"
-  >
-    <template v-slot:prepend>
-      <v-list-item-action>
-        <v-switch class="mr-2" v-model="minMax"></v-switch>
-      </v-list-item-action>
-    </template>
-  </v-list-item>
+  <div class="flex flex-row gap-5 mb">
+    <InputSwitch v-model="minMax" />
+    <div>
+      <h3>{{ minMax ? "MIN/MAX" : "P10/P90" }}</h3>
+      <p class="font-thin">
+        Applicable to some reports. Determines whether to use Min/Max or P10/P90
+      </p>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -22,6 +20,7 @@ export default {
 import { computed } from "vue";
 import { useStore } from "vuex";
 import { TOGGLE_MINMAX_SETTING } from "@/widgets/settings/model/store/actions.type";
+import InputSwitch from "primevue/inputswitch";
 
 const store = useStore();
 

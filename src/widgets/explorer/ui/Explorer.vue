@@ -1,102 +1,79 @@
 <template>
-  <div v-if="store.getters.explorerLoaded" id="explorer" class="pa-2">
-    <v-row>
-      <v-col cols="1" class="d-flex justify-center align-center">
-        <v-btn to="/home" icon variant="plain">
-          <v-img :class="iconClass" :src="icon" width="42"></v-img> </v-btn
-      ></v-col>
-      <v-col cols="auto">
-        <v-autocomplete
+  <div
+    v-if="store.getters.explorerLoaded"
+    id="explorer"
+    class="container flex flex-row gap-16 my-10 justify-items-center"
+  >
+    <img :class="iconClass" :src="icon" width="45" />
+    <div class="flex flex-row gap-5">
+      <div class="p-float-label">
+        <dropdown
+          inputId="folder"
           :model-value="store.getters.getSelectedFolder"
-          class="mt-2"
-          label="Report Category"
-          prepend-icon="mdi-folder"
-          return-object
-          density="compact"
-          variant="underlined"
-          :items="config.folders"
-          item-title="name"
-          item-value="name"
           @update:modelValue="changeFolder"
+          :options="config.folders"
+          optionLabel="name"
+        ></dropdown>
+        <label class="left-3 font-light dark:text-white text-black" for="folder"
+          >Report category</label
         >
-          <template v-slot:item="{ props, item }">
-            <v-list-item
-              v-bind="props"
-              :title="item.value.name"
-              :append-icon="item.value.icon"
-            ></v-list-item>
-          </template>
-        </v-autocomplete>
-      </v-col>
-      <v-col v-if="showSourceSelector" cols="auto">
-        <v-autocomplete
-          class="mt-2"
-          variant="underlined"
-          label="Source"
-          density="compact"
+      </div>
+
+      <div v-if="showSourceSelector" class="p-float-label">
+        <dropdown
+          input-id="source"
           :model-value="store.getters.getSelectedSource"
-          return-object
-          prepend-icon="mdi-database"
-          auto-select-first
-          :items="store.getters.getSources"
-          item-title="cdm_source_abbreviation"
-          item-value="cdm_source_key"
           @update:modelValue="changeSource"
+          :options="store.getters.getSources"
+          optionLabel="cdm_source_abbreviation"
+        />
+        <label class="left-3 font-light dark:text-white text-black" for="source"
+          >Source</label
         >
-        </v-autocomplete>
-      </v-col>
-      <v-col v-if="showReleaseSelector" cols="auto">
-        <v-autocomplete
-          class="mt-2"
-          variant="underlined"
-          density="compact"
-          label="Data Source Release"
+      </div>
+
+      <div v-if="showReleaseSelector" class="p-float-label">
+        <dropdown
+          input-id="release"
           :model-value="store.getters.getSelectedRelease"
-          return-object
-          prepend-icon="mdi-database-clock"
-          auto-select-first
-          :items="store.getters.getReleases"
-          item-title="release_name"
-          item-value="release_id"
           @update:modelValue="changeRelease"
+          :options="store.getters.getReleases"
+          optionLabel="release_name"
+        />
+        <label
+          class="left-3 font-light dark:text-white text-black"
+          for="release"
+          >Release</label
         >
-        </v-autocomplete>
-      </v-col>
-      <v-col cols="auto">
-        <v-autocomplete
-          class="mt-2"
-          label="Report"
-          density="compact"
-          variant="underlined"
+      </div>
+
+      <div class="p-float-label">
+        <dropdown
+          input-id="report"
           :model-value="store.getters.getSelectedReport"
-          return-object
-          prepend-icon="mdi-file-chart"
-          :items="store.getters.getFilteredReports"
-          item-title="name"
-          item-value="route"
           @update:modelValue="changeReport"
+          :options="store.getters.getFilteredReports"
+          optionLabel="name"
+        />
+        <label class="left-3 font-light dark:text-white text-black" for="report"
+          >Report</label
         >
-          <template v-slot:item="{ props, item }">
-            <v-list-item
-              v-bind="props"
-              :title="item.value.name"
-              :append-icon="item.value.icon"
-            ></v-list-item>
-          </template>
-        </v-autocomplete>
-      </v-col>
-      <v-col v-if="showConceptSelector" cols="auto">
-        <v-autocomplete
-          readonly
-          variant="underlined"
-          density="compact"
-          class="mt-2"
-          label="Concept ID"
-          prepend-icon="mdi-chart-timeline-variant-shimmer"
+      </div>
+
+      <div v-if="showConceptSelector" class="p-float-label">
+        <dropdown
+          input-id="concept"
           :model-value="showConceptSelector"
-        ></v-autocomplete>
-      </v-col>
-    </v-row>
+          :options="[showConceptSelector]"
+          disabled
+        />
+        <label
+          class="left-3 font-light dark:text-white text-black"
+          for="concept"
+          >Concept ID</label
+        >
+      </div>
+    </div>
   </div>
 </template>
 
@@ -110,6 +87,7 @@ import { useStore } from "vuex";
 import icon from "@/shared/assets/icon.png";
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
+import Dropdown from "primevue/dropdown";
 
 import config from "@/widgets/explorer/config";
 import {
@@ -190,7 +168,7 @@ tr:hover {
 .inverted {
   filter: invert(1);
 }
- .v-list-item{
-   min-height: 30px !important;
- }
+.v-list-item {
+  min-height: 30px !important;
+}
 </style>

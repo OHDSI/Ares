@@ -1,7 +1,5 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-    <ChartHeader title="Death By Type" />
-
+  <Panel header="Death by Type">
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-deathbytype"
@@ -9,22 +7,24 @@
       :chartSpec="specDeathByType"
       :data="store.getters.getData.DEATH_BY_TYPE"
     />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex[route.name.toUpperCase()]
-                .DEATH_BY_TYPE[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.name.toUpperCase()]
+                  .DEATH_BY_TYPE[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +36,8 @@ import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces } from "@mdi/js";
 
 const store = useStore();
 const route = useRoute();

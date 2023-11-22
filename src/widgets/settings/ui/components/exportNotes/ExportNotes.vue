@@ -1,11 +1,14 @@
 <template>
-  <v-btn variant="flat" block @click="exportFiles"> Export Notes </v-btn>
+  <Button size="block" severity="secondary" @click="exportFiles">
+    Export Notes
+  </Button>
 </template>
 
 <script setup lang="ts">
 import { useStore } from "vuex";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import Button from "primevue/button";
 
 const store = useStore();
 

@@ -1,15 +1,17 @@
 import { defineConfig } from "vite";
 
 import path from "path";
-import vuetify from "vite-plugin-vuetify";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 
 export default defineConfig({
   base: "/ares/",
-  plugins: [vue(), vueJsx({}), vuetify({ autoImport: true })],
+  plugins: [vue(), vueJsx({})],
   server: {
     port: 8080,
+    watch: {
+      usePolling: true,
+    },
   },
   resolve: {
     alias: [

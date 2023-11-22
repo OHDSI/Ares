@@ -1,16 +1,22 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-    <ChartHeader
-      title="Historical Data Quality by Category"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+  <Panel
+    header="Historical Data Quality by Category"
+    :loading="!store.getters.dataInStore"
+    elevation="2"
+    class="ma-4"
+  >
+    <template #icons>
+      <ChartHeader
+        title="Historical Data Quality by Category"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
-      title="Historical Data Quality by Category"
       :data="store.getters.getData[QUALITY_INDEX].dataQualityRecordsStratified"
       :chartSpec="specDataQualityResultsByCategory"
       :annotations="annotations"
@@ -22,7 +28,7 @@
       }"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-  </v-card>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +42,7 @@ import { specDataQualityResultsByCategoryAnnotation } from "@/pages/reports/sour
 import _ from "lodash";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import Panel from "primevue/panel";
 
 const store = useStore();
 const route = useRoute();

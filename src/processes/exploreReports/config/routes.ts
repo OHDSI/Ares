@@ -1,49 +1,48 @@
-import reportsView from "@/processes/exploreReports/ui/ReportsView.vue";
-import home from "@/pages/info/Home.vue";
-import help from "@/pages/info/Help.vue";
-import article from "@/pages/info/Article.vue";
-import networkDataQualitySummary from "@/pages/reports/network/NetworkDataQualitySummary/NetworkDataQualitySummary.vue";
-import networkPerformance from "@/pages/reports/network/NetworkPerformance/NetworkPerformance.vue";
-import networkUnmappedSourceCodes from "@/pages/reports/network/NetworkUnmappedSourceCodes/NetworkUnmappedSourceCodes.vue";
+import ReportsView from "@/processes/exploreReports/ui/ReportsView.vue";
+import Home from "@/pages/info/Home.vue";
+import Help from "@/pages/info/Help.vue";
+import Article from "@/pages/info/Article.vue";
+import NetworkDataQualitySummary from "@/pages/reports/network/NetworkDataQualitySummary/NetworkDataQualitySummary.vue";
+import NetworkPerformance from "@/pages/reports/network/NetworkPerformance/NetworkPerformance.vue";
+import NetworkUnmappedSourceCodes from "@/pages/reports/network/NetworkUnmappedSourceCodes/NetworkUnmappedSourceCodes.vue";
 import NetworkDataFeasibilityReport from "@/pages/reports/network/NetworkDataFeasibilityReport/index.vue";
-import networkDatastrandReport from "@/pages/reports/network/NetworkDatastrandReport/NetworkDatastrandReport.vue";
-import networkPopulationReport from "@/pages/reports/network/NetworkPopulationReport/NetworkPopulationReport.vue";
-import networkOverview from "@/pages/reports/network/NetworkOverview/NetworkOverview.vue";
-import networkConceptReport from "@/pages/reports/network/NetworkConceptReport/NetworkConceptReport.vue";
-import observationPeriodReport from "@/pages/reports/release/ObservationPeriodReport/ObservationPeriodReport.vue";
-import TemporalCharacterization from "@/pages/reports/release/TemporalCharacterizationReport/TemporalCharacterization.vue";
-import metadataReport from "@/pages/reports/release/MetadataReport/MetadataReport.vue";
-import deathReport from "@/pages/reports/release/DeathReport/DeathReport.vue";
-import dataQualityResults from "@/pages/reports/release/DataQualityResults/DataQualityResults.vue";
-import domainDensity from "@/pages/reports/release/DomainDensity/DomainDensity.vue";
-import unmappedSourceCodes from "@/pages/reports/release/UnmappedSourceCodesReport/UnmappedSourceCodes.vue";
-import performanceReport from "@/pages/reports/release/PerformanceReport/PerformanceTable.vue";
-import personReport from "@/pages/reports/release/PersonReport/PersonReport.vue";
-import domainTable from "@/pages/reports/release/DomainTable/DomainTable.vue";
-import conceptReport from "@/pages/reports/release/ConceptReport/ConceptReport.vue";
-import dataQualityHistory from "@/pages/reports/source/DataQualityHistory/DataQualityHistory.vue";
-import SourceOverview from "@/pages/reports/source/SourceOverview/SourceOverview.vue";
-import domainContinuity from "@/pages/reports/source/DomainContinuity/DomainContinuity.vue";
-import sourceConceptReport from "@/pages/reports/source/SourceConceptReport/SourceConceptReport.vue";
-import WebApiInfo from "@/pages/info/WebApiInfo.vue";
-import networkConceptDashboard from "@/pages/reports/network/NetworkConceptDashboard/NetworkConceptDashboard.vue";
+import NetworkDatastrandReport from "@/pages/reports/network/NetworkDatastrandReport/NetworkDatastrandReport.vue";
+import NetworkPopulationReport from "@/pages/reports/network/NetworkPopulationReport/NetworkPopulationReport.vue";
+import NetworkOverview from "@/pages/reports/network/NetworkOverview/NetworkOverview.vue";
 import NetworkConceptReport from "@/pages/reports/network/NetworkConceptReport/NetworkConceptReport.vue";
+import ObservationPeriodReport from "@/pages/reports/release/ObservationPeriodReport/ObservationPeriodReport.vue";
+import TemporalCharacterization from "@/pages/reports/release/TemporalCharacterizationReport/TemporalCharacterization.vue";
+import MetadataReport from "@/pages/reports/release/MetadataReport/MetadataReport.vue";
+import DeathReport from "@/pages/reports/release/DeathReport/DeathReport.vue";
+import DataQualityResults from "@/pages/reports/release/DataQualityResults/DataQualityResults.vue";
+import DomainDensity from "@/pages/reports/release/DomainDensity/DomainDensity.vue";
+import UnmappedSourceCodes from "@/pages/reports/release/UnmappedSourceCodesReport/UnmappedSourceCodes.vue";
+import PerformanceReport from "@/pages/reports/release/PerformanceReport/PerformanceTable.vue";
+import PersonReport from "@/pages/reports/release/PersonReport/PersonReport.vue";
+import DomainTable from "@/pages/reports/release/DomainTable/DomainTable.vue";
+import ConceptReport from "@/pages/reports/release/ConceptReport/ConceptReport.vue";
+import DataQualityHistory from "@/pages/reports/source/DataQualityHistory/DataQualityHistory.vue";
+import SourceOverview from "@/pages/reports/source/SourceOverview/SourceOverview.vue";
+import DomainContinuity from "@/pages/reports/source/DomainContinuity/DomainContinuity.vue";
+import SourceConceptReport from "@/pages/reports/source/SourceConceptReport/SourceConceptReport.vue";
+import WebApiInfo from "@/pages/info/WebApiInfo.vue";
+import NetworkConceptDashboard from "@/pages/reports/network/NetworkConceptDashboard/NetworkConceptDashboard.vue";
 
 import { RouteRecordRaw } from "vue-router";
 
 export const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    components: { main: reportsView },
+    components: { main: ReportsView },
     redirect: { name: "home" },
     meta: { showModules: true },
     children: [
-      { path: "/home", name: "home", components: { reportsView: home } },
-      { path: "/help", name: "help", components: { reportsView: help } },
+      { path: "/home", name: "home", components: { reportsView: Home } },
+      { path: "/help", name: "help", components: { reportsView: Help } },
       {
         path: "/publication/article",
         name: "article",
-        components: { reportsView: article },
+        components: { reportsView: Article },
       },
     ],
   },
@@ -51,13 +50,13 @@ export const routes: RouteRecordRaw[] = [
   {
     path: "/network",
     name: "network",
-    components: { main: reportsView },
+    components: { main: ReportsView },
     redirect: { name: "overview" },
     children: [
       {
         path: "network_data_quality",
         name: "networkDataQuality",
-        components: { reportsView: networkDataQualitySummary },
+        components: { reportsView: NetworkDataQualitySummary },
       },
 
       {
@@ -68,7 +67,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "network_concept_dashboard",
         name: "networkConceptDashboard",
-        components: { reportsView: networkConceptDashboard },
+        components: { reportsView: NetworkConceptDashboard },
       },
       {
         path: "web_api",
@@ -78,12 +77,12 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "network_performance",
         name: "networkPerformance",
-        components: { reportsView: networkPerformance },
+        components: { reportsView: NetworkPerformance },
       },
       {
         path: "network_unmapped_source_codes",
         name: "networkUnmappedSourceCodes",
-        components: { reportsView: networkUnmappedSourceCodes },
+        components: { reportsView: NetworkUnmappedSourceCodes },
       },
       {
         path: "feasibility",
@@ -93,17 +92,17 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "data_strand_report",
         name: "dataStrandReport",
-        components: { reportsView: networkDatastrandReport },
+        components: { reportsView: NetworkDatastrandReport },
       },
       {
         path: "population",
         name: "population",
-        components: { reportsView: networkPopulationReport },
+        components: { reportsView: NetworkPopulationReport },
       },
       {
         path: "overview",
         name: "overview",
-        components: { reportsView: networkOverview },
+        components: { reportsView: NetworkOverview },
       },
       /*{
         path: "concept/:domain/:concept/summary",
@@ -115,13 +114,13 @@ export const routes: RouteRecordRaw[] = [
   {
     path: "/cdm/:cdm",
     name: "datasource",
-    components: { main: reportsView },
+    components: { main: ReportsView },
     redirect: { name: "dataSourceOverview" },
     children: [
       {
         path: "data_quality_history",
         name: "dataQualityHistory",
-        components: { reportsView: dataQualityHistory },
+        components: { reportsView: DataQualityHistory },
       },
       {
         path: "data_source_overview",
@@ -131,12 +130,12 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "domain_continuity",
         name: "domainContinuity",
-        components: { reportsView: domainContinuity },
+        components: { reportsView: DomainContinuity },
       },
       {
         path: ":domain/:concept/overlay",
         name: "sourceConceptOverlay",
-        components: { reportsView: sourceConceptReport },
+        components: { reportsView: SourceConceptReport },
       },
     ],
   },
@@ -144,13 +143,13 @@ export const routes: RouteRecordRaw[] = [
   {
     path: "/cdm/:cdm/:release",
     name: "cdm",
-    components: { main: reportsView },
+    components: { main: ReportsView },
     redirect: { name: "person" },
     children: [
       {
         path: "observation_period",
         name: "observationPeriod",
-        components: { reportsView: observationPeriodReport },
+        components: { reportsView: ObservationPeriodReport },
       },
       {
         path: "temporal_characterization",
@@ -160,46 +159,46 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "metadata",
         name: "metadata",
-        components: { reportsView: metadataReport },
+        components: { reportsView: MetadataReport },
       },
       {
         path: "death",
         name: "death",
-        components: { reportsView: deathReport },
+        components: { reportsView: DeathReport },
       },
       {
         path: "data_quality",
         name: "dataQuality",
-        components: { reportsView: dataQualityResults },
+        components: { reportsView: DataQualityResults },
       },
       {
         path: "data_density",
         name: "dataDensity",
-        components: { reportsView: domainDensity },
+        components: { reportsView: DomainDensity },
       },
       {
         path: "unmapped_source_codes",
         name: "unmappedSourceCodes",
-        components: { reportsView: unmappedSourceCodes },
+        components: { reportsView: UnmappedSourceCodes },
       },
       {
         path: "performance",
         name: "performance",
-        components: { reportsView: performanceReport },
+        components: { reportsView: PerformanceReport },
       },
       {
         path: "person",
         name: "person",
-        components: { reportsView: personReport },
+        components: { reportsView: PersonReport },
       },
       {
         path: ":domain",
-        components: { reportsView: domainTable },
+        components: { reportsView: DomainTable },
         name: "domainTable",
       },
       {
         path: ":domain/:concept/",
-        components: { reportsView: conceptReport },
+        components: { reportsView: ConceptReport },
         name: "concept",
       },
     ],

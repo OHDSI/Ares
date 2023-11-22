@@ -1,64 +1,63 @@
 <template>
-  <div v-if="props.show" class="text-center">
-    <v-dialog v-if="sh" v-model="sh" width="auto">
-      <v-card width="900" height="550">
-        <v-card-title class="bg-blue px-5 text-center">{{
-          formTitle
-        }}</v-card-title>
-        <v-row justify="space-evenly" class="pa-2">
-          <v-col cols="5">
-            <v-card class="pa-2" elevation="0">
-              <v-card-title class="text-center"> Selection </v-card-title>
-              <v-text-field
-                :rules="[rules.required]"
-                label="Title"
-                variant="outlined"
+  <Dialog
+    :pt="{
+      root: { class: 'h-[520px] w-[850px]' },
+    }"
+    :header="formTitle"
+    unstyled
+    modal
+    v-model:visible="sh"
+  >
+    <div class="h-full relative">
+      <div class="p-6">
+        <div class="flex flex-row h-full gap-20 p-3">
+          <div class="flex flex-col gap-3" style="flex: 1">
+            <h3 class="text-center font-bold text-xl">Selection</h3>
+            <div class="flex flex-col gap-7">
+              <InputText
+                placeholder="Title"
+                size="small"
                 v-model="currentSelection.title"
-              ></v-text-field>
-              <v-textarea
-                auto-grow
-                variant="outlined"
-                v-model="currentSelection.description"
-                label="Description"
+              />
+              <Textarea
+                placeholder="Description"
+                auto-resize
                 rows="9"
-                placeholder="optional"
-                counter
-              ></v-textarea>
-            </v-card>
-          </v-col>
-          <v-col cols="6">
-            <v-card max-height="400" class="pa-2 overflow-auto" elevation="0">
-              <v-card-title class="text-center"> Notes </v-card-title>
-
-              <v-card variant="outlined" color="info" class="mb-2" width="400">
-                <v-layout class="justify-center">
-                  <v-btn block variant="flat" @click="addNote">
-                    <v-layout class="newNote align-center">
-                      <v-icon size="20"> mdi-plus-thick </v-icon>
-                      <span>Add new note</span>
-                    </v-layout>
-                  </v-btn>
-                </v-layout>
-              </v-card>
-
-              <metadata-card
-                @delete-card="removeNote"
-                @edit-card="editNote"
-                edit
-                v-for="note in currentSelection.notes"
-                :note="note"
-                :key="note.id"
-              ></metadata-card>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-card-actions class="justify-space-between">
-          <v-btn color="error" @click="cancel">Cancel</v-btn>
-          <v-btn @click="submit">Save</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+                v-model="currentSelection.description"
+              />
+            </div>
+          </div>
+          <div class="flex flex-col gap-3" style="flex: 1">
+            <h3 class="text-center font-bold text-xl">Notes</h3>
+            <div class="flex flex-col gap-3 mx-1">
+              <Button plain size="block" variant="flat" @click="addNote">
+                <div class="newNote align-center">
+                  <svg-icon type="mdi" :path="mdiPlusThick"></svg-icon>
+                  <span>Add new note</span>
+                </div>
+              </Button>
+              <div class="flex flex-col gap-3 overflow-auto mt-1 p-2 h-[280px]">
+                <metadata-card
+                  @delete-card="removeNote"
+                  @edit-card="editNote"
+                  edit
+                  v-for="note in currentSelection.notes"
+                  :note="note"
+                  :key="note.id"
+                ></metadata-card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-row justify-between w-full absolute bottom-0">
+        <Button text severity="danger" size="large" @click="cancel"
+          >CANCEL</Button
+        >
+        <Button text severity="info" size="large" @click="submit">SAVE</Button>
+      </div>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -67,6 +66,13 @@ import MetadataCard from "@/entities/chartMetadataCard/metadataCard.vue";
 import { useStore } from "vuex";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
 import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
+import Dialog from "primevue/dialog";
+import Textarea from "primevue/textarea";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import { mdiPlusThick } from "@mdi/js";
+import SvgIcon from "@jamescoyle/vue-icon";
+
 interface Props {
   action: (a) => void;
   data?: {
@@ -170,6 +176,6 @@ const rules = {
 .newNote {
   display: flex;
   flex-direction: row;
-  gap: 1%;
+  text-transform: uppercase;
 }
 </style>

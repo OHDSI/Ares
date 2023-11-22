@@ -1,12 +1,9 @@
 <template>
-  <div>
-    <v-container
-      v-if="store.getters.dataInStore && !store.getters.getErrors"
-      fluid
-      class="pa-1"
-    >
-      <PerformanceInformation />
-    </v-container>
+  <div
+    v-if="store.getters.dataInStore && !store.getters.getErrors"
+    class="pa-1"
+  >
+    <PerformanceInformation />
   </div>
 </template>
 

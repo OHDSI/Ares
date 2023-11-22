@@ -1,12 +1,14 @@
 <template>
-  <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
-    <ChartHeader
-      title="Population by Year of Birth"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationMode"
-      @notes-mode-toggled="toggleNoteMode"
-    />
+  <Panel header="Population by Year of Birth" :loading="!store.getters.getData">
+    <template #icons>
+      <ChartHeader
+        title="Population by Year of Birth"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationMode"
+        @notes-mode-toggled="toggleNoteMode"
+      />
+    </template>
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-birthyearnote"
@@ -22,21 +24,23 @@
     >
     </Chart>
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -46,6 +50,13 @@ import { specBirthYearAnnotation } from "./specBirthYearAnnotation";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
+import Panel from "primevue/panel";
+import { computed } from "vue";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { ref } from "vue";
+import { helpers } from "@/shared/lib/mixins";
+import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import { mdiCodeBraces } from "@mdi/js";
 
 const annotationsMode = ref(false);
 const notesMode = ref(false);
@@ -57,12 +68,6 @@ function toggleAnnotationMode(mode) {
 function toggleNoteMode(mode) {
   notesMode.value = mode;
 }
-
-import { computed } from "vue";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { ref } from "vue";
-import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const store = useStore();
 

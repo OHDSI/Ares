@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <div>
     <Pivot
       :data="store.getters.getData.rawData.CheckResults"
       :event-listener="pivotRedirectToResultsTab"
@@ -17,7 +17,7 @@
       :aggregator-names-list="['Count']"
     >
     </Pivot>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -64,7 +64,7 @@ const pivotRedirectToResultsTab = function (
             route.params.release +
             `/data_quality`,
           query: {
-            tab: "results",
+            tab: 2,
             ...params,
           },
         });

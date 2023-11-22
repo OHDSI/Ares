@@ -1,12 +1,15 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-    <ChartHeader
-      title="Record Count Proportion by Month"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+  <Panel header="Record Count Proportion by Month">
+    <template #icons>
+      <ChartHeader
+        title="Record Count Proportion by Month"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
+
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
@@ -23,42 +26,44 @@
       :annotation-mode="annotationsMode"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        icon="mdi-help-circle"
-        tooltip="Proportion of people with at least one record per 1000 people."
-      />
-      <ChartActionIcon
-        v-if="store.getters.getData.isNotStationary"
-        icon="mdi-clock-alert"
-        tooltip="This time series has been deemed non-stationary by temporal characterization."
-      />
-      <ChartActionIcon
-        v-if="store.getters.getData.isNotStationary"
-        icon="mdi-clock-alert"
-        :tooltip="store.getters.getData.seasonalityComment"
-        @iconClicked="helpers.openNewTab(links.getCastorLink())"
-      />
-      <ChartActionIcon
-        icon="mdi-database-clock"
-        tooltip="Review this Time-Series across data source releases."
-        @iconClicked="router.push(getSourceConceptReportLink())"
-      />
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                .PREVALENCE_BY_MONTH[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          :icon="mdiHelpCircle"
+          tooltip="Proportion of people with at least one record per 1000 people."
+        />
+        <ChartActionIcon
+          v-if="store.getters.getData.isNotStationary"
+          :icon="mdiClockAlert"
+          tooltip="This time series has been deemed non-stationary by temporal characterization."
+        />
+        <ChartActionIcon
+          v-if="store.getters.getData.isNotStationary"
+          :icon="mdiClockAlert"
+          :tooltip="store.getters.getData.seasonalityComment"
+          @iconClicked="helpers.openNewTab(links.getCastorLink())"
+        />
+        <ChartActionIcon
+          :icon="mdiDatabaseClock"
+          tooltip="Review this Time-Series across data source releases."
+          @iconClicked="router.push(getSourceConceptReportLink())"
+        />
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                  .PREVALENCE_BY_MONTH[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -75,6 +80,13 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import _ from "lodash";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import {
+  mdiClockAlert,
+  mdiCodeBraces,
+  mdiDatabaseClock,
+  mdiHelpCircle,
+} from "@mdi/js";
 
 const annotationsMode = ref(false);
 const notesMode = ref(false);

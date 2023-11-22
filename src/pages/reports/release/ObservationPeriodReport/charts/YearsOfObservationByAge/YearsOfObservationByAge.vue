@@ -1,6 +1,5 @@
 <template>
-  <v-card :loading="!store.getters.getData" elevation="2" class="ma-4">
-    <ChartHeader title="Years of Observation by Age" />
+  <Panel header="Years of Observation by Age">
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-observationbyage"
@@ -10,22 +9,24 @@
           .OBSERVATION_PERIOD_LENGTH_BY_AGE
       "
     />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex.OBSERVATION_PERIOD
-                .OBSERVATION_PERIOD_LENGTH_BY_AGE[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.OBSERVATION_PERIOD
+                  .OBSERVATION_PERIOD_LENGTH_BY_AGE[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -34,9 +35,10 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specObservationByAge } from "./specObservationByAge";
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces } from "@mdi/js";
 
 const store = useStore();
 </script>

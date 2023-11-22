@@ -1,85 +1,37 @@
 <template>
-
-  <v-card
+  <Panel
+    header="Measurement Value Distributions by Unit"
     v-if="store.getters.getData.measurementTable"
-    elevation="2"
-    class="ma-4"
   >
-    <ChartHeader title="Measurement Value Distributions by Unit"></ChartHeader>    
-    <v-data-table
-      density="compact"
-      :headers="headers"
-      :items="store.getters.getData.measurementTable"
+    <DataTable
+      removable-sort
+      size="small"
+      paginator
+      :value="store.getters.getData.measurementTable"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
     >
-    </v-data-table>
-  </v-card>
+      <template #empty> No concepts found </template>
+      <Column sortable header="Unit ID" field="CATEGORY"></Column>
+      <Column sortable header="Count value" field="UNIT_COUNT"></Column>
+      <Column sortable header="Min Value" field="MIN_VALUE"></Column>
+      <Column sortable header="P10 Value" field="P10_VALUE"></Column>
+      <Column sortable header="P25 Value" field="P25_VALUE"></Column>
+      <Column sortable header="Median Value" field="MEDIAN_VALUE"></Column>
+      <Column sortable header="P75 Value" field="P75_VALUE"></Column>
+      <Column sortable header="P90 Value" field="P90_VALUE"></Column>
+      <Column sortable header="Max Value" field="MAX_VALUE"></Column>
+    </DataTable>
+  </Panel>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
-import { ref, Ref } from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { useStore } from "vuex";
+import Panel from "primevue/panel";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 const store = useStore();
-
-const headers: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Unit",
-    sortable: true,
-    key: "CATEGORY",
-    align: "start",
-  },
-  {
-    title: "Count value",
-    sortable: true,
-    key: "UNIT_COUNT",
-    align: "start",
-  },
-  {
-    title: "Min Value",
-    sortable: true,
-    key: "MIN_VALUE",
-    align: "start",
-  },
-  {
-    title: "P10 Value",
-    sortable: true,
-    key: "P10_VALUE",
-    align: "start",
-  },
-  {
-    title: "P25 Value",
-    sortable: true,
-    key: "P25_VALUE",
-    align: "start",
-  },
-  {
-    title: "Median Value",
-    sortable: true,
-    key: "MEDIAN_VALUE",
-    align: "start",
-  },
-  {
-    title: "P75 Value",
-    sortable: true,
-    key: "P75_VALUE",
-    align: "start",
-  },
-  {
-    title: "P90 Value",
-    sortable: true,
-    key: "P90_VALUE",
-    align: "start",
-  },
-  {
-    title: "Max Value",
-    sortable: true,
-    key: "MAX_VALUE",
-    align: "start",
-  },
-]);
 </script>
 
 <style scoped></style>

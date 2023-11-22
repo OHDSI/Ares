@@ -1,10 +1,8 @@
 <template>
-  <v-toolbar density="compact" class="mb-6">
-    <v-card-title v-if="title">{{ title }}</v-card-title>
-    <v-spacer></v-spacer>
+  <div class="flex flex-row gap-1">
     <ChartActionIcon
       v-if="props.notesCount !== undefined"
-      icon="mdi-note-text"
+      :icon="mdiNoteText"
       tooltip="Toggle Notes"
       :count="props.notesCount"
       show-state
@@ -13,7 +11,7 @@
     />
     <ChartActionIcon
       v-if="props.annotationsCount !== undefined"
-      icon="mdi-selection-marker"
+      :icon="mdiSelectionMarker"
       tooltip="Toggle Annotations"
       :count="props.annotationsCount"
       show-state
@@ -21,25 +19,23 @@
       @iconClicked="toggleAnnotationMode"
     />
     <slot></slot>
-  </v-toolbar>
+  </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, watch } from "vue";
-import { links } from "@/shared/config/links";
+import { ref, defineProps, defineEmits } from "vue";
 import { onMounted } from "vue";
 import { useStore } from "vuex";
-import { TOGGLE_DEFAULT_ANNOTATIONS_MODE } from "@/widgets/settings/model/store/actions.type";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 
 const annotationMode = ref(false);
 const noteMode = ref(false);
 const store = useStore();
+import { mdiSelectionMarker, mdiNoteText } from "@mdi/js";
 
 interface Props {
   notesCount?: number;
   annotationsCount?: number;
   issueCount?: number;
-  title?: string;
 }
 
 const props = defineProps<Props>();
@@ -57,6 +53,7 @@ function toggleAnnotationMode(val) {
 
 function toggleNotesMode(val) {
   emits("notesModeToggled", val);
+  console.log(val);
 }
 
 /*watch(annotationMode, () => {

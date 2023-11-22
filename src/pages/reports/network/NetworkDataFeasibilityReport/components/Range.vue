@@ -1,141 +1,168 @@
 <template>
-  <v-container fluid>
-    <v-container fluid class="mb-4">
-      <v-card-subtitle>Age range</v-card-subtitle>
-      <v-range-slider
-        density="compact"
-        step="1"
-        v-model="rangeAge"
-        :max="getAgeMinMax[1]"
-        :min="getAgeMinMax[0]"
-        hide-details
-        class="align-center"
+  <Panel toggleable header="Range Requirements" fluid>
+    <div class="flex flex-col gap-5">
+      <div class="flex flex-col gap-10">
+        <div class="flex flex-col gap-3">
+          <h3>Age range</h3>
+          <div class="flex flex-row gap-4 items-center">
+            <InputText
+              style="width: 5rem"
+              :inputmode="'numeric'"
+              v-model="rangeAge[0]"
+            />
+            <Slider
+              class="flex-grow"
+              range
+              :step="1"
+              :min="getAgeMinMax[0]"
+              :max="getAgeMinMax[1]"
+              v-model="rangeAge"
+            />
+            <InputText
+              style="width: 5rem"
+              :inputmode="'numeric'"
+              v-model="rangeAge[1]"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col gap-3">
+          <h3>Observation year range</h3>
+          <div class="flex flex-row gap-4 items-center">
+            <InputText
+              style="width: 5rem"
+              :inputmode="'numeric'"
+              v-model="rangeYear[0]"
+            />
+            <Slider
+              class="flex-grow"
+              range
+              :step="1"
+              :min="getYearsMinMax[0]"
+              :max="getYearsMinMax[1]"
+              v-model="rangeYear"
+            />
+            <InputText
+              style="width: 5rem"
+              :inputmode="'numeric'"
+              v-model="rangeYear[1]"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col gap-3">
+          <h3>Minimum continuous observation</h3>
+
+          <div class="flex flex-row gap-4 items-center">
+            <InputText
+              style="width: 5rem"
+              :inputmode="'numeric'"
+              v-model="continuousObservation[0]"
+            />
+            <Slider
+              class="flex-grow"
+              :step="1"
+              :min="getDurationMinMax[0]"
+              :max="getDurationMinMax[1]"
+              v-model="continuousObservation[0]"
+            />
+          </div>
+        </div>
+      </div>
+      <DataTable
+        removable-sort
+        size="small"
+        :value="getRangeData"
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
       >
-        <template v-slot:prepend>
-          <v-text-field
-            v-model="rangeAge[0]"
-            hide-details
-            single-line
-            type="number"
-            variant="underlined"
-            style="width: 60px"
-          ></v-text-field>
-        </template>
-        <template v-slot:append>
-          <v-text-field
-            v-model="rangeAge[1]"
-            hide-details
-            single-line
-            type="number"
-            style="width: 60px"
-            variant="underlined"
-          ></v-text-field>
-        </template>
-      </v-range-slider>
-      <v-card-subtitle>Observation year range</v-card-subtitle>
-      <v-range-slider
-        step="1"
-        density="compact"
-        v-model="rangeYear"
-        :max="getYearsMinMax[1]"
-        :min="getYearsMinMax[0]"
-        hide-details
-        class="align-center"
-      >
-        <template v-slot:prepend>
-          <v-text-field
-            v-model="rangeYear[0]"
-            class="mt-0 pt-0"
-            hide-details
-            single-line
-            variant="underlined"
-            type="number"
-            style="width: 60px"
-          ></v-text-field>
-        </template>
-        <template v-slot:append>
-          <v-text-field
-            v-model="rangeYear[1]"
-            class="mt-0 pt-0"
-            hide-details
-            single-line
-            variant="underlined"
-            type="number"
-            style="width: 60px"
-          ></v-text-field>
-        </template>
-      </v-range-slider>
-      <v-card-subtitle>Minimum continuous observation</v-card-subtitle>
-      <v-slider
-        step="1"
-        v-model="continuousObservation[0]"
-        :min="getDurationMinMax[0]"
-        :max="getDurationMinMax[1]"
-        hide-details
-        class="align-center"
-      >
-        <template v-slot:prepend>
-          <v-text-field
-            v-model="continuousObservation[0]"
-            class="mt-0 pt-0"
-            hide-details
-            variant="underlined"
-            single-line
-            type="number"
-            style="width: 60px"
-          ></v-text-field>
-        </template>
-      </v-slider>
-    </v-container>
-    <v-data-table dense :headers="yearHeaders" :items="getRangeData">
-      <template v-slot:item.population_observed="{ item }">{{
-        !isNaN(item.raw.population_observed)
-          ? formatComma(item.raw.population_observed)
-          : "No data"
-      }}</template>
-      <template v-slot:item.population_age="{ item }">{{
-        item.raw.population_age
-          ? formatComma(item.raw.population_age)
-          : "No data"
-      }}</template>
-      <template v-slot:item.average_population_percentage="{ item }">{{
-        item.raw.average_population_percentage
-          ? (item.raw.average_population_percentage * 100).toFixed(2)
-          : "No data"
-      }}</template>
-      <template v-slot:item.continuous_duration="{ item }">{{
-        item.raw.continuous_duration
-          ? (item.raw.continuous_duration * 100).toFixed(2)
-          : "No data"
-      }}</template>
-      <template v-slot:item.population_age_percent="{ item }">{{
-        item.raw.population_age_percent
-          ? (item.raw.population_age_percent * 100).toFixed(2)
-          : "No data"
-      }}</template>
-    </v-data-table>
-    <v-divider></v-divider>
-    <v-alert
-      color="message"
-      density="compact"
-      icon="mdi-help-rhombus"
-      prominent
-    >
+        <Column header="Data Source" field="cdm_name"></Column>
+        <Column
+          sortable
+          header="Population in the Age range"
+          field="population_age"
+        >
+          <template #body="slotProps">
+            {{
+              slotProps.data.population_age
+                ? formatComma(slotProps.data.population_age)
+                : "No data"
+            }}
+          </template>
+        </Column>
+        <Column
+          sortable
+          header="% in the Age range"
+          field="population_age_percent"
+        >
+          <template #body="slotProps">
+            {{
+              slotProps.data.population_age_percent
+                ? (slotProps.data.population_age_percent * 100).toFixed(2)
+                : "No data"
+            }}
+          </template>
+        </Column>
+        <Column
+          sortable
+          header="Cumulative observation %"
+          field="cumulative_duration"
+        >
+        </Column>
+        <Column
+          sortable
+          header="Average observed population per month"
+          field="population_observed"
+        >
+          <template #body="slotProps">
+            {{
+              !isNaN(slotProps.data.population_observed)
+                ? formatComma(slotProps.data.population_observed)
+                : "No data"
+            }}
+          </template>
+        </Column>
+        <Column
+          sortable
+          header="Average observed % population per month"
+          field="average_population_percentage"
+        >
+          <template #body="slotProps">
+            {{
+              slotProps.data.average_population_percentage
+                ? (slotProps.data.average_population_percentage * 100).toFixed(
+                    2
+                  )
+                : "No data"
+            }}
+          </template>
+        </Column>
+        <Column sortable header="Years observed" field="years_observed">
+        </Column>
+      </DataTable>
+    </div>
+
+    <Divider />
+    <Message :closable="false" severity="info">
       The continuous duration column shows the lowest % of all values found in
       the range.
-    </v-alert>
-  </v-container>
+    </Message>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import { timeParse } from "d3-time-format";
 import * as d3Format from "d3-format";
-import { VDataTable } from "vuetify/labs/VDataTable";
 import { computed, ref, watch, defineProps, defineEmits, Ref } from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { ObservationPeriodType } from "@/processes/exploreReports/model/interfaces/files/ObservationPeriodType";
 import { PersonData } from "@/processes/exploreReports/model/interfaces/files/Person";
 import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/interfaces/MultipleFilesRawInterface";
+import Message from "primevue/message";
+import Divider from "primevue/divider";
+import Panel from "primevue/panel";
+import InputText from "primevue/inputtext";
+import Slider from "primevue/slider";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 interface Props {
   observationPeriod: MultipleFilesRawInterface<ObservationPeriodType>[];
@@ -147,45 +174,6 @@ const props = defineProps<Props>();
 const rangeAge: Ref<number[]> = ref([0, 100]);
 const rangeYear: Ref<number[]> = ref([1900, 2021]);
 const continuousObservation: Ref<number[]> = ref([50]);
-const yearHeaders: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Data source",
-    align: "start",
-    sortable: false,
-    key: "cdm_name",
-  },
-  {
-    title: "Population in the Age range",
-    key: "population_age",
-    align: "end",
-  },
-  {
-    title: "% in the Age range",
-    key: "population_age_percent",
-    align: "end",
-  },
-  {
-    title: "Cumulative observation %",
-    key: "cumulative_duration",
-    align: "end",
-  },
-  {
-    title: "Average observed population per month",
-    key: "population_observed",
-    align: "end",
-  },
-  {
-    title: "Average observed % population per month",
-    key: "average_population_percentage",
-    align: "end",
-  },
-  {
-    title: "Years observed",
-    key: "years_observed",
-    align: "end",
-  },
-]);
-
 const getRangeData = computed(function () {
   const person = props.person;
   const timeparse = timeParse("%Y%m");

@@ -1,15 +1,7 @@
 <template>
-  <div v-if="!store.getters.getErrors">
+  <div class="flex flex-col gap-10" v-if="!store.getters.getErrors">
     <DomainDensity />
     <DomainRecordsPerPerson />
-    <form-dialog
-      v-if="store.getters.getDialogData.show"
-      @close="store.commit(SET_DIALOG, false)"
-      :show="store.getters.getDialogData.show"
-      :action="store.getters.getDialogData.action"
-      :data="store.getters.getDialogData.data"
-      :form-title="'Edit selection'"
-    />
   </div>
 </template>
 

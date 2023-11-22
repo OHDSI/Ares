@@ -1,11 +1,9 @@
 <template>
-  <div v-if="!store.getters.getErrors">
-    <v-container fluid class="pa-1">
-      <MainTable />
-      <DomainMetadataTable :data="store.getters.getData.metadataData" />
-      <DataStratificationByVisit />
-      <DataStratificationByDrug />
-    </v-container>
+  <div v-if="!store.getters.getErrors" class="flex flex-col gap-5">
+    <MainTable />
+    <DomainMetadataTable :data="store.getters.getData.metadataData" />
+    <DataStratificationByVisit />
+    <DataStratificationByDrug />
   </div>
 </template>
 

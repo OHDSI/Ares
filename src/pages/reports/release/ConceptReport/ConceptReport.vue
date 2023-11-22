@@ -1,53 +1,65 @@
 <template>
-  <div>
-    <v-container v-if="!store.getErrors && store.getters.dataInStore" fluid>
-      <v-responsive min-width="900">
-        <v-layout class="ma-0 mb-2 align-center d-flex">
-          <v-col class="justify-start align-center d-flex">
-            <h2 class="text-uppercase">
-              {{ store.getters.getData.conceptName }}
-            </h2>
-          </v-col>
-          <v-col class="justify-end align-center d-flex">
-            <v-btn class="ma-4" color="primary" density="comfortable" prepend-icon="mdi-check-network"
-              @click="navigateToNetworkConcept">
-              Network Report
-            </v-btn>
+  <div v-if="!store.getErrors && store.getters.dataInStore">
+    <div class="flex flex-col gap-10">
+      <PageHeader :title="store.getters.getData.conceptName">
+        <template #default>
+          <div class="flex flex-row gap-2">
+            <Button
+              size="small"
+              style="width: 180px; height: 30px"
+              @click="navigateToNetworkConcept"
+            >
+              <svg-icon
+                class="text-white"
+                type="mdi"
+                :path="mdiCheckNetwork"
+              ></svg-icon>
+              <span class="text-white uppercase text-base">
+                Network Report
+              </span>
+            </Button>
             <ReturnButton />
-          </v-col>
-        </v-layout>
-        <InfoPanel :network-concept-report="navigateToNetworkConcept" :concept="store.getters.getData.conceptId"
-          :population="store.getters.getData.numPersons" :percent-people="store.getters.getData.percentPersons"
-          :records-per-person="store.getters.getData.recordsPerPerson" :percent-values="route.params.domain === 'measurement'
+          </div>
+        </template>
+      </PageHeader>
+      <InfoPanel
+        :network-concept-report="navigateToNetworkConcept"
+        :concept="store.getters.getData.conceptId"
+        :population="store.getters.getData.numPersons"
+        :percent-people="store.getters.getData.percentPersons"
+        :records-per-person="store.getters.getData.recordsPerPerson"
+        :percent-values="
+          route.params.domain === 'measurement'
             ? getPercentWithValues
             : undefined
-            " :count-failed="store.getters.getData.countFailed
-    ? {
-      value: store.getters.getData.countFailed,
-      action: navigateToDataQuality,
-    }
-    : undefined
-    " :not-stationary="store.getters.getData.isNotStationary" />
-        <MeasurementTable />
-        <MeasurementValueDistribution />
-        <AgeAtFirstDiagnosis />
-        <AgeAtFirstExposure />
-        <LengthOfEra />
-        <ConditionsByType />
-        <DrugsByType />
-        <RecordsByUnit />
-        <MeasurementsByType />
-        <AgeAtFirstOccurrence />
-        <RecordCountProportionByMonth />
-        <DaysSupply />
-        <QuantityDistribution />
-        <VisitDurationByType />
-        <RecordCountProportionByAgeSexYear />
-      </v-responsive>
-      <form-dialog @close="store.commit(SET_DIALOG, false)" v-if="store.getters.getDialogData.show"
-        :show="store.getters.getDialogData.show" :action="store.getters.getDialogData.action"
-        :data="store.getters.getDialogData.data" :form-title="'Edit selection'" />
-    </v-container>
+        "
+        :count-failed="
+          store.getters.getData.countFailed
+            ? {
+                value: store.getters.getData.countFailed,
+                action: navigateToDataQuality,
+              }
+            : undefined
+        "
+        :not-stationary="store.getters.getData.isNotStationary"
+      />
+
+      <MeasurementTable />
+      <MeasurementValueDistribution />
+      <AgeAtFirstDiagnosis />
+      <AgeAtFirstExposure />
+      <LengthOfEra />
+      <ConditionsByType />
+      <DrugsByType />
+      <RecordsByUnit />
+      <MeasurementsByType />
+      <AgeAtFirstOccurrence />
+      <RecordCountProportionByMonth />
+      <DaysSupply />
+      <QuantityDistribution />
+      <VisitDurationByType />
+      <RecordCountProportionByAgeSexYear />
+    </div>
   </div>
 </template>
 
@@ -71,9 +83,11 @@ import DaysSupply from "@/pages/reports/release/ConceptReport/charts/DaysSupply/
 import QuantityDistribution from "@/pages/reports/release/ConceptReport/charts/QuantityDistribution/QuantityDistribution.vue";
 import VisitDurationByType from "@/pages/reports/release/ConceptReport/charts/VisitDurationByType/VisitDurationByType.vue";
 import RecordCountProportionByAgeSexYear from "@/pages/reports/release/ConceptReport/charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
-import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 import InfoPanel from "@/widgets/infoPanel";
+import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import { mdiCheckNetwork } from "@mdi/js";
+import SvgIcon from "@jamescoyle/vue-icon";
+import Button from "primevue/button";
 
 const route = useRoute();
 const router = useRouter();

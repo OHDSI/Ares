@@ -1,127 +1,148 @@
 <template>
-  <v-container fluid>
-    <v-data-table
-      class="mb-4"
-      show-expand
-      density="compact"
-      item-key="cdm_name"
-      v-model:expanded="expanded"
-      :headers="headers"
-      :items="getSourcesOverview"
+  <Panel toggleable header="Concept Requirements" fluid>
+    <DataTable
+      v-model:expandedRows="expanded"
+      removable-sort
+      size="small"
+      :value="getSourcesOverview"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
     >
-      <template v-slot:top>
-        <v-toolbar color="transparent" density="compact" flat>
-          <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="1000px">
-            <template v-slot:activator="{ props }">
-              <v-btn variant="flat" color="primary" class="mb-2" v-bind="props">
-                Add concept
-              </v-btn>
-            </template>
-            <ConceptSearchForm
-              :added-concepts="addedConcepts"
-              :success-message="successMessage"
-              :errors="errors"
-              @close="close"
-              @save="(item) => save(item)"
-              @inputChanged="clearMessages"
-            />
-          </v-dialog>
-        </v-toolbar>
-      </template>
-      <template v-slot:item.min_population="{ item }">{{
-        helpers.formatComma(item.raw.min_population) || "No data"
-      }}</template>
-      <template v-slot:item.max_population="{ item }">{{
-        helpers.formatComma(item.raw.max_population) || "No data"
-      }}</template>
-      <template v-slot:item.concepts.length="{ item }">{{
-        `${item.raw.concepts.length}/${addedConceptsCount}`
-      }}</template>
-      <template v-slot:expanded-row="{ columns, item }">
-        <td :colspan="columns.length">
-          <v-data-table
-            :hide-default-footer="true"
-            :disable-pagination="true"
-            density="compact"
-            :headers="conceptHeaders"
-            :items="item.raw.concepts"
-            class="elevation-1 accent"
+      <template #header>
+        <div class="flex flex-row justify-end">
+          <Button @click="dialog = !dialog" plain>
+            <span class="uppercase font-thin text-grey"
+              >Add concepts
+            </span></Button
           >
-            <template v-slot:item.time_series="{ item }">{{
-              item.raw.time_series
-                ? item.raw.time_series[0] === false
-                  ? "Non-stationary"
-                  : "Stationary"
-                : "No data"
-            }}</template>
-            <template v-slot:item.issues="{ item }">{{
-              item.issues ? item.raw.issues[0] : ""
-            }}</template>
-            <template v-slot:item.percentage="{ item }">{{
-              (item.raw.percentage * 100).toFixed(2) || "No data"
-            }}</template>
-            <template v-slot:item.population="{ item }">{{
-              helpers.formatComma(item.raw.population)
-            }}</template>
-            <template v-slot:item.measurement="{ item }">{{
-              !item.raw.measurement
-                ? isNaN(item.raw.measurement)
-                  ? "No data"
-                  : "N/A"
-                : item.raw.measurement
-            }}</template>
-          </v-data-table>
-        </td>
+        </div>
+
+        <ConceptSearchForm
+          :added-concepts="addedConcepts"
+          :success-message="successMessage"
+          :errors="errors"
+          @close="close"
+          @save="(item) => save(item)"
+          @inputChanged="clearMessages"
+          :show="dialog"
+        />
       </template>
-      <template v-slot:no-data><div>No concepts selected</div></template>
-    </v-data-table>
-    <v-divider></v-divider>
-    <v-alert
-      color="message"
-      dark
-      density="compact"
-      icon="mdi-help-rhombus"
-      prominent
-    >
+      <Column header="Source" field="cdm_name"> </Column>
+      <Column sortable header="Issues" field="issues"> </Column>
+      <Column header="Time-series issues" field="time_series_issues"></Column>
+      <Column sortable header="Available concepts" field="concepts.length">
+        <template #body="slotProps">
+          {{ `${slotProps.data.concepts.length}/${addedConceptsCount}` }}
+        </template>
+      </Column>
+      <Column header="Min population" field="min_population">
+        <template #body="slotProps">
+          {{ helpers.formatComma(slotProps.data.min_population) || "No data" }}
+        </template>
+      </Column>
+      <Column sortable header="Max population" field="max_population">
+        <template #body="slotProps">
+          {{ helpers.formatComma(slotProps.data.max_population) || "No data" }}
+        </template>
+      </Column>
+      <Column style="width: 5rem" expander> </Column>
+      <template #expansion="slotProps">
+        <DataTable
+          removable-sort
+          size="small"
+          :value="slotProps.data.concepts"
+          :rows="10"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
+        >
+          <Column header="Concept ID" field="concept_id"></Column>
+          <Column sortable header="Concept Name" field="concept_name"> </Column>
+          <Column sortable header="Domain" field="domain">
+            <template #body="slotProps">
+              {{ (slotProps.data.percentage * 100).toFixed(2) }}
+            </template>
+          </Column>
+          <Column sortable header="Population" field="population">
+            <template #body="slotProps">
+              {{ helpers.formatComma(slotProps.data.population) }}
+            </template>
+          </Column>
+          <Column sortable header="%" field="percentage">
+            <template #body="slotProps">
+              {{ (slotProps.data.percentage * 100).toFixed(2) || "No data" }}
+            </template>
+          </Column>
+          <Column sortable header="Time series" field="time_series">
+            <template #body="slotProps">
+              {{
+                slotProps.data.time_series
+                  ? slotProps.data.time_series[0] === false
+                    ? "Non-stationary"
+                    : "Stationary"
+                  : "No data"
+              }}
+            </template>
+          </Column>
+          <Column sortable header="Issues" field="issues">
+            <template #body="slotProps">
+              {{ slotProps.issues ? slotProps.data.issues[0] : "" }}
+            </template>
+          </Column>
+          <Column
+            :hidden="
+              ![
+                ...getSourcesOverview.map((value) =>
+                  value.concepts.filter(
+                    (concept) => concept.domain === 'MEASUREMENT'
+                  )
+                ),
+              ].filter((value) => value.length).length
+            "
+            sortable
+            header="% with values"
+            field="measurement"
+          >
+            <template #body="slotProps">
+              {{
+                !slotProps.data.measurement
+                  ? isNaN(slotProps.data.measurement)
+                    ? "No data"
+                    : "N/A"
+                  : slotProps.data.measurement
+              }}
+            </template>
+          </Column>
+        </DataTable>
+      </template>
+    </DataTable>
+    <Divider />
+    <Message :closable="false" severity="info">
       The overview section uses the smallest population count of all added
       concepts in estimations.
-    </v-alert>
-  </v-container>
+    </Message>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import { useStore } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
-import * as d3Format from "d3-format";
 import { helpers } from "@/shared/lib/mixins";
 import { computed, ref, watch, defineEmits, Ref, onBeforeMount } from "vue";
-import { VDataTable } from "vuetify/labs/VDataTable";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import { webApiActions } from "@/shared/api/webAPI";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Message from "primevue/message";
+import Divider from "primevue/divider";
+import Panel from "primevue/panel";
 
 const store = useStore();
-
+const dialog: Ref<boolean> = ref(false);
 const addedConcepts = ref({});
-const dialog = ref(false);
 const errors = ref("");
 const conceptsData = ref([]);
 const successMessage = ref([]);
-const headers = ref([
-  {
-    title: "Source",
-    align: "start",
-    sortable: false,
-    key: "cdm_name",
-  },
-  { title: "Issues", key: "issues" },
-  { title: "Time-series issues", key: "time_series_issues" },
-  { title: "Available concepts", key: "concepts.length" },
-  { title: "Min population", key: "min_population" },
-  { title: "Max population", key: "max_population" },
-]);
 const expanded = ref([]);
 const sources = ref([]);
 
@@ -132,19 +153,12 @@ const addedConceptsCount = computed(function () {
 });
 
 const emit = defineEmits(["overlappingDataChanged"]);
-/*
-watch(dialog, (val) => {
-  val || close();
-  if (this.$refs?.form) {
-    this.$refs.form.resetValidation();
-  }
-});*/
 
 const filterSourcesWithData = computed(function () {
   return sources.value.filter((data) => data.concepts.length);
 });
 watch(filterSourcesWithData, () => {
-  emit("overlappingDataChanged", filterSourcesWithData);
+  emit("overlappingDataChanged", filterSourcesWithData.value);
 });
 
 const getSourcesOverview = computed(function () {
@@ -167,32 +181,6 @@ const getSourcesOverview = computed(function () {
       value.time_series ? value.time_series[0] === false : false
     ).length,
   }));
-});
-const conceptHeaders = computed(function () {
-  return [
-    {
-      title: "Concept ID",
-      align: "start",
-      sortable: false,
-      key: "concept_id",
-      show: true,
-    },
-    { title: "Concept Name", key: "concept_name", show: true },
-    { title: "Domain", key: "domain", show: true },
-    { title: "Population", key: "population", show: true },
-    { title: "%", key: "percentage", show: true },
-    { title: "Time series", key: "time_series", show: true },
-    { title: "Issues", key: "issues", show: true },
-    {
-      title: "% with values",
-      key: "measurement",
-      show: [
-        ...getSourcesOverview.value.map((value) =>
-          value.concepts.filter((concept) => concept.domain === "MEASUREMENT")
-        ),
-      ].filter((value) => value.length).length,
-    },
-  ].filter((header) => header.show);
 });
 
 const clearMessages = function () {

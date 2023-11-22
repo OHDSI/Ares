@@ -1,139 +1,62 @@
 <template>
-  <div>
-    <v-card
-      v-if="!store.getters.getErrors && store.getters.dataInStore"
-      elevation="2"
-      class="ma-4"
+  <Panel
+    v-if="store.getters.dataInStore"
+    header="Network Unmapped Source Codes"
+  >
+    <DataTable
+      size="small"
+      :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
+      paginator
+      v-model:filters="newFilters"
+      :value="store.getters.getData.domainTable"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
     >
-      <ChartHeader title="Unmapped Source Codes" />
-      <v-row>
-        <v-col cols="3">
-          <v-text-field
-            v-model="search"
-            prepend-icon="mdi-magnify"
-            label="Search in Table"
-            variant="outlined"
-            single-line
-            hide-details
-          ></v-text-field>
-        </v-col>
-        <v-col cols="9"> </v-col>
-      </v-row>
-
-      <v-data-table
-        class="mt-4"
-        dense
-        :headers="headers"
-        :items="filteredRecords"
-        :footer-props="{
-          'items-per-page-options': [10, 50, 100],
-        }"
-        item-key="CDM_TABLE"
-        :items-per-page="10"
-        :search="search"
-        :sort-desc="true"
-      >
-        <template v-slot:body.prepend>
-          <tr>
-            <th v-for="header in headers" :key="header.title">
-              <div v-if="filters.hasOwnProperty(header.key)">
-                <v-select
-                  v-model="filters[header.key]"
-                  small-chips
-                  deletable-chips
-                  hide-details
-                  multiple
-                  :items="helpers.getValuesArray(filteredRecords, header.key)"
-                ></v-select>
-              </div>
-            </th>
-          </tr>
-        </template>
-        <template v-slot:item.CDM_TABLE_NAME="{ item }">
-          {{ item.raw.CDM_TABLE_NAME }}
-        </template>
-        <template v-slot:item.CDM_FIELD_NAME="{ item }">
-          {{ item.raw.CDM_FIELD_NAME }}
-        </template>
-        <template v-slot:item.SOURCE_VALUE="{ item }">
-          {{ item.raw.SOURCE_VALUE }}
-        </template>
-        <template v-slot:item.RECORD_COUNT="{ item }">
-          <v-layout justify-end>{{
-            helpers.formatComma(item.raw.RECORD_COUNT)
-          }}</v-layout>
-        </template>
-        <template v-slot:item.DATA_SOURCE_COUNT="{ item }">
-          <v-layout justify-end>{{ item.raw.DATA_SOURCE_COUNT }}</v-layout>
-        </template>
-        <template v-slot:item.DATA_SOURCES="{ item }">
-          <v-layout justify-end>{{ item.raw.DATA_SOURCES }}</v-layout>
-        </template>
-      </v-data-table>
-    </v-card>
-  </div>
+      <template #header>
+        <div>
+          <InputGroup unstyled>
+            <InputGroupAddon>
+              <i class="pi pi-search"></i>
+            </InputGroupAddon>
+            <InputText
+              class="rounded-r-lg"
+              style="width: 45rem"
+              unstyled
+              v-model="newFilters['global'].value"
+              placeholder="Search in Table"
+            />
+          </InputGroup>
+        </div>
+      </template>
+      <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
+      <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
+      <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
+      <Column sortable header="# Records" field="RECORD_COUNT"></Column>
+      <Column
+        sortable
+        header="# Data Sources"
+        field="DATA_SOURCE_COUNT"
+      ></Column>
+      <Column sortable header="Data Sources" field="DATA_SOURCES"></Column>
+    </DataTable>
+  </Panel>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
-import { helpers } from "@/shared/lib/mixins";
-
-import { computed, Ref, ref } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import InputGroup from "primevue/inputgroup";
+import InputText from "primevue/inputtext";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import Panel from "primevue/panel";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import { FilterMatchMode } from "primevue/api";
 
 const store = useStore();
 
-const search: Ref<string> = ref("");
-const filters: Ref<{ CDM_TABLE_NAME: string[]; CDM_FIELD_NAME: string[] }> =
-  ref({
-    CDM_TABLE_NAME: [],
-    CDM_FIELD_NAME: [],
-  });
-
-const headers: Ref<DataTableHeader[]> = ref([
-  {
-    title: "CDM Table",
-    sortable: true,
-    key: "CDM_TABLE_NAME",
-  },
-  {
-    title: "CDM Field",
-    sortable: true,
-    key: "CDM_FIELD_NAME",
-  },
-  {
-    title: "Source Value",
-    sortable: true,
-    key: "SOURCE_VALUE",
-  },
-  {
-    title: "# Records",
-    sortable: true,
-    key: "RECORD_COUNT",
-  },
-  {
-    title: "# Data Sources",
-    sortable: true,
-    key: "DATA_SOURCE_COUNT",
-  },
-  {
-    title: "Data Sources",
-    sortable: true,
-    key: "DATA_SOURCES",
-  },
-]);
-
-const filteredRecords = computed(function () {
-  return store.getters.getData.domainTable.filter((d) => {
-    return Object.keys(filters.value).every((f) => {
-      return (
-        filters.value[f as keyof typeof filters.value].length < 1 ||
-        filters.value[f as keyof typeof filters.value].includes(d[f])
-      );
-    });
-  });
+const newFilters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 </script>
 

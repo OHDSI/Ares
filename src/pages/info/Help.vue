@@ -1,5 +1,9 @@
 <template>
-  <div v-if="!store.getters.getErrors" id="help">
+  <div
+    class="text-black dark:text-white"
+    v-if="!store.getters.getErrors"
+    id="help"
+  >
     <Markdown
       v-if="contentLoaded"
       html

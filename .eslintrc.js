@@ -10,7 +10,7 @@ module.exports = {
     "plugin:prettier/recommended",
   ],
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: "latest",
   },
   rules: {
     eqeqeq: "warn",

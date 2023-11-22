@@ -1,12 +1,19 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-    <ChartHeader
-      title="Historical Data Quality by Domain"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+  <Panel
+    header="Historical Data Quality by Domain"
+    :loading="!store.getters.dataInStore"
+    elevation="2"
+    class="ma-4"
+  >
+    <template #icons>
+      <ChartHeader
+        title="Historical Data Quality by Domain"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
@@ -21,7 +28,7 @@
       }"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-  </v-card>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -35,6 +42,7 @@ import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import _ from "lodash";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import Panel from "primevue/panel";
 
 const store = useStore();
 const route = useRoute();
