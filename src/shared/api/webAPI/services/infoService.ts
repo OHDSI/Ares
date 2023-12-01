@@ -1,4 +1,4 @@
-import apiService from "@/shared/api/apiService";
+import apiService from "@/shared/api/axios/apiService";
 import environment from "@/shared/api/environment";
 
 export const InfoService = {

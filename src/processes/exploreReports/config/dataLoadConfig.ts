@@ -30,8 +30,9 @@ import {
   FETCH_MULTIPLE_FILES_BY_SOURCE,
 } from "../model/store/actions.type";
 import { FETCH_WEBAPI_INFO } from "@/shared/api/webAPI/data/store/actions.type";
+import environment from "@/shared/api/environment";
 
-export default function getFilesByView() {
+export default function getFilesByView(params = null) {
   return {
     temporalCharacterization: {
       loadMethod: FETCH_FILES,
@@ -74,7 +75,11 @@ export default function getFilesByView() {
     networkConcept: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
       payload: {
-        files: [{ name: CONCEPT, instanceParams: [{}] }],
+        files:
+          environment.DUCKDB_ENABLED === "true"
+            ? params.files
+            : [{ name: CONCEPT, instanceParams: [{}] }],
+        duckdb_supported: true,
       },
     },
     networkDataQuality: {
@@ -98,10 +103,14 @@ export default function getFilesByView() {
     concept: {
       loadMethod: FETCH_FILES,
       payload: {
-        files: [
-          { name: DOMAIN_SUMMARY, required: true },
-          { name: CONCEPT, required: true },
-        ],
+        files:
+          environment.DUCKDB_ENABLED === "true"
+            ? params.files
+            : [
+                { name: DOMAIN_SUMMARY, required: true },
+                { name: CONCEPT, required: true },
+              ],
+        duckdb_supported: true,
       },
     },
     dataQuality: {
@@ -186,7 +195,11 @@ export default function getFilesByView() {
     sourceConceptOverlay: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_RELEASE,
       payload: {
-        files: [SOURCE_CONCEPT],
+        files:
+          environment.DUCKDB_ENABLED === "true"
+            ? params.files
+            : [{ name: SOURCE_CONCEPT }],
+        duckdb_supported: true,
       },
     },
   };
