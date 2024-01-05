@@ -9,8 +9,8 @@ import {
   FETCH_QUERY_INDEX,
 } from "@/widgets/explorer/model/store/actions.type";
 import { EXPORT_QUERY_INDEX, INDEX } from "@/shared/config/files";
-import apiService from "@/shared/api/apiService";
-import getFilePath from "@/shared/api/getFilePath";
+import apiService from "@/shared/api/axios/apiService";
+import getFilePath from "@/shared/api/axios/files";
 import config from "@/widgets/explorer/config";
 import { errorActions } from "@/widgets/error";
 import { QueryIndexType } from "@/processes/exploreReports/model/interfaces/files/QueryIndex";

@@ -17,6 +17,7 @@
     "@codemirror/theme-one-dark": "^6.1.2",
     "@jamescoyle/svg-icon": "^0.1.1",
     "@jamescoyle/vue-icon": "^0.1.2",
+    "@duckdb/duckdb-wasm": "1.28.0",
     "@mdi/font": "^7.0.96",
     "@mdi/js": "^7.3.67",
     "axios": "1.6.0",

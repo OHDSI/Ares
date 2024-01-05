@@ -1,5 +1,5 @@
 import environment from "@/shared/api/environment";
-import apiService from "@/shared/api/apiService";
+import apiService from "@/shared/api/axios/apiService";
 
 export const VocabularyService = {
   search: {

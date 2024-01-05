@@ -6,7 +6,7 @@ import { PrevalenceType } from "@/processes/exploreReports/model/interfaces/repo
 export interface ConceptType {
   CDM_TABLE_NAME: string[];
   AGE_AT_FIRST_DIAGNOSIS?: DistributionType[];
-  CONCEPT_ID: number[];
+  CONCEPT_ID: number[] | number;
   CONCEPT_NAME: string[];
   NUM_PERSONS: number[];
   PERCENT_PERSONS: string[];

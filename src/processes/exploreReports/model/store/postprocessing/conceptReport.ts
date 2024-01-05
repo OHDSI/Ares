@@ -4,33 +4,60 @@ import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import * as d3Format from "d3-format";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import { DomainSummary } from "@/processes/exploreReports/model/interfaces/files/DomainSummary";
+import environment from "@/shared/api/environment";
+import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 
 export default function concept(data) {
   const dateParse = d3.timeParse("%Y%m");
-  const conceptData: ConceptType = data[CONCEPT];
-  const domainSummary: DomainSummary = data[DOMAIN_SUMMARY];
-  const conceptName: string = conceptData.CONCEPT_NAME[0];
-  const conceptId: number = conceptData.CONCEPT_ID[0];
-  const numPersons: number = conceptData.NUM_PERSONS[0];
-  const percentPersons: string = conceptData.PERCENT_PERSONS[0];
-  const recordsPerPerson: string = conceptData.RECORDS_PER_PERSON[0];
-  let countFailed: string;
+  let conceptData: ConceptType;
+  let conceptName: string | string[];
+  let conceptId: number | number[];
+  let numPersons: number | number[];
+  let percentPersons: string | string[];
+  let recordsPerPerson: string | string[];
+  let countFailed: string | string[];
   let isNotStationary: boolean;
-  let seasonalityScore: string;
+  let seasonalityScore: string | string[];
   let seasonalityComment: string;
 
-  if (conceptData.COUNT_FAILED) {
-    countFailed = conceptData.COUNT_FAILED[0];
+  if (environment.DUCKDB_ENABLED === "true") {
+    conceptData = { ...data, ...data[CONCEPT_METADATA][0] };
+    conceptName = conceptData.CONCEPT_NAME;
+    conceptId = conceptData.CONCEPT_ID;
+    numPersons = conceptData.NUM_PERSONS;
+    percentPersons = conceptData.PERCENT_PERSONS;
+    recordsPerPerson = conceptData.RECORDS_PER_PERSON;
+    countFailed = conceptData.COUNT_FAILED;
+    if (conceptData.IS_STATIONARY) {
+      isNotStationary = !conceptData.IS_STATIONARY;
+    }
+    if (conceptData.SEASONALITY_SCORE) {
+      seasonalityScore = conceptData.SEASONALITY_SCORE;
+    }
+  } else {
+    conceptData = data[CONCEPT];
+    conceptName = conceptData.CONCEPT_NAME[0];
+    conceptId = conceptData.CONCEPT_ID[0];
+    numPersons = conceptData.NUM_PERSONS[0];
+    percentPersons = conceptData.PERCENT_PERSONS[0];
+    recordsPerPerson = conceptData.RECORDS_PER_PERSON[0];
+    if (conceptData.COUNT_FAILED) {
+      countFailed = conceptData.COUNT_FAILED[0];
+    }
+    if (conceptData.IS_STATIONARY) {
+      isNotStationary = !conceptData.IS_STATIONARY[0];
+    }
+    if (conceptData.SEASONALITY_SCORE) {
+      seasonalityScore =
+        conceptData.SEASONALITY_SCORE[0] || conceptData.SEASONALITY_SCORE;
+    }
   }
 
-  if (conceptData.IS_STATIONARY) {
-    isNotStationary = !conceptData.IS_STATIONARY[0];
-  }
-
-  if (conceptData.SEASONALITY_SCORE) {
-    seasonalityScore = conceptData.SEASONALITY_SCORE[0];
+  if (seasonalityScore) {
     seasonalityComment = "Seasonality score of " + seasonalityScore + ".";
   }
+
+  const domainSummary: DomainSummary = data[DOMAIN_SUMMARY];
 
   conceptData.PREVALENCE_BY_GENDER_AGE_YEAR = sortByRange(
     conceptData.PREVALENCE_BY_GENDER_AGE_YEAR,

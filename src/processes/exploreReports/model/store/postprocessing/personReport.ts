@@ -19,12 +19,16 @@ export default function person(data) {
       personData.BIRTH_YEAR_DATA[i].YEAR = dateParse(v.YEAR);
     }
   });
-  if (personData.GENDER_DATA[0].CONCEPT_NAME === "MALE") {
-    genderMaleCount = personData.GENDER_DATA[0].COUNT_VALUE;
-    genderFemaleCount = personData.GENDER_DATA[1].COUNT_VALUE;
+  const firstGender = personData.GENDER_DATA[0];
+  const secondGender = personData.GENDER_DATA[1]
+    ? personData.GENDER_DATA[1]
+    : { COUNT_VALUE: 0 };
+  if (firstGender.CONCEPT_NAME === "MALE") {
+    genderMaleCount = firstGender.COUNT_VALUE;
+    genderFemaleCount = secondGender.COUNT_VALUE;
   } else {
-    genderMaleCount = personData.GENDER_DATA[1].COUNT_VALUE;
-    genderFemaleCount = personData.GENDER_DATA[0].COUNT_VALUE;
+    genderMaleCount = secondGender.COUNT_VALUE;
+    genderFemaleCount = firstGender.COUNT_VALUE;
   }
 
   return {

@@ -39,6 +39,7 @@ import { useStore } from "vuex";
 import { watch, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
+import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
 import SelectionEditDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
 
@@ -58,7 +59,9 @@ const showExplorer = computed(function () {
 });
 
 const loadViewData = function () {
-  const view = getFilesByView()[route.name];
+  const view = getFilesByView({
+    files: getDuckDBTables()[route.params.domain],
+  })[route.name];
   if (view) {
     store.dispatch(view.loadMethod, view.payload);
   }

@@ -7,7 +7,7 @@ const loadFile = (config: AxiosRequestConfig, payload: object) => {
       return response;
     },
     function (error: AxiosError) {
-      return Promise.reject({ error, payload });
+      return Promise.reject({ ...error, payload });
     }
   );
 
