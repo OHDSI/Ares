@@ -139,27 +139,41 @@
               <template #content>
                 <div class="flex flex-col gap-5">
                   <TreeSelect
+                    :pt="{
+                      label: { class: ['self-center pl-4 font-light'] },
+                    }"
+                    style="width: 100%; height: 50px"
                     v-model="selectedFilterAttributes"
-                    :options="getDisplayedAttributes"
-                    selectionMode="checkbox"
-                    placeholder="Select Item"
+                    :options="getFilters"
+                    :meta-key-selection="false"
+                    selectionMode="multiple"
+                    placeholder="Exclude values"
                     class="md:w-20rem w-full"
                   />
                   <Dropdown
+                    :pt="{
+                      label: { class: ['self-center pl-4 font-light'] },
+                    }"
+                    style="width: 100%; height: 50px"
                     v-model="aggregateFunction"
-                    class="px-3 w-full"
                     placeholder="Aggregate function"
                     :options="aggregatorNamesList"
                   ></Dropdown>
                   <Dropdown
+                    :pt="{
+                      label: { class: ['self-center pl-4 font-light'] },
+                    }"
                     v-if="aggregateFunction === 'Sum'"
                     v-model="aggregateValue[0]"
                     hide-details
                     outlined
-                    class="pa-3 w-full"
-                    placeholder="Aggregate attribute"
+                    :placeholder="aggregateValue[0]"
                     :options="getAggregateValues"
-                  ></Dropdown>
+                  >
+                    <template #value>
+                      {{ aggregateValue[0] }}
+                    </template>
+                  </Dropdown>
                 </div>
               </template>
             </Card>
@@ -181,7 +195,7 @@
           :cols="selectedCols"
           :aggregators="aggregators"
           :attributes="getDisplayedAttributes"
-          :value-filter="selectedFilterValues"
+          :value-filter="getParsedFiltersForPivotTable"
           :aggregator-name="aggregateFunction"
           :vals="aggregateValue"
           :table-options="
@@ -260,6 +274,40 @@ const props = defineProps<Props>();
 const getDisplayedAttributes = computed(function () {
   return props.attributes;
 });
+
+const getFilters = computed(() => {
+  return getDisplayedAttributes.value.map((field, index) => {
+    return {
+      key: index,
+      label: field,
+      data: field,
+      children: getUniqueAttributeValues.value[field].map((value, valIndex) => {
+        return {
+          key: `${index}-${valIndex}`,
+          label: value,
+          data: value,
+        };
+      }),
+    };
+  });
+});
+
+const getParsedFiltersForPivotTable = computed(() => {
+  const keys = Object.keys(selectedFilterAttributes.value);
+  return keys.reduce((acc, current) => {
+    const keyArray = current.split("-");
+    const attribute = keyArray[0];
+    const value = keyArray[1];
+    return {
+      ...acc,
+      [getFilters.value[attribute].data]: {
+        ...acc[getFilters.value[attribute].data],
+        [getFilters.value[attribute].children[value].data]: true,
+      },
+    };
+  }, {});
+});
+
 const getAggregateValues = computed(function () {
   if (props.aggregateAttrs) {
     return props.aggregateAttrs;
@@ -295,68 +343,6 @@ const removeCols = function (item: string) {
 const selectedFilterAttributes: Ref<string[]> = ref([]);
 const selectedFilterValues: Ref<{ [key: string]: { [key: string]: boolean } }> =
   ref({});
-const removeFilterAttributes = function (attribute = null) {
-  if (attribute) {
-    selectedFilterAttributes.value = selectedFilterAttributes.value.filter(
-      (value) => attribute !== value
-    );
-    selectedFilterValues.value = Object.keys(selectedFilterValues.value)
-      .filter((value) => value !== attribute)
-      .reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]:
-            selectedFilterValues.value[
-              key as keyof typeof selectedFilterValues.value
-            ],
-        }),
-        {}
-      );
-  } else {
-    selectedFilterAttributes.value = [];
-    selectedFilterValues.value = {};
-  }
-};
-
-const menu = ref();
-
-const toggle = (event) => {
-  menu.value.toggle(event);
-};
-const changeFilterValues = function (
-  attribute: string | number,
-  attrValue: string | number,
-  value: string | number
-) {
-  if (!value) {
-    selectedFilterValues.value = {
-      ...selectedFilterValues.value,
-      [attribute]: {
-        ...selectedFilterValues.value[
-          attribute as keyof typeof selectedFilterValues.value
-        ],
-        [attrValue]: true,
-      },
-    };
-  } else {
-    selectedFilterValues.value = {
-      ...selectedFilterValues.value,
-      [attribute]: Object.keys(
-        selectedFilterValues.value[
-          attribute as keyof typeof selectedFilterValues.value
-        ]
-      )
-        .filter((attr) => attr !== attrValue)
-        .reduce(
-          (acc, key) => ({
-            ...acc,
-            [key]: true,
-          }),
-          {}
-        ),
-    };
-  }
-};
 
 const aggregateFunction: Ref<string> = ref("");
 const aggregateValue: Ref<string[]> = ref([""]);

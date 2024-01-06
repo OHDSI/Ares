@@ -9,7 +9,7 @@ export default {
       "rounded-md",
 
       // Color and Background
-      "bg-surface-0 dark:bg-surface-900",
+      "bg-surface-0 dark:bg-surface-800",
       "border border-surface-300 dark:border-surface-700",
 
       // Transitions
@@ -136,7 +136,7 @@ export default {
         // Colors
         "text-surface-600 dark:text-white/70",
         {
-          "bg-primary-50 dark:bg-primary-400/30 text-primary-600 dark:text-surface-0":
+          "bg-primary-50 dark:bg-surface-700 text-primary-600 dark:text-surface-0":
             context.selected,
         },
 

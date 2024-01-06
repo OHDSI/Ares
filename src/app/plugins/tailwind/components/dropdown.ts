@@ -35,8 +35,9 @@ export default {
       "leading-none",
 
       // Display
-      "block",
-      "flex-auto",
+      "flex",
+      "flex-wrap",
+      "content-center",
 
       // Color and Background
       "bg-transparent",
@@ -62,7 +63,6 @@ export default {
       "relative",
       "cursor-pointer",
       "overflow-hidden overflow-ellipsis",
-      "whitespace-nowrap",
       "appearance-none",
     ],
   }),
@@ -164,7 +164,6 @@ export default {
       // Misc
       "cursor-pointer",
       "overflow-hidden",
-      "whitespace-nowrap",
     ],
   }),
   itemgroup: {

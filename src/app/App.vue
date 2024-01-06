@@ -1,5 +1,5 @@
 <template>
-  <div class="p-3 min-w-[840px]">
+  <div class="p-3 min-w-[1250px]">
     <div class="flex flex-col justify-center px-14 md:px-20 lg:px-24">
       <router-view name="main" />
     </div>

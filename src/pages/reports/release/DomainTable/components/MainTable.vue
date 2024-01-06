@@ -398,7 +398,6 @@ import {
   mdiEye,
   mdiHelpCircle,
   mdiTable,
-  mdiTableColumn,
 } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { links } from "@/shared/config/links";
