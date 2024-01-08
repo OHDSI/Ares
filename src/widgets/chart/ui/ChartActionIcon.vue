@@ -26,7 +26,9 @@
       <span
         v-if="!isUndefined(props.count)"
         :class="`${
-          activated ? 'bg-primary-50 text-black' : 'bg-primary-500 text-white'
+          activated
+            ? 'dark:bg-primary-50 dark:text-black bg-black text-white '
+            : 'bg-primary-500 text-white'
         } px-2 py-1 rounded-full z-10 top-0 right-0 absolute indent-0 text-xs`"
         :style="{ right: '-3px' }"
       >
