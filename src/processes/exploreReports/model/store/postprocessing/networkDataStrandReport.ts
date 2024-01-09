@@ -5,7 +5,8 @@ import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/inte
 export default function DataStrandReport(data) {
   const recordsDomain: MultipleFilesRawInterface<RecordsDomain[]>[] =
     data[RECORDS_DOMAIN];
-  return recordsDomain.reduce(
+
+  const processedData = recordsDomain.reduce(
     (prevValue, current) => [
       ...prevValue,
       ...current.data.map((value) => ({
@@ -17,4 +18,5 @@ export default function DataStrandReport(data) {
     ],
     []
   );
+  return { dataStrandReport: processedData };
 }

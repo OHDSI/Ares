@@ -76,7 +76,7 @@ const darkMode = computed(() => store.getters.getSettings.darkMode);
 
 watch(data, function () {
   if (data.value) {
-    config.data[0].values = data.value;
+    config.data[0].values = data.value.dataStrandReport;
     renderChart();
   }
 });
