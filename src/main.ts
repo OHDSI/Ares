@@ -19,9 +19,10 @@ import Tooltip from "primevue/tooltip";
 import { tailwindTheme } from "@/app/plugins/tailwind/tailwindStyles";
 import ConfirmationService from "primevue/confirmationservice";
 import resize from "@/shared/lib/directives/resize";
+import { errorActions } from "@/widgets/error";
 // adds reactive router module to global state
-sync(store, router);
 
+sync(store, router);
 environment.load().then(() => {
   store
     .dispatch(authActions.GET_AUTH_TOKEN)
@@ -29,7 +30,19 @@ environment.load().then(() => {
     .catch()
     .finally(() => {
       store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE).then(() => {
-        createApp(App)
+        const app = createApp(App);
+        app.config.errorHandler = (err) => {
+          // Handle the error globally
+          store.dispatch(errorActions.NEW_ERROR, {
+            message: `An unexpected error has occurred (${err.name})`,
+            name: err.name,
+            details: err.message,
+            stack: err.stack,
+            type: "unexpected",
+            page: store.state.route.name,
+          });
+        };
+        app
           .directive("click-outside", clickOutside)
           .directive("resize", resize)
           .directive("tooltip", Tooltip)

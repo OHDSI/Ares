@@ -42,7 +42,6 @@ export default function sourceConceptOverlay(data) {
     );
   } else {
     parsedResponses = data[SOURCE_CONCEPT];
-    console.log(data);
     conceptName = parsedResponses[0].data.CONCEPT_NAME[0];
     conceptId = parsedResponses[0].data.CONCEPT_ID[0];
     numPersons = sumBy(parsedResponses, (item) => item.data.NUM_PERSONS[0]);

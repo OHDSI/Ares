@@ -1,7 +1,9 @@
 <template>
   <div v-if="!store.getErrors && store.getters.dataInStore">
     <div class="flex flex-col gap-10">
-      <PageHeader :title="store.getters.getData.conceptName">
+      <PageHeader
+        :title="store.getters.getData.conceptName || 'Report name unknown'"
+      >
         <template #default>
           <div class="flex flex-row gap-2">
             <Button

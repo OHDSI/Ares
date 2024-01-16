@@ -1,7 +1,6 @@
 import * as d3 from "d3-time-format";
 import { PERSON } from "@/shared/config/files";
 import { PersonData } from "@/processes/exploreReports/model/interfaces/files/Person";
-import { first } from "lodash";
 
 export default function person(data) {
   const dateParse = d3.timeParse("%Y");

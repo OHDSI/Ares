@@ -33,6 +33,7 @@ import PopulationByYearBirth from "@/pages/reports/release/PersonReport/charts/P
 import PopulationByEthnicity from "@/pages/reports/release/PersonReport/charts/PopulationByEthnicity/PopulationByEthnicity.vue";
 import InfoPanel from "@/widgets/infoPanel";
 import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import { onMounted } from "vue";
 
 const store = useStore();
 </script>
