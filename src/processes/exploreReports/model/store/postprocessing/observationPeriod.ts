@@ -7,24 +7,30 @@ import { ObservationPeriodType } from "@/processes/exploreReports/model/interfac
 export default function observationPeriod(data) {
   const dateParse = d3.timeParse("%Y%m");
   const observationPeriodData: ObservationPeriodType = data[OBSERVATION_PERIOD];
-  const personPeriods = observationPeriodData.PERSON_PERIODS_DATA.map(
-    (item) => ({
+  let personPeriods;
+  if (observationPeriodData.PERSON_PERIODS_DATA) {
+    personPeriods = observationPeriodData.PERSON_PERIODS_DATA.map((item) => ({
       ...item,
       PERCENT_PEOPLE: getPercentage(
         item.COUNT_VALUE,
         observationPeriodData.PERSON_PERIODS_DATA
       ),
-    })
-  );
-  observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE = sortByRange(
-    observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
-    "ascending",
-    "CATEGORY",
-    "categoryOrder"
-  );
-  observationPeriodData.OBSERVED_BY_MONTH.forEach((v) => {
-    v.DATE = dateParse(v.MONTH_YEAR.toString());
-  });
+    }));
+  }
+  if (observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE) {
+    observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE = sortByRange(
+      observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE,
+      "ascending",
+      "CATEGORY",
+      "categoryOrder"
+    );
+  }
+
+  if (observationPeriodData.OBSERVED_BY_MONTH) {
+    observationPeriodData.OBSERVED_BY_MONTH.forEach((v) => {
+      v.DATE = dateParse(v.MONTH_YEAR.toString());
+    });
+  }
 
   return {
     observationPeriodData,

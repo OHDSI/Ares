@@ -5,18 +5,22 @@ import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/inte
 export default function DataStrandReport(data) {
   const recordsDomain: MultipleFilesRawInterface<RecordsDomain[]>[] =
     data[RECORDS_DOMAIN];
+  let processedData;
 
-  const processedData = recordsDomain.reduce(
-    (prevValue, current) => [
-      ...prevValue,
-      ...current.data.map((value) => ({
-        ...value,
-        cdm_source_key: current.source.cdm_source_key,
-        cdm_release_key: current.source.releases[0].release_id,
-        cdm_source_abbreviation: current.source.cdm_source_abbreviation,
-      })),
-    ],
-    []
-  );
+  if (recordsDomain && recordsDomain.length) {
+    processedData = recordsDomain.reduce(
+      (prevValue, current) => [
+        ...prevValue,
+        ...current.data.map((value) => ({
+          ...value,
+          cdm_source_key: current.source.cdm_source_key,
+          cdm_release_key: current.source.releases[0]?.release_id,
+          cdm_source_abbreviation: current.source.cdm_source_abbreviation,
+        })),
+      ],
+      []
+    );
+  }
+
   return { dataStrandReport: processedData };
 }

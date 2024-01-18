@@ -5,26 +5,30 @@ import { ObservationPeriodType } from "@/processes/exploreReports/model/interfac
 export default function population(data) {
   const observationPeriod: MultipleFilesRawInterface<ObservationPeriodType>[] =
     data[OBSERVATION_PERIOD];
-  return {
-    allCumulativeDurationData: observationPeriod.reduce(
-      (prevValue, current) => [
-        ...prevValue,
-        ...current.data.CUMULATIVE_DURATION.map((value) => ({
-          ...value,
-          DATA_SOURCE_KEY: current.source.cdm_source_key,
-        })),
-      ],
-      []
-    ),
-    allAgeAtFirstObservationData: observationPeriod.reduce(
-      (prevValue, current) => [
-        ...prevValue,
-        ...current.data.AGE_AT_FIRST_OBSERVATION.map((value) => ({
-          ...value,
-          DATA_SOURCE_KEY: current.source.cdm_source_key,
-        })),
-      ],
-      []
-    ),
-  };
+  if (observationPeriod && observationPeriod.length) {
+    return {
+      allCumulativeDurationData: observationPeriod.reduce(
+        (prevValue, current) => [
+          ...prevValue,
+          ...current.data.CUMULATIVE_DURATION.map((value) => ({
+            ...value,
+            DATA_SOURCE_KEY: current.source.cdm_source_key,
+          })),
+        ],
+        []
+      ),
+      allAgeAtFirstObservationData: observationPeriod.reduce(
+        (prevValue, current) => [
+          ...prevValue,
+          ...current.data.AGE_AT_FIRST_OBSERVATION.map((value) => ({
+            ...value,
+            DATA_SOURCE_KEY: current.source.cdm_source_key,
+          })),
+        ],
+        []
+      ),
+    };
+  } else {
+    return [];
+  }
 }

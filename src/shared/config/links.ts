@@ -18,6 +18,10 @@ const getDocsLink = function (val: string): string {
   return `https://ohdsi.github.io/CommonDataModel/cdm531.html#${val}`;
 };
 
+const getNewIssueLink = function (title = "", body = "") {
+  return `https://github.com/OHDSI/Ares/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=${title}&body=${body}`;
+};
+
 export const links = {
   getSqlQueryLink,
   getDocsLink,
@@ -25,4 +29,5 @@ export const links = {
   getAchillesLink,
   getDatavizDatasheetLink,
   getDataQualityDashboardLink,
+  getNewIssueLink,
 };

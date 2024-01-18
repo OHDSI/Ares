@@ -4,14 +4,13 @@ export default {
       // Spacing and Shape
       "my-4 mx-0",
       "rounded-md",
-      "border-solid border-0 border-l-[6px]",
 
       // Colors
       {
         "bg-blue-100/70 dark:bg-blue-500/20": props.severity == "info",
         "bg-green-100/70 dark:bg-green-500/20": props.severity == "success",
         "bg-orange-100/70 dark:bg-orange-500/20": props.severity == "warn",
-        "bg-red-600 dark:bg-red-500": props.severity == "error",
+        "bg-red-500 dark:bg-red-700": props.severity == "error",
       },
       {
         "border-blue-500 dark:border-blue-400": props.severity == "info",
@@ -47,7 +46,9 @@ export default {
     class: [
       // Font and Text
       "text-base leading-none",
+      "w-full",
       "font-medium",
+      "rounded-b-md",
     ],
   },
   button: {

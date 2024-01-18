@@ -6,17 +6,25 @@ import { Death } from "@/processes/exploreReports/model/interfaces/files/Death";
 export default function death(data) {
   const dateParse = d3.timeParse("%Y%m");
   const deathData: Death = data[DEATH];
-  deathData.PREVALENCE_BY_GENDER_AGE_YEAR = sortByRange(
-    deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
-    "ascending",
-    "TRELLIS_NAME",
-    "trellisOrder"
-  );
-  deathData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-    deathData.PREVALENCE_BY_MONTH[i].date = dateParse(
-      v.X_CALENDAR_MONTH.toString()
+  if (
+    deathData.PREVALENCE_BY_GENDER_AGE_YEAR &&
+    deathData.PREVALENCE_BY_GENDER_AGE_YEAR.length
+  ) {
+    deathData.PREVALENCE_BY_GENDER_AGE_YEAR = sortByRange(
+      deathData.PREVALENCE_BY_GENDER_AGE_YEAR,
+      "ascending",
+      "TRELLIS_NAME",
+      "trellisOrder"
     );
-  });
+  }
+  if (deathData.PREVALENCE_BY_MONTH && deathData.PREVALENCE_BY_MONTH.length) {
+    deathData.PREVALENCE_BY_MONTH.forEach((v, i) => {
+      deathData.PREVALENCE_BY_MONTH[i].date = dateParse(
+        v.X_CALENDAR_MONTH.toString()
+      );
+    });
+  }
+
   return {
     ...deathData,
   };
