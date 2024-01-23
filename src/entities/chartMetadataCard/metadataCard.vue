@@ -51,7 +51,7 @@
       >
     </div>
   </div>
-  <ConfirmDialog group="templating">
+  <ConfirmDialog :group="'templating' + props.note.id">
     <template #message="slotProps">
       <div
         class="flex flex-column align-items-center w-full gap-3 border-bottom-1 surface-border"
@@ -84,9 +84,9 @@ import { useConfirm } from "primevue/useconfirm";
 const confirm = useConfirm();
 const showTemplate = () => {
   confirm.require({
-    group: "templating",
+    group: `${"templating" + props.note.id}`,
     header: "Confirmation",
-    message: "Please confirm to proceed moving forward.",
+    message: "Are you sure you want to delete this note?",
     icon: "pi pi-exclamation-circle",
     acceptIcon: "pi pi-check",
     rejectIcon: "pi pi-times",
@@ -94,8 +94,11 @@ const showTemplate = () => {
     acceptClass: "p-button-outlined p-button-sm",
     accept: () => {
       deleteCard();
+      return;
     },
-    reject: () => {},
+    reject: () => {
+      return;
+    },
   });
 };
 const extensions = [markdown(), oneDark];
@@ -104,7 +107,8 @@ interface Note {
   title: string;
   description: string;
   id: number;
-  lastUpdated: number;
+  updatedAt: number;
+  createdAt: number;
   report?: string;
   selection?: string;
   createdBy: string;
@@ -116,7 +120,7 @@ interface Props {
 }
 
 const dateTimeCreated = computed(() => {
-  const isoDate = new Date(props.note.id);
+  const isoDate = new Date(props.note.createdAt);
   return isoDate.toLocaleString(undefined, {
     dateStyle: "short",
     timeStyle: "short",
@@ -124,8 +128,8 @@ const dateTimeCreated = computed(() => {
 });
 
 const dateTimeUpdated = computed(() => {
-  if (props.note.lastUpdated) {
-    const isoDate = new Date(props.note.lastUpdated);
+  if (props.note.updatedAt) {
+    const isoDate = new Date(props.note.updatedAt);
     return isoDate.toLocaleString(undefined, {
       dateStyle: "short",
       timeStyle: "short",

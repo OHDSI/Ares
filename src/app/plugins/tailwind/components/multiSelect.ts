@@ -6,7 +6,7 @@ export default {
       "relative",
 
       // Shape
-      "w-full",
+      "w-full, overflow-hidden",
       "rounded-md",
 
       // Color and Background
@@ -35,7 +35,7 @@ export default {
     ],
   }),
   labelContainer: {
-    class: "overflow-wrap flex flex-auto cursor-pointer ",
+    class: "overflow-hidden flex flex-auto cursor-pointer ",
   },
   label: ({ props }) => ({
     class: [

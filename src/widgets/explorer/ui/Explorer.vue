@@ -117,11 +117,13 @@ const iconClass = computed((): string => {
 });
 
 function changeSource(data: Source): void {
+  const folder = store.getters.getSelectedFolder;
+  const release = folder.key === "cdm" ? data.releases[0].release_id : null;
   router.push({
     params: {
       ...route.params,
       cdm: data.cdm_source_key,
-      release: data.releases[0].release_id,
+      release,
     },
   });
 }
@@ -134,15 +136,26 @@ function changeRelease(data: SourceRelease): void {
   });
 }
 function changeFolder(data): void {
+  let cdm, release;
+  if (data.key === "datasource") {
+    cdm = store.getters.getSelectedSource
+      ? store.getters.getSelectedSource.cdm_source_key
+      : store.getters.getSources[0].cdm_source_key;
+  }
+  if (data.key === "cdm") {
+    cdm = store.getters.getSelectedSource
+      ? store.getters.getSelectedSource.cdm_source_key
+      : store.getters.getSources[0].cdm_source_key;
+    release = store.getters.getSelectedSource
+      ? store.getters.getSelectedRelease.release_id
+      : store.getters.getSources[0].releases[0].release_id;
+  }
+
   router.push({
     name: data.key,
     params: {
-      cdm: store.getters.getSelectedSource
-        ? store.getters.getSelectedSource.cdm_source_key
-        : store.getters.getSources[0].cdm_source_key,
-      release: store.getters.getSelectedSource
-        ? store.getters.getSelectedRelease.release_id
-        : store.getters.getSources[0].releases[0].release_id,
+      cdm,
+      release,
     },
   });
 }
