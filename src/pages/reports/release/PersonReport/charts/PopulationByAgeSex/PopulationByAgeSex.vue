@@ -41,6 +41,37 @@
       :annotations="notesFemale"
       :annotation-mode="annotationsMode"
     />
+    <div class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="store.getters.getData.personData.AGE_GENDER_DATA"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
+        <Column sortable header="Sex" field="CONCEPT_NAME"> </Column>
+        <Column sortable header="AGE" field="AGE"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="# of People"
+          field="COUNT_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.COUNT_VALUE
+                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  : "No data"
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
     <NotesPanel v-if="notesMode" :notes="notesMaleFemale" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -73,6 +104,11 @@ import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 import { helpers } from "@/shared/lib/mixins";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
+import InputGroup from "primevue/inputgroup";
+import DataTable from "primevue/datatable";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import Column from "primevue/column";
+import InputText from "primevue/inputtext";
 
 const annotationsMode = ref(false);
 const notesMode = ref(false);
