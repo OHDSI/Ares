@@ -1,6 +1,7 @@
 <template>
   <Panel v-if="store.getters.dataInStore" header="Unmapped Source Codes">
     <DataTable
+      removable-sort
       size="small"
       :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
       paginator
@@ -28,7 +29,24 @@
       <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
       <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
       <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
-      <Column sortable header="# Records" field="RECORD_COUNT"></Column>
+      <Column
+        :pt="{ headerContent: 'justify-end' }"
+        sortable
+        header="# Records"
+        field="RECORD_COUNT"
+      >
+        <template #body="slotProps">
+          <div class="flex justify-end">
+            <span>
+              {{
+                slotProps.data.RECORD_COUNT
+                  ? helpers.formatComma(slotProps.data.RECORD_COUNT)
+                  : "No data"
+              }}</span
+            >
+          </div>
+        </template>
+      </Column>
     </DataTable>
     <template #footer>
       <div class="flex flex-row gap-2">

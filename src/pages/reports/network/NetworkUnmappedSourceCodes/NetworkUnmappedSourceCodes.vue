@@ -4,6 +4,7 @@
     header="Network Unmapped Source Codes"
   >
     <DataTable
+      removable-sort
       size="small"
       :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
       paginator
@@ -31,13 +32,30 @@
       <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
       <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
       <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
-      <Column sortable header="# Records" field="RECORD_COUNT"></Column>
       <Column
         sortable
         header="# Data Sources"
         field="DATA_SOURCE_COUNT"
       ></Column>
       <Column sortable header="Data Sources" field="DATA_SOURCES"></Column>
+      <Column
+        :pt="{ headerContent: 'justify-end' }"
+        sortable
+        header="# Records"
+        field="RECORD_COUNT"
+      >
+        <template #body="slotProps">
+          <div class="flex justify-end">
+            <span>
+              {{
+                slotProps.data.RECORD_COUNT
+                  ? helpers.formatComma(slotProps.data.RECORD_COUNT)
+                  : "No data"
+              }}</span
+            >
+          </div>
+        </template>
+      </Column>
     </DataTable>
   </Panel>
 </template>
@@ -52,6 +70,7 @@ import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
+import { helpers } from "@/shared/lib/mixins";
 
 const store = useStore();
 
