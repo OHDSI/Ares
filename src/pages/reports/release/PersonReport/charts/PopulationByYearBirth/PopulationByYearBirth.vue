@@ -23,6 +23,34 @@
       :annotation-mode="annotationsMode"
     >
     </Chart>
+    <div class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="store.getters.getData.personData.BIRTH_YEAR_DATA"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Year of Birth" field="YEAR"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="# of People"
+          field="COUNT_PERSON"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.COUNT_PERSON
+                  ? helpers.formatComma(slotProps.data.COUNT_PERSON)
+                  : "No data"
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -57,6 +85,8 @@ import { ref } from "vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 const annotationsMode = ref(false);
 const notesMode = ref(false);
