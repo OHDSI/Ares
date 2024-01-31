@@ -31,22 +31,36 @@
       </tr>
       <tr>
         <td class="font-bold">Source Documentation</td>
-        <td>
-          {{ store.getters.getData.sourceDocumentationReference }}
+        <td class="flex flex-row gap-2">
+          <span>
+            {{ store.getters.getData.sourceDocumentationReference }}
+          </span>
           <a
             :href="store.getters.getData.sourceDocumentationReference"
             target="_blank"
           >
-            <v-icon right small color="primary">mdi-open-in-new</v-icon>
+            <i>
+              <svg-icon
+                class="text-primary-500"
+                type="mdi"
+                :path="mdiOpenInNew"
+              ></svg-icon
+            ></i>
           </a>
         </td>
       </tr>
       <tr>
         <td class="font-bold">ETL Reference</td>
-        <td>
-          {{ store.getters.getData.cdmEtlReference }}
+        <td class="flex flex-row gap-2">
+          <span> {{ store.getters.getData.cdmEtlReference }} </span>
           <a :href="store.getters.getData.cdmEtlReference" target="_blank">
-            <v-icon right small color="primary">mdi-open-in-new</v-icon>
+            <i>
+              <svg-icon
+                class="text-primary-500"
+                type="mdi"
+                :path="mdiOpenInNew"
+              ></svg-icon
+            ></i>
           </a>
         </td>
       </tr>
@@ -56,6 +70,8 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
+import { mdiOpenInNew } from "@mdi/js";
+import SvgIcon from "@jamescoyle/vue-icon";
 
 const store = useStore();
 </script>
