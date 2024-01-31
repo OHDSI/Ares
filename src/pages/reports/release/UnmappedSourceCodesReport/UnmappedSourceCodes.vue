@@ -1,83 +1,96 @@
 <template>
-  <Panel v-if="store.getters.dataInStore" header="Unmapped Source Codes">
-    <DataTable
-      removable-sort
-      size="small"
-      :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
-      paginator
-      v-model:filters="newFilters"
-      :value="filteredRecords"
-      :rows="10"
-      :rowsPerPageOptions="[5, 10, 20, 50]"
-    >
-      <template #header>
-        <div>
-          <InputGroup unstyled>
-            <InputGroupAddon>
-              <i class="pi pi-search"></i>
-            </InputGroupAddon>
-            <InputText
-              class="rounded-r-lg"
-              style="width: 45rem"
-              unstyled
-              v-model="newFilters['global'].value"
-              placeholder="Search in Table"
-            />
-          </InputGroup>
-        </div>
-      </template>
-      <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
-      <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
-      <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
-      <Column
-        :pt="{ headerContent: 'justify-end' }"
-        sortable
-        header="# Records"
-        field="RECORD_COUNT"
+  <div class="flex flex-col gap-5">
+    <Panel v-if="store.getters.dataInStore" header="Unmapped Source Codes">
+      <DataTable
+        removable-sort
+        size="small"
+        :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
+        paginator
+        v-model:filters="newFilters"
+        :value="filteredRecords"
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
       >
-        <template #body="slotProps">
-          <div class="flex justify-end">
-            <span>
-              {{
-                slotProps.data.RECORD_COUNT
-                  ? helpers.formatComma(slotProps.data.RECORD_COUNT)
-                  : "No data"
-              }}</span
-            >
+        <template #header>
+          <div>
+            <InputGroup unstyled>
+              <InputGroupAddon>
+                <i class="pi pi-search"></i>
+              </InputGroupAddon>
+              <InputText
+                class="rounded-r-lg"
+                style="width: 45rem"
+                unstyled
+                v-model="newFilters['global'].value"
+                placeholder="Search in Table"
+              />
+            </InputGroup>
           </div>
         </template>
-      </Column>
-    </DataTable>
-    <template #footer>
-      <div class="flex flex-row gap-2">
-        <ChartActionIcon
-          v-if="
-            store.getters.getQueryIndex &&
-            store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION
-          "
-          :icon="mdiHelpCircle"
-          tooltip="This report identifies columns in tables within the CDM where values are
+        <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
+        <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
+        <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="# Records"
+          field="RECORD_COUNT"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              <span>
+                {{
+                  slotProps.data.RECORD_COUNT
+                    ? helpers.formatComma(slotProps.data.RECORD_COUNT)
+                    : "No data"
+                }}</span
+              >
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+      <template #footer>
+        <div class="flex flex-row gap-2">
+          <ChartActionIcon
+            v-if="
+              store.getters.getQueryIndex &&
+              store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION
+            "
+            :icon="mdiHelpCircle"
+            tooltip="This report identifies columns in tables within the CDM where values are
     mapped to 0 (unknown concept). It provides a listing of all unmapped source
     values to be reviewed for potential inclusion or remediation."
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+            @iconClicked="
+              helpers.openNewTab(
+                links.getSqlQueryLink(
+                  store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+                )
               )
-            )
-          "
-        />
-      </div>
-    </template>
-  </Panel>
+            "
+          />
+        </div>
+      </template>
+    </Panel>
+    <Panel v-if="store.getters.dataInStore" header="Pivot Table">
+      <Pivot
+        :data="store.getters.getData.domainTable"
+        :attributes="[
+          'CDM_TABLE_NAME',
+          'CDM_FIELD_NAME',
+          'SOURCE_VALUE',
+          'RECORD_COUNT',
+        ]"
+        :aggregate-attrs="['RECORD_COUNT']"
+        :aggregator-names-list="['Count', 'Sum']"
+      />
+    </Panel>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { helpers } from "@/shared/lib/mixins";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
-import { debounce } from "lodash";
 
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
@@ -89,6 +102,7 @@ import { FilterMatchMode } from "primevue/api";
 import { mdiHelpCircle } from "@mdi/js";
 import { links } from "@/shared/config/links";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import Pivot from "@/widgets/pivot/ui/Pivot.vue";
 
 const store = useStore();
 
