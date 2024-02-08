@@ -54,27 +54,54 @@
         </template>
       </Column>
       <Column field="end_timestamp" header="DQ Execution Date"> </Column>
-      <Column field="count_passed" header="# Passed"> </Column>
+      <Column field="vocabulary_version" header="Vocabulary"> </Column>
 
-      <Column field="count_failed" header="# Failed">
+      <Column
+        :pt="{ headerContent: 'justify-end' }"
+        field="count_passed"
+        header="# Passed"
+      >
         <template #body="slotProps">
-          <router-link
-            class="text-blue-400 hover:underline"
-            :to="{
-              name: 'dataQuality',
-              query: { tab: 'results', FAILED: 'FAIL' },
-              params: {
-                cdm: route.params.cdm,
-                release: slotProps.data.cdm_release_date.replaceAll('-', ''),
-              },
-            }"
-            :title="slotProps.data.count_failed"
-            >{{ slotProps.data.count_failed }}
-          </router-link>
+          <div class="flex justify-end">
+            <span> {{ slotProps.data.count_passed }}</span>
+          </div>
         </template>
       </Column>
-      <Column field="count_total" header="# Total"> </Column>
-      <Column field="vocabulary_version" header="Vocabulary"> </Column>
+
+      <Column
+        :pt="{ headerContent: 'justify-end' }"
+        field="count_failed"
+        header="# Failed"
+      >
+        <template #body="slotProps">
+          <div class="flex justify-end">
+            <router-link
+              class="text-blue-400 hover:underline"
+              :to="{
+                name: 'dataQuality',
+                query: { tab: 'results', FAILED: 'FAIL' },
+                params: {
+                  cdm: route.params.cdm,
+                  release: slotProps.data.cdm_release_date.replaceAll('-', ''),
+                },
+              }"
+              :title="slotProps.data.count_failed"
+              >{{ slotProps.data.count_failed }}
+            </router-link>
+          </div>
+        </template>
+      </Column>
+      <Column
+        :pt="{ headerContent: 'justify-end' }"
+        field="count_total"
+        header="# Total"
+      >
+        <template #body="slotProps">
+          <div class="flex justify-end">
+            <span> {{ slotProps.data.count_total }}</span>
+          </div>
+        </template>
+      </Column>
     </DataTable>
   </Panel>
 </template>
