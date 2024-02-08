@@ -7,6 +7,9 @@ module.exports = {
     "./node_modules/primevue/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
+    fontFamily: {
+      'sans':['Roboto','Arial']
+    },
     extend: {
       colors: {
         "primary-50": "rgb(var(--primary-50))",
