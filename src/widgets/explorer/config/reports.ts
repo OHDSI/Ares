@@ -1,11 +1,13 @@
 import {
   mdiAlphaMCircleOutline,
   mdiChartLine,
+  mdiChartTimeline,
   mdiCheckNetwork,
   mdiDatabaseSearch,
   mdiDiversify,
   mdiDna,
   mdiShape,
+  mdiHistory,
   mdiSigmaLower,
   mdiSpeedometer,
   mdiTable,
@@ -68,16 +70,19 @@ export const reports = [
   },
   {
     folder: "Data Source",
+    icon: mdiHistory,
     name: "Data Quality History",
     routeName: "dataQualityHistory",
   },
   {
     folder: "Data Source",
+    icon: mdiTable,
     name: "Data Source Overview",
     routeName: "dataSourceOverview",
   },
   {
     folder: "Data Source",
+    icon: mdiChartTimeline,
     name: "Domain Continuity",
     routeName: "domainContinuity",
   },
