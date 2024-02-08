@@ -53,55 +53,24 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { defRecordsPerPerson } from "./defRecordsPerPerson";
 import { defRecordsPerPersonAnnotation } from "./defRecordsPerPersonAnnotation";
-import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import _ from "lodash";
-import { useRoute } from "vue-router";
 import * as listeners from "@/pages/model/lib/listeners";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
 
-const route = useRoute();
-
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-function toggleAnnotationsMode(mode) {
-  annotationsMode.value = mode;
-}
-function toggleNotesMode(mode) {
-  notesMode.value = mode;
-}
-
 const reportId = "viz-recordsperperson";
 
-const annotations = computed(() => {
-  const { cdm, release, domain } = route.params;
-  const path = [cdm, release, domain].filter(Boolean);
-  const selections = _.get(store.getters.getNotes, path.join(".")) || {};
-  return selections[reportId] || [];
-});
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: reportId,
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
-});
+const { annotations, notes } = useAnnotations(reportId);
 </script>
 
 <style scoped></style>

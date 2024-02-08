@@ -6,10 +6,10 @@
   >
     <template #icons>
       <ChartHeader
-        :notes-count="notesMaleFemale.length"
-        :annotations-count="notesFemale.length + notesMale.length"
-        @annotations-mode-toggled="toggleAnnotationMode"
-        @notes-mode-toggled="toggleNoteMode"
+        :notes-count="allNotes.length"
+        :annotations-count="allAnnotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
       />
     </template>
     <Chart
@@ -24,7 +24,7 @@
       }"
       :data="store.getters.getData.maleAgeSex"
       :chartSpec="specAgeSex"
-      :annotations="notesMale"
+      :annotations="notesMale.annotations.value"
       :annotation-mode="annotationsMode"
     />
     <Chart
@@ -38,41 +38,40 @@
       }"
       :data="store.getters.getData.femaleAgeSex"
       :chartSpec="specAgeSex"
-      :annotations="notesFemale"
+      :annotations="notesFemale.annotations.value"
       :annotation-mode="annotationsMode"
     />
     <div class="p-4">
       <DataTable
-        removable-sort
-        size="small"
-        paginator
-        :value="store.getters.getData.personData.AGE_GENDER_DATA"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
+          removable-sort
+          size="small"
+          paginator
+          :value="store.getters.getData.personData.AGE_GENDER_DATA"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
       >
         <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
         <Column sortable header="Sex" field="CONCEPT_NAME"> </Column>
         <Column sortable header="AGE" field="AGE"> </Column>
         <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="# of People"
-          field="COUNT_VALUE"
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="# of People"
+            field="COUNT_VALUE"
         >
           <template #body="slotProps">
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
-                  : "No data"
+                    ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                    : "No data"
               }}
             </div>
           </template>
         </Column>
       </DataTable>
     </div>
-
-    <NotesPanel v-if="notesMode" :notes="notesMaleFemale" />
+    <NotesPanel v-if="notesMode" :notes="allNotes" />
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -97,70 +96,36 @@ import { Chart } from "@/widgets/chart";
 import { specAgeSex } from "./specAgeSex";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 import { helpers } from "@/shared/lib/mixins";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
-import InputGroup from "primevue/inputgroup";
 import DataTable from "primevue/datatable";
-import InputGroupAddon from "primevue/inputgroupaddon";
 import Column from "primevue/column";
-import InputText from "primevue/inputtext";
 
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-
-function toggleAnnotationMode(mode) {
-  annotationsMode.value = mode;
-}
-function toggleNoteMode(mode) {
-  notesMode.value = mode;
-}
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
-const releaseContainer = computed(() => {
-  const sourceName = store.getters.getSelectedSource.cdm_source_key;
-  const releaseName = store.getters.getSelectedRelease.release_id;
-  const sourceContainer = store.getters.getNotes[sourceName] || {};
-  return sourceContainer[releaseName] || {};
-});
 
 const femaleReportId = "viz-populationbyageandsexFemale";
 const maleReportId = "viz-populationbyageandsexMale";
 
-const notesFemale = computed(() => {
-  return releaseContainer.value[femaleReportId] || [];
-});
-const notesMale = computed(() => {
-  return releaseContainer.value[maleReportId] || [];
-});
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
-const notesMaleFemale = computed(() => {
-  return [
-    ...notesFemale.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: femaleReportId,
-          selection: val.id,
-        })),
-      ];
-    }, []),
-    ...notesMale.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: maleReportId,
-          selection: val.id,
-        })),
-      ];
-    }, []),
-  ];
+const notesMale = useAnnotations(maleReportId);
+
+const notesFemale = useAnnotations(femaleReportId);
+
+const allNotes = computed(() => {
+  return [...notesMale.notes.value, ...notesFemale.notes.value];
+});
+const allAnnotations = computed(() => {
+  return [...notesFemale.annotations.value, ...notesMale.annotations.value];
 });
 </script>
 

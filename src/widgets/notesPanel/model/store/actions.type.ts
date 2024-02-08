@@ -8,3 +8,5 @@ export const DELETE_SELECTION = "deleteSelection";
 export const EDIT_SELECTION = "editSelection";
 
 export const CREATE_SELECTION = "createSelection";
+
+export const EXPORT_NOTES = "exportNotes";

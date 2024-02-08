@@ -36,50 +36,21 @@ import { QUALITY_INDEX } from "@/shared/config/files";
 import { Chart } from "@/widgets/chart";
 import { specDataQualityResultsByCategory } from "./specDataQualityResultsByCategory";
 import { useStore } from "vuex";
-import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { specDataQualityResultsByCategoryAnnotation } from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByCategory/specDataQualityResultsByCategoryAnnotation";
-import _ from "lodash";
-import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Panel from "primevue/panel";
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
-const route = useRoute();
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-function toggleAnnotationsMode(mode) {
-  annotationsMode.value = mode;
-}
-function toggleNotesMode(mode) {
-  notesMode.value = mode;
-}
 
 const reportId = "viz-sourcedataqualityresultsbycategory";
 
-const annotations = computed(() => {
-  const { cdm, release } = route.params;
-  const path = [cdm, release].filter(Boolean);
-  const selections = _.get(store.getters.getNotes, path.join(".")) || {};
-  return selections[reportId] || [];
-});
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: reportId,
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
-});
+const { annotations, notes } = useAnnotations(reportId);
 </script>
 
 <style scoped></style>

@@ -73,11 +73,9 @@ import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import * as listeners from "@/pages/model/lib/listeners";
-import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import _ from "lodash";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
 import Panel from "primevue/panel";
@@ -87,16 +85,8 @@ import {
   mdiDatabaseClock,
   mdiHelpCircle,
 } from "@mdi/js";
-
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-function toggleAnnotationsMode(mode) {
-  annotationsMode.value = mode;
-}
-function toggleNotesMode(mode) {
-  notesMode.value = mode;
-}
-
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
@@ -113,29 +103,10 @@ const getSourceConceptReportLink = function () {
   };
 };
 
-const annotations = computed(() => {
-  const { cdm, release, domain, concept } = route.params;
-  const path = [cdm, release, domain, concept].filter(Boolean);
-  const selections = _.get(store.getters.getNotes, path.join(".")) || {};
-  return selections[reportId] || [];
-});
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: reportId,
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
-});
+const { annotations, notes } = useAnnotations(reportId);
 </script>
 
 <style scoped></style>

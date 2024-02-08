@@ -12,9 +12,10 @@ import { useStore } from "vuex";
 
 import MetadataCard from "@/entities/chartMetadataCard/metadataCard.vue";
 import Carousel from "primevue/carousel";
+import { Note } from "@/shared/interfaces/Annotations";
 
 interface Props {
-  notes: [];
+  notes: Note[];
 }
 
 const props = defineProps<Props>();
