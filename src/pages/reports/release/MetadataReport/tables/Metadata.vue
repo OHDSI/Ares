@@ -44,7 +44,7 @@
 import { links } from "@/shared/config/links";
 
 import { useStore } from "vuex";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { helpers } from "@/shared/lib/mixins";
 import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";

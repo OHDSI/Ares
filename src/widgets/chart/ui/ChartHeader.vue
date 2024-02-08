@@ -1,23 +1,37 @@
 <template>
-  <div class="flex flex-row gap-1">
-    <ChartActionIcon
-      v-if="props.notesCount !== undefined"
-      :icon="mdiNoteText"
-      tooltip="Toggle Notes"
-      :count="props.notesCount"
-      show-state
-      :default-state="store.getters.getSettings.notesMode"
-      @iconClicked="toggleNotesMode"
-    />
-    <ChartActionIcon
-      v-if="props.annotationsCount !== undefined"
-      :icon="mdiSelectionMarker"
-      tooltip="Toggle Annotations"
-      :count="props.annotationsCount"
-      show-state
-      :default-state="store.getters.getSettings.annotationsMode"
-      @iconClicked="toggleAnnotationMode"
-    />
+  <div class="flex flex-row">
+    <div class="flex flex-row gap-1">
+      <ToggleIcon
+        v-if="props.tableToggle"
+        :icon="mdiTable"
+        show-state
+        tooltip="Toggle table view"
+        :default-state="false"
+        @iconClicked="toggleTable"
+      />
+    </div>
+
+    <div class="flex flex-row gap-1">
+      <ToggleIcon
+        v-if="props.notesCount !== undefined"
+        :icon="mdiNoteText"
+        tooltip="Toggle Notes"
+        :count="props.notesCount"
+        show-state
+        :default-state="store.getters.getSettings.notesMode"
+        @iconClicked="toggleNotesMode"
+      />
+      <ToggleIcon
+        v-if="props.annotationsCount !== undefined"
+        :icon="mdiSelectionMarker"
+        tooltip="Toggle Annotations"
+        :count="props.annotationsCount"
+        show-state
+        :default-state="store.getters.getSettings.annotationsMode"
+        @iconClicked="toggleAnnotationMode"
+      />
+    </div>
+
     <slot></slot>
   </div>
 </template>
@@ -25,22 +39,27 @@
 import { ref, defineProps, defineEmits } from "vue";
 import { onMounted } from "vue";
 import { useStore } from "vuex";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ToggleIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 
 const annotationMode = ref(false);
 const noteMode = ref(false);
 const store = useStore();
-import { mdiSelectionMarker, mdiNoteText } from "@mdi/js";
+import { mdiSelectionMarker, mdiNoteText, mdiTable } from "@mdi/js";
 
 interface Props {
   notesCount?: number;
   annotationsCount?: number;
   issueCount?: number;
+  tableToggle?: boolean;
 }
 
 const props = defineProps<Props>();
 
-const emits = defineEmits(["annotationsModeToggled", "notesModeToggled"]);
+const emits = defineEmits([
+  "annotationsModeToggled",
+  "notesModeToggled",
+  "tableToggled",
+]);
 
 onMounted(() => {
   annotationMode.value = store.getters.getSettings.annotationsMode;
@@ -53,15 +72,11 @@ function toggleAnnotationMode(val) {
 
 function toggleNotesMode(val) {
   emits("notesModeToggled", val);
-  console.log(val);
 }
 
-/*watch(annotationMode, () => {
-  emits("annotationsModeToggled", annotationMode.value);
-});*/
-/*watch(noteMode, () => {
-  emits("notesModeToggled", noteMode.value);
-});*/
+function toggleTable(val) {
+  emits("tableToggled", val);
+}
 </script>
 
 <style scoped></style>

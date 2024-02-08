@@ -10,6 +10,8 @@
         :annotations-count="annotations.length"
         @annotations-mode-toggled="toggleAnnotationsMode"
         @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
       />
     </template>
     <Chart
@@ -23,10 +25,24 @@
         brushParentElement: 'g g g',
       }"
       :signal-listener="listeners.setSelectionAreaSignal"
-      :data="store.getters.getData.domainRecords"
+      :data="data"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="data"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Date" field="date"> </Column>
+        <Column sortable header="Domain" field="domain"> </Column>
+        <Column sortable header="Records" field="records"> </Column>
+      </DataTable>
+    </div>
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -60,9 +76,11 @@ import _ from "lodash";
 import { useRoute } from "vue-router";
 import * as listeners from "@/pages/model/lib/listeners";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 
 const store = useStore();
 
@@ -101,6 +119,16 @@ const notes = computed(() => {
   } else {
     return [];
   }
+});
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.domainRecords;
 });
 </script>
 

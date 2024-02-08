@@ -11,6 +11,8 @@
         :annotations-count="annotations.length"
         @annotations-mode-toggled="toggleAnnotationsMode"
         @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
       />
     </template>
     <Chart
@@ -18,7 +20,7 @@
       :id="reportId"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
-      :data="store.getters.getData[QUALITY_INDEX].dataQualityRecords"
+      :data="data"
       :chartSpec="specDataQualityResults"
       :annotations-config="{
         chartSpec: specDataQualityResultsAnnotation,
@@ -26,56 +28,58 @@
         brushParentElement: 'g g',
       }"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        size="small"
+        v-if="store.getters.dataInStore"
+        :value="data"
+        paginator
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column field="cdm_release_date" header="Release Date">
+          <template #body="slotProps">
+            <router-link
+              class="text-blue-400 hover:underline"
+              :to="{
+                name: 'dataQuality',
+                query: { tab: 'overview' },
+                params: {
+                  cdm: route.params.cdm,
+                  release: slotProps.data.cdm_release_date.replaceAll('-', ''),
+                },
+              }"
+              :title="slotProps.data.cdm_release_date"
+              >{{ slotProps.data.cdm_release_date }}
+            </router-link>
+          </template>
+        </Column>
+        <Column field="end_timestamp" header="DQ Execution Date"> </Column>
+        <Column field="count_passed" header="# Passed"> </Column>
+
+        <Column field="count_failed" header="# Failed">
+          <template #body="slotProps">
+            <router-link
+              class="text-blue-400 hover:underline"
+              :to="{
+                name: 'dataQuality',
+                query: { tab: 'results', FAILED: 'FAIL' },
+                params: {
+                  cdm: route.params.cdm,
+                  release: slotProps.data.cdm_release_date.replaceAll('-', ''),
+                },
+              }"
+              :title="slotProps.data.count_failed"
+              >{{ slotProps.data.count_failed }}
+            </router-link>
+          </template>
+        </Column>
+        <Column field="count_total" header="# Total"> </Column>
+        <Column field="vocabulary_version" header="Vocabulary"> </Column>
+      </DataTable>
+    </div>
+
     <NotesPanel v-if="notesMode" :notes="notes" />
-
-    <DataTable
-      size="small"
-      v-if="store.getters.dataInStore"
-      :value="store.getters.getData[QUALITY_INDEX].dataQualityRecords"
-      paginator
-      :rows="5"
-      :rowsPerPageOptions="[5, 10, 20, 50]"
-    >
-      <Column field="cdm_release_date" header="Release Date">
-        <template #body="slotProps">
-          <router-link
-            class="text-blue-400 hover:underline"
-            :to="{
-              name: 'dataQuality',
-              query: { tab: 'overview' },
-              params: {
-                cdm: route.params.cdm,
-                release: slotProps.data.cdm_release_date.replaceAll('-', ''),
-              },
-            }"
-            :title="slotProps.data.cdm_release_date"
-            >{{ slotProps.data.cdm_release_date }}
-          </router-link>
-        </template>
-      </Column>
-      <Column field="end_timestamp" header="DQ Execution Date"> </Column>
-      <Column field="count_passed" header="# Passed"> </Column>
-
-      <Column field="count_failed" header="# Failed">
-        <template #body="slotProps">
-          <router-link
-            class="text-blue-400 hover:underline"
-            :to="{
-              name: 'dataQuality',
-              query: { tab: 'results', FAILED: 'FAIL' },
-              params: {
-                cdm: route.params.cdm,
-                release: slotProps.data.cdm_release_date.replaceAll('-', ''),
-              },
-            }"
-            :title="slotProps.data.count_failed"
-            >{{ slotProps.data.count_failed }}
-          </router-link>
-        </template>
-      </Column>
-      <Column field="count_total" header="# Total"> </Column>
-      <Column field="vocabulary_version" header="Vocabulary"> </Column>
-    </DataTable>
   </Panel>
 </template>
 
@@ -130,6 +134,16 @@ const notes = computed(() => {
   } else {
     return [];
   }
+});
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData[QUALITY_INDEX].dataQualityRecords;
 });
 </script>
 

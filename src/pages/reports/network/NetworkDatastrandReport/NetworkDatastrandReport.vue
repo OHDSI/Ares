@@ -1,10 +1,41 @@
 <template>
   <Panel header="Data Strands">
+    <template #icons>
+      <ChartHeader table-toggle @table-toggled="toggleTable" />
+    </template>
     <div
       v-if="store.getters.getData"
       id="viz-datastrand"
       class="viz-container"
     ></div>
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        size="small"
+        :value="data.dataStrandReport"
+        paginator
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column field="domain" header="Domain"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Number of Records"
+          field="count_records"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.count_records
+                  ? helpers.formatComma(slotProps.data.count_records)
+                  : "No data"
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -34,7 +65,7 @@
 
 <script setup lang="ts">
 import embed from "vega-embed";
-import { watch, computed } from "vue";
+import { watch, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -47,9 +78,12 @@ const config = specDatastrand;
 
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 
 const renderChart = function () {
   embed("#viz-datastrand", config, {
@@ -84,6 +118,12 @@ watch(data, function () {
 watch(darkMode, () => {
   renderChart();
 });
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
 </script>
 
 <style scoped>

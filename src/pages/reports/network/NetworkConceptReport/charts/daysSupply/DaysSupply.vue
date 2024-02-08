@@ -39,7 +39,7 @@ import { specDaysSupply } from "./specDaysSupply";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import { defineProps } from "vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";

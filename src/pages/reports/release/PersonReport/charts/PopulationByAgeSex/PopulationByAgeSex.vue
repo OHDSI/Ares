@@ -10,6 +10,8 @@
         :annotations-count="notesFemale.length + notesMale.length"
         @annotations-mode-toggled="toggleAnnotationMode"
         @notes-mode-toggled="toggleNoteMode"
+        table-toggle
+        @table-toggled="toggleTable"
       />
     </template>
     <Chart
@@ -41,7 +43,7 @@
       :annotations="notesFemale"
       :annotation-mode="annotationsMode"
     />
-    <div class="p-4">
+    <div v-if="showTable" class="p-4">
       <DataTable
         removable-sort
         size="small"
@@ -100,18 +102,21 @@ import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { helpers } from "@/shared/lib/mixins";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
-import InputGroup from "primevue/inputgroup";
 import DataTable from "primevue/datatable";
-import InputGroupAddon from "primevue/inputgroupaddon";
 import Column from "primevue/column";
-import InputText from "primevue/inputtext";
 
 const annotationsMode = ref(false);
 const notesMode = ref(false);
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
 
 function toggleAnnotationMode(mode) {
   annotationsMode.value = mode;
