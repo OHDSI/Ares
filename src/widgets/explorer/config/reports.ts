@@ -4,7 +4,9 @@ import {
   mdiChartTimeline,
   mdiCheckNetwork,
   mdiDatabaseSearch,
+  mdiDiversify,
   mdiDna,
+  mdiShape,
   mdiHistory,
   mdiSigmaLower,
   mdiSpeedometer,
@@ -201,6 +203,12 @@ export const reports = [
     icon: mdiChartLine,
     name: "Population Overview",
     routeName: "population",
+  },
+  {
+    folder: "Data Network",
+    icon: mdiShape,
+    name: "Network Diversity Report",
+    routeName: "networkDiversityReport",
   },
   {
     folder: "Data Network",
