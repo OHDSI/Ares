@@ -20,7 +20,9 @@
       label="Search"
       plain
       :class="`${
-        activated ? 'text-primary-500' : 'text-black dark:text-primary-50'
+        activated
+          ? 'text-primary-500 dark:text-primary-400'
+          : 'text-black dark:text-primary-50'
       }`"
     >
       <span
@@ -28,7 +30,7 @@
         :class="`${
           activated
             ? 'dark:bg-primary-50 dark:text-black bg-black text-white '
-            : 'bg-primary-500 text-white'
+            : 'bg-primary-500 dark:bg-primary-400 text-white'
         } px-2 py-1 rounded-full z-10 top-0 right-0 absolute indent-0 text-xs`"
         :style="{ right: '-3px' }"
       >

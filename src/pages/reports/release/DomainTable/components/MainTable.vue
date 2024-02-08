@@ -42,11 +42,11 @@
             </InputGroup>
             <MultiSelect
               :pt="{
-                root: 'dark:bg-primary-500 bg-primary-400 text-white rounded',
+                root: 'dark:bg-primary-400 bg-primary-500 text-white rounded',
                 labelContainer:
-                  'dark:bg-primary-500 bg-primary-400 text-white rounded',
+                  'dark:bg-primary-400 bg-primary-500 text-white rounded',
                 trigger: [
-                  'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-500 w-12',
+                  'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-400 w-12',
                 ],
               }"
               v-model="selectedHeaders"

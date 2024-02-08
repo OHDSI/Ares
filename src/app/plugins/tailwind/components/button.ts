@@ -274,7 +274,7 @@ export default {
 
       // Primary
       {
-        "hover:bg-primary-600 dark:hover:bg-primary-300 hover:border-primary-600 dark:hover:border-primary-300":
+        "hover:bg-primary-600 dark:hover:bg-primary-500 hover:border-primary-600 dark:hover:border-primary-300":
           !props.link &&
           props.severity === null &&
           !props.text &&
