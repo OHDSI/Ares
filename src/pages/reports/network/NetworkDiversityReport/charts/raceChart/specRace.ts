@@ -5,7 +5,6 @@ export function specRace(zeroBaseline = false) {
   return {
     $schema: VEGA_SCHEMA,
     width: "container",
-    height: 75,
     mark: "bar",
     data: { name: "conceptData" },
     transform: [

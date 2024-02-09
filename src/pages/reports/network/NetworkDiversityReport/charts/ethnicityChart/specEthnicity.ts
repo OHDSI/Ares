@@ -5,7 +5,6 @@ export function specEthnicity(zeroBaseline = false) {
   return {
     $schema: VEGA_SCHEMA,
     width: "container",
-    height: 100,
     mark: "bar",
     data: { name: "conceptData" },
     transform: [
