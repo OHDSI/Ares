@@ -82,8 +82,8 @@ const actions = {
       })
       .catch((error) => {
         dispatch(errorActions.NEW_ERROR, {
-          message: error.error.message,
-          details: error.error.response.request.responseURL,
+          message: "Unable to load data source index file",
+          details: error.message,
         });
       });
   },
@@ -93,12 +93,6 @@ const actions = {
     }).then((response) => {
       commit(LOAD_QUERY_INDEX, response.data);
     });
-    /* .catch((error) => {
-        dispatch(errorActions.NEW_ERROR, {
-          message: error.error.message,
-          details: error.error.response.request.responseURL,
-        });
-      });*/
   },
 };
 
