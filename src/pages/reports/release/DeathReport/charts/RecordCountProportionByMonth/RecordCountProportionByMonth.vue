@@ -7,6 +7,8 @@
         :annotations-count="annotations.length"
         @annotations-mode-toggled="toggleAnnotationsMode"
         @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
       />
     </template>
 
@@ -23,8 +25,27 @@
         brushParentElement: 'g g',
       }"
       :chartSpec="specRecordProportionByMonth"
-      :data="store.getters.getData.PREVALENCE_BY_MONTH"
+      :data="data"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="data"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Month" field="X_CALENDAR_MONTH"> </Column>
+
+        <Column
+          sortable
+          header="Record Proportion Per 1000"
+          field="Y_PREVALENCE_1000PP"
+        >
+        </Column>
+      </DataTable>
+    </div>
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -58,14 +79,16 @@ import { useRoute } from "vue-router";
 import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import * as listeners from "@/pages/model/lib/listeners";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import _ from "lodash";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
@@ -78,6 +101,16 @@ const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
   useAnnotationControls();
 
 const { annotations, notes } = useAnnotations(reportId);
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.PREVALENCE_BY_MONTH;
+});
 </script>
 
 <style scoped></style>

@@ -39,7 +39,7 @@ import { useStore } from "vuex";
 import { defineProps } from "vue";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Panel from "primevue/panel";
 

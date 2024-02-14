@@ -50,7 +50,7 @@
 import { links } from "@/shared/config/links";
 import { helpers } from "@/shared/lib/mixins";
 import { useStore } from "vuex";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Panel from "primevue/panel";

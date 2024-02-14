@@ -7,6 +7,8 @@
         :annotations-count="annotations.length"
         @annotations-mode-toggled="toggleAnnotationsMode"
         @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
       />
     </template>
     <Chart
@@ -22,6 +24,34 @@
       }"
       :data="releases"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        size="small"
+        :value="releases"
+        paginator
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column field="dqd_execution_date" header="Date"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Population"
+          field="count_person"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.count_person
+                  ? helpers.formatComma(slotProps.data.count_person)
+                  : "No data"
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -46,13 +76,15 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { specPopulationByRelease } from "./specPopulationByRelease";
 import { specPopulationByReleaseAnnotation } from "./specPopulationByReleaseAnnotation";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import Panel from "primevue/panel";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
@@ -71,6 +103,12 @@ const releases = computed(() => {
     dateU: new Date(value.dqd_execution_date),
   }));
 });
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
 </script>
 
 <style scoped></style>

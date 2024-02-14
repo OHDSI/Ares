@@ -46,7 +46,6 @@
         :not-stationary="store.getters.getData.isNotStationary"
       />
 
-      <MeasurementTable />
       <MeasurementValueDistribution />
       <AgeAtFirstDiagnosis />
       <AgeAtFirstExposure />
@@ -70,7 +69,6 @@ import ReturnButton from "@/features/returnToPreviousPage";
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
 import { useStore } from "vuex";
-import MeasurementTable from "@/pages/reports/release/ConceptReport/charts/MeasurementTable/MeasurementTable.vue";
 import MeasurementValueDistribution from "@/pages/reports/release/ConceptReport/charts/MeasurementValueDistribution/MeasurementValueDistribution.vue";
 import AgeAtFirstDiagnosis from "@/pages/reports/release/ConceptReport/charts/AgeAtFirstDiagnosis/AgeAtFirstDiagnosis.vue";
 import AgeAtFirstExposure from "@/pages/reports/release/ConceptReport/charts/AgeAtFirstExposure/AgeAtFirstExposure.vue";

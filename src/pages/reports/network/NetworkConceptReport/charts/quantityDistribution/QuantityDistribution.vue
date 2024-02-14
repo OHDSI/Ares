@@ -39,7 +39,7 @@ import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import { specQuantity } from "./specQuantity";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 const store = useStore();
 const route = useRoute();
 const router = useRouter();

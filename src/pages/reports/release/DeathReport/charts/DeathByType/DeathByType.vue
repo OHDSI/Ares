@@ -1,12 +1,44 @@
 <template>
   <Panel header="Death by Type">
+    <template #icons>
+      <ChartHeader table-toggle @table-toggled="toggleTable" />
+    </template>
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-deathbytype"
       width="100"
       :chartSpec="specDeathByType"
-      :data="store.getters.getData.DEATH_BY_TYPE"
+      :data="data"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="data"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Condition Type" field="CONCEPT_NAME"> </Column>
+        <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Number of Records"
+          field="COUNT_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.COUNT_VALUE
+                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -35,12 +67,25 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import { computed, ref } from "vue";
 
 const store = useStore();
 const route = useRoute();
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.DEATH_BY_TYPE;
+});
 </script>
 
 <style scoped></style>

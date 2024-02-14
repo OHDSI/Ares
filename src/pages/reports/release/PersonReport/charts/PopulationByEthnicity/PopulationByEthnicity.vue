@@ -5,18 +5,21 @@
     elevation="2"
     class="ma-4"
   >
+    <template #icons>
+      <ChartHeader table-toggle @table-toggled="toggleTable" />
+    </template>
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ethnicity"
       :chartSpec="specEthnicity"
-      :data="store.getters.getData.personData.ETHNICITY_DATA"
+      :data="data"
     />
-    <div class="p-4">
+    <div v-if="showTable" class="p-4">
       <DataTable
         removable-sort
         size="small"
         paginator
-        :value="store.getters.getData.personData.ETHNICITY_DATA"
+        :value="data"
         :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
@@ -65,13 +68,25 @@ import { specEthnicity } from "./specEthnicity";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { computed, ref } from "vue";
 
 const store = useStore();
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.personData.ETHNICITY_DATA;
+});
 </script>
 
 <style scoped></style>
