@@ -30,7 +30,7 @@
         <template #body="slotProps">
           <router-link
             class="text-blue-400 hover:underline"
-            :to="getDataSourceRoute(slotProps.data.cdm_source_name)"
+            :to="getDataSourceRoute(slotProps.data.cdm_source_key)"
             >{{ slotProps.data.cdm_source_name }}</router-link
           >
         </template>
