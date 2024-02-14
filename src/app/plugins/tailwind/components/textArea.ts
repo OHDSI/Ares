@@ -1,8 +1,8 @@
 export default {
   root: ({ context }) => ({
     class: [
-      "text-xl",
-      "p-5",
+      "text-normal",
+      "p-4",
       "border border-surface-300 dark:border-surface-600",
       "bg-surface-0 dark:bg-surface-800",
       "rounded-md",

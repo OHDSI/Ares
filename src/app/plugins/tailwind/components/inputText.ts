@@ -6,6 +6,7 @@ export default {
 
       // Spacing
       "m-0",
+      "px-4",
       {
         "px-4 py-4": props.size == "large",
         "px-2 py-2": props.size == "small",
@@ -13,8 +14,6 @@ export default {
       },
 
       // Colors
-      "text-surface-600 dark:text-surface-200",
-      "placeholder:text-surface-400 dark:placeholder:text-surface-500",
       "bg-surface-0 dark:bg-surface-800",
       "border border-surface-300 dark:border-surface-600",
 
