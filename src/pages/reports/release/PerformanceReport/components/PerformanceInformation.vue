@@ -81,7 +81,7 @@ import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";

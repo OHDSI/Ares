@@ -101,7 +101,7 @@ import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
 import { mdiHelpCircle } from "@mdi/js";
 import { links } from "@/shared/config/links";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Pivot from "@/widgets/pivot/ui/Pivot.vue";
 
 const store = useStore();

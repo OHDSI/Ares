@@ -54,7 +54,7 @@ export default {
 
       // Color
       {
-        "text-white dark:text-white/80": props.modelValue,
+        "text-black dark:text-white/80": props.modelValue,
         "text-surface-400 dark:text-surface-500": !props.modelValue,
       },
       "placeholder:text-surface-400 dark:placeholder:text-surface-500",

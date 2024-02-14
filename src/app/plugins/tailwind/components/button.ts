@@ -263,7 +263,7 @@ export default {
 
       // Plain
       {
-        "hover:bg-gray-600 hover:border-gray-600":
+        "hover:bg-primary-500 hover:text-white hover:border-gray-600":
           props.plain && !props.outlined && !props.text,
       },
       // Text & Outlined Button

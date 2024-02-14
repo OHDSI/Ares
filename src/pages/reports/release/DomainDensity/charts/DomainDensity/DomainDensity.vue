@@ -8,6 +8,8 @@
         :annotations-count="annotations.length"
         @annotations-mode-toggled="toggleAnnotationsMode"
         @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
       />
     </template>
 
@@ -21,11 +23,40 @@
         annotationsParentElement: 'g g',
         brushParentElement: 'g g g',
       }"
-      :data="store.getters.getData.domainDensity"
+      :data="data"
       :signal-listener="listeners.setSelectionAreaSignal"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="data"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Date" field="date"> </Column>
+        <Column sortable header="Domain" field="domain"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Records"
+          field="records"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.records
+                  ? helpers.formatComma(slotProps.data.records)
+                  : "No data"
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -55,12 +86,15 @@ import { useStore } from "vuex";
 import { defOverview } from "./defOverview";
 import { defOverviewAnnotation } from "./defOverviewAnnotation";
 import * as listeners from "@/pages/model/lib/listeners";
+import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
@@ -72,6 +106,16 @@ const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
   useAnnotationControls();
 
 const { annotations, notes } = useAnnotations(reportId);
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.domainDensity;
+});
 </script>
 
 <style scoped></style>

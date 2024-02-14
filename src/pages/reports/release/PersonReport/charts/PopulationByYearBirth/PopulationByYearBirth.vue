@@ -7,6 +7,8 @@
         :annotations-count="annotations.length"
         @annotations-mode-toggled="toggleAnnotationsMode"
         @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
       />
     </template>
     <Chart
@@ -18,17 +20,17 @@
         annotationsParentElement: 'g',
         brushParentElement: 'g g',
       }"
-      :data="store.getters.getData.personData.BIRTH_YEAR_DATA"
+      :data="data"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     >
     </Chart>
-    <div class="p-4">
+    <div v-if="showTable" class="p-4">
       <DataTable
         removable-sort
         size="small"
         paginator
-        :value="store.getters.getData.personData.BIRTH_YEAR_DATA"
+        :value="data"
         :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
@@ -79,9 +81,11 @@ import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
+import { computed } from "vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { ref } from "vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -96,6 +100,15 @@ const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
   useAnnotationControls();
 
 const { annotations, notes } = useAnnotations(reportId);
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.personData.BIRTH_YEAR_DATA;
+});
 </script>
 
 <style scoped></style>

@@ -34,7 +34,7 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { defineProps } from "vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import { mdiCodeBraces } from "@mdi/js";
 import Panel from "primevue/panel";

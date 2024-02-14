@@ -1,14 +1,33 @@
 <template>
-  <Panel
-    header="Age at First Occurrence"
-    v-if="store.getters.getData.conceptData.AGE_AT_FIRST_OCCURRENCE"
-  >
+  <Panel header="Age at First Occurrence" v-if="data">
+    <template #icons>
+      <ChartHeader table-toggle @table-toggled="toggleTable" />
+    </template>
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ageatfirstoccurrence"
       :chartSpec="specAgeAtFirstOccurrence"
-      :data="store.getters.getData.conceptData.AGE_AT_FIRST_OCCURRENCE"
+      :data="data"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="data"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Sex" field="CATEGORY"> </Column>
+        <Column sortable header="MIN_VALUE" field="MIN_VALUE"> </Column>
+        <Column sortable header="P10_VALUE" field="P10_VALUE"> </Column>
+        <Column sortable header="P25_VALUE" field="P25_VALUE"> </Column>
+        <Column sortable header="MEDIAN_VALUE" field="MEDIAN_VALUE"> </Column>
+        <Column sortable header="P75_VALUE" field="P75_VALUE"> </Column>
+        <Column sortable header="P90_VALUE" field="P90_VALUE"> </Column>
+        <Column sortable header="MAX_VALUE" field="MAX_VALUE"> </Column>
+      </DataTable>
+    </div>
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -44,13 +63,26 @@ import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
+import { computed, ref } from "vue";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.conceptData.AGE_AT_FIRST_OCCURRENCE;
+});
 </script>
 
 <style scoped></style>

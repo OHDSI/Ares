@@ -71,7 +71,7 @@
         {{ data.failed }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           show-clear
           filter
           v-model="filterModel.value"
@@ -80,7 +80,7 @@
           placeholder="Select One"
           class="p-column-filter w-full"
           style="min-width: 12rem"
-        ></Dropdown>
+        ></MultiSelect>
       </template>
     </Column>
     <Column
@@ -90,7 +90,6 @@
       sortable
       header="Table"
       filterField="cdmTableName"
-      field="cdmTableName"
     >
       <template #body="{ data }">
         <div class="flex align-items-center gap-2">
@@ -98,12 +97,13 @@
         </div>
       </template>
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           show-clear
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
           :options="cdmTableNamesOptions"
+          :maxSelectedLabels="1"
           placeholder="Select One"
           class="p-column-filter w-full"
           style="min-width: 12rem"
@@ -111,7 +111,7 @@
           <template #option="slotProps">
             {{ slotProps.option }}
           </template>
-        </Dropdown>
+        </MultiSelect>
       </template>
     </Column>
     <Column
@@ -129,7 +129,7 @@
         {{ data.cdmFieldName }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -141,7 +141,7 @@
           <template #option="slotProps">
             {{ slotProps.option }}
           </template>
-        </Dropdown>
+        </MultiSelect>
       </template>
     </Column>
     <Column
@@ -159,7 +159,7 @@
         {{ data.checkName }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -171,7 +171,7 @@
           <template #option="slotProps">
             {{ slotProps.option }}
           </template>
-        </Dropdown>
+        </MultiSelect>
       </template>
     </Column>
     <Column
@@ -189,7 +189,7 @@
         {{ data.category }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -201,7 +201,7 @@
           <template #option="slotProps">
             {{ slotProps.option }}
           </template>
-        </Dropdown>
+        </MultiSelect>
       </template>
     </Column>
     <Column
@@ -219,7 +219,7 @@
         {{ slotProps.data.subcategory ? slotProps.data.subcategory : "None" }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -231,7 +231,7 @@
           <template #option="slotProps">
             {{ slotProps.option }}
           </template>
-        </Dropdown>
+        </MultiSelect>
       </template>
     </Column>
     <Column
@@ -249,7 +249,7 @@
         {{ data.context }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -261,7 +261,7 @@
           <template #option="slotProps">
             {{ slotProps.option }}
           </template>
-        </Dropdown>
+        </MultiSelect>
       </template>
     </Column>
     <Column
@@ -276,7 +276,7 @@
       header="Check Level"
     >
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -288,7 +288,7 @@
           <template #option="slotProps">
             {{ slotProps.option }}
           </template>
-        </Dropdown>
+        </MultiSelect>
       </template>
     </Column>
     <Column
@@ -303,7 +303,7 @@
       header="Notes"
     >
       <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
+        <MultiSelect
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -315,7 +315,7 @@
           <template #option="slotProps">
             {{ slotProps.option }}
           </template>
-        </Dropdown>
+        </MultiSelect>
       </template>
     </Column>
     <Column
@@ -575,15 +575,15 @@ const notesExistOptions = computed(() => {
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  failed: { value: null, matchMode: FilterMatchMode.EQUALS },
-  cdmTableName: { value: null, matchMode: FilterMatchMode.EQUALS },
-  cdmFieldName: { value: null, matchMode: FilterMatchMode.EQUALS },
-  checkName: { value: null, matchMode: FilterMatchMode.EQUALS },
-  category: { value: null, matchMode: FilterMatchMode.EQUALS },
-  subcategory: { value: null, matchMode: FilterMatchMode.EQUALS },
-  context: { value: null, matchMode: FilterMatchMode.EQUALS },
-  checkLevel: { value: null, matchMode: FilterMatchMode.EQUALS },
-  notesExist: { value: null, matchMode: FilterMatchMode.EQUALS },
+  failed: { value: null, matchMode: FilterMatchMode.IN },
+  cdmTableName: { value: null, matchMode: FilterMatchMode.IN },
+  cdmFieldName: { value: null, matchMode: FilterMatchMode.IN },
+  checkName: { value: null, matchMode: FilterMatchMode.IN },
+  category: { value: null, matchMode: FilterMatchMode.IN },
+  subcategory: { value: null, matchMode: FilterMatchMode.IN },
+  context: { value: null, matchMode: FilterMatchMode.IN },
+  checkLevel: { value: null, matchMode: FilterMatchMode.IN },
+  notesExist: { value: null, matchMode: FilterMatchMode.IN },
 });
 
 const expanded = ref([]);

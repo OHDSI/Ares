@@ -2,7 +2,14 @@
   <Panel v-if="store.getters.dataInStore" header="Temporal Characterization">
     <DataTable
       size="small"
-      :globalFilterFields="['analysis_id', 'analysis_name']"
+      :globalFilterFields="[
+        'CDM_TABLE_NAME',
+        'CONCEPT_ID',
+        'CONCEPT_NAME',
+        'SEASONALITY_SCORE',
+        'IS_STATIONARY',
+      ]"
+      removable-sort
       paginator
       v-model:filters="newFilters"
       :value="filteredChecks"
@@ -40,8 +47,12 @@
           }}</router-link>
         </template>
       </Column>
-      <Column header="Seasonality Score" field="SEASONALITY_SCORE"></Column>
-      <Column header="Is Stationary" field="IS_STATIONARY"></Column>
+      <Column
+        sortable
+        header="Seasonality Score"
+        field="SEASONALITY_SCORE"
+      ></Column>
+      <Column sortable header="Is Stationary" field="IS_STATIONARY"></Column>
     </DataTable>
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -70,7 +81,7 @@ import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import InputGroupAddon from "primevue/inputgroupaddon";

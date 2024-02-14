@@ -1,14 +1,43 @@
 <template>
-  <Panel
-    header="Records By Unit"
-    v-if="store.getters.getData.conceptData.RECORDS_BY_UNIT"
-  >
+  <Panel header="Records By Unit" v-if="data">
+    <template #icons>
+      <ChartHeader table-toggle @table-toggled="toggleTable" />
+    </template>
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-recordsbyunit"
       :chartSpec="specRecordsByUnit"
-      :data="store.getters.getData.conceptData.RECORDS_BY_UNIT"
+      :data="data"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="data"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Unit Type" field="CONCEPT_NAME"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Number of Records"
+          field="COUNT_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.COUNT_VALUE
+                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -36,12 +65,26 @@ import { specRecordsByUnit } from "./specRecordsByUnit";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import { computed, ref } from "vue";
 
 const store = useStore();
 const route = useRoute();
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.conceptData.RECORDS_BY_UNIT;
+});
 </script>
 
 <style scoped></style>

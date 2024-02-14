@@ -26,7 +26,7 @@
           />
         </InputGroup>
       </template>
-      <Column field="cdm_source_name" header="Data quality issues">
+      <Column field="cdm_source_name" header="Data Source">
         <template #body="slotProps">
           <router-link
             class="text-blue-400 hover:underline"
@@ -63,14 +63,6 @@
           {{ slotProps.data.releases[0].count_data_quality_issues }}
         </template>
       </Column>
-      <Column
-        field="releases[0].count_data_quality_issues"
-        header="Person Count"
-      >
-        <template #body="slotProps">
-          {{ slotProps.data.releases[0].count_data_quality_issues }}
-        </template>
-      </Column>
       <Column field="count_releases" header="Data Source Releases"></Column>
 
       <Column
@@ -89,29 +81,18 @@
           {{ slotProps.data.average_update_interval_days }}
         </template>
       </Column>
-      <Column
-        field="releases[0].count_data_quality_issues"
-        header="Person Count"
-      >
-        <template #body="slotProps">
-          {{ slotProps.data.releases[0].count_data_quality_issues }}
-        </template>
-      </Column>
     </DataTable>
   </Panel>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { useStore } from "vuex";
 import { debounce } from "lodash";
-import { helpers } from "@/shared/lib/mixins";
 import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
-import MultiSelect from "primevue/multiselect";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import { useRoute, useRouter } from "vue-router";

@@ -7,6 +7,8 @@
         :annotations-count="annotations.length"
         @annotations-mode-toggled="toggleAnnotationsMode"
         @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
       />
     </template>
 
@@ -20,11 +22,36 @@
         annotationsParentElement: 'g',
         brushParentElement: 'g g ',
       }"
-      :data="store.getters.getData.conceptData.PREVALENCE_BY_MONTH"
+      :data="data"
       :signal-listener="listeners.setSelectionAreaSignal"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="data"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Date" field="date">
+          <template #body="slotProps">
+            <div>
+              {{
+                slotProps.data.X_CALENDAR_MONTH
+                  ? slotProps.data.X_CALENDAR_MONTH
+                  : "no data"
+              }}
+            </div>
+          </template>
+        </Column>
+
+        <Column sortable header="RPP1000" field="Y_PREVALENCE_1000PP"> </Column>
+      </DataTable>
+    </div>
+
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -73,11 +100,12 @@ import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import * as listeners from "@/pages/model/lib/listeners";
+import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import {
   mdiClockAlert,
@@ -85,6 +113,8 @@ import {
   mdiDatabaseClock,
   mdiHelpCircle,
 } from "@mdi/js";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 const store = useStore();
@@ -107,6 +137,16 @@ const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
   useAnnotationControls();
 
 const { annotations, notes } = useAnnotations(reportId);
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.conceptData.PREVALENCE_BY_MONTH;
+});
 </script>
 
 <style scoped></style>

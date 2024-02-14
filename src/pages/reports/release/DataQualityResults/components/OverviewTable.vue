@@ -203,7 +203,7 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 
 const store = useStore();
 </script>

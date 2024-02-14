@@ -3,6 +3,9 @@
     header="Measurement Value Distributions By Unit"
     v-if="store.getters.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION"
   >
+    <template #icons>
+      <ChartHeader table-toggle @table-toggled="toggleTable" />
+    </template>
     <MultiSelect
       v-model="selectedMeasurementUnits"
       class="mr-13"
@@ -23,6 +26,43 @@
       :chartSpec="specMeasurementValueDistribution"
       :data="getSelectedMeasurementUnits"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="store.getters.getData.measurementTable"
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <template #empty> No concepts found </template>
+        <Column sortable header="Unit ID" field="CATEGORY"></Column>
+        <Column sortable header="MIN_VALUE" field="MIN_VALUE"> </Column>
+        <Column sortable header="P10_VALUE" field="P10_VALUE"> </Column>
+        <Column sortable header="P25_VALUE" field="P25_VALUE"> </Column>
+        <Column sortable header="MEDIAN_VALUE" field="MEDIAN_VALUE"> </Column>
+        <Column sortable header="P75_VALUE" field="P75_VALUE"> </Column>
+        <Column sortable header="P90_VALUE" field="P90_VALUE"> </Column>
+        <Column sortable header="MAX_VALUE" field="MAX_VALUE"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Count value"
+          field="UNIT_COUNT"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.UNIT_COUNT
+                  ? helpers.formatComma(slotProps.data.UNIT_COUNT)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -63,9 +103,12 @@ import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ref, Ref } from "vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCheckNetwork, mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 
 const selectedMeasurementUnits: Ref<string[]> = ref([]);
 
@@ -104,6 +147,16 @@ const getNetworkConceptRoute = function (): object {
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData.conceptData.MEASUREMENTS_BY_TYPE;
+});
 </script>
 
 <style scoped></style>

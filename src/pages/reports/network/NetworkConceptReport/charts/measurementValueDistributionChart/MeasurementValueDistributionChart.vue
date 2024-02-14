@@ -52,7 +52,7 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref, Ref, defineProps } from "vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { useRouter } from "vue-router";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import Panel from "primevue/panel";
