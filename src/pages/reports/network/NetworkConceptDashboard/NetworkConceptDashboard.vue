@@ -1,8 +1,10 @@
 <template>
   <Panel header="Network Concept Dashboard">
     <template #icons>
-      <Button @click="dialog = !dialog" plain>
-        <span class="uppercase font-thin text-grey">Add concepts </span></Button
+      <Button @click="dialog = !dialog">
+        <span class="uppercase font-light text-white py-1 px-2"
+          >Add concepts
+        </span></Button
       >
     </template>
     <div class="table-container">
@@ -69,7 +71,6 @@ import Column from "primevue/column";
 import environment from "@/shared/api/environment";
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
-
 
 const addedConcepts = ref({});
 const conceptData = ref([]);
