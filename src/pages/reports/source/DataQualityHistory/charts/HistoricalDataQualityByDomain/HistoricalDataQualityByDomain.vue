@@ -96,8 +96,10 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import { useRoute } from "vue-router";
 
 const store = useStore();
+const route = useRoute();
 
 const reportId = "viz-sourcedataqualityresultsbydomain";
 

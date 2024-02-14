@@ -40,7 +40,22 @@
       >
         <Column sortable header="Date" field="date"> </Column>
         <Column sortable header="Domain" field="domain"> </Column>
-        <Column sortable header="Records" field="records"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Records"
+          field="records"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.records
+                  ? helpers.formatComma(slotProps.data.records)
+                  : "No data"
+              }}
+            </div>
+          </template>
+        </Column>
       </DataTable>
     </div>
     <NotesPanel v-if="notesMode" :notes="notes" />

@@ -57,9 +57,9 @@
         <Column field="vocabulary_version" header="Vocabulary"> </Column>
         <Column field="end_timestamp" header="DQ Execution Date"> </Column>
         <Column
-            :pt="{ headerContent: 'justify-end' }"
-            field="count_passed"
-            header="# Passed"
+          :pt="{ headerContent: 'justify-end' }"
+          field="count_passed"
+          header="# Passed"
         >
           <template #body="slotProps">
             <div class="flex justify-end">
@@ -67,7 +67,11 @@
             </div>
           </template>
         </Column>
-        <Column field="count_failed" header="# Failed">
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          field="count_failed"
+          header="# Failed"
+        >
           <template #body="slotProps">
             <router-link
               class="text-blue-400 hover:underline"
@@ -80,21 +84,24 @@
                 },
               }"
               :title="slotProps.data.count_failed"
-              >{{ slotProps.data.count_failed }}
+              ><span class="flex justify-end">{{
+                slotProps.data.count_failed
+              }}</span>
             </router-link>
           </template>
         </Column>
         <Column
-            :pt="{ headerContent: 'justify-end' }"
-            field="count_total"
-            header="# Total"
+          :pt="{ headerContent: 'justify-end' }"
+          field="count_total"
+          header="# Total"
         >
           <template #body="slotProps">
             <div class="flex justify-end">
               <span> {{ slotProps.data.count_total }}</span>
             </div>
           </template>
-        </Column>      </DataTable>
+        </Column>
+      </DataTable>
     </div>
 
     <NotesPanel v-if="notesMode" :notes="notes" />

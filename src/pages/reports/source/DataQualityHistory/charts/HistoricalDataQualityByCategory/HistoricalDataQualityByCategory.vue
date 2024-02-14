@@ -95,8 +95,11 @@ import DataTable from "primevue/datatable";
 import { helpers } from "@/shared/lib/mixins";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import { useRoute } from "vue-router";
 
 const store = useStore();
+
+const route = useRoute();
 
 const reportId = "viz-sourcedataqualityresultsbycategory";
 

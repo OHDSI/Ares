@@ -18,7 +18,7 @@
         :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
-        <Column sortable header="CATEGORY" field="CATEGORY"> </Column>
+        <Column sortable header="Sex" field="CATEGORY"> </Column>
         <Column sortable header="MIN_VALUE" field="MIN_VALUE"> </Column>
         <Column sortable header="P10_VALUE" field="P10_VALUE"> </Column>
         <Column sortable header="P25_VALUE" field="P25_VALUE"> </Column>

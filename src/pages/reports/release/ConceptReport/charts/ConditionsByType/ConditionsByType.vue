@@ -19,7 +19,21 @@
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
         <Column sortable header="Condition Type" field="CONCEPT_NAME"> </Column>
-        <Column sortable header="Number of Records" field="COUNT_VALUE">
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Number of Records"
+          field="COUNT_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.COUNT_VALUE
+                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  : "No data"
+              }}
+            </div>
+          </template>
         </Column>
       </DataTable>
     </div>
