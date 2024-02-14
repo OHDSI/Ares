@@ -51,7 +51,7 @@
           placeholder="Select Columns"
         >
           <template #value>
-            <span class="uppercase">Select Columns</span>
+            <span class="uppercase text-white">Select Columns</span>
           </template>
         </MultiSelect>
       </div>

@@ -57,7 +57,7 @@
               placeholder="Select Columns"
             >
               <template #value>
-                <span class="flex flex-row w-full items-center">
+                <span class="flex flex-row w-full text-white items-center">
                   <svg-icon type="mdi" :path="mdiTable"></svg-icon>
                   <span class="uppercase text-base">Columns to display</span>
                 </span>
