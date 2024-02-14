@@ -33,12 +33,20 @@
         <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
         <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
         <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
+
+        <Column sortable header="Data Sources" field="DATA_SOURCES"></Column>
         <Column
+          :pt="{ headerContent: 'justify-end' }"
           sortable
           header="# Data Sources"
           field="DATA_SOURCE_COUNT"
-        ></Column>
-        <Column sortable header="Data Sources" field="DATA_SOURCES"></Column>
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              <span> {{ slotProps.data.DATA_SOURCE_COUNT }}</span>
+            </div>
+          </template>
+        </Column>
         <Column
           :pt="{ headerContent: 'justify-end' }"
           sortable

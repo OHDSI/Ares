@@ -25,8 +25,10 @@ import DataQualityHistory from "@/pages/reports/source/DataQualityHistory/DataQu
 import SourceOverview from "@/pages/reports/source/SourceOverview/SourceOverview.vue";
 import DomainContinuity from "@/pages/reports/source/DomainContinuity/DomainContinuity.vue";
 import SourceConceptReport from "@/pages/reports/source/SourceConceptReport/SourceConceptReport.vue";
-import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 import NetworkConceptDashboard from "@/pages/reports/network/NetworkConceptDashboard/NetworkConceptDashboard.vue";
+import NetworkDiversityReport from "@/pages/reports/network/NetworkDiversityReport/NetworkDiversityReport.vue";
+
+import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 
 import { RouteRecordRaw } from "vue-router";
 
@@ -78,6 +80,11 @@ export const routes: RouteRecordRaw[] = [
         path: "network_performance",
         name: "networkPerformance",
         components: { reportsView: NetworkPerformance },
+      },
+      {
+        path: "network_diversity",
+        name: "networkDiversityReport",
+        components: { reportsView: NetworkDiversityReport },
       },
       {
         path: "network_unmapped_source_codes",

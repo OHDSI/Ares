@@ -121,44 +121,17 @@ import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
 
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-function toggleAnnotationsMode(mode) {
-  annotationsMode.value = mode;
-}
-function toggleNotesMode(mode) {
-  notesMode.value = mode;
-}
-
 const reportId = "viz-observationbymonth";
 
-const annotations = computed(() => {
-  const sourceName = store.getters.getSelectedSource?.cdm_source_key;
-  const releaseName = store.getters.getSelectedRelease?.release_id;
-  const sourceContainer = store.getters.getNotes[sourceName] || {};
-  const releaseContainer = sourceContainer[releaseName] || {};
-  return releaseContainer[reportId] || [];
-});
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: reportId,
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
-});
+const { annotations, notes } = useAnnotations(reportId);
 
 const showTable = ref(false);
 

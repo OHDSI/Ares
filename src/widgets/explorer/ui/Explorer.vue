@@ -2,9 +2,11 @@
   <div
     v-if="store.getters.explorerLoaded"
     id="explorer"
-    class="container flex flex-row gap-16 my-10 justify-items-center"
+    class="container flex flex-row gap-16 my-10 items-center"
   >
-    <img :class="iconClass" :src="icon" width="45" />
+    <Button class="logo-button" text @click="router.push('/')">
+      <img :class="iconClass" :src="icon" alt="Ares logo" width="45" />
+    </Button>
     <div class="flex flex-row gap-5">
       <div class="p-float-label">
         <dropdown
@@ -100,13 +102,13 @@ import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
 import Dropdown from "primevue/dropdown";
 import SvgIcon from "@jamescoyle/vue-icon";
+import Button from "primevue/button";
 
 import config from "@/widgets/explorer/config";
 import {
   Source,
   SourceRelease,
 } from "@/processes/exploreReports/model/interfaces/files/SourceIndex";
-import { mdiCog } from "@mdi/js";
 
 const route = useRoute();
 const store = useStore();
@@ -117,11 +119,13 @@ const iconClass = computed((): string => {
 });
 
 function changeSource(data: Source): void {
+  const folder = store.getters.getSelectedFolder;
+  const release = folder.key === "cdm" ? data.releases[0].release_id : null;
   router.push({
     params: {
       ...route.params,
       cdm: data.cdm_source_key,
-      release: data.releases[0].release_id,
+      release,
     },
   });
 }
@@ -134,15 +138,26 @@ function changeRelease(data: SourceRelease): void {
   });
 }
 function changeFolder(data): void {
+  let cdm, release;
+  if (data.key === "datasource") {
+    cdm = store.getters.getSelectedSource
+      ? store.getters.getSelectedSource.cdm_source_key
+      : store.getters.getSources[0].cdm_source_key;
+  }
+  if (data.key === "cdm") {
+    cdm = store.getters.getSelectedSource
+      ? store.getters.getSelectedSource.cdm_source_key
+      : store.getters.getSources[0].cdm_source_key;
+    release = store.getters.getSelectedSource
+      ? store.getters.getSelectedRelease.release_id
+      : store.getters.getSources[0].releases[0].release_id;
+  }
+
   router.push({
     name: data.key,
     params: {
-      cdm: store.getters.getSelectedSource
-        ? store.getters.getSelectedSource.cdm_source_key
-        : store.getters.getSources[0].cdm_source_key,
-      release: store.getters.getSelectedSource
-        ? store.getters.getSelectedRelease.release_id
-        : store.getters.getSources[0].releases[0].release_id,
+      cdm,
+      release,
     },
   });
 }
@@ -183,5 +198,14 @@ tr:hover {
 }
 .v-list-item {
   min-height: 30px !important;
+}
+.logo-button {
+  opacity: 0.5;
+  transition: 0.3s;
+}
+
+.logo-button:hover {
+  opacity: 1;
+  transition: 0.3s;
 }
 </style>

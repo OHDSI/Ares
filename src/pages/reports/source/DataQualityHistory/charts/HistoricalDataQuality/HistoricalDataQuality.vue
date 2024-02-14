@@ -54,9 +54,19 @@
             </router-link>
           </template>
         </Column>
+        <Column field="vocabulary_version" header="Vocabulary"> </Column>
         <Column field="end_timestamp" header="DQ Execution Date"> </Column>
-        <Column field="count_passed" header="# Passed"> </Column>
-
+        <Column
+            :pt="{ headerContent: 'justify-end' }"
+            field="count_passed"
+            header="# Passed"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              <span> {{ slotProps.data.count_passed }}</span>
+            </div>
+          </template>
+        </Column>
         <Column field="count_failed" header="# Failed">
           <template #body="slotProps">
             <router-link
@@ -74,9 +84,17 @@
             </router-link>
           </template>
         </Column>
-        <Column field="count_total" header="# Total"> </Column>
-        <Column field="vocabulary_version" header="Vocabulary"> </Column>
-      </DataTable>
+        <Column
+            :pt="{ headerContent: 'justify-end' }"
+            field="count_total"
+            header="# Total"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              <span> {{ slotProps.data.count_total }}</span>
+            </div>
+          </template>
+        </Column>      </DataTable>
     </div>
 
     <NotesPanel v-if="notesMode" :notes="notes" />
@@ -97,44 +115,17 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
 const route = useRoute();
-
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-function toggleAnnotationsMode(mode) {
-  annotationsMode.value = mode;
-}
-function toggleNotesMode(mode) {
-  notesMode.value = mode;
-}
-
 const reportId = "viz-dataqualityresults";
 
-const annotations = computed(() => {
-  const { cdm, release } = route.params;
-  const path = [cdm, release].filter(Boolean);
-  const selections = _.get(store.getters.getNotes, path.join(".")) || {};
-  return selections[reportId] || [];
-});
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: reportId,
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
-});
+const { annotations, notes } = useAnnotations(reportId);
 
 const showTable = ref(false);
 

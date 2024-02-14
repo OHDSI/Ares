@@ -36,6 +36,6 @@ export default function getFilePath(params: Params) {
     [files.NETWORK_PERFORMANCE]: "data/network-performance.csv",
     [files.EXPORT_QUERY_INDEX]: "data/export_query_index.json",
     [files.TEMPORAL_CHARACTERIZATION]: `data/${params.cdm}/${params.release}/temporal-characterization.csv`,
-    [files.NOTES]: `data/${params.cdm}/notes.json`,
+    [files.NOTES]: `data${params.cdm ? "/" + params.cdm : ""}/notes.json`,
   };
 }

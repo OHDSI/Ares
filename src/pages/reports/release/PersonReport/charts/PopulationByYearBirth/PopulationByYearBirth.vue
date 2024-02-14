@@ -5,15 +5,15 @@
         title="Population by Year of Birth"
         :notes-count="notes.length"
         :annotations-count="annotations.length"
-        @annotations-mode-toggled="toggleAnnotationMode"
-        @notes-mode-toggled="toggleNoteMode"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
         table-toggle
         @table-toggled="toggleTable"
       />
     </template>
     <Chart
       v-if="store.getters.dataInStore"
-      id="viz-birthyearnote"
+      :id="reportId"
       :chartSpec="specBirthYear"
       :annotations-config="{
         chartSpec: specBirthYearAnnotation,
@@ -89,45 +89,17 @@ import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-
-function toggleAnnotationMode(mode) {
-  annotationsMode.value = mode;
-}
-
-function toggleNoteMode(mode) {
-  notesMode.value = mode;
-}
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
 
-const annotations = computed(() => {
-  const sourceName = store.getters.getSelectedSource.cdm_source_key;
-  const releaseName = store.getters.getSelectedRelease.release_id;
-  const sourceContainer = store.getters.getNotes[sourceName] || {};
-  const releaseContainer = sourceContainer[releaseName] || {};
-  return releaseContainer["viz-birthyearnote"] || [];
-});
+const reportId = "viz-birthyearnote";
 
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: "viz-birthyearnote",
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
-});
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
+const { annotations, notes } = useAnnotations(reportId);
 const showTable = ref(false);
 
 function toggleTable(mode) {

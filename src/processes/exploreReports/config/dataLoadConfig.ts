@@ -66,6 +66,12 @@ export default function getFilesByView(params = null) {
       loadMethod: FETCH_FILES,
       payload: { files: [{ name: NETWORK_PERFORMANCE, required: true }] },
     },
+    networkDiversityReport: {
+      loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
+      payload: {
+        files: [{ name: PERSON, instanceParams: [{}] }],
+      },
+    },
     networkUnmappedSourceCodes: {
       loadMethod: FETCH_FILES,
       payload: {
