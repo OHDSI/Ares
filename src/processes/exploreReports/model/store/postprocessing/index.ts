@@ -16,6 +16,7 @@ import domainTable from "@/processes/exploreReports/model/store/postprocessing/d
 import feasibility from "@/processes/exploreReports/model/store/postprocessing/feasibility";
 import networkUnmappedSourceCodes from "@/processes/exploreReports/model/store/postprocessing/networkUnmappedSourceCodes";
 import networkDiversityReport from "@/processes/exploreReports/model/store/postprocessing/networkDiversityReport";
+import cohortReport from "@/processes/exploreReports/model/store/postprocessing/cohortReport";
 
 export default {
   dataStrandReport,
@@ -36,4 +37,5 @@ export default {
   domainTable,
   feasibility,
   networkUnmappedSourceCodes,
+  cohortReport,
 };

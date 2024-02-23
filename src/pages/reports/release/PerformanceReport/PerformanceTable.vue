@@ -3,7 +3,10 @@
     v-if="store.getters.dataInStore && !store.getters.getErrors"
     class="pa-1"
   >
-    <PerformanceInformation />
+    <div class="flex flex-col gap-5">
+      <AchillesPerformance />
+      <CohortDiagnosticsPerformance />
+    </div>
   </div>
 </template>
 
@@ -12,7 +15,8 @@ import { useStore } from "vuex";
 
 const store = useStore();
 
-import PerformanceInformation from "@/pages/reports/release/PerformanceReport/components/PerformanceInformation.vue";
+import AchillesPerformance from "@/pages/reports/release/PerformanceReport/components/AchillesPerformance.vue";
+import CohortDiagnosticsPerformance from "@/pages/reports/release/PerformanceReport/components/CohortDiagnosticsPerformance.vue";
 </script>
 
 <style scoped>

@@ -27,6 +27,8 @@ import DomainContinuity from "@/pages/reports/source/DomainContinuity/DomainCont
 import SourceConceptReport from "@/pages/reports/source/SourceConceptReport/SourceConceptReport.vue";
 import NetworkConceptDashboard from "@/pages/reports/network/NetworkConceptDashboard/NetworkConceptDashboard.vue";
 import NetworkDiversityReport from "@/pages/reports/network/NetworkDiversityReport/NetworkDiversityReport.vue";
+import CohortsTable from "@/pages/reports/release/CohortsTable/CohortsTable.vue";
+import CohortDrilldownReport from "@/pages/reports/release/CohortDrilldownReport/CohortDrilldownReport.vue";
 
 import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 
@@ -197,6 +199,16 @@ export const routes: RouteRecordRaw[] = [
         path: "person",
         name: "person",
         components: { reportsView: PersonReport },
+      },
+      {
+        path: "cohorts",
+        name: "cohorts",
+        components: { reportsView: CohortsTable },
+      },
+      {
+        path: "cohorts/:cohort_id/",
+        name: "cohortReport",
+        components: { reportsView: CohortDrilldownReport },
       },
       {
         path: ":domain",

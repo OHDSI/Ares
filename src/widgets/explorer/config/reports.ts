@@ -4,13 +4,13 @@ import {
   mdiChartTimeline,
   mdiCheckNetwork,
   mdiDatabaseSearch,
-  mdiDiversify,
   mdiDna,
   mdiShape,
   mdiHistory,
   mdiSigmaLower,
   mdiSpeedometer,
   mdiTable,
+  mdiAccountGroupOutline,
 } from "@mdi/js";
 
 export const reports = [
@@ -25,6 +25,12 @@ export const reports = [
     icon: mdiChartLine,
     name: "Person",
     routeName: "person",
+  },
+  {
+    folder: "Data Source Release",
+    icon: mdiAccountGroupOutline,
+    name: "Cohorts",
+    routeName: "cohorts",
   },
   {
     folder: "Data Network",

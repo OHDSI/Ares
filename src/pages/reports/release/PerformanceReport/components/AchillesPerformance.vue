@@ -1,5 +1,5 @@
 <template>
-  <Panel header="Performance">
+  <Panel header="Achilles Performance">
     <DataTable
       size="small"
       :globalFilterFields="['analysis_id', 'analysis_name']"
@@ -42,6 +42,8 @@
       </Column>
       <Column sortable header="Analysis Name" field="analysis_name"></Column>
       <Column
+        style="text-align: end"
+        :pt="{ headerContent: 'justify-end' }"
         sortable
         header="Duration (seconds)"
         field="elapsed_seconds"
@@ -99,7 +101,7 @@ const newFilters = ref({
 });
 
 const filteredRecords = computed(function () {
-  return store.getters.getData.domainTable.filter((d) => {
+  return store.getters.getData.achilles_performance.filter((d) => {
     return Object.keys(filters.value).every((f) => {
       return (
         filters.value[f as keyof typeof filters].length < 1 ||

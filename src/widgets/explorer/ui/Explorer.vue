@@ -91,6 +91,17 @@
           >Concept ID</label
         >
       </div>
+      <div v-if="showCohortSelector" class="p-float-label">
+        <dropdown
+          input-id="cohort"
+          :model-value="showCohortSelector"
+          :options="[showCohortSelector]"
+          disabled
+        />
+        <label class="left-3 font-light dark:text-white text-black" for="cohort"
+          >Cohort ID</label
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -174,6 +185,10 @@ function changeReport(data): void {
 
 const showConceptSelector = computed(function (): string | string[] {
   return route.params.concept;
+});
+
+const showCohortSelector = computed(function (): string | string[] {
+  return route.params.cohort_id;
 });
 const showSourceSelector = computed(function (): boolean {
   return (

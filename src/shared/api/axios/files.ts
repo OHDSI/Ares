@@ -37,5 +37,10 @@ export default function getFilePath(params: Params) {
     [files.EXPORT_QUERY_INDEX]: "data/export_query_index.json",
     [files.TEMPORAL_CHARACTERIZATION]: `data/${params.cdm}/${params.release}/temporal-characterization.csv`,
     [files.NOTES]: `data${params.cdm ? "/" + params.cdm : ""}/notes.json`,
+    [files.COHORT_INDEX]: `data/${params.cdm}/${params.release}/cohort_index.csv`,
+    [files.COHORT_CHARACTERIZATION]: `data/${params.cdm}/${params.release}/cohort_characterization.csv`,
+    [files.COHORT_DIAGNOSTICS_PERFORMANCE]: `data/${params.cdm}/${params.release}/cohort_diagnostics_performance.csv`,
+    [files.COHORT_INDEX_EVENT_BREAKDOWN]: `data/${params.cdm}/${params.release}/cohort_index_event_breakdown.csv`,
+    [files.COHORT_TEMPORAL_COVARIATE_DISTRIBUTION]: `data/${params.cdm}/${params.release}/cohort_temporal_covariate_distribution.csv`,
   };
 }
