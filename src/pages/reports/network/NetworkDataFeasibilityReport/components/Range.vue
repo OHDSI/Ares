@@ -151,7 +151,15 @@
 <script setup lang="ts">
 import { timeParse } from "d3-time-format";
 import * as d3Format from "d3-format";
-import { computed, ref, watch, defineProps, defineEmits, Ref } from "vue";
+import {
+  computed,
+  ref,
+  watch,
+  defineProps,
+  defineEmits,
+  Ref,
+  onMounted,
+} from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { ObservationPeriodType } from "@/processes/exploreReports/model/interfaces/files/ObservationPeriodType";
 import { PersonData } from "@/processes/exploreReports/model/interfaces/files/Person";
@@ -171,9 +179,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const rangeAge: Ref<number[]> = ref([0, 100]);
-const rangeYear: Ref<number[]> = ref([1900, 2021]);
-const continuousObservation: Ref<number[]> = ref([50]);
+const rangeAge: Ref<number[]> = ref([]);
+const rangeYear: Ref<number[]> = ref([]);
+
+const continuousObservation: Ref<number[]> = ref([]);
+
 const getRangeData = computed(function () {
   const person = props.person;
   const timeparse = timeParse("%Y%m");
@@ -241,6 +251,7 @@ const getRangeData = computed(function () {
     ...personData.filter((data) => data.cdm_name === value.cdm_name)[0],
   }));
 });
+
 const getAgeMinMax = computed(function () {
   const data = props.person.reduce(
     (prevValue, current) => [
@@ -285,6 +296,12 @@ watch(getRangeData, () => {
 const formatComma = function (value) {
   return d3Format.format(",")(value);
 };
+
+onMounted(() => {
+  rangeAge.value = getAgeMinMax.value;
+  rangeYear.value = getYearsMinMax.value;
+  continuousObservation.value = [Math.floor(getDurationMinMax.value[1] / 2)];
+});
 </script>
 
 <script lang="ts">
