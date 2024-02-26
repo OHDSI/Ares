@@ -37,13 +37,118 @@
       >
         <template #empty> No concepts found </template>
         <Column sortable header="Unit ID" field="CATEGORY"></Column>
-        <Column sortable header="MIN_VALUE" field="MIN_VALUE"> </Column>
-        <Column sortable header="P10_VALUE" field="P10_VALUE"> </Column>
-        <Column sortable header="P25_VALUE" field="P25_VALUE"> </Column>
-        <Column sortable header="MEDIAN_VALUE" field="MEDIAN_VALUE"> </Column>
-        <Column sortable header="P75_VALUE" field="P75_VALUE"> </Column>
-        <Column sortable header="P90_VALUE" field="P90_VALUE"> </Column>
-        <Column sortable header="MAX_VALUE" field="MAX_VALUE"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="MIN_VALUE"
+          field="MIN_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.MIN_VALUE
+                  ? helpers.formatComma(slotProps.data.MIN_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="P10_VALUE"
+          field="P10_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.P10_VALUE
+                  ? helpers.formatComma(slotProps.data.P10_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="P25_VALUE"
+          field="P25_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.P25_VALUE
+                  ? helpers.formatComma(slotProps.data.P25_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="MEDIAN_VALUE"
+          field="MEDIAN_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.MEDIAN_VALUE
+                  ? helpers.formatComma(slotProps.data.MEDIAN_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="P75_VALUE"
+          field="P75_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.P75_VALUE
+                  ? helpers.formatComma(slotProps.data.P75_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="P90_VALUE"
+          field="P90_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.P90_VALUE
+                  ? helpers.formatComma(slotProps.data.P90_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="MAX_VALUE"
+          field="MAX_VALUE"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.MAX_VALUE
+                  ? helpers.formatComma(slotProps.data.MAX_VALUE)
+                  : 0
+              }}
+            </div>
+          </template>
+        </Column>
         <Column
           :pt="{ headerContent: 'justify-end' }"
           sortable
