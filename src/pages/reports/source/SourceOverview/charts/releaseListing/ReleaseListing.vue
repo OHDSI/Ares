@@ -8,27 +8,44 @@
       :rows="5"
       :rowsPerPageOptions="[5, 10, 20, 50]"
       tableStyle="min-width: 50rem"
+      removable-sort
     >
-      <Column field="release_name" header="Release Date"> </Column>
-      <Column field="count_person" header="Count person">
+      <Column sortable field="release_name" header="Release Date"> </Column>
+      <Column
+        :pt="{ headerContent: 'justify-end' }"
+        sortable
+        field="count_person"
+        header="Count person"
+      >
         <template #body="slotProps">
-          <router-link
-            class="text-blue-400 hover:underline"
-            :to="getPersonLink(slotProps.data)"
-            :title="slotProps.data.count_person"
-            >{{ helpers.formatComma(slotProps.data.count_person) }}</router-link
-          >
+          <div class="flex flex-row justify-end">
+            <router-link
+              class="text-blue-400 hover:underline"
+              :to="getPersonLink(slotProps.data)"
+              :title="slotProps.data.count_person"
+              >{{
+                helpers.formatComma(slotProps.data.count_person)
+              }}</router-link
+            >
+          </div>
         </template>
       </Column>
-      <Column field="count_data_quality_issues" header="Data quality issues">
+      <Column
+        :pt="{ headerContent: 'justify-end' }"
+        sortable
+        field="count_data_quality_issues"
+        header="Data quality issues"
+      >
         <template #body="slotProps">
-          <router-link
-            class="text-blue-400 hover:underline"
-            :to="getQualityLink(slotProps.data)"
-            >{{
-              helpers.formatComma(slotProps.data.count_data_quality_issues)
-            }}</router-link
-          >
+          <div class="flex flex-row justify-end">
+            <router-link
+              class="text-blue-400 hover:underline"
+              :to="getQualityLink(slotProps.data)"
+              >{{
+                helpers.formatComma(slotProps.data.count_data_quality_issues)
+              }}</router-link
+            >
+          </div>
         </template>
       </Column>
     </DataTable>
