@@ -2,34 +2,25 @@
   <Panel header="Network Concept Dashboard">
     <template #icons>
       <Button @click="dialog = !dialog">
-        <span class="uppercase font-light text-white py-1 px-2"
-          >Add concepts
-        </span></Button
-      >
+        <span class="uppercase font-light text-white py-1 px-2">Add concepts
+        </span></Button>
     </template>
     <div class="table-container">
-      <DataTable
-        removable-sort
-        rowGroupMode="subheader"
-        groupRowsBy="CONCEPT_NAME"
-        class="table"
-        v-if="conceptData.length"
-        size="small"
-        paginator
-        :value="conceptData"
-        :rows="10"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
+      <DataTable removable-sort rowGroupMode="subheader" groupRowsBy="CONCEPT_NAME" class="table"
+        v-if="conceptData.length" size="small" paginator :value="conceptData" :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]">
         <Column sortable header="Source" field="CDM_NAME"></Column>
         <Column sortable header="Concept Name" field="CONCEPT_NAME"></Column>
 
         <Column sortable header="Concept ID" field="CONCEPT_ID"></Column>
-        <Column sortable header="# People" field="PEOPLE_COUNT">
+        <Column sortable header="# People" field="PEOPLE_COUNT" style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }">
           <template #body="slotProps">
             {{ helpers.formatComma(slotProps.data.PEOPLE_COUNT) }}
           </template>
         </Column>
-        <Column sortable header="% People" field="PEOPLE_PERCENT">
+        <Column sortable header="% People" field="PEOPLE_PERCENT" style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }">
           <template #body="slotProps">
             {{ slotProps.data.PEOPLE_PERCENT }}%
           </template>
@@ -40,15 +31,8 @@
       </div>
     </div>
   </Panel>
-  <ConceptSearchForm
-    :added-concepts="addedConcepts"
-    :success-message="successMessage"
-    :errors="errors"
-    @close="close"
-    @save="(item) => save(item)"
-    @inputChanged="clearMessages"
-    :show="dialog"
-  />
+  <ConceptSearchForm :added-concepts="addedConcepts" :success-message="successMessage" :errors="errors" @close="close"
+    @save="(item) => save(item)" @inputChanged="clearMessages" :show="dialog" />
 </template>
 
 <script setup lang="ts">
@@ -157,20 +141,20 @@ const save = function (item) {
       files:
         environment.DUCKDB_ENABLED === "true"
           ? getDuckDBTables({
-              domain: webApiKeyMap.domains[item.DOMAIN_ID],
-              concept: item.CONCEPT_ID,
-            })[webApiKeyMap.domains[item.DOMAIN_ID]]
+            domain: webApiKeyMap.domains[item.DOMAIN_ID],
+            concept: item.CONCEPT_ID,
+          })[webApiKeyMap.domains[item.DOMAIN_ID]]
           : [
-              {
-                name: CONCEPT,
-                instanceParams: [
-                  {
-                    domain: webApiKeyMap.domains[item.DOMAIN_ID],
-                    concept: item.CONCEPT_ID,
-                  },
-                ],
-              },
-            ],
+            {
+              name: CONCEPT,
+              instanceParams: [
+                {
+                  domain: webApiKeyMap.domains[item.DOMAIN_ID],
+                  concept: item.CONCEPT_ID,
+                },
+              ],
+            },
+          ],
       criticalError: false,
       duckdb_supported: true,
     })
@@ -213,11 +197,13 @@ export default {
 .table {
   flex-grow: 1;
 }
+
 .table-card {
   padding: 10px;
   width: 100%;
   height: 100%;
 }
+
 .table-container {
   display: flex;
   flex-grow: 1;
@@ -225,10 +211,12 @@ export default {
   padding: 10px;
   min-height: 60vh;
 }
+
 .placeholder {
   text-align: center;
   align-self: center;
 }
+
 .table-placeholder {
   font-size: 1.5rem !important;
 }

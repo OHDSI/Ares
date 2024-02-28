@@ -50,7 +50,7 @@ export default {
       { "pr-7": props.showClear },
 
       //Shape
-      "rounded-none",
+      "rounded-sm",
 
       // Transitions
       "transition",
@@ -98,6 +98,9 @@ export default {
       "bg-surface-0 dark:bg-surface-800",
       "text-surface-800 dark:text-white/80",
       "dark:border-surface-700",
+
+      // misc
+      "my-1",
     ],
   },
   wrapper: {
@@ -110,7 +113,7 @@ export default {
     ],
   },
   list: {
-    class: "py-3 list-none m-0",
+    class: "py-0 px-0 list-none m-1",
   },
   item: ({ context }) => ({
     class: [
@@ -122,12 +125,11 @@ export default {
       "relative",
 
       // Shape
-      "border-0",
-      "rounded-none",
+      "rounded",
 
       // Spacing
-      "m-0",
-      "py-3 px-5",
+      "my-2 mx-1",
+      "py-1 px-2",
 
       // Color
       {
