@@ -79,7 +79,7 @@ const countPeople = computed(function () {
 });
 
 const personCountFormatter = function (count: number) {
-  return d3.format(".3s")(count);
+  return d3.format(".3s")(count).replace("G", "B");
 };
 </script>
 

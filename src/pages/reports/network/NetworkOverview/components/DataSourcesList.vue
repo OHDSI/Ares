@@ -7,7 +7,7 @@
       v-model:filters="newFilters"
       :globalFilterFields="['cdm_source_name', 'releases[0].release_name', '']"
       paginator
-      :rows="10"
+      :rows="20"
       :rowsPerPageOptions="[5, 10, 20, 50]"
       tableStyle="min-width: 50rem"
     >
@@ -35,11 +35,6 @@
           >
         </template>
       </Column>
-      <Column field="releases[0].count_person" header="Person Count">
-        <template #body="slotProps">
-          {{ slotProps.data.releases[0].count_person }}
-        </template>
-      </Column>
       <Column field="releases[0].obs_period_start" header="Start Observed">
         <template #body="slotProps">
           {{ slotProps.data.releases[0].obs_period_start }}
@@ -56,16 +51,6 @@
         </template>
       </Column>
       <Column
-        field="releases[0].count_data_quality_issues"
-        header="Data Quality Issues"
-      >
-        <template #body="slotProps">
-          {{ slotProps.data.releases[0].count_data_quality_issues }}
-        </template>
-      </Column>
-      <Column field="count_releases" header="Data Source Releases"></Column>
-
-      <Column
         field="releases[0].vocabulary_version"
         header="Vocabulary Version"
       >
@@ -74,6 +59,39 @@
         </template>
       </Column>
       <Column
+        style="text-align: end"
+        :pt="{ headerContent: 'justify-end' }"
+        field="releases[0].count_data_quality_issues"
+        header="Data Quality Issues"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.releases[0].count_data_quality_issues }}
+        </template>
+      </Column>
+      <Column
+        style="text-align: end"
+        :pt="{ headerContent: 'justify-end' }"
+        field="count_releases"
+        header="Data Source Releases"
+      ></Column>
+
+      <Column
+        style="text-align: end"
+        :pt="{ headerContent: 'justify-end' }"
+        field="releases[0].count_person"
+        header="Person Count"
+      >
+        <template #body="slotProps">
+          {{
+            slotProps.data.releases[0].count_person
+              ? helpers.formatComma(slotProps.data.releases[0].count_person)
+              : 0
+          }}
+        </template>
+      </Column>
+      <Column
+        style="text-align: end"
+        :pt="{ headerContent: 'justify-end' }"
         field="average_update_interval_days"
         header="Average Update Frequency (days)"
       >
@@ -97,6 +115,7 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import { useRoute, useRouter } from "vue-router";
 import { FilterMatchMode } from "primevue/api";
+import { helpers } from "@/shared/lib/mixins";
 
 const store = useStore();
 const route = useRoute();
