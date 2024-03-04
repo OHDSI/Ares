@@ -48,7 +48,14 @@
           </template>
         </Column>
 
-        <Column sortable header="RPP1000" field="Y_PREVALENCE_1000PP"> </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="RPP1000"
+          field="Y_PREVALENCE_1000PP"
+        >
+        </Column>
       </DataTable>
     </div>
 

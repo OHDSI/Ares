@@ -26,6 +26,8 @@
         <Column sortable header="Age Decile" field="TRELLIS_NAME"> </Column>
         <Column sortable header="Year" field="X_CALENDAR_YEAR"> </Column>
         <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
           sortable
           header="Record Proportion per 1000"
           field="Y_PREVALENCE_1000PP"

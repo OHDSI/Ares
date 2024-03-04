@@ -19,13 +19,62 @@
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
         <Column sortable header="Sex" field="CATEGORY"> </Column>
-        <Column sortable header="MIN_VALUE" field="MIN_VALUE"> </Column>
-        <Column sortable header="P10_VALUE" field="P10_VALUE"> </Column>
-        <Column sortable header="P25_VALUE" field="P25_VALUE"> </Column>
-        <Column sortable header="MEDIAN_VALUE" field="MEDIAN_VALUE"> </Column>
-        <Column sortable header="P75_VALUE" field="P75_VALUE"> </Column>
-        <Column sortable header="P90_VALUE" field="P90_VALUE"> </Column>
-        <Column sortable header="MAX_VALUE" field="MAX_VALUE"> </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="MIN_VALUE"
+          field="MIN_VALUE"
+        >
+        </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="P10_VALUE"
+          field="P10_VALUE"
+        >
+        </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="P25_VALUE"
+          field="P25_VALUE"
+        >
+        </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="MEDIAN_VALUE"
+          field="MEDIAN_VALUE"
+        >
+        </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="P75_VALUE"
+          field="P75_VALUE"
+        >
+        </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="P90_VALUE"
+          field="P90_VALUE"
+        >
+        </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="MAX_VALUE"
+          field="MAX_VALUE"
+        >
+        </Column>
       </DataTable>
     </div>
     <template #footer>

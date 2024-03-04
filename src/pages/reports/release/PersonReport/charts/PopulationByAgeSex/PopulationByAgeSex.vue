@@ -45,28 +45,35 @@
     />
     <div v-if="showTable" class="p-4">
       <DataTable
-          removable-sort
-          size="small"
-          paginator
-          :value="store.getters.getData.personData.AGE_GENDER_DATA"
-          :rows="5"
-          :rowsPerPageOptions="[5, 10, 20, 50]"
+        removable-sort
+        size="small"
+        paginator
+        :value="store.getters.getData.personData.AGE_GENDER_DATA"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
       >
         <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
         <Column sortable header="Sex" field="CONCEPT_NAME"> </Column>
-        <Column sortable header="AGE" field="AGE"> </Column>
         <Column
-            :pt="{ headerContent: 'justify-end' }"
-            sortable
-            header="# of People"
-            field="COUNT_VALUE"
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="AGE"
+          field="AGE"
+        >
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="# of People"
+          field="COUNT_VALUE"
         >
           <template #body="slotProps">
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                    ? helpers.formatComma(slotProps.data.COUNT_VALUE)
-                    : "No data"
+                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  : "No data"
               }}
             </div>
           </template>
