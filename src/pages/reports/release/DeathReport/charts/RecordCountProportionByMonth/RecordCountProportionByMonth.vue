@@ -39,6 +39,8 @@
         <Column sortable header="Month" field="X_CALENDAR_MONTH"> </Column>
 
         <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
           sortable
           header="Record Proportion Per 1000"
           field="Y_PREVALENCE_1000PP"
