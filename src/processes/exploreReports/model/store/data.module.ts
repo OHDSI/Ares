@@ -112,7 +112,7 @@ const actions = {
       }
     });
 
-    const data = {};
+    let data = {};
 
     await Promise.allSettled(promises).then((responses) => {
       responses.forEach((response, index) => {
@@ -133,14 +133,28 @@ const actions = {
           const message = response.reason.message;
           const url = response.reason?.config?.url;
           dispatch(errorActions.NEW_ERROR, { message, details: url });
-          data[fileName] = [];
+          data = null;
+          return;
         } else {
           data[fileName] = [];
         }
       });
-      postprocessing[rootState.route.name]
-        ? commit(SET_DATA, postprocessing[rootState.route.name](data))
-        : commit(SET_DATA, data);
+      try {
+        if (data) {
+          postprocessing[rootState.route.name]
+            ? commit(SET_DATA, postprocessing[rootState.route.name](data))
+            : commit(SET_DATA, data);
+        }
+      } catch (e) {
+        dispatch(errorActions.NEW_ERROR, {
+          message: `An unexpected error has occurred (${e.name})`,
+          name: e.name,
+          details: e.message,
+          stack: e.stack,
+          type: "unexpected",
+          page: rootState.route.name,
+        });
+      }
     });
   },
 
@@ -148,7 +162,6 @@ const actions = {
     { commit, dispatch, rootState, rootGetters },
     payload
   ) {
-    console.log(payload);
     const promises = payload.files.reduce(
       (obj, file) => ({
         ...obj,
@@ -193,7 +206,7 @@ const actions = {
       {}
     );
 
-    const data = {};
+    let data = {};
     for (const file in promises) {
       await Promise.allSettled(promises[file]).then((responses) => {
         data[file] = responses
@@ -216,6 +229,7 @@ const actions = {
             })
           );
         if (data[file].length === 0 && payload.criticalError) {
+          data = null;
           dispatch(errorActions.NEW_ERROR, {
             message: "No files found across data sources",
             details: "No additional data",
@@ -223,9 +237,20 @@ const actions = {
         }
       });
     }
-    postprocessing[rootState.route.name]
-      ? commit(SET_DATA, postprocessing[rootState.route.name](data))
-      : commit(SET_DATA, data);
+    try {
+      if (data) {
+        postprocessing[rootState.route.name]
+          ? commit(SET_DATA, postprocessing[rootState.route.name](data))
+          : commit(SET_DATA, data);
+      }
+    } catch (e) {
+      dispatch(errorActions.NEW_ERROR, {
+        message: `An unexpected error has occurred (${e.name})`,
+        details: e.message,
+        stack: e.stack,
+        type: "unexpected",
+      });
+    }
   },
 
   async [FETCH_MULTIPLE_FILES_BY_RELEASE](
@@ -265,7 +290,7 @@ const actions = {
       }),
       {}
     );
-    const data = {};
+    let data = {};
     for (const file in promises) {
       await Promise.allSettled(promises[file]).then((responses) => {
         data[file] = responses
@@ -286,6 +311,7 @@ const actions = {
             })
           );
         if (data[file].length === 0) {
+          data = null;
           dispatch(errorActions.NEW_ERROR, {
             message: "No files found across current data source releases",
             details: rootGetters.getSelectedSource.cdm_source_abbreviation,
@@ -293,9 +319,21 @@ const actions = {
         }
       });
     }
-    postprocessing[rootState.route.name]
-      ? commit(SET_DATA, postprocessing[rootState.route.name](data))
-      : commit(SET_DATA, data);
+    try {
+      if (data) {
+        postprocessing[rootState.route.name]
+          ? commit(SET_DATA, postprocessing[rootState.route.name](data))
+          : commit(SET_DATA, data);
+      }
+    } catch (e) {
+      dispatch(errorActions.NEW_ERROR, {
+        message: `An unexpected error has occurred (${e.name})`,
+        details: e.message,
+        stack: e.stack,
+        type: "unexpected",
+        page: rootState.route.name,
+      });
+    }
   },
 };
 

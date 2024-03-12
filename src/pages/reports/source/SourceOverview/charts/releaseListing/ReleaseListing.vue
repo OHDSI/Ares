@@ -1,60 +1,49 @@
 <template>
-  <v-card elevation="2" class="mx-auto pb-6" outlined>
-    <ChartHeader title="Release Listing" />
-    <v-card-text>
-      <v-data-table
-        density="compact"
-        :items="getTable"
-        :headers="overviewTable"
-        :items-per-page="-1"
-        hide-default-footer
-      >
-        <template #item.count_person="{ item }">
+  <Panel header="Release listing">
+    <DataTable
+      size="small"
+      showGridlines
+      :value="getTable"
+      paginator
+      :rows="5"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
+      tableStyle="min-width: 50rem"
+    >
+      <Column field="release_name" header="Release Date"> </Column>
+      <Column field="count_person" header="Count person">
+        <template #body="slotProps">
           <router-link
-            :to="getPersonLink(item.raw)"
-            :title="item.raw.count_person"
-            >{{ helpers.formatComma(item.raw.count_person) }}</router-link
+            class="text-blue-400 hover:underline"
+            :to="getPersonLink(slotProps.data)"
+            :title="slotProps.data.count_person"
+            >{{ helpers.formatComma(slotProps.data.count_person) }}</router-link
           >
         </template>
-        <template #item.count_data_quality_issues="{ item }">
-          <router-link :to="getQualityLink(item.raw)">{{
-            helpers.formatComma(item.raw.count_data_quality_issues)
-          }}</router-link>
+      </Column>
+      <Column field="count_data_quality_issues" header="Data quality issues">
+        <template #body="slotProps">
+          <router-link
+            class="text-blue-400 hover:underline"
+            :to="getQualityLink(slotProps.data)"
+            >{{
+              helpers.formatComma(slotProps.data.count_data_quality_issues)
+            }}</router-link
+          >
         </template>
-      </v-data-table>
-    </v-card-text>
-  </v-card>
+      </Column>
+    </DataTable>
+  </Panel>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
+import Panel from "primevue/panel";
 import { helpers } from "@/shared/lib/mixins";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 const store = useStore();
-
-const overviewTable = ref([
-  {
-    title: "Release date",
-    align: "start",
-    sortable: true,
-    key: "release_name",
-  },
-  {
-    title: "Number of people",
-    align: "end",
-    sortable: true,
-    key: "count_person",
-  },
-  {
-    title: "Data quality issues",
-    align: "end",
-    sortable: true,
-    key: "count_data_quality_issues",
-  },
-]);
 
 const getTable = computed(function () {
   if (store.getters.explorerLoaded) {

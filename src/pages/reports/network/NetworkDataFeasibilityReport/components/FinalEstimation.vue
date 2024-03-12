@@ -1,72 +1,147 @@
 <template>
-  <v-container fluid>
-    <v-data-table
-      class="mb-4"
-      density="compact"
-      :hide-default-footer="true"
-      :disable-pagination="true"
-      :headers="headers"
-      :items="getEstimations"
-      :sort-by="['estimation']"
-      :sort-desc="[true, false]"
+  <Panel toggleable header="Data Source Feasibility Overview">
+    <DataTable
+      removable-sort
+      size="small"
+      sortField="estimation"
+      :sortOrder="-1"
+      :value="getEstimations"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
     >
-      <template v-slot:item.domain_percent.data="{ item }">{{
-        item.raw.domain_percent.data
-          ? (item.raw.domain_percent.data * 100).toFixed(2)
-          : "No data"
-      }}</template>
-      <template v-slot:item.observation_percent.data="{ item }">{{
-        item.raw.observation_percent.data
-          ? (item.raw.observation_percent.data * 100).toFixed(2)
-          : "No data"
-      }}</template>
-      <template v-slot:item.visit_types_percent.data="{ item }">{{
-        item.raw.visit_types_percent.data
-          ? (item.raw.visit_types_percent.data * 100).toFixed(2)
-          : "No data"
-      }}</template>
-      <template v-slot:item.concepts_percent.data="{ item }">{{
-        item.raw.concepts_percent.data
-          ? (item.raw.concepts_percent.data * 100).toFixed(2)
-          : "No data"
-      }}</template>
-      <template v-slot:item.cumulative_duration_percent.data="{ item }">{{
-        item.raw.cumulative_duration_percent.data
-          ? (item.raw.cumulative_duration_percent.data * 100).toFixed(2)
-          : "No data"
-      }}</template>
-      <template v-slot:item.population.data="{ item }">{{
-        item.raw.population.data
-          ? formatComma(item.raw.population.data)
-          : "No data"
-      }}</template>
-      <template v-slot:item.estimation="{ item }">{{
-        item.raw.estimation
-          ? formatComma(item.raw.estimation.toFixed(2))
-          : "No data"
-      }}</template>
-      <template v-slot:item.population_age_percent.data="{ item }">{{
-        item.raw.population_age_percent.data
-          ? (item.raw.population_age_percent.data * 100).toFixed(2)
-          : "No data"
-      }}</template>
-      <template v-slot:item.desired_domain_value.data="{ item }">{{
-        item.raw.desired_domain_value.data ? "Present" : "No data"
-      }}</template>
-    </v-data-table>
-    <v-divider></v-divider>
-    <v-alert color="message" dark dense icon="mdi-help-rhombus" prominent>
+      <Column header="Data Source" field="cdm_name"></Column>
+      <Column sortable header="Source population" field="population.data">
+        <template #body="slotProps">
+          {{
+            slotProps.data.population.data
+              ? formatComma(slotProps.data.population.data)
+              : "No data"
+          }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getEstimations[0].domain_percent.isIncluded"
+        sortable
+        header="% Required Domains"
+        field="domain_percent.data"
+      >
+        <template #body="slotProps">
+          {{
+            slotProps.data.domain_percent.data
+              ? (slotProps.data.domain_percent.data * 100).toFixed(2)
+              : "No data"
+          }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getEstimations[0].desired_domain_value.isIncluded"
+        sortable
+        header="Desired Domains"
+        field="desired_domain_value.data"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.desired_domain_value.data ? "Present" : "No data" }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getEstimations[0].cumulative_duration_percent.isIncluded"
+        sortable
+        header="% Cumulative Observation"
+        field="cumulative_duration_percent.data"
+      >
+        <template #body="slotProps">
+          {{
+            slotProps.data.cumulative_duration_percent.data
+              ? (slotProps.data.cumulative_duration_percent.data * 100).toFixed(
+                  2
+                )
+              : "No data"
+          }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getEstimations[0].population_age_percent.isIncluded"
+        sortable
+        header="% Population by age"
+        field="population_age_percent.data"
+      >
+        <template #body="slotProps">
+          {{
+            slotProps.data.population_age_percent.data
+              ? (slotProps.data.population_age_percent.data * 100).toFixed(2)
+              : "No data"
+          }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getEstimations[0].observation_percent.isIncluded"
+        sortable
+        header="% Observed"
+        field="observation_percent.data"
+      >
+        <template #body="slotProps">
+          {{
+            slotProps.data.observation_percent.data
+              ? (slotProps.data.observation_percent.data * 100).toFixed(2)
+              : "No data"
+          }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getEstimations[0].visit_types_percent.isIncluded"
+        sortable
+        header="% Visit types"
+        field="visit_types_percent.data"
+      >
+        <template #body="slotProps">
+          {{
+            slotProps.data.visit_types_percent.data
+              ? (slotProps.data.visit_types_percent.data * 100).toFixed(2)
+              : "No data"
+          }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getEstimations[0].concepts_percent.isIncluded"
+        sortable
+        header="% Concepts"
+        field="concepts_percent.data"
+      >
+        <template #body="slotProps">
+          {{
+            slotProps.data.concepts_percent.data
+              ? (slotProps.data.concepts_percent.data * 100).toFixed(2)
+              : "No data"
+          }}
+        </template>
+      </Column>
+      <Column sortable header="Estimated population" field="estimation">
+        <template #body="slotProps">
+          {{
+            slotProps.data.estimation
+              ? formatComma(slotProps.data.estimation.toFixed(2))
+              : "No data"
+          }}
+        </template>
+      </Column>
+    </DataTable>
+    <Divider />
+    <Message :closable="false" severity="info">
       This section derives data from the sections above. The contents of the
       table depend on the sections used in calculations.
-    </v-alert>
-  </v-container>
+    </Message>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import * as d3Format from "d3-format";
-import { VDataTable } from "vuetify/labs/VDataTable";
 import { computed, defineProps } from "vue";
 import { useStore } from "vuex";
+import Message from "primevue/message";
+import Divider from "primevue/divider";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Panel from "primevue/panel";
 
 const store = useStore();
 
@@ -242,11 +317,3 @@ const getEstimations = computed(function () {
     }));
 });
 </script>
-
-<script lang="ts">
-export default {
-  name: "FinalEstimation",
-};
-</script>
-
-<style scoped></style>

@@ -1,35 +1,36 @@
 <template>
-  <v-card elevation="2" class="ma-4">
-    <ChartHeader title="Conditions by Type" />
+  <Panel header="Conditions by Type">
     <Chart
       id="viz-conditionsbytype"
       :chartSpec="specConditionsByType"
       :data="props.data"
       width="85"
     />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        icon="mdi-help-circle"
-        tooltip="Learn about Condition types."
-        @iconClicked="
-          helpers.openNewTab(links.getDocsLink('CONDITION_OCCURRENCE'))
-        "
-      />
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                .CONDITIONS_BY_TYPE[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          :icon="mdiHelpCircle"
+          tooltip="Learn about Condition types."
+          @iconClicked="
+            helpers.openNewTab(links.getDocsLink('CONDITION_OCCURRENCE'))
+          "
+        />
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                  .CONDITIONS_BY_TYPE[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -41,10 +42,11 @@ import { defineProps } from "vue";
 import { specConditionsByType } from "./specConditionsByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { RecordsCountType } from "@/processes/exploreReports/model/interfaces/reportTypes/RecordsCountType";
+import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
+import Panel from "primevue/panel";
 
 const store = useStore();
 const route = useRoute();

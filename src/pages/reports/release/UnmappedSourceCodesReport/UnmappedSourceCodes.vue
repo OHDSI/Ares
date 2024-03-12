@@ -1,119 +1,115 @@
 <template>
-  <div>
-    <v-card
-      v-if="!store.getters.getErrors"
-      :loading="!store.getters.dataInStore"
-      elevation="2"
-      class="ma-4"
-    >
-      <ChartHeader title="Unmapped Source Codes" />
-      <v-row>
-        <v-col cols="3">
-          <v-text-field
-            prepend-icon="mdi-magnify"
-            label="Search in Table"
-            variant="outlined"
-            density="compact"
-            single-line
-            hide-details
-            :model-value="route.query.search"
-            @update:modelValue="debouncedSearch"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="9"> </v-col>
-      </v-row>
-
-      <v-data-table
-        v-if="store.getters.dataInStore"
-        class="mt-4"
-        density="compact"
-        :headers="headers"
-        :items="filteredRecords"
-        :footer-props="{
-          'items-per-page-options': [10, 50, 100],
-        }"
-        item-key="CONCEPT_ID"
-        :items-per-page="10"
-        :search="route.query.search"
+  <div class="flex flex-col gap-5">
+    <Panel v-if="store.getters.dataInStore" header="Unmapped Source Codes">
+      <DataTable
+        removable-sort
+        size="small"
+        :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
+        paginator
+        v-model:filters="newFilters"
+        :value="filteredRecords"
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
       >
-        <template #body.prepend>
-          <tr>
-            <th v-for="header in headers" :key="header.title">
-              <div v-if="filters.hasOwnProperty(header.key)">
-                <v-select
-                  v-model="filters[header.key]"
-                  small-chips
-                  deletable-chips
-                  hide-details
-                  multiple
-                  :items="helpers.getValuesArray(filteredRecords, header.key)"
-                ></v-select>
-              </div>
-            </th>
-          </tr>
+        <template #header>
+          <div>
+            <InputGroup unstyled>
+              <InputGroupAddon>
+                <i class="pi pi-search"></i>
+              </InputGroupAddon>
+              <InputText
+                class="rounded-r-lg"
+                style="width: 45rem"
+                unstyled
+                v-model="newFilters['global'].value"
+                placeholder="Search in Table"
+              />
+            </InputGroup>
+          </div>
         </template>
-        <template #item.RECORD_COUNT="{ item }">
-          <v-layout justify-end>{{
-            helpers.formatComma(item.raw.RECORD_COUNT)
-          }}</v-layout>
-        </template>
-      </v-data-table>
-      <v-card-text>
-        <v-icon small color="info" left>mdi-help-circle</v-icon>
-        This report identifies columns in tables within the CDM where values are
-        mapped to 0 (unknown concept). It provides a listing of all unmapped
-        source values to be reviewed for potential inclusion or remediation.
-      </v-card-text>
-    </v-card>
+        <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
+        <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
+        <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="# Records"
+          field="RECORD_COUNT"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              <span>
+                {{
+                  slotProps.data.RECORD_COUNT
+                    ? helpers.formatComma(slotProps.data.RECORD_COUNT)
+                    : "No data"
+                }}</span
+              >
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+      <template #footer>
+        <div class="flex flex-row gap-2">
+          <ChartActionIcon
+            v-if="
+              store.getters.getQueryIndex &&
+              store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION
+            "
+            :icon="mdiHelpCircle"
+            tooltip="This report identifies columns in tables within the CDM where values are
+    mapped to 0 (unknown concept). It provides a listing of all unmapped source
+    values to be reviewed for potential inclusion or remediation."
+            @iconClicked="
+              helpers.openNewTab(
+                links.getSqlQueryLink(
+                  store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+                )
+              )
+            "
+          />
+        </div>
+      </template>
+    </Panel>
+    <Panel v-if="store.getters.dataInStore" header="Pivot Table">
+      <Pivot
+        :data="store.getters.getData.domainTable"
+        :attributes="[
+          'CDM_TABLE_NAME',
+          'CDM_FIELD_NAME',
+          'SOURCE_VALUE',
+          'RECORD_COUNT',
+        ]"
+        :aggregate-attrs="['RECORD_COUNT']"
+        :aggregator-names-list="['Count', 'Sum']"
+      />
+    </Panel>
   </div>
 </template>
 
 <script setup lang="ts">
 import { helpers } from "@/shared/lib/mixins";
-import { computed, Ref, ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import { VDataTable } from "vuetify/labs/VDataTable";
-import { useRoute, useRouter } from "vue-router";
-import { debounce } from "lodash";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+
+import InputGroup from "primevue/inputgroup";
+import InputText from "primevue/inputtext";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import Panel from "primevue/panel";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import { FilterMatchMode } from "primevue/api";
+import { mdiHelpCircle } from "@mdi/js";
+import { links } from "@/shared/config/links";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import Pivot from "@/widgets/pivot/ui/Pivot.vue";
 
 const store = useStore();
-const router = useRouter();
-const route = useRoute();
 
 const filters = ref({});
-
-const debouncedSearch = debounce(function (data: string): void {
-  router.push({
-    query: {
-      search: data,
-    },
-  });
-}, 300);
-
-const headers: Ref<DataTableHeader[]> = ref([
-  {
-    title: "CDM Table",
-    sortable: true,
-    key: "CDM_TABLE_NAME",
-  },
-  {
-    title: "CDM Field",
-    sortable: true,
-    key: "CDM_FIELD_NAME",
-  },
-  {
-    title: "Source Value",
-    sortable: true,
-    key: "SOURCE_VALUE",
-  },
-  {
-    title: "# Records",
-    sortable: true,
-    key: "RECORD_COUNT",
-  },
-]);
+const newFilters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 const filteredRecords = computed(function () {
   return store.getters.getData.domainTable.filter((d) => {

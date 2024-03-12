@@ -1,5 +1,9 @@
 <template>
-  <div v-if="!store.getters.getErrors" id="network-data-quality-summary">
+  <div
+    v-if="!store.getters.getErrors"
+    class="flex flex-col gap-5"
+    id="network-data-quality-summary"
+  >
     <NetworkDataQualityIssuesByCategory />
     <NetworkDataQualityIssuesByCdmTable />
   </div>
@@ -11,11 +15,6 @@ import NetworkDataQualityIssuesByCategory from "@/pages/reports/network/NetworkD
 import NetworkDataQualityIssuesByCdmTable from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCdmTable/NetworkDataQualityIssuesByCdmTable.vue";
 
 const store = useStore();
-</script>
-<script lang="ts">
-export default {
-  name: "NetworkDataQualitySummary",
-};
 </script>
 
 <style scoped>

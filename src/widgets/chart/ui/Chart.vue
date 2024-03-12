@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-6">
+  <div class="p-4">
     <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
     <div v-resize="load" :id="id" :style="style"></div>
     <ContextMenu v-if="annotationMode" :items="actions" />
@@ -34,16 +34,18 @@ import {
 } from "@/widgets/notesPanel/model/store/actions.type";
 import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
 import { OPEN_MENU } from "@/entities/contextMenu/model/store/actions.type";
+import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
+import { Annotation } from "@/shared/interfaces/Annotations";
 
 interface Props {
   title?: string;
   data: object[] | string[];
   id: string;
   width?: string;
-  chartSpec: (a?: boolean, b?: boolean, c?: string) => TopLevelSpec;
+  chartSpec: (a?: boolean, b?: boolean, c?: string) => any;
   annotationMode?: boolean;
   annotationsConfig?: {
-    chartSpec: (a?: boolean, b?: boolean, c?: string) => TopLevelSpec;
+    chartSpec: (a?: boolean, b?: boolean, c?: string) => any;
     annotationsParentElement: string;
     brushParentElement: string;
   };
@@ -58,7 +60,7 @@ interface Props {
     g: any,
     h: any
   ) => void;
-  annotations?: [];
+  annotations?: Annotation[];
 }
 
 const actions = [
@@ -201,19 +203,15 @@ function getD3AnnotationObject(note, type, xScale, yScale) {
     type: type,
     disable: ["note", "connector"],
     data: {
-      x: note.xAxis || note.start,
-      y: note.yAxis || note.y1,
+      x: note.coordinates.x1Axis,
+      y: note.coordinates.y1Axis,
       report: view.container().id,
       originalNote: note,
     },
     id: note.id,
     subject: {
-      width: note.x1Axis
-        ? xScale(note.x1Axis) - xScale(note.xAxis)
-        : xScale(note.end) - xScale(note.start),
-      height: note.height
-        ? yScale(note.height)
-        : yScale(note.y) - yScale(note.y1),
+      width: xScale(note.coordinates.x2Axis) - xScale(note.coordinates.x1Axis),
+      height: yScale(note.coordinates.y2Axis) - yScale(note.coordinates.y1Axis),
     },
   };
 }
@@ -234,26 +232,18 @@ function getAnnotationsArray(view) {
 
 function editSelection(xScale, yScale) {
   return function (annotation) {
-    const x = xScale.invert(annotation._x);
-    const x1 = xScale.invert(annotation.subject.width + annotation._x);
-    const y = yScale.invert(annotation._y);
+    const x1Axis = xScale.invert(annotation._x);
+    const x2Axis = xScale.invert(annotation.subject.width + annotation._x);
+    const y1Axis = yScale.invert(annotation._y);
+    const y2Axis = yScale.invert(annotation.subject.height + annotation._y);
     const width = xScale.invert(annotation.subject.width);
     const height = yScale.invert(annotation.subject.height);
     const note = annotation.data.originalNote;
 
-    const newData = {
-      title: note.title,
-      description: note.description,
-      createdBy: note.createdBy,
-      notes: note.notes,
-      id: note.id,
-      updatedAt: Date.now(),
-      xAxis: x,
-      x1Axis: x1,
-      yAxis: y,
-      width,
-      height,
-    };
+    const newData = createSelection(
+      { x1Axis, x2Axis, y1Axis, y2Axis, width, height },
+      note
+    );
     store.dispatch(EDIT_SELECTION, {
       report: view.container().id,
       save: true,
@@ -340,15 +330,15 @@ function initializeTooltip() {
 
   function getTooltipMarkup(data, parseTime) {
     return `<span class="tooltip-field-title">Title:</span> ${
-      data.originalNote.title
+      data.originalNote.body.title
     }<br><span class="tooltip-field-title">Description:</span> ${
-      data.originalNote.description
+      data.originalNote.body.description
     }<br><span class="tooltip-field-title">Author</span>: ${
-      data.originalNote.createdBy
+      data.originalNote.metadata.createdBy
     }<br><span class="tooltip-field-title">Created at:</span> ${parseTime(
-      data.originalNote.id
+      data.originalNote.metadata.createdAt
     )}<br><span class="tooltip-field-title">Updated at:</span> ${parseTime(
-      data.originalNote.updatedAt
+      data.originalNote.metadata.updatedAt
     )}`;
   }
   const handleMouseOver = function () {
@@ -389,10 +379,11 @@ function createAnnotation(xScale, yScale) {
     store.dispatch(SHOW_DIALOG, {
       show: true,
       data: null,
-      position: {
-        xAxis: xScale.invert(event.selection[1][0]),
-        yAxis: yScale.invert(event.selection[0][1]),
-        x1Axis: xScale.invert(event.selection[0][0]),
+      coordinates: {
+        y1Axis: yScale.invert(event.selection[0][1]),
+        y2Axis: yScale.invert(event.selection[1][1]),
+        x1Axis: xScale.invert(event.selection[1][0]),
+        x2Axis: xScale.invert(event.selection[0][0]),
         width: xScale.invert(event.selection[0][0] - event.selection[1][0]),
         height: yScale.invert(event.selection[1][1] - event.selection[0][1]),
       },

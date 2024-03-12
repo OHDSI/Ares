@@ -1,38 +1,27 @@
 <template>
   <div v-if="!store.getters.getErrors">
-    <v-container fluid>
-      <v-responsive min-width="900">
-        <v-layout class="ma-0 mb-5 d-flex justify-space-between">
-          <h2 class="text-uppercase">NETWORK CONCEPT REPORT</h2>
-          <ReturnButton />
-        </v-layout>
-        <v-row class="ma-2">
-          <v-col cols="3">
-            <v-text-field
-              v-model="concept"
-              prepend-icon="mdi-magnify"
-              label="Enter concept ID"
-              single-line
-              variant="outlined"
-              density="compact"
-              hide-details
-            ></v-text-field>
-          </v-col>
-          <v-col cols="3">
-            <v-select
-              :items="domains"
-              v-model="selected"
-              variant="outlined"
-              density="compact"
-              item-title="text"
-              item-value="value"
-            ></v-select>
-          </v-col>
-          <v-col cols="3">
-            <v-btn color="primary" @click="atClick">Update report </v-btn>
-          </v-col>
-        </v-row>
-        <div v-if="store.getters.getData">
+    <div>
+      <div class="flex flex-col gap-5">
+        <PageHeader title="NETWORK CONCEPT REPORT">
+          <template> <ReturnButton /> </template>
+        </PageHeader>
+        <div class="flex flex-row gap-5">
+          <InputText
+            v-model="concept"
+            prepend-icon="mdi-magnify"
+            label="Enter concept ID"
+          ></InputText>
+          <Dropdown
+            :options="domains"
+            v-model="selected"
+            variant="outlined"
+            density="compact"
+            option-label="text"
+            option-value="value"
+          ></Dropdown>
+          <Button color="primary" @click="atClick">Update report </Button>
+        </div>
+        <div class="flex flex-col gap-5" v-if="store.getters.getData">
           <info-panel
             v-if="metadata"
             :concept="metadata.conceptId"
@@ -86,8 +75,8 @@
         <div v-else>
           <h3 class="text-center">No data available</h3>
         </div>
-      </v-responsive>
-    </v-container>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -112,7 +101,10 @@ import MeasurementsByType from "@/pages/reports/network/NetworkConceptReport/cha
 import LengthOfEra from "@/pages/reports/network/NetworkConceptReport/charts/lengthOfEra/LengthOfEra.vue";
 import AgeAtFirstOccurrence from "@/pages/reports/network/NetworkConceptReport/charts/ageAtFirstOccurrence/AgeAtFirstOccurrence.vue";
 import InfoPanel from "@/widgets/infoPanel";
-import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
+import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
+import Dropdown from "primevue/dropdown";
 
 const store = useStore();
 const router = useRouter();

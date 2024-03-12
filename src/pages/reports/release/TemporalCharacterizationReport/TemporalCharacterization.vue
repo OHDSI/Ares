@@ -1,135 +1,105 @@
 <template>
-  <v-card v-if="store.getters.dataInStore" elevation="2" class="ma-4">
-    <ChartHeader title="Temporal Characterization" />
-    <!--Table controls-->
-    <v-row>
-      <v-col cols="3">
-        <v-text-field
-          prepend-icon="mdi-magnify"
-          label="Search in Table"
-          single-line
-          hide-details
-          variant="outlined"
-          v-model="search"
-        ></v-text-field>
-      </v-col>
-    </v-row>
-    <v-data-table
-      class="mt-4"
-      :headers="headers"
-      :items="filteredChecks"
-      :footer-props="{
-        'items-per-page-options': [5, 10, 25],
-      }"
-      item-key="checkId"
-      :items-per-page="10"
-      :search="search"
-      density="compact"
+  <Panel v-if="store.getters.dataInStore" header="Temporal Characterization">
+    <DataTable
+      size="small"
+      :globalFilterFields="[
+        'CDM_TABLE_NAME',
+        'CONCEPT_ID',
+        'CONCEPT_NAME',
+        'SEASONALITY_SCORE',
+        'IS_STATIONARY',
+      ]"
+      removable-sort
+      paginator
+      v-model:filters="newFilters"
+      :value="filteredChecks"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
     >
-      <template v-slot:item.CONCEPT_ID="{ item }">
-        <v-layout flex-end
-          ><router-link :to="getReportRoute(item.raw)">{{
-            item.raw.CONCEPT_ID
-          }}</router-link></v-layout
-        >
+      <template #header>
+        <div>
+          <InputGroup unstyled>
+            <InputGroupAddon>
+              <i class="pi pi-search"></i>
+            </InputGroupAddon>
+            <InputText
+              class="rounded-r-lg"
+              style="width: 45rem"
+              unstyled
+              v-model="newFilters['global'].value"
+              placeholder="Search in Table"
+            />
+          </InputGroup>
+        </div>
       </template>
-      <template v-slot:item.CONCEPT_NAME="{ item }">
-        <v-row>
-          <v-col cols="10">
-            <router-link
-              :to="getReportRoute(item.raw)"
-              :title="item.raw.CONCEPT_NAME"
-              >{{ item.raw.CONCEPT_NAME }}
-            </router-link>
-          </v-col>
-        </v-row>
-      </template>
-      <template v-slot:body.prepend>
-        <tr>
-          <th v-for="header in headers" :key="header.title">
-            <div
-              v-if="
-                header.title === 'Table' || header.title === 'Is Stationary'
-              "
-            >
-              <v-select
-                v-model="filters[header.value]"
-                prepend-inner-icon="mdi-filter"
-                small-chips
-                deletable-chips
-                hide-details
-                multiple
-                :items="helpers.getValuesArray(filteredChecks, header.value)"
-              ></v-select>
-            </div>
-          </th>
-        </tr>
-      </template>
-    </v-data-table>
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="
-          store.getters.getQueryIndex &&
-          store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION
-        "
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+      <Column sortable header="Table" field="CDM_TABLE_NAME"> </Column>
+      <Column sortable header="Concept Id" field="CONCEPT_ID">
+        <template #body="slotProps">
+          <router-link :to="getReportRoute(slotProps.data)">{{
+            slotProps.data.CONCEPT_ID
+          }}</router-link>
+        </template>
+      </Column>
+      <Column sortable header="Concept Name" field="CONCEPT_NAME">
+        <template #body="slotProps">
+          <router-link :to="getReportRoute(slotProps.data)">{{
+            slotProps.data.CONCEPT_NAME
+          }}</router-link>
+        </template>
+      </Column>
+      <Column
+        sortable
+        header="Seasonality Score"
+        field="SEASONALITY_SCORE"
+      ></Column>
+      <Column sortable header="Is Stationary" field="IS_STATIONARY"></Column>
+    </DataTable>
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="
+            store.getters.getQueryIndex &&
+            store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION
+          "
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
 import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
-import { computed, ref, Ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import InputGroup from "primevue/inputgroup";
+import InputText from "primevue/inputtext";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import Panel from "primevue/panel";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import { FilterMatchMode } from "primevue/api";
+import { mdiCodeBraces } from "@mdi/js";
 
 const store = useStore();
+const newFilters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
-const search = ref("");
 const filters = ref({
   CDM_TABLE_NAME: [],
   IS_STATIONARY: [],
 });
-const headers: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Table",
-    sortable: false,
-    key: "CDM_TABLE_NAME",
-  },
-  {
-    title: "Concept id",
-    sortable: false,
-    key: "CONCEPT_ID",
-  },
-  {
-    title: "Concept Name",
-    sortable: false,
-    key: "CONCEPT_NAME",
-  },
-  {
-    title: "Seasonality Score",
-    sortable: true,
-    key: "SEASONALITY_SCORE",
-  },
-  {
-    title: "Is Stationary",
-    sortable: true,
-    key: "IS_STATIONARY",
-  },
-]);
 
 const filteredChecks = computed(function () {
   return store.getters.getData.temporalCharacterization.filter((d) => {

@@ -1,10 +1,15 @@
-import { ACHILLES_PERFORMANCE } from "@/shared/config/files";
+import {
+  ACHILLES_PERFORMANCE,
+  COHORT_DIAGNOSTICS_PERFORMANCE,
+} from "@/shared/config/files";
 import { AchillesPerformanceType } from "@/processes/exploreReports/model/interfaces/files/AchillesPerformanceType";
 
 export default function performance(data): {
-  domainTable: AchillesPerformanceType[];
+  achilles_performance: AchillesPerformanceType[];
+  cohort_diagnostics_performance: object[];
 } {
   return {
-    domainTable: data[ACHILLES_PERFORMANCE],
+    achilles_performance: data[ACHILLES_PERFORMANCE],
+    cohort_diagnostics_performance: data[COHORT_DIAGNOSTICS_PERFORMANCE],
   };
 }

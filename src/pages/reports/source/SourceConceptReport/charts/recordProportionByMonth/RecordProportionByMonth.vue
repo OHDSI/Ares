@@ -1,16 +1,17 @@
 <template>
-  <v-card
+  <Panel
+    header="Record Proportion by Month"
     v-if="!store.getErrors && store.getters.dataInStore"
-    elevation="2"
-    class="ma-4"
   >
-    <ChartHeader
-      title="Record Proportion by Month"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+    <template #icons>
+      <ChartHeader
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+      />
+    </template>
+
     <Chart
       v-if="store.getters.getData"
       :id="reportId"
@@ -27,22 +28,24 @@
       :annotation-mode="annotationsMode"
     />
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                .PREVALENCE_BY_MONTH[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
+                  .PREVALENCE_BY_MONTH[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -53,52 +56,24 @@ import { useRoute } from "vue-router";
 import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
 import * as listeners from "@/pages/model/lib/listeners";
-import { computed, ref } from "vue";
-import _ from "lodash";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import { specDataQualityResultsAnnotation } from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQuality/specDataQualityResultsAnnotation";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import { mdiCodeBraces } from "@mdi/js";
+import Panel from "primevue/panel";
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
 const route = useRoute();
 
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-function toggleAnnotationsMode(mode) {
-  annotationsMode.value = mode;
-}
-function toggleNotesMode(mode) {
-  notesMode.value = mode;
-}
-
 const reportId = "viz-sourcerecordproportionbymonth";
 
-const annotations = computed(() => {
-  const { cdm, domain, concept } = route.params;
-  const path = [cdm, domain, concept].filter(Boolean);
-  const selections = _.get(store.getters.getNotes, path.join(".")) || [];
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
-  return selections[reportId] || [];
-});
-
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: reportId,
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
-});
+const { annotations, notes } = useAnnotations(reportId);
 </script>
 
 <style scoped></style>

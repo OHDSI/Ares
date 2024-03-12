@@ -60,7 +60,7 @@ export function defOverview(zeroBaseline = false) {
             selection: {
               x: {
                 type: "single",
-                on: "mousemove",
+                on: "mouseover",
                 fields: ["transformedDate"],
                 nearest: true,
               },

@@ -1,13 +1,18 @@
 <template>
-  <v-card :loading="!store.getters.dataInStore" elevation="10" class="ma-4">
-    <ChartHeader
-      title="Domain
-      Density"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+  <Panel header="Domain Density" :loading="!store.getters.dataInStore">
+    <template #icons>
+      <ChartHeader
+        title="Domain
+          Density"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
+      />
+    </template>
+
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
@@ -18,28 +23,59 @@
         annotationsParentElement: 'g g',
         brushParentElement: 'g g g',
       }"
-      :data="store.getters.getData.domainDensity"
+      :data="data"
       :signal-listener="listeners.setSelectionAreaSignal"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        removable-sort
+        size="small"
+        paginator
+        :value="data"
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column sortable header="Date" field="date"> </Column>
+        <Column sortable header="Domain" field="domain"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Records"
+          field="records"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.records
+                  ? helpers.formatComma(slotProps.data.records)
+                  : "No data"
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(
-              store.getters.getQueryIndex.DATA_DENSITY
-                .DATADENSITY_RECORDS_PER_PERSON[0]
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(
+                store.getters.getQueryIndex.DATA_DENSITY
+                  .DATADENSITY_RECORDS_PER_PERSON[0]
+              )
             )
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+          "
+        />
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -53,47 +89,32 @@ import * as listeners from "@/pages/model/lib/listeners";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import _ from "lodash";
-import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces } from "@mdi/js";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
 
-const route = useRoute();
+const reportId = "viz-densityOverview";
 
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-function toggleAnnotationsMode(mode) {
-  annotationsMode.value = mode;
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
+
+const { annotations, notes } = useAnnotations(reportId);
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
 }
-function toggleNotesMode(mode) {
-  notesMode.value = mode;
-}
 
-const reportId = "viz-overview";
-const annotations = computed(() => {
-  const { cdm, release, domain } = route.params;
-  const path = [cdm, release, domain].filter(Boolean);
-  const selections = _.get(store.getters.getNotes, path.join(".")) || {};
-  return selections[reportId] || [];
-});
-
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: reportId,
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
+const data = computed(() => {
+  return store.getters.getData.domainDensity;
 });
 </script>
 

@@ -1,35 +1,30 @@
 <template>
-  <v-card elevation="10" class="mx-auto pb-6" outlined>
-    <ChartHeader title="Source Overview" />
-    <v-card-text>
-      <v-container fluid>
-        <v-row justify="space-around"
-          ><v-col class="mx-4" cols="auto">
-            <h3 class="mb-4 text--center">Releases</h3>
-            <h1 class="text-center">
-              {{ getReleasesCount
-              }}<v-icon large color="primary" class="mx-2">mdi-history</v-icon>
-            </h1>
-          </v-col>
-          <v-col class="mx-4" cols="auto">
-            <h3 class="mb-4 text-center">Average Days Between Releases</h3>
-            <h1 class="text-center">
-              {{ getDaysBetweenReleases.toFixed(0)
-              }}<v-icon large color="primary" class="mx-2"
-                >mdi-clock-outline</v-icon
-              >
-            </h1>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-card-text>
-  </v-card>
+  <Panel header="Source Overview">
+    <div class="flex flex-row justify-evenly">
+      <div class="flex flex-col gap-3 items-center content-center">
+        <h3>Releases</h3>
+        <div class="flex flex-row items-center gap-3">
+          <h1 class="text-xl">{{ getReleasesCount }}</h1>
+          <svg-icon :size="46" type="mdi" :path="mdiHistory"></svg-icon>
+        </div>
+      </div>
+      <div class="flex flex-col gap-3 items-center content-center">
+        <h3>Average days between releases</h3>
+        <div class="flex flex-row items-center gap-3">
+          <h1 class="text-xl">{{ getDaysBetweenReleases.toFixed(0) }}</h1>
+          <svg-icon :size="46" type="mdi" :path="mdiClockOutline"></svg-icon>
+        </div>
+      </div>
+    </div>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import SvgIcon from "@jamescoyle/vue-icon";
+import Panel from "primevue/panel";
+import { mdiClockOutline, mdiHistory } from "@mdi/js";
 
 const store = useStore();
 

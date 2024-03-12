@@ -1,71 +1,76 @@
 <template>
-  <v-container fluid>
-    <v-row class="mb-4">
-      <v-col>
-        <v-data-table
-          v-model="visitTypesSelected"
-          density="compact"
-          item-key="concept_id"
-          :search="visitTypesSearch"
-          :headers="domainSummaryHeaders"
-          :items="getVisitTypes"
-          show-select
-        >
-          <template v-slot:top>
-            <v-text-field
-              density="compact"
-              variant="outlined"
-              v-model="visitTypesSearch"
-              label="Filter Visit Types"
-              class="mx-4"
-            ></v-text-field>
+  <Panel toggleable header="Visit Type Requirements">
+    <div class="flex flex-row gap-10">
+      <DataTable
+        class="flex-grow"
+        v-model:selection="visitTypesSelected"
+        removable-sort
+        v-model:filters="visitTypesFilter"
+        :globalFilterFields="['concept_id', 'concept_name', '']"
+        size="small"
+        :value="getVisitTypes"
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <template #header>
+          <InputText
+            class="w-full"
+            v-model="visitTypesFilter['global'].value"
+            placeholder="Filter Visit Types"
+          ></InputText
+        ></template>
+        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+
+        <Column header="Concept ID" field="concept_id"></Column>
+        <Column sortable header="Concept Name" field="concept_name"> </Column>
+      </DataTable>
+      <DataTable
+        class="flex-grow"
+        removable-sort
+        size="small"
+        v-model:filters="sourcesFilter"
+        :value="getSmallestVisitTypeValue"
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <template #header>
+          <InputText
+            class="w-full"
+            v-model="sourcesFilter['global'].value"
+            placeholder="Filter Data Sources"
+          ></InputText
+        ></template>
+        <Column header="Data Source" field="cdm_name"></Column>
+        <Column sortable header="%" field="percentage">
+          <template #body="slotProps">
+            {{
+              slotProps.data.percentage
+                ? (slotProps.data.percentage * 100).toFixed(2)
+                : ""
+            }}
           </template>
-        </v-data-table>
-      </v-col>
-      <v-col>
-        <v-data-table
-          density="compact"
-          :search="resultsSearch"
-          item-key="cdm_name"
-          :items="getSmallestVisitTypeValue"
-          :headers="domainTypesResults"
-        >
-          <template v-slot:top>
-            <v-text-field
-              v-model="resultsSearch"
-              density="compact"
-              variant="outlined"
-              label="Filter Data Sources "
-              class="mx-4"
-            ></v-text-field>
-          </template>
-          <template v-slot:item.percentage="{ item }">{{
-            item.raw.percentage ? (item.raw.percentage * 100).toFixed(2) : ""
-          }}</template>
-        </v-data-table>
-      </v-col>
-    </v-row>
-    <v-divider></v-divider>
-    <v-alert
-      color="message"
-      dark
-      density="compact"
-      icon="mdi-help-rhombus"
-      prominent
-    >
+        </Column>
+      </DataTable>
+    </div>
+    <Divider />
+    <Message :closable="false" severity="info">
       The table on the left lists all visit types found across available data
       sources. The table on the right lists all matching data sources displaying
       the lowest % of all chosen visit types.
-    </v-alert>
-  </v-container>
+    </Message>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, defineEmits, watch, Ref, defineProps } from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
-import { VDataTable } from "vuetify/labs/VDataTable";
-const visitTypesSearch: Ref<string> = ref("");
-const resultsSearch: Ref<string> = ref("");
+import Message from "primevue/message";
+import Divider from "primevue/divider";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Panel from "primevue/panel";
+import InputText from "primevue/inputtext";
+import { FilterMatchMode } from "primevue/api";
+
 const visitTypesSelected = ref([]);
 
 interface Props {
@@ -74,25 +79,13 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const domainSummaryHeaders: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Concept ID",
-    align: "start",
-    sortable: false,
-    key: "concept_id",
-  },
-  { title: "Concept Name", key: "concept_name" },
-]);
+const visitTypesFilter = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
-const domainTypesResults: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Data source",
-    align: "start",
-    sortable: false,
-    key: "cdm_name",
-  },
-  { title: "%", key: "percentage" },
-]);
+const sourcesFilter = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 const getVisitTypes = computed(function () {
   const data = props.data.reduce(

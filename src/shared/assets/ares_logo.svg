@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg2"
+   width="60"
+   height="60"
+   viewBox="0 0 4000 4000"
+   sodipodi:docname="ares_logo.eps"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     id="g8"
+     inkscape:groupmode="layer"
+     inkscape:label="ink_ext_XXXXXX"
+     transform="matrix(1.3333333,0,0,-1.3333333,0,4000)">
+    <g
+       id="g10"
+       transform="scale(0.1)">
+      <path
+         d="M 30000,0 H 0 V 30000 H 30000 V 0"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="path12" />
+      <path
+         d="m 10955.4,9412.1 c 620.6,-390.7 1301.7,-694.3 2026,-893.3 V 4614.2 H 5224.48 L 6340.36,6547 h 2231.76 2476.48 v 623.2 0.1 h -0.2 c -366.5,167.1 -720.3,356.6 -1059.93,566.8 l 966.93,1675"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="path14" />
+      <path
+         d="m 20011.5,7737.2 c -339.8,-210.3 -693.8,-399.8 -1060.2,-566.9 V 6547 h 2476.6 2231.6 l 1116,-1932.8 h -7757 v 3904.6 c 724.4,199 1405.3,502.6 2026,893.3 l 967,-1674.9"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="path16" />
+      <path
+         d="m 23011.9,7668.8 287.9,-498.5 h -2231.9 l -84.8,147.1 -444.8,770.4 -2436.6,4220.4 -0.1,-0.1 -3101.6,5372.4 -2921.5,-5060.3 v 0 L 9461.63,8087.8 9197.08,7629.4 8932,7170.3 H 6700.24 l 1283.6,2223.5 v 0 l 1025.15,1775.7 1103.21,1910.6 4887.8,8465.9 4887.8,-8465.9 242.8,-420.5 h -0.1 l 2881.3,-4990.8 h 0.1"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="path18" />
+      <path
+         d="m 15000,25385.8 c 5266.2,0 9535.3,-4269.1 9535.3,-9535.4 0,-2250.1 -779.8,-4317.8 -2083.4,-5948.6 l -1058.4,1833.5 c 765,1186.1 1209,2598.8 1209,4115.1 0,4198.8 -3403.8,7602.6 -7602.5,7602.6 -4198.8,0 -7602.53,-3403.8 -7602.53,-7602.6 0,-1516.3 443.95,-2929 1208.97,-4115 L 7548.04,9901.9 c -1303.66,1630.7 -2083.36,3698.4 -2083.36,5948.5 0,5266.3 4269.1,9535.4 9535.32,9535.4"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="path20" />
+    </g>
+  </g>
+</svg>

@@ -1,53 +1,52 @@
 <template>
-  <v-container fluid>
-    <v-data-table
-      class="mb-4"
-      density="compact"
-      :hide-default-footer="true"
-      :disable-pagination="true"
-      :headers="domainHeaders"
-      :items="getDomainsData"
+  <Panel header="Domain Requirements" toggleable fluid>
+    <DataTable
+      removable-sort
+      size="small"
+      :value="getDomainsData"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
     >
-      <template v-slot:top>
-        <v-select
+      <template #header>
+        <MultiSelect
           v-model="switchDomains"
-          :items="items"
-          chips
-          variant="outlined"
-          item-value="value"
-          item-title="text"
-          label="Select domains"
-          closable-chips
-          multiple
-          hide-selected
+          :options="items"
+          display="chip"
+          option-value="value"
+          option-label="text"
+          placeholder="Select domains"
           @update:modelValue="updateBits"
-        ></v-select>
-      </template>
-      <template v-slot:item.percentage="{ item }">{{
-        (item.raw.percentage * 100).toFixed(2)
-      }}</template>
-      <template v-slot:item.population="{ item }">{{
-        formatComma(item.raw.population)
-      }}</template>
-    </v-data-table>
-    <v-divider></v-divider>
-    <v-alert
-      color="message"
-      density="compact"
-      icon="mdi-help-rhombus"
-      prominent
-    >
+        ></MultiSelect
+      ></template>
+      <Column header="Data Source" field="cdm_name"></Column>
+      <Column sortable header="Person Count" field="population">
+        <template #body="slotProps">
+          {{ formatComma(slotProps.data.population) }}
+        </template>
+      </Column>
+      <Column sortable header="%" field="percentage">
+        <template #body="slotProps">
+          {{ (slotProps.data.percentage * 100).toFixed(2) }}
+        </template>
+      </Column>
+    </DataTable>
+    <Divider />
+    <Message :closable="false" severity="info">
       This section uses pre-calculated data to display % of overlapping values
-    </v-alert>
-  </v-container>
+    </Message>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import * as d3Format from "d3-format";
-import { VDataTable } from "vuetify/labs/VDataTable";
 
 import { computed, ref, watch, defineProps, defineEmits, Ref } from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Panel from "primevue/panel";
+import MultiSelect from "primevue/multiselect";
+import Divider from "primevue/divider";
+import Message from "primevue/message";
 
 interface Props {
   data: [];
@@ -60,24 +59,6 @@ const formatComma = function (value) {
 };
 
 const switchDomains = ref([]);
-const domainHeaders: Ref<DataTableHeader[]> = ref([
-  {
-    title: "Data Source",
-    align: "start",
-    sortable: false,
-    key: "cdm_name",
-  },
-  {
-    title: "Person Count",
-    key: "population",
-    align: "end",
-  },
-  {
-    title: "%",
-    key: "percentage",
-    align: "end",
-  },
-]);
 const items = ref([
   { value: "condition_occurrence", text: "Condition occurrence" },
   { value: "drug_exposure", text: "Drug exposure" },

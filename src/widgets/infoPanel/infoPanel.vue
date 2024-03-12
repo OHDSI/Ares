@@ -1,119 +1,164 @@
 <template>
-  <v-row class="ma-4 align-baseline" justify="start" align="baseline">
-    <v-col v-if="props.concept" cols="2">
-      <v-icon left color="primary">mdi-identifier</v-icon>
-      <v-badge tile inline color="primary" :content="props.concept"></v-badge>
-      <p class="text-caption">Concept Identifier</p></v-col
+  <div class="flex flex-row gap-36 px-5">
+    <div v-if="props.concept" class="flex flex-col">
+      <div class="flex flex-row items-center content-center">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiIdentifier"
+        ></svg-icon>
+        <Badge severity="info" :value="props.concept" />
+      </div>
+      <p class="font-light text-xs dark:text-white">Concept Identifier</p>
+    </div>
+    <div v-if="props.population" class="flex flex-col">
+      <div class="flex flex-row items-center content-center">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiAccountGroup"
+        ></svg-icon>
+        <Badge severity="info" :value="helpers.formatComma(props.population)" />
+      </div>
+      <p class="font-light text-xs dark:text-white">Number of People</p>
+    </div>
+    <div v-if="props.percentPeople" class="flex flex-col">
+      <div class="flex flex-row items-center content-center">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiPercent"
+        ></svg-icon>
+        <Badge
+          severity="info"
+          :value="helpers.formatPercent(props.percentPeople)"
+        />
+      </div>
+      <p class="font-light text-xs dark:text-white">% of People</p>
+    </div>
+    <div v-if="props.recordsPerPerson" class="flex flex-col">
+      <div class="flex flex-row items-center content-center">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiTableRow"
+        ></svg-icon>
+        <Badge severity="info" :value="props.recordsPerPerson" />
+      </div>
+      <p class="font-light text-xs dark:text-white">Records per Person</p>
+    </div>
+    <div
+      v-if="props.percentValues"
+      class="flex flex-col items-center content-center"
     >
-    <v-col v-if="props.population" cols="2">
-      <v-icon left color="primary">mdi-account-group</v-icon>
-      <v-badge
-        tile
-        inline
-        dark
-        color="primary"
-        :content="helpers.formatComma(props.population)"
-      ></v-badge>
-      <p class="text-caption">Number of People</p>
-    </v-col>
-    <v-col v-if="props.percentPeople" cols="2" align="center">
-      <v-icon small left color="primary">mdi-percent</v-icon>
-      <v-badge
-        tile
-        inline
-        dark
-        color="primary"
-        :content="helpers.formatPercent(props.percentPeople)"
-      ></v-badge>
-      <p class="text-caption">% of People</p>
-    </v-col>
-    <v-col v-if="props.recordsPerPerson" cols="2" align="center">
-      <v-icon left color="primary">mdi-table-row</v-icon>
-      <v-badge
-        tile
-        inline
-        dark
-        color="primary"
-        :content="props.recordsPerPerson"
-      ></v-badge>
-      <p class="text-caption">Records per Person</p></v-col
+      <div class="flex flex-row">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiDatabaseCheckOutline"
+        ></svg-icon>
+        <Badge severity="info" :value="props.percentValues" />
+      </div>
+      <p class="font-light text-xs dark:text-white">% with Values</p>
+    </div>
+    <div
+      v-if="props.countFailed"
+      class="flex flex-col items-center content-center"
     >
-    <v-col v-if="props.percentValues" cols="2" align="center">
-      <v-icon left color="primary">mdi-database-check-outline</v-icon>
-      <v-badge
-        tile
-        inline
-        dark
-        color="primary"
-        :content="props.percentValues"
-      ></v-badge>
-      <p class="text-caption">% with Values</p></v-col
+      <div @click="props.countFailed.action" class="flex flex-row">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiDatabaseAlert"
+        ></svg-icon>
+        <Badge severity="danger" :value="props.countFailed.value" />
+      </div>
+      <p class="font-light text-xs dark:text-white">Records Per Person</p>
+    </div>
+    <div
+      v-if="props.notStationary"
+      class="flex flex-col items-center content-center"
     >
-    <v-col v-if="props.countFailed" cols="2" align="center">
-      <v-icon left color="error" @click="props.countFailed.action"
-        >mdi-database-alert</v-icon
-      >
-      <v-badge
-        tile
-        inline
-        dark
-        color="error"
-        :content="props.countFailed.value"
-      ></v-badge>
-      <p class="text-caption">Data Quality Issues</p></v-col
+      <div class="flex flex-row">
+        <svg-icon
+          class="text-red-500"
+          type="mdi"
+          :path="mdiClockAlert"
+        ></svg-icon>
+      </div>
+      <p class="font-light text-xs dark:text-white">
+        Non-Stationary Time Series
+      </p>
+    </div>
+    <div
+      v-if="props.proportionSex"
+      class="flex flex-col items-center content-center"
     >
-    <v-col v-if="props.notStationary" cols="2" align="center">
-      <v-icon left color="error">mdi-clock-alert</v-icon>
-      <p class="text-caption">Non-Stationary Time Series</p></v-col
+      <div class="flex flex-row">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiHumanMaleFemale"
+        ></svg-icon>
+        <div class="flex flex-row gap-2">
+          <Badge
+            severity="info"
+            :value="
+              'Male: ' +
+              helpers.formatComma(props.proportionSex.male.count) +
+              ' (' +
+              helpers.formatPercent(props.proportionSex.male.pct) +
+              ')'
+            "
+          />
+          <Badge
+            severity="info"
+            :value="
+              'Female: ' +
+              helpers.formatComma(props.proportionSex.female.count) +
+              ' (' +
+              helpers.formatPercent(props.proportionSex.female.pct) +
+              ')'
+            "
+          />
+        </div>
+      </div>
+      <p class="font-light text-xs dark:text-white">Proportion by Sex</p>
+    </div>
+    <div
+      v-if="props.networkPopulation"
+      class="flex flex-col items-center content-center"
     >
-    <!-- Gender breakdown in top bar -->
-    <v-col v-if="props.proportionSex" cols="4" align="center">
-      <v-icon left color="primary">mdi-human-male-female</v-icon>
-      <v-badge
-        tile
-        inline
-        dark
-        color="primary"
-        :content="
-          'Male: ' +
-          helpers.formatComma(props.proportionSex.male.count) +
-          ' (' +
-          helpers.formatPercent(props.proportionSex.male.pct) +
-          ')'
-        "
-      ></v-badge>
-      <v-badge
-        tile
-        inline
-        dark
-        color="primary"
-        :content="
-          'Female: ' +
-          helpers.formatComma(props.proportionSex.female.count) +
-          ' (' +
-          helpers.formatPercent(props.proportionSex.female.pct) +
-          ')'
-        "
-      ></v-badge>
-      <p class="text-caption">Proportion by Sex</p>
-    </v-col>
-    <v-col v-if="props.networkPopulation" cols="2" align="center">
-      <v-icon left color="info">mdi-account-group</v-icon>
-      <v-badge
-        tile
-        inline
-        dark
-        color="info"
-        :content="props.networkPopulation"
-      ></v-badge>
-      <p class="text-caption">Number of People in Network</p>
-    </v-col>
-  </v-row>
+      <div class="flex flex-row">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiAccountGroup"
+        ></svg-icon>
+        <Badge severity="info" :value="props.networkPopulation" />
+      </div>
+      <p class="font-light text-xs dark:text-white">
+        Number of People in Network
+      </p>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { helpers } from "@/shared/lib/mixins";
 import { defineProps } from "vue";
+import SvgIcon from "@jamescoyle/vue-icon";
+import {
+  mdiAccountGroup,
+  mdiClockAlert,
+  mdiDatabaseAlert,
+  mdiDatabaseCheckOutline,
+  mdiHumanMaleFemale,
+  mdiIdentifier,
+  mdiPercent,
+  mdiTableRow,
+} from "@mdi/js";
+import Badge from "primevue/badge";
 
 interface Props {
   population?: number;

@@ -1,17 +1,34 @@
 <template>
-  <v-card v-if="items.length" elevation="10" class="ma-4">
-    <v-card-title>Domain metadata</v-card-title>
-    <v-data-table :headers="headers" :items="items"></v-data-table>
-  </v-card>
+  <Panel
+    header="Domain metadata"
+    v-if="items.length"
+    elevation="10"
+    class="ma-4"
+  >
+    <DataTable
+      size="small"
+      paginator
+      :value="items"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
+    >
+      <Column header="METADATA_CONCEPT_ID" field="METADATA_CONCEPT_ID"></Column>
+      <Column header="NAME" field="NAME"></Column>
+      <Column header="VALUE_AS_STRING" field="VALUE_AS_STRING"></Column>
+      <Column header="VALUE_AS_CONCEPT_ID" field="VALUE_AS_CONCEPT_ID">
+      </Column>
+      <Column header="METADATA_DATE" field="METADATA_DATE"> </Column>
+      <Column header="METADATA_DATETIME" field="METADATA_DATETIME"> </Column>
+    </DataTable>
+  </Panel>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
-
-import { useStore } from "vuex";
-import { computed, ref, Ref, defineProps } from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
+import { computed, defineProps } from "vue";
 import { useRoute } from "vue-router";
+import Panel from "primevue/panel";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 interface Props {
   data: [];
@@ -19,7 +36,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const store = useStore();
 const route = useRoute();
 
 const items = computed(() => {
@@ -47,45 +63,6 @@ const domainMap = {
   person: "PERSON",
   observationPeriod: "OBSERVATION PERIOD",
 };
-
-const headers: Ref<DataTableHeader[]> = ref([
-  {
-    title: "METADATA_CONCEPT_ID",
-    sortable: true,
-    key: "METADATA_CONCEPT_ID",
-    align: "start",
-  },
-  {
-    title: "NAME",
-    sortable: true,
-    key: "NAME",
-    align: "start",
-  },
-  {
-    title: "VALUE_AS_STRING",
-    sortable: true,
-    key: "VALUE_AS_STRING",
-    align: "start",
-  },
-  {
-    title: "VALUE_AS_CONCEPT_ID",
-    sortable: true,
-    key: "VALUE_AS_CONCEPT_ID",
-    align: "start",
-  },
-  {
-    title: "METADATA_DATE",
-    sortable: true,
-    key: "METADATA_DATE",
-    align: "start",
-  },
-  {
-    title: "METADATA_DATETIME",
-    sortable: true,
-    key: "METADATA_DATETIME",
-    align: "start",
-  },
-]);
 </script>
 
 <style scoped></style>

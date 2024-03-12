@@ -1,13 +1,13 @@
 export const getFontWeight = function (decile: string): string {
   if (decile === "1") {
-    return "font-weight-black";
+    return "font-black";
   } else if (decile === "2") {
-    return "font-weight-bold";
+    return "font-bold";
   } else if (decile === "3") {
-    return "font-weight-medium";
+    return "font-medium";
   } else if (decile === "9" || decile === "10") {
-    return "font-weight-light";
+    return "font-light";
   } else {
-    return "font-weight-regular";
+    return "font-normal";
   }
 };

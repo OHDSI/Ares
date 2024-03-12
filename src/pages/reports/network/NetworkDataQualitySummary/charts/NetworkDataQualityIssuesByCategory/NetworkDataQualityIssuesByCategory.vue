@@ -1,13 +1,12 @@
 <template>
-  <v-card :loading="!store.getters.getData" elevation="10" class="ma-4">
-    <ChartHeader title="Network Data Quality Issues By Category" />
+  <Panel header="Network Data Quality Issues By Category">
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-category"
       :data="store.getters.getData[NETWORK_QUALITY_SUMMARY]"
       :chartSpec="specIssueStratificationByCategory"
     />
-  </v-card>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -16,6 +15,8 @@ import { Chart } from "@/widgets/chart";
 import { specIssueStratificationByCategory } from "./specIssueStratificationByCategory";
 import { useStore } from "vuex";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import { specCumulativeObservation } from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation/specCumulativeObservation";
+import Panel from "primevue/panel";
 
 const store = useStore();
 </script>

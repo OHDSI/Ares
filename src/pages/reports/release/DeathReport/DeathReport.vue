@@ -1,22 +1,14 @@
 <template>
-  <div>
-    <v-container v-if="!store.getters.getErrors" fluid>
-      <v-responsive min-width="900">
-        <div class="text-uppercase text-h6">Death Report</div>
+  <div v-if="!store.getters.getErrors" fluid>
+    <div class="flex flex-col gap-10">
+      <PageHeader title="Death Report" />
+      <div class="flex flex-col gap-5">
         <AgeAtDeath />
         <DeathByType />
         <RecordCountProportionByAgeSexYear />
         <RecordCountProportionByMonth />
-      </v-responsive>
-      <form-dialog
-        @close="store.commit(SET_DIALOG, false)"
-        v-if="store.getters.getDialogData.show"
-        :show="store.getters.getDialogData.show"
-        :action="store.getters.getDialogData.action"
-        :data="store.getters.getDialogData.data"
-        :form-title="'Edit selection'"
-      />
-    </v-container>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -29,6 +21,7 @@ import RecordCountProportionByAgeSexYear from "@/pages/reports/release/DeathRepo
 import RecordCountProportionByMonth from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
 import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
+import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 
 const route = useRoute();
 const store = useStore();

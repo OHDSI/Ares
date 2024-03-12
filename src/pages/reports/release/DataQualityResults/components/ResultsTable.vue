@@ -1,155 +1,521 @@
 <template>
-  <v-container fluid class="ma-2 pa-4">
-    <v-row>
-      <v-col cols="3">
-        <v-text-field
-          prepend-icon="mdi-magnify"
-          label="Search in Table"
-          single-line
-          variant="outlined"
-          density="compact"
-          hide-details
-          @update:modelValue="debouncedSearch"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="auto">
-        <SelectColumns :headers="headers" />
-      </v-col>
-      <v-col>
-        <NestedMenu
-          :data="store.getters.getData.checkResults"
-          :items="showHeaders"
-          :filters="filters"
-        ></NestedMenu>
-      </v-col>
-    </v-row>
-  </v-container>
-  <v-data-table
-    show-expand
-    v-model:expanded="expanded"
-    :headers="showHeaders"
-    :items="filteredChecks"
-    :footer-props="{
-      'items-per-page-options': [5, 10, 25],
-    }"
-    item-value="checkId"
-    :items-per-page="10"
-    :search="route.query.search"
-    density="compact"
+  <DataTable
+    show-gridlines
+    unstyled
+    removableSort
+    v-model:expandedRows="expanded"
+    size="small"
+    v-model:filters="filters"
+    :value="checks"
+    paginator
+    :rows="10"
+    filterDisplay="row"
+    :globalFilterFields="[
+      'cdmTableName',
+      'cdmFieldName',
+      'failed',
+      'category',
+      'checkDescription',
+    ]"
   >
-    <template v-slot:expanded-row="{ columns, item }">
-      <td class="text-left pa-4" :colspan="columns.length">
-        <v-row dense>
-          <v-col cols="2">Check Name</v-col>
-          <v-col>{{ item.raw.checkName }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Description</v-col>
-          <v-col
-            >{{ item.raw.checkDescription }} (threshold
-            {{ item.raw.thresholdValue }}%)</v-col
-          >
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Threshold</v-col>
-          <v-col>{{ item.raw.thresholdValue }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Notes</v-col>
-          <v-col>{{ item.raw.noteValue }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Level</v-col>
-          <v-col>{{ item.raw.checkLevel }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Table</v-col>
-          <v-col>
-            <a :href="links.getDocsLink(item.raw.cdmTableName)" target="_blank">
-              {{ item.raw.cdmTableName }}
-              <v-icon small>mdi-open-in-new</v-icon>
-            </a>
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Field</v-col>
-          <v-col>{{ item.raw.cdmFieldName }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Concept Id</v-col>
-          <v-col>
-            <router-link
-              v-if="item.raw.conceptId != undefined"
-              :to="getConceptDrilldown(item)"
-              color="primary"
-            >
-              {{ item.raw.conceptId }}
-              <v-icon small>mdi-open-in-new</v-icon>
-            </router-link>
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Unit Concept Id</v-col>
-          <v-col>{{ item.raw.UNIT_conceptId }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2"># Rows Violated</v-col>
-          <v-col>{{ item.raw.numViolatedRows }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2"># Rows Total</v-col>
-          <v-col>{{ item.raw.numDenominatorRows }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">% Rows Violated</v-col>
-          <v-col>{{ (item.raw.pctViolatedRows * 100).toFixed(2) }} %</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Execution Time</v-col>
-          <v-col>{{ item.raw.executionTime }}</v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">SQL Query</v-col>
-          <v-col>
-            <Codemirror
-              :model-value="item.raw.queryText"
-              :extensions="extensions"
-              disabled
-            ></Codemirror>
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="2">Errors</v-col>
-          <v-col>{{ item.raw.ERROR }}</v-col>
-        </v-row>
-      </td>
-    </template>
-    <template #item.subcategory="{ item }">{{
-      item.raw.subcategory == undefined ? item.raw.subcategory : "None"
-    }}</template>
-    <template #item.checkDescription="{ item }">{{
-      renderDescription(item.raw)
-    }}</template>
-    <template #item.pctViolatedRows="{ item }">
-      <div class="text-right">{{ renderPercentPassed(item.raw) }} %</div>
-    </template>
-    <template #item.numViolatedRows="{ item }">
-      <div class="text-right">
-        {{ helpers.formatComma(item.raw.numViolatedRows) }}
+    <template #header>
+      <div class="flex flex-row gap-10">
+        <InputGroup unstyled>
+          <InputGroupAddon>
+            <i class="pi pi-search"></i>
+          </InputGroupAddon>
+          <InputText
+            class="rounded-r-lg"
+            style="width: 45rem"
+            unstyled
+            :value="route.query.search"
+            @update:modelValue="debouncedSearch"
+            placeholder="Search in Table"
+          />
+        </InputGroup>
+        <MultiSelect
+          :pt="{
+            root: 'dark:bg-primary-500 bg-primary-400 text-white rounded',
+            labelContainer:
+              'dark:bg-primary-500 bg-primary-400 text-white rounded',
+            trigger: [
+              'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-500 w-12',
+            ],
+          }"
+          v-model="selectedHeaders"
+          data-key="title"
+          option-label="title"
+          option-value="key"
+          :options="headers"
+          style="width: 15rem"
+          placeholder="Select Columns"
+        >
+          <template #value>
+            <span class="uppercase text-white">Select Columns</span>
+          </template>
+        </MultiSelect>
       </div>
     </template>
-    <template #item.numDenominatorRows="{ item }">
-      <div class="text-right">
-        {{ helpers.formatComma(item.raw.numDenominatorRows) }}
+    <template #empty> No matching rows </template>
+    <Column
+      unstyled
+      :hidden="!selectedHeaders.includes('failed')"
+      sortable
+      filter-field="failed"
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      field="failed"
+      header="Status"
+    >
+      <template #body="{ data }">
+        {{ data.failed }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          show-clear
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="statusOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        ></MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      :hidden="!selectedHeaders.includes('cdmTableName')"
+      sortable
+      header="Table"
+      filterField="cdmTableName"
+    >
+      <template #body="{ data }">
+        <div class="flex align-items-center gap-2">
+          {{ data.cdmTableName }}
+        </div>
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          show-clear
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="cdmTableNamesOptions"
+          :maxSelectedLabels="1"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('cdmFieldName')"
+      sortable
+      field="cdmFieldName"
+      filter-field="cdmFieldName"
+      header="Field"
+      style="min-width: 12rem; text-align: end"
+    >
+      <template #body="{ data }">
+        {{ data.cdmFieldName }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="cdmFieldNameOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      :hidden="!selectedHeaders.includes('checkName')"
+      sortable
+      filter-field="checkName"
+      field="checkName"
+      header="Check"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+    >
+      <template #body="{ data }">
+        {{ data.checkName }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="checkNameOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('category')"
+      sortable
+      filter-field="category"
+      field="category"
+      header="Category"
+    >
+      <template #body="{ data }">
+        {{ data.category }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="categoryOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('subcategory')"
+      sortable
+      filter-field="subcategory"
+      field="subcategory"
+      header="Subcategory"
+    >
+      <template #body="slotProps">
+        {{ slotProps.data.subcategory ? slotProps.data.subcategory : "None" }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="subcategoryOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('context')"
+      sortable
+      filter-field="context"
+      field="context"
+      header="Context"
+    >
+      <template #body="{ data }">
+        {{ data.context }}
+      </template>
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="contextsOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('checkLevel')"
+      sortable
+      filter-field="checkLevel"
+      field="checkLevel"
+      header="Check Level"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="checkLevelOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('notesExist')"
+      sortable
+      filter-field="notesExist"
+      field="notesExist"
+      header="Notes"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="notesExistOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('checkDescription')"
+      sortable
+      field="checkDescription"
+      header="Description"
+    >
+      <template #body="slotProps">
+        {{ renderDescription(slotProps.data) }}
+      </template>
+    </Column>
+    <Column
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('pctViolatedRows')"
+      sortable
+      field="pctViolatedRows"
+      header="% Records Failed"
+    >
+      <template #body="slotProps">
+        <div class="text-right">
+          {{ renderPercentPassed(slotProps.data) }} %
+        </div>
+      </template>
+    </Column>
+    <Column
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('numViolatedRows')"
+      sortable
+      field="numViolatedRows"
+      header="# Records Failed"
+    >
+      <template #body="slotProps">
+        {{ helpers.formatComma(slotProps.data.numViolatedRows) }}
+      </template>
+    </Column>
+    <Column
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('numDenominatorRows')"
+      sortable
+      field="numDenominatorRows"
+      header="# Total Records"
+    >
+      <template #body="slotProps">
+        <div class="text-right">
+          {{ helpers.formatComma(slotProps.data.numDenominatorRows) }}
+        </div>
+      </template>
+    </Column>
+    <Column
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!selectedHeaders.includes('executionTime')"
+      sortable
+      field="executionTime"
+      header="Execution Duration"
+    >
+    </Column>
+
+    <Column expander style="width: 5rem" />
+
+    <template #expansion="slotProps">
+      <div class="p-3 flex flex-col gap-2">
+        <table>
+          <tr>
+            <td>
+              <h3 class="font-bold" cols="2">Check Name</h3>
+            </td>
+            <td>
+              <p>{{ slotProps.data.checkName }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold">Description</h3></td>
+            <td>
+              <div>
+                {{ slotProps.data.checkDescription }} (threshold
+                {{ slotProps.data.thresholdValue }}%)
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2">Threshold</h3></td>
+            <td>
+              <p>{{ slotProps.data.thresholdValue }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2">Notes</h3></td>
+            <td>
+              <p>{{ slotProps.data.noteValue }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2">Check Level</h3></td>
+            <td>
+              <p>{{ slotProps.data.checkLevel }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2">Table</h3></td>
+            <td>
+              <p>
+                <a
+                  :href="links.getDocsLink(slotProps.data.cdmTableName)"
+                  target="_blank"
+                >
+                  {{ slotProps.data.cdmTableName }}
+                  <!--                <v-icon small>mdi-open-in-new</v-icon>-->
+                </a>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h3 class="font-bold" cols="2">Field</h3>
+            </td>
+            <td>
+              <p>{{ slotProps.data.cdmFieldName }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h3 class="font-bold" cols="2">Concept Id</h3>
+            </td>
+            <td>
+              <p>
+                <router-link
+                  v-if="slotProps.data.conceptId != undefined"
+                  :to="getConceptDrilldown(slotProps.data)"
+                  color="primary"
+                >
+                  {{ slotProps.data.conceptId }}
+                  <!--                <v-icon small>mdi-open-in-new</v-icon>-->
+                </router-link>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2">Unit Concept Id</h3></td>
+            <td>
+              <p>{{ slotProps.data.UNIT_conceptId }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h3 class="font-bold" cols="2"># Rows Violated</h3>
+            </td>
+            <td>
+              <p>{{ slotProps.data.numViolatedRows }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2"># Rows Total</h3></td>
+            <td>
+              <p>{{ slotProps.data.numDenominatorRows }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <h3 class="font-bold" cols="2">% Rows Violated</h3>
+            </td>
+            <td>
+              <p>{{ (slotProps.data.pctViolatedRows * 100).toFixed(2) }} %</p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2">Execution Time</h3></td>
+            <td>
+              <p>{{ slotProps.data.executionTime }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2">Errors</h3></td>
+            <td>
+              <p>{{ slotProps.data.ERROR }}</p>
+            </td>
+          </tr>
+          <tr>
+            <td><h3 class="font-bold" cols="2">SQL Query</h3></td>
+            <td>
+              <Codemirror
+                :model-value="slotProps.data.queryText"
+                :extensions="extensions"
+                disabled
+              ></Codemirror>
+            </td>
+          </tr>
+        </table>
       </div>
     </template>
-  </v-data-table>
+  </DataTable>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
-import SelectColumns from "@/features/selectColumns";
-import NestedMenu from "@/features/nestedMenu/NestedMenu.vue";
 import { links } from "@/shared/config/links";
 import { helpers } from "@/shared/lib/mixins";
 import { useStore } from "vuex";
@@ -163,22 +529,65 @@ import { oneDark } from "@codemirror/theme-one-dark";
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
+import { FilterMatchMode } from "primevue/api";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import InputText from "primevue/inputtext";
+import Dropdown from "primevue/dropdown";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
+import MultiSelect from "primevue/multiselect";
+
+const checks = ref(store.getters.getData.checkResults);
 
 const extensions = [sql(), oneDark];
 
+//filter field options
+const statusOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "failed", true);
+});
+
+const cdmTableNamesOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "cdmTableName", true);
+});
+
+const cdmFieldNameOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "cdmFieldName", true);
+});
+const checkNameOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "checkName", true);
+});
+const categoryOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "category", true);
+});
+const subcategoryOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "subcategory", true);
+});
+const contextsOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "context", true);
+});
+const checkLevelOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "checkLevel", true);
+});
+const notesExistOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "notesExist", true);
+});
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  failed: { value: null, matchMode: FilterMatchMode.IN },
+  cdmTableName: { value: null, matchMode: FilterMatchMode.IN },
+  cdmFieldName: { value: null, matchMode: FilterMatchMode.IN },
+  checkName: { value: null, matchMode: FilterMatchMode.IN },
+  category: { value: null, matchMode: FilterMatchMode.IN },
+  subcategory: { value: null, matchMode: FilterMatchMode.IN },
+  context: { value: null, matchMode: FilterMatchMode.IN },
+  checkLevel: { value: null, matchMode: FilterMatchMode.IN },
+  notesExist: { value: null, matchMode: FilterMatchMode.IN },
+});
+
 const expanded = ref([]);
-const filters = ref({});
-const defaultFilters = {
-  failed: [],
-  cdmTableName: [],
-  cdmFieldName: [],
-  checkName: [],
-  notesExist: [],
-  category: [],
-  subcategory: [],
-  context: [],
-  checkLevel: [],
-};
+
 const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Status",
@@ -225,7 +634,7 @@ const headers: Ref<DataTableHeader[]> = ref([
   {
     title: "Context",
     sortable: true,
-    key: "contexts",
+    key: "context",
     show: false,
     default: false,
   },
@@ -279,6 +688,14 @@ const headers: Ref<DataTableHeader[]> = ref([
     default: false,
   },
 ]);
+
+const selectedHeaders = ref([]);
+
+const setDefaultSelectedHeaders = function () {
+  selectedHeaders.value = Object.values(headers.value)
+    .filter((value) => value.show)
+    .reduce((acc, val) => [...acc, val.key], []);
+};
 const getConceptDrilldown = function (item) {
   return {
     name: "networkConcept",
@@ -288,13 +705,6 @@ const getConceptDrilldown = function (item) {
     },
   };
 };
-const filteredChecks = computed(() => {
-  return store.getters.getData.checkResults.filter((d) => {
-    return Object.keys(filters.value).every((f) => {
-      return filters.value[f].length < 1 || filters.value[f].includes(d[f]);
-    });
-  });
-});
 const renderDescription = function (d) {
   let thresholdMessage = "";
   if (d.thresholdValue != undefined) {
@@ -305,13 +715,17 @@ const renderDescription = function (d) {
 const renderPercentPassed = function (d): string | number {
   return d.pctViolatedRows ? (d.pctViolatedRows * 100).toFixed(2) : 0;
 };
-const showHeaders = computed((): DataTableHeader[] => {
-  return headers.value.filter((header) => header.show);
-});
+
 const debouncedSearch = debounce(function (data: string): void {
-  router.push({
-    query: { ...route.query, search: data },
-  });
+  router
+    .push({
+      query: {
+        search: data,
+      },
+    })
+    .then(() => {
+      filters.value.global.value = route.query.search;
+    });
 }, 300);
 
 const filterParams = computed(function () {
@@ -329,34 +743,19 @@ const filterParams = computed(function () {
 });
 const updateColumnsList = function (): void {
   const parsedParams = Object.keys(JSON.parse(filterParams.value));
-  headers.value = headers.value.map((header) => {
-    if (parsedParams.includes(header.key)) {
-      return { ...header, show: true };
-    } else {
-      if (header.default) {
-        return header;
-      } else {
-        return { ...header, show: false };
-      }
-    }
-  });
+  selectedHeaders.value = [...selectedHeaders.value, ...parsedParams];
 };
 
 const updateFiltersFromUrl = function (): void {
   const parsedParams = JSON.parse(filterParams.value);
 
-  filters.value = {
-    ...defaultFilters,
-    ...Object.keys(parsedParams).reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: Array.isArray(parsedParams[key])
-          ? [...parsedParams[key]]
-          : [parsedParams[key]],
-      }),
-      {}
-    ),
-  };
+  for (const key in filters.value) {
+    if (parsedParams[key]) {
+      filters.value[key].value = parsedParams[key];
+    } else {
+      filters.value[key].value = null;
+    }
+  }
 };
 
 watch(filterParams, (): void => {
@@ -365,8 +764,13 @@ watch(filterParams, (): void => {
 });
 
 onBeforeMount((): void => {
+  setDefaultSelectedHeaders();
   updateColumnsList();
   updateFiltersFromUrl();
+});
+
+watch(route, () => {
+  setDefaultSelectedHeaders();
 });
 </script>
 

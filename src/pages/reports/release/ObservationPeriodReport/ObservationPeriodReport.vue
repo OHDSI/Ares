@@ -1,28 +1,18 @@
 <template>
-  <div>
-    <v-container
-      v-if="!store.getters.getErrors && store.getters.dataInStore"
-      fluid
-    >
-      <v-responsive min-width="900">
-        <div class="text-uppercase text-h6">Observation Period Report</div>
-        <CumulativeObservation />
-        <ObservationPeriodsPerPerson />
-        <ObservationOverTime />
-        <YearsOfObservationByAge />
-        <YearsOfObservationBySex />
-        <AgeAtFirstObservation />
-        <AgeAtFirstObservationBySex />
-      </v-responsive>
-      <form-dialog
-        @close="store.commit(SET_DIALOG, false)"
-        v-if="store.getters.getDialogData.show"
-        :show="store.getters.getDialogData.show"
-        :action="store.getters.getDialogData.action"
-        :data="store.getters.getDialogData.data"
-        :form-title="'Edit selection'"
-      />
-    </v-container>
+  <div
+    class="flex flex-col gap-10"
+    v-if="!store.getters.getErrors && store.getters.dataInStore"
+  >
+    <PageHeader title="Observation Period Report" />
+    <div class="flex flex-col gap-5">
+      <CumulativeObservation />
+      <ObservationPeriodsPerPerson />
+      <ObservationOverTime />
+      <YearsOfObservationByAge />
+      <YearsOfObservationBySex />
+      <AgeAtFirstObservation />
+      <AgeAtFirstObservationBySex />
+    </div>
   </div>
 </template>
 
@@ -35,8 +25,7 @@ import YearsOfObservationBySex from "@/pages/reports/release/ObservationPeriodRe
 import AgeAtFirstObservation from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservation/AgeAtFirstObservation.vue";
 import AgeAtFirstObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservationBySex/AgeAtFirstObservationBySex.vue";
 import { useStore } from "vuex";
-import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
+import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 
 const store = useStore();
 </script>

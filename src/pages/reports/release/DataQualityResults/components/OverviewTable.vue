@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="ma-2 pa-4">
+  <div class="ma-2 pa-4">
     <table id="results">
       <thead>
         <tr>
@@ -187,25 +187,60 @@
         </tr>
       </tbody>
     </table>
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        icon="mdi-help-circle"
-        tooltip="The Data Quality Overview provides a summary
-              of the results of the Data Quality assessment performed by the
-              Data Quality Dashboard package."
-        @iconClicked="helpers.openNewTab(links.getDataQualityDashboardLink())"
-      />
-    </v-toolbar>
-  </v-container>
+    <!--    <v-toolbar density="compact" class="mt-6">-->
+    <!--      <ChartActionIcon-->
+    <!--        icon="mdi-help-circle"-->
+    <!--        tooltip="The Data Quality Overview provides a summary-->
+    <!--              of the results of the Data Quality assessment performed by the-->
+    <!--              Data Quality Dashboard package."-->
+    <!--        @iconClicked="helpers.openNewTab(links.getDataQualityDashboardLink())"-->
+    <!--      />-->
+    <!--    </v-toolbar>-->
+  </div>
 </template>
 
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 
 const store = useStore();
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+td {
+  line-height: 30px;
+}
+table#results {
+  width: 100%;
+}
+table#results tr td.header {
+  text-transform: uppercase;
+  @apply bg-surface-200 dark:bg-surface-700 #{!important};
+}
+table#results .subheader {
+  text-transform: uppercase;
+  @apply bg-surface-200 dark:bg-surface-700 #{!important};
+}
+table#results {
+  border-spacing: 2px;
+  border-collapse: separate;
+}
+table#results td:not(.header, .subheader) {
+  font-size: 14px;
+  text-align: right;
+}
+table#results th {
+  text-align: left;
+}
+table#results tbody td {
+  padding: 0px 3px 0px 7px;
+}
+body {
+  font-size: 14px;
+}
+a {
+  text-decoration: none;
+}
+</style>

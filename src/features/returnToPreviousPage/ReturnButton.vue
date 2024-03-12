@@ -1,30 +1,29 @@
 <template>
-  <v-btn
-    :block="props.block"
-    color="primary"
-    density="comfortable"
+  <Button
+    style="width: 130px; height: 30px"
+    :size="props.block ? 'block' : 'small'"
     @click="back"
   >
-    <v-icon>mdi-arrow-left</v-icon>
-    Back
-  </v-btn>
+    <svg-icon
+      class="text-white text-lg"
+      type="mdi"
+      :path="mdiArrowLeft"
+    ></svg-icon>
+    <span class="uppercase text-white text-base">Back</span>
+  </Button>
 </template>
 
-<script lang="ts">
-export default {
-  name: "ReturnButton",
-};
-</script>
 <script setup lang="ts">
 import { defineProps } from "vue";
-
+import Button from "primevue/button";
+import { useRouter } from "vue-router";
+import { mdiArrowLeft } from "@mdi/js";
+import SvgIcon from "@jamescoyle/vue-icon";
 const props = defineProps<Props>();
 
 interface Props {
   block?: boolean;
 }
-
-import { useRouter } from "vue-router";
 
 const router = useRouter();
 const back = function (): void {

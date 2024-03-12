@@ -1,54 +1,29 @@
 <template>
-  <v-slide-group
-    v-if="!showAllMode"
-    v-model="model"
-    class="pa-4"
-    show-arrows="always"
-  >
-    <v-slide-group-item v-if="notes.length == 0"> No Notes </v-slide-group-item>
-    <v-slide-group-item v-for="note in notes" :key="note.title">
-      <MetadataCard :note="note" :key="note.id" class="mb-2 elevation-1" />
-    </v-slide-group-item>
-  </v-slide-group>
-  <v-slide-group v-else v-model="model" class="pa-4" show-arrows="always">
-    <v-slide-group-item v-if="allNotes.length == 0">
-      No Notes
-    </v-slide-group-item>
-    <v-slide-group-item v-for="note in allNotes" :key="note.title">
-      <MetadataCard :note="note" :key="note.id" class="mb-2 elevation-1" />
-    </v-slide-group-item>
-  </v-slide-group>
+  <Carousel :value="notes" :num-visible="5" :num-scroll="5">
+    <template #item="slotProps">
+      <MetadataCard :note="slotProps.data" />
+    </template>
+  </Carousel>
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, ref } from "vue";
-import MetadataCard from "@/entities/chartMetadataCard/metadataCard.vue";
+import { defineProps, computed } from "vue";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+
+import MetadataCard from "@/entities/chartMetadataCard/metadataCard.vue";
+import Carousel from "primevue/carousel";
+import { Note } from "@/shared/interfaces/Annotations";
 
 interface Props {
-  notes: [];
+  notes: Note[];
 }
 
 const props = defineProps<Props>();
-const showAllMode = ref(false);
-onMounted(() => {
-  showAllMode.value = store.getters.getSettings.notesMode;
-});
-
-import { computed } from "vue";
-
 const store = useStore();
-
-const model = ref(null);
 
 const notes = computed(() => {
   const selectionId = store.getters.getSelectedRectangle?.item?.id;
   return props.notes.filter((note) => note.selection === selectionId);
-});
-
-const allNotes = computed(() => {
-  return props.notes;
 });
 </script>
 

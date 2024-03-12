@@ -1,91 +1,57 @@
 <template>
-  <v-card
-    :loading="!store.getters.getData.metadataData"
-    elevation="2"
-    class="ma-4"
-  >
-    <ChartHeader title="Metadata" />
-    <v-container v-if="store.getters.getData.metadataData" fluid>
-      <v-data-table
-        v-if="store.getters.getData"
-        class="mt-4"
-        dense
-        :headers="headers"
-        :items="store.getters.getData.metadataData"
+  <Panel header="Metadata">
+    <div class="p-5" v-if="store.getters.getData.metadataData" fluid>
+      <DataTable
+        size="small"
+        v-if="store.getters.dataInStore"
+        :value="store.getters.getData.metadataData"
+        paginator
+        :rows="10"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
       >
-      </v-data-table>
-    </v-container>
-    <v-toolbar density="compact" class="mt-6">
-      <ChartActionIcon
-        icon="mdi-help-circle"
-        tooltip="Metadata is
-        derived from the METADATA table."
-      />
-      <ChartActionIcon
-        v-if="store.getters.getQueryIndex"
-        icon="mdi-code-braces"
-        tooltip="View Export Query"
-        @iconClicked="
-          helpers.openNewTab(
-            links.getSqlQueryLink(store.getters.getQueryIndex.METADATA[0])
-          )
-        "
-      />
-    </v-toolbar>
-  </v-card>
+        <Column field="METADATA_CONCEPT_ID" header="METADATA_CONCEPT_ID">
+        </Column>
+        <Column field="NAME" header="NAME"> </Column>
+        <Column field="VALUE_AS_STRING" header="VALUE_AS_STRING"> </Column>
+        <Column field="VALUE_AS_CONCEPT_ID" header="VALUE_AS_CONCEPT_ID">
+        </Column>
+        <Column field="METADATA_DATE" header="METADATA_DATE"> </Column>
+        <Column field="METADATA_DATETIME" header="METADATA_DATETIME"> </Column>
+      </DataTable>
+    </div>
+    <template #footer
+      ><div class="flex flex-row gap-2">
+        <ChartActionIcon
+          :icon="mdiHelpCircle"
+          tooltip="Metadata is
+            derived from the METADATA table."
+        />
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiCodeBraces"
+          tooltip="View Export Query"
+          @iconClicked="
+            helpers.openNewTab(
+              links.getSqlQueryLink(store.getters.getQueryIndex.METADATA[0])
+            )
+          "
+        /></div
+    ></template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
-import { VDataTable } from "vuetify/labs/VDataTable";
 
 import { useStore } from "vuex";
-import { ref, Ref } from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { helpers } from "@/shared/lib/mixins";
+import Panel from "primevue/panel";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 
 const store = useStore();
-
-const headers: Ref<DataTableHeader[]> = ref([
-  {
-    title: "METADATA_CONCEPT_ID",
-    sortable: true,
-    key: "METADATA_CONCEPT_ID",
-    align: "start",
-  },
-  {
-    title: "NAME",
-    sortable: true,
-    key: "NAME",
-    align: "start",
-  },
-  {
-    title: "VALUE_AS_STRING",
-    sortable: true,
-    key: "VALUE_AS_STRING",
-    align: "start",
-  },
-  {
-    title: "VALUE_AS_CONCEPT_ID",
-    sortable: true,
-    key: "VALUE_AS_CONCEPT_ID",
-    align: "start",
-  },
-  {
-    title: "METADATA_DATE",
-    sortable: true,
-    key: "METADATA_DATE",
-    align: "start",
-  },
-  {
-    title: "METADATA_DATETIME",
-    sortable: true,
-    key: "METADATA_DATETIME",
-    align: "start",
-  },
-]);
 </script>
 
 <style scoped></style>

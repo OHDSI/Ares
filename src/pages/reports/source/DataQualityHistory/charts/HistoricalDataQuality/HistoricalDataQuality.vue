@@ -1,23 +1,26 @@
 <template>
-  <v-card
-    v-if="!store.getters.getErrors"
-    :loading="!store.getters.dataInStore"
-    elevation="2"
-    class="ma-4"
+  <Panel
+    header="Historical Data Quality"
+    v-if="store.getters.explorerLoaded"
+    id="network-data-quality-overview"
   >
-    <ChartHeader
-      title="Historical Data Quality"
-      :notes-count="notes.length"
-      :annotations-count="annotations.length"
-      @annotations-mode-toggled="toggleAnnotationsMode"
-      @notes-mode-toggled="toggleNotesMode"
-    />
+    <template #icons>
+      <ChartHeader
+        title="Historical Data Quality"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
+        @annotations-mode-toggled="toggleAnnotationsMode"
+        @notes-mode-toggled="toggleNotesMode"
+        table-toggle
+        @table-toggled="toggleTable"
+      />
+    </template>
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
-      :data="store.getters.getData[QUALITY_INDEX].dataQualityRecords"
+      :data="data"
       :chartSpec="specDataQualityResults"
       :annotations-config="{
         chartSpec: specDataQualityResultsAnnotation,
@@ -25,50 +28,89 @@
         brushParentElement: 'g g',
       }"
     />
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        size="small"
+        v-if="store.getters.dataInStore"
+        :value="data"
+        paginator
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column field="cdm_release_date" header="Release Date">
+          <template #body="slotProps">
+            <router-link
+              class="text-blue-400 hover:underline"
+              :to="{
+                name: 'dataQuality',
+                query: { tab: 'overview' },
+                params: {
+                  cdm: route.params.cdm,
+                  release: slotProps.data.cdm_release_date.replaceAll('-', ''),
+                },
+              }"
+              :title="slotProps.data.cdm_release_date"
+              >{{ slotProps.data.cdm_release_date }}
+            </router-link>
+          </template>
+        </Column>
+        <Column field="vocabulary_version" header="Vocabulary"> </Column>
+        <Column field="end_timestamp" header="DQ Execution Date"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          field="count_passed"
+          header="# Passed"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              <span> {{ slotProps.data.count_passed }}</span>
+            </div>
+          </template>
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          field="count_failed"
+          header="# Failed"
+        >
+          <template #body="slotProps">
+            <router-link
+              class="text-blue-400 hover:underline"
+              :to="{
+                name: 'dataQuality',
+                query: { tab: 'results', FAILED: 'FAIL' },
+                params: {
+                  cdm: route.params.cdm,
+                  release: slotProps.data.cdm_release_date.replaceAll('-', ''),
+                },
+              }"
+              :title="slotProps.data.count_failed"
+              ><span class="flex justify-end">{{
+                slotProps.data.count_failed
+              }}</span>
+            </router-link>
+          </template>
+        </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          field="count_total"
+          header="# Total"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              <span> {{ slotProps.data.count_total }}</span>
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
     <NotesPanel v-if="notesMode" :notes="notes" />
-    <v-data-table
-      v-if="store.getters.dataInStore"
-      class="viz-container"
-      density="compact"
-      :items="store.getters.getData[QUALITY_INDEX].dataQualityRecords"
-      :headers="historyColumns"
-    >
-      <template #item.cdm_release_date="{ item }">
-        <router-link
-          :to="{
-            name: 'dataQuality',
-            query: { tab: 'overview' },
-            params: {
-              cdm: route.params.cdm,
-              release: item.raw.cdm_release_date.replaceAll('-', ''),
-            },
-          }"
-          :title="item.raw.cdm_release_date"
-          >{{ item.raw.cdm_release_date }}
-        </router-link>
-      </template>
-      <template #item.count_failed="{ item }">
-        <router-link
-          :to="{
-            name: 'dataQuality',
-            query: { tab: 'results', FAILED: 'FAIL' },
-            params: {
-              cdm: route.params.cdm,
-              release: item.raw.cdm_release_date.replaceAll('-', ''),
-            },
-          }"
-          :title="item.raw.count_failed"
-          >{{ item.raw.count_failed }}
-        </router-link>
-      </template>
-    </v-data-table>
-  </v-card>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import { QUALITY_INDEX } from "@/shared/config/files";
 import { Chart } from "@/widgets/chart";
-import { VDataTable } from "vuetify/labs/VDataTable";
 import { specDataQualityResults } from "./specDataQualityResults";
 import { specDataQualityResultsAnnotation } from "./specDataQualityResultsAnnotation";
 import { useStore } from "vuex";
@@ -77,82 +119,29 @@ import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import _ from "lodash";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import Panel from "primevue/panel";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import useAnnotations from "@/shared/lib/composables/useAnnotations";
+import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 
 const store = useStore();
 const route = useRoute();
-const historyColumns = ref([
-  {
-    title: "CDM Release Date",
-    align: "start",
-    sortable: true,
-    key: "cdm_release_date",
-  },
-
-  {
-    title: "DQ Execution Date",
-    align: "start",
-    sortable: true,
-    key: "end_timestamp",
-  },
-  {
-    title: "# Passed",
-    align: "end",
-    sortable: true,
-    key: "count_passed",
-  },
-  {
-    title: "# Failed",
-    align: "end",
-    sortable: true,
-    key: "count_failed",
-  },
-  {
-    title: "# Total",
-    align: "end",
-    sortable: true,
-    key: "count_total",
-  },
-  {
-    title: "Vocabulary",
-    align: "end",
-    sortable: false,
-    key: "vocabulary_version",
-  },
-]);
-
-const annotationsMode = ref(false);
-const notesMode = ref(false);
-function toggleAnnotationsMode(mode) {
-  annotationsMode.value = mode;
-}
-function toggleNotesMode(mode) {
-  notesMode.value = mode;
-}
-
 const reportId = "viz-dataqualityresults";
 
-const annotations = computed(() => {
-  const { cdm, release } = route.params;
-  const path = [cdm, release].filter(Boolean);
-  const selections = _.get(store.getters.getNotes, path.join(".")) || {};
-  return selections[reportId] || [];
-});
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
+  useAnnotationControls();
 
-const notes = computed(() => {
-  if (annotations.value.length) {
-    return annotations.value.reduce((acc, val) => {
-      return [
-        ...acc,
-        ...val.notes.map((note) => ({
-          ...note,
-          report: reportId,
-          selection: val.id,
-        })),
-      ];
-    }, []);
-  } else {
-    return [];
-  }
+const { annotations, notes } = useAnnotations(reportId);
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
+
+const data = computed(() => {
+  return store.getters.getData[QUALITY_INDEX].dataQualityRecords;
 });
 </script>
 

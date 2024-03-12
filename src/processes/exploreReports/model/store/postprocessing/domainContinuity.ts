@@ -3,5 +3,9 @@ import { SourceHistoryIndex } from "@/processes/exploreReports/model/interfaces/
 
 export default function domainContinuity(data) {
   const historyIndex: SourceHistoryIndex[] = data[SOURCE_HISTORY_INDEX];
-  return { ...historyIndex };
+  if (historyIndex) {
+    return { ...historyIndex };
+  } else {
+    return {};
+  }
 }

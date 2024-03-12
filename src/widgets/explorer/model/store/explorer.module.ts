@@ -63,13 +63,17 @@ const getters = {
       : getters.getReleases[0];
   },
   getSelectedReport: function (state, getters, rootState) {
-    return getters.getFilteredReports.find((report) =>
-      report.domain
-        ? rootState.route.params.domain === report.domain
-        : rootState.route.matched.some(
-            (route) => route.name === report.routeName
-          )
-    );
+    return getters.getFilteredReports.find((report) => {
+      if (report.domain) {
+        return rootState.route.params.domain === report.domain;
+      } else if (rootState.route.params.cohort_id) {
+        return report.routeName === "cohorts";
+      } else {
+        return rootState.route.matched.some(
+          (route) => route.name === report.routeName
+        );
+      }
+    });
   },
 };
 
@@ -82,8 +86,8 @@ const actions = {
       })
       .catch((error) => {
         dispatch(errorActions.NEW_ERROR, {
-          message: error.error.message,
-          details: error.error.response.request.responseURL,
+          message: "Unable to load data source index file",
+          details: error.message,
         });
       });
   },
@@ -93,12 +97,6 @@ const actions = {
     }).then((response) => {
       commit(LOAD_QUERY_INDEX, response.data);
     });
-    /* .catch((error) => {
-        dispatch(errorActions.NEW_ERROR, {
-          message: error.error.message,
-          details: error.error.response.request.responseURL,
-        });
-      });*/
   },
 };
 

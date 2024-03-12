@@ -1,7 +1,5 @@
 <template>
-  <v-responsive min-width="900">
-    <DomainRecords />
-  </v-responsive>
+  <DomainRecords />
 </template>
 
 <script setup lang="ts">

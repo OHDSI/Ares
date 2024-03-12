@@ -1,6 +1,11 @@
 import {
   ACHILLES_PERFORMANCE,
   CDM_SOURCE,
+  COHORT_CHARACTERIZATION,
+  COHORT_DIAGNOSTICS_PERFORMANCE,
+  COHORT_INDEX,
+  COHORT_INDEX_EVENT_BREAKDOWN,
+  COHORT_TEMPORAL_COVARIATE_DISTRIBUTION,
   CONCEPT,
   DEATH,
   DENSITY_DOMAIN_PERSON,
@@ -66,6 +71,12 @@ export default function getFilesByView(params = null) {
       loadMethod: FETCH_FILES,
       payload: { files: [{ name: NETWORK_PERFORMANCE, required: true }] },
     },
+    networkDiversityReport: {
+      loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
+      payload: {
+        files: [{ name: PERSON, instanceParams: [{}] }],
+      },
+    },
     networkUnmappedSourceCodes: {
       loadMethod: FETCH_FILES,
       payload: {
@@ -86,6 +97,22 @@ export default function getFilesByView(params = null) {
       loadMethod: FETCH_FILES,
       payload: {
         files: [{ name: NETWORK_QUALITY_SUMMARY, required: true }],
+      },
+    },
+    cohorts: {
+      loadMethod: FETCH_FILES,
+      payload: {
+        files: [{ name: COHORT_INDEX, required: true }],
+      },
+    },
+    cohortReport: {
+      loadMethod: FETCH_FILES,
+      payload: {
+        files: [
+          { name: COHORT_CHARACTERIZATION, required: true },
+          { name: COHORT_INDEX_EVENT_BREAKDOWN, required: true },
+          { name: COHORT_TEMPORAL_COVARIATE_DISTRIBUTION, required: true },
+        ],
       },
     },
     dataStrandReport: {
@@ -165,7 +192,10 @@ export default function getFilesByView(params = null) {
     performance: {
       loadMethod: FETCH_FILES,
       payload: {
-        files: [{ name: ACHILLES_PERFORMANCE, required: true }],
+        files: [
+          { name: ACHILLES_PERFORMANCE, required: true },
+          { name: COHORT_DIAGNOSTICS_PERFORMANCE, required: false },
+        ],
       },
     },
     person: {

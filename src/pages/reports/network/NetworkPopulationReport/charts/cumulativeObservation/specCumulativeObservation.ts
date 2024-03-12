@@ -47,13 +47,23 @@ export function specCumulativeObservation(zeroBaseline = false) {
       },
       {
         selection: {
+          dataSource: {
+            type: "multi",
+            fields: ["DATA_SOURCE_KEY"],
+            bind: "legend",
+          },
           x: {
             type: "single",
             on: "mousemove",
-            encodings: ["x"],
+            fields: ["YEARS"],
             nearest: true,
           },
         },
+        transform: [
+          {
+            filter: { selection: "dataSource" },
+          },
+        ],
         mark: { type: "point", tooltip: true },
       },
       {
@@ -63,6 +73,7 @@ export function specCumulativeObservation(zeroBaseline = false) {
               and: ["x.YEARS", { selection: "x" }],
             },
           },
+          { filter: { selection: "dataSource" } },
         ],
         layer: [
           {

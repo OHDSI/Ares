@@ -15,6 +15,8 @@ import concept from "@/processes/exploreReports/model/store/postprocessing/conce
 import domainTable from "@/processes/exploreReports/model/store/postprocessing/domainTable";
 import feasibility from "@/processes/exploreReports/model/store/postprocessing/feasibility";
 import networkUnmappedSourceCodes from "@/processes/exploreReports/model/store/postprocessing/networkUnmappedSourceCodes";
+import networkDiversityReport from "@/processes/exploreReports/model/store/postprocessing/networkDiversityReport";
+import cohortReport from "@/processes/exploreReports/model/store/postprocessing/cohortReport";
 
 export default {
   dataStrandReport,
@@ -30,8 +32,10 @@ export default {
   observationPeriod,
   performance,
   domainContinuity,
+  networkDiversityReport,
   concept,
   domainTable,
   feasibility,
   networkUnmappedSourceCodes,
+  cohortReport,
 };

@@ -1,24 +1,54 @@
 <template>
-  <v-container v-if="!store.getters.getErrors" fluid min-width="900">
-    <v-card :loading="!store.getters.dataInStore" elevation="2" class="ma-4">
-      <ChartHeader title="Data Strands" />
-      <div
-        v-if="store.getters.getData"
-        id="viz-datastrand"
-        class="viz-container"
-      ></div>
-      <v-toolbar density="compact" class="mt-6">
+  <Panel header="Data Strands">
+    <template #icons>
+      <ChartHeader table-toggle @table-toggled="toggleTable" />
+    </template>
+    <div
+      v-if="store.getters.getData"
+      id="viz-datastrand"
+      class="viz-container"
+    ></div>
+    <div v-if="showTable" class="p-4">
+      <DataTable
+        size="small"
+        :value="data.dataStrandReport"
+        paginator
+        :rows="5"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
+      >
+        <Column field="domain" header="Domain"> </Column>
+        <Column
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="Number of Records"
+          field="count_records"
+        >
+          <template #body="slotProps">
+            <div class="flex justify-end">
+              {{
+                slotProps.data.count_records
+                  ? helpers.formatComma(slotProps.data.count_records)
+                  : "No data"
+              }}
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
+    <template #footer>
+      <div class="flex flex-row gap-2">
         <ChartActionIcon
-          icon="mdi-help-circle"
+          :icon="mdiHelpCircle"
           tooltip="Data strands are simple visualizations that describe the composition of
-        a data source across the various CDM domain tables. Each individual
-        strand shows the percentage of the data source comprised of data from a
-        particular domain table. Across the network, the strands can be visually
-        compared and contrasted."
+            a data source across the various CDM domain tables. Each individual
+            strand shows the percentage of the data source comprised of data from a
+            particular domain table. Across the network, the strands can be visually
+            compared and contrasted."
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
-          icon="mdi-code-braces"
+          :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
             helpers.openNewTab(
@@ -28,14 +58,14 @@
             )
           "
         />
-      </v-toolbar>
-    </v-card>
-  </v-container>
+      </div>
+    </template>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import embed from "vega-embed";
-import { watch, computed } from "vue";
+import { watch, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -47,9 +77,13 @@ import { links } from "@/shared/config/links";
 const config = specDatastrand;
 
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
-import ChartActionIcon from "@/widgets/chart/ui/ChartActionIcon.vue";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import Panel from "primevue/panel";
+import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
+import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 
 const renderChart = function () {
   embed("#viz-datastrand", config, {
@@ -76,7 +110,7 @@ const darkMode = computed(() => store.getters.getSettings.darkMode);
 
 watch(data, function () {
   if (data.value) {
-    config.data[0].values = data.value;
+    config.data[0].values = data.value.dataStrandReport;
     renderChart();
   }
 });
@@ -84,6 +118,12 @@ watch(data, function () {
 watch(darkMode, () => {
   renderChart();
 });
+
+const showTable = ref(false);
+
+function toggleTable(mode) {
+  showTable.value = mode;
+}
 </script>
 
 <style scoped>

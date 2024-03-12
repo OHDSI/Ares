@@ -1,20 +1,18 @@
 <template>
-  <v-list-item
-    :title="annotationsMode ? 'On' : 'Off'"
-    subtitle="Switch default annotations mode"
-  >
-    <template v-slot:prepend>
-      <v-list-item-action>
-        <v-switch class="mr-2" v-model="annotationsMode"></v-switch>
-      </v-list-item-action>
-    </template>
-  </v-list-item>
+  <div class="flex flex-row gap-5">
+    <InputSwitch v-model="annotationsMode" />
+    <div>
+      <h3>{{ annotationsMode ? "On" : "Off" }}</h3>
+      <p class="font-thin">Switch default annotations mode</p>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
 import { TOGGLE_DEFAULT_ANNOTATIONS_MODE } from "@/widgets/settings/model/store/actions.type";
+import InputSwitch from "primevue/inputswitch";
 
 const store = useStore();
 

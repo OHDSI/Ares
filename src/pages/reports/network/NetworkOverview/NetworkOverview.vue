@@ -2,18 +2,10 @@
   <div
     v-if="store.getters.explorerLoaded"
     id="network-data-quality-overview"
-    class="pa-4"
+    class="flex flex-col gap-10"
   >
-    <v-row>
-      <v-col>
-        <DataNetworkOverview />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <DataSourcesList />
-      </v-col>
-    </v-row>
+    <DataNetworkOverview />
+    <DataSourcesList />
   </div>
 </template>
 
@@ -24,21 +16,4 @@ import DataSourcesList from "@/pages/reports/network/NetworkOverview/components/
 const store = useStore();
 </script>
 
-<script lang="ts">
-export default {
-  name: "NetworkOverview",
-};
-</script>
-
-<style scoped>
-.v-card__title {
-  word-break: normal;
-}
-.v-card__subtitle {
-  padding-bottom: 0px;
-  padding-top: 4px;
-}
-.row {
-  margin-top: -5px;
-}
-</style>
+<style scoped></style>

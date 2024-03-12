@@ -1,66 +1,105 @@
 <template>
-  <v-container fluid>
-    <v-data-table
-      class="mb-4"
-      density="compact"
-      hide-default-footer
-      disable-pagination
-      :headers="getDomainHeaders"
-      :items="getDomainsData"
+  <Panel toggleable header="Desired Domains" fluid>
+    <DataTable
+      removable-sort
+      size="small"
+      :value="getDomainsData"
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
     >
-      <template v-slot:top>
-        <v-select
-          variant="outlined"
-          density="compact"
+      <template #header>
+        <MultiSelect
           v-model="switchDomains"
-          :items="items"
-          chips
-          label="Select domains"
-          closable-chips
-          multiple
-          item-title="text"
-          item-value="value"
-          hide-selected
-        ></v-select>
-      </template>
-      <template v-slot:item.condition_occurrence.data="{ item }">{{
-        item.raw.condition_occurrence.data ? "Yes" : "No"
-      }}</template>
-      <template v-slot:item.drug_exposure.data="{ item }">{{
-        item.raw.drug_exposure.data ? "Yes" : "No"
-      }}</template>
-      <template v-slot:item.device_exposure.data="{ item }">{{
-        item.raw.device_exposure.data ? "Yes" : "No"
-      }}</template>
-      <template v-slot:item.measurement.data="{ item }">{{
-        item.raw.measurement.data ? "Yes" : "No"
-      }}</template>
-      <template v-slot:item.death.data="{ item }">{{
-        item.raw.death.data ? "Yes" : "No"
-      }}</template>
-      <template v-slot:item.procedure_occurrence.data="{ item }">{{
-        item.raw.procedure_occurrence.data ? "Yes" : "No"
-      }}</template>
-      <template v-slot:item.observation_period.data="{ item }">{{
-        item.raw.observation_period.data ? "Yes" : "No"
-      }}</template>
-    </v-data-table>
-    <v-divider></v-divider>
-    <v-alert
-      color="message"
-      density="compact"
-      icon="mdi-help-rhombus"
-      prominent
-    >
+          :options="items"
+          display="chip"
+          option-value="value"
+          option-label="text"
+          placeholder="Select domains"
+        ></MultiSelect
+      ></template>
+      <Column header="Data Source" field="cdm_name"></Column>
+      <Column
+        :hiden="!getDomainsData[0]?.condition_occurrence.show"
+        sortable
+        header="Condition Occurrence"
+        field="condition_occurrence.data"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.condition_occurrence.data ? "Yes" : "No" }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getDomainsData[0]?.drug_exposure.show"
+        sortable
+        header="Drug Exposure"
+        field="drug_exposure.data"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.drug_exposure.data ? "Yes" : "No" }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getDomainsData[0]?.device_exposure.show"
+        header="Device Exposure"
+        field="device_exposure.data"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.device_exposure.data ? "Yes" : "No" }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getDomainsData[0]?.measurement.show"
+        header="Measurement"
+        field="measurement.data"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.measurement.data ? "Yes" : "No" }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getDomainsData[0]?.death.show"
+        header="Death"
+        field="death.data"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.death.data ? "Yes" : "No" }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getDomainsData[0]?.procedure_occurrence.show"
+        header="Procedure Occurrence"
+        field="procedure_occurrence.data"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.procedure_occurrence.data ? "Yes" : "No" }}
+        </template>
+      </Column>
+      <Column
+        :hidden="!getDomainsData[0]?.observation_period.show"
+        header="Observation"
+        field="observation_period.data"
+      >
+        <template #body="slotProps">
+          {{ slotProps.data.observation_period.data ? "Yes" : "No" }}
+        </template>
+      </Column>
+    </DataTable>
+
+    <Divider></Divider>
+    <Message :closable="false" severity="info">
       This section shows data availability for chosen domains.
-    </v-alert>
-  </v-container>
+    </Message>
+  </Panel>
 </template>
 
 <script setup lang="ts">
-import { VDataTable } from "vuetify/labs/VDataTable";
-
 import { computed, ref, watch, defineProps, defineEmits } from "vue";
+import Message from "primevue/message";
+import Panel from "primevue/panel";
+import Divider from "primevue/divider";
+import MultiSelect from "primevue/multiselect";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 interface Props {
   data: [];
@@ -77,67 +116,6 @@ const items = ref([
   { value: "procedure_occurrence", text: "Procedure occurrence" },
   { value: "observation_period", text: "Observation" },
 ]);
-
-const getDomainHeaders = computed(function () {
-  return [
-    {
-      title: "Data Source",
-      align: "start",
-      sortable: false,
-      key: "cdm_name",
-      show: true,
-    },
-    {
-      title: "Condition Occurrence",
-      align: "start",
-      sortable: false,
-      key: "condition_occurrence.data",
-      show: getDomainsData.value[0]?.condition_occurrence.show,
-    },
-    {
-      title: "Drug Exposure",
-      align: "start",
-      sortable: false,
-      key: "drug_exposure.data",
-      show: getDomainsData.value[0]?.drug_exposure.show,
-    },
-    {
-      title: "Device Exposure",
-      align: "start",
-      sortable: false,
-      key: "device_exposure.data",
-      show: getDomainsData.value[0]?.device_exposure.show,
-    },
-    {
-      title: "Measurement",
-      align: "start",
-      sortable: false,
-      key: "measurement.data",
-      show: getDomainsData.value[0]?.measurement.show,
-    },
-    {
-      title: "Death",
-      align: "start",
-      sortable: false,
-      key: "death.data",
-      show: getDomainsData.value[0]?.death.show,
-    },
-    {
-      title: "Procedure Occurrence",
-      align: "start",
-      sortable: false,
-      key: "procedure_occurrence.data",
-      show: getDomainsData.value[0]?.procedure_occurrence.show,
-    },
-    {
-      title: "Observation",
-      align: "start",
-      sortable: false,
-      key: "observation_period.data",
-      show: getDomainsData.value[0]?.observation_period.show,
-    },
-  ].filter((x) => x.show);
-});
 
 const domainMap = ref({
   condition_occurrence: "1000000",
