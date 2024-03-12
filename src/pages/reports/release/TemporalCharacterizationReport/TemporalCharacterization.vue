@@ -47,12 +47,15 @@
           }}</router-link>
         </template>
       </Column>
+
+      <Column sortable header="Is Stationary" field="IS_STATIONARY"></Column>
       <Column
+        style="text-align: end"
+        :pt="{ headerContent: 'justify-end' }"
         sortable
         header="Seasonality Score"
         field="SEASONALITY_SCORE"
       ></Column>
-      <Column sortable header="Is Stationary" field="IS_STATIONARY"></Column>
     </DataTable>
     <template #footer>
       <div class="flex flex-row gap-2">

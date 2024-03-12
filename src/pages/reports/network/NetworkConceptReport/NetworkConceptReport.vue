@@ -7,9 +7,9 @@
         </PageHeader>
         <div class="flex flex-row gap-5">
           <InputText
+            class="rounded-md text-black dark:text-white dark:bg-surface-800 border border-surface-300 dark:border-surface-700"
             v-model="concept"
-            prepend-icon="mdi-magnify"
-            label="Enter concept ID"
+            placeholder="Concept ID"
           ></InputText>
           <Dropdown
             :options="domains"
@@ -19,7 +19,11 @@
             option-label="text"
             option-value="value"
           ></Dropdown>
-          <Button color="primary" @click="atClick">Update report </Button>
+          <Button @click="atClick">
+            <span class="uppercase font-light text-white py-1 px-2"
+              >Update Report
+            </span></Button
+          >
         </div>
         <div class="flex flex-col gap-5" v-if="store.getters.getData">
           <info-panel
@@ -35,13 +39,9 @@
             v-if="recordCountProportionByMonth.length"
             :data="recordCountProportionByMonth"
           />
-          <MeasurementValueDistributionTable
-            v-if="measurementTable.length"
-            :data="measurementTable"
-          />
           <MeasurementValueDistributionChart
-            v-if="measurementChart.length"
-            :data="measurementChart"
+            v-if="measurementValueDistribution.chart.length"
+            :data="measurementValueDistribution"
           />
           <AgeAtFirstExposure
             v-if="ageAtFirstExposure.length"
@@ -138,9 +138,7 @@ const metadata = computed(() => {
 const recordCountProportionByMonth = computed(() => {
   return store.getters.getData?.chart?.recordCountProportionByMonth || [];
 });
-const measurementChart = computed(() => {
-  return store.getters.getData?.chart?.measurementValueDistribution || [];
-});
+
 const ageAtFirstExposure = computed(() => {
   return store.getters.getData?.chart?.ageAtFirstExposure || [];
 });
@@ -150,8 +148,11 @@ const drugsByType = computed(() => {
 const daysSupply = computed(() => {
   return store.getters.getData?.chart?.daysSupply || [];
 });
-const measurementTable = computed(() => {
-  return store.getters.getData?.table?.measurementValueDistribution || [];
+const measurementValueDistribution = computed(() => {
+  return {
+    table: store.getters.getData?.table?.measurementValueDistribution || [],
+    chart: store.getters.getData?.chart?.measurementValueDistribution || [],
+  };
 });
 const quantityDistribution = computed(() => {
   return store.getters.getData?.chart?.quantityDistribution || [];

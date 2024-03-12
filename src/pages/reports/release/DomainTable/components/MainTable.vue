@@ -24,6 +24,7 @@
         :globalFilterFields="['CONCEPT_ID', 'CONCEPT_NAME', '']"
         :rows="10"
         :rowsPerPageOptions="[5, 10, 20, 50]"
+        removable-sort
       >
         <template #header>
           <div class="flex flex-row gap-10">
@@ -69,6 +70,7 @@
           :hidden="!selectedHeaders.includes('CONCEPT_ID')"
           field="CONCEPT_ID"
           header="Concept Id"
+          sortable
         >
           <template #body="slotProps">
             <router-link
@@ -83,6 +85,7 @@
           :hidden="!selectedHeaders.includes('CONCEPT_NAME')"
           field="CONCEPT_NAME"
           header="Concept Name"
+          sortable
         >
           <template #body="slotProps">
             <router-link
@@ -99,6 +102,7 @@
           :hidden="!selectedHeaders.includes('NUM_PERSONS')"
           field="NUM_PERSONS"
           header="# People"
+          sortable
         >
           <template #body="slotProps">
             <div
@@ -116,6 +120,7 @@
           :hidden="!selectedHeaders.includes('DIFF_NUM_PERSONS')"
           field="DIFF_NUM_PERSONS"
           header="Delta # Person"
+          sortable
         >
           <template #body="slotProps">
             <div>
@@ -133,6 +138,7 @@
           :hidden="!selectedHeaders.includes('PERCENT_PERSONS')"
           field="PERCENT_PERSONS"
           header="% People"
+          sortable
         >
           <template #body="slotProps">
             <div
@@ -150,6 +156,7 @@
           :hidden="!selectedHeaders.includes('DIFF_PERCENT_PERSONS')"
           field="DIFF_PERCENT_PERSONS"
           header="Delta % People"
+          sortable
         >
           <template #body="slotProps">
             <div
@@ -167,6 +174,7 @@
           :hidden="!selectedHeaders.includes('RECORDS_PER_PERSON')"
           field="RECORDS_PER_PERSON"
           header="Records per Person"
+          sortable
         >
           <template #body="slotProps">
             <div
@@ -184,6 +192,7 @@
           :hidden="!selectedHeaders.includes('DIFF_RECORDS_PER_PERSON')"
           field="DIFF_RECORDS_PER_PERSON"
           header="Delta Records per Person"
+          sortable
         >
           <template #body="slotProps">
             {{
@@ -199,6 +208,7 @@
           :hidden="!selectedHeaders.includes('AVERAGE_DURATION')"
           field="AVERAGE_DURATION"
           header="Avg Duration"
+          sortable
         >
         </Column>
         <Column
@@ -207,6 +217,7 @@
           :hidden="!selectedHeaders.includes('PERCENT_MISSING_VALUES')"
           field="PERCENT_MISSING_VALUES"
           header="% with Values"
+          sortable
         >
           <template #body="slotProps">
             {{
@@ -225,6 +236,7 @@
           :hidden="!selectedHeaders.includes('MEDIAN_VALUE')"
           field="MEDIAN_VALUE"
           header="Median Era Length (Days)"
+          sortable
         >
         </Column>
         <Column
@@ -233,6 +245,7 @@
           :hidden="!selectedHeaders.includes('P25_VALUE')"
           field="P25_VALUE"
           header="25th % Era Length (Days)"
+          sortable
         >
         </Column>
         <Column
@@ -241,111 +254,10 @@
           :hidden="!selectedHeaders.includes('P75_VALUE')"
           field="P75_VALUE"
           header="75th % Era Length (Days)"
+          sortable
         >
         </Column>
       </DataTable>
-
-      <!--      <v-data-table-->
-      <!--        v-if="store.getters.getData"-->
-      <!--        class="mt-4"-->
-      <!--        density="compact"-->
-      <!--        :headers="showHeaders"-->
-      <!--        :items="store.getters.getData.domainTable"-->
-      <!--        :footer-props="{-->
-      <!--          'items-per-page-options': [10, 25, 50],-->
-      <!--        }"-->
-      <!--        item-key="CONCEPT_ID"-->
-      <!--        :items-per-page="10"-->
-      <!--        :search="route.query.search"-->
-      <!--        :sort-by="['PERCENT_PERSONS']"-->
-      <!--        :sort-desc="[true, false]"-->
-      <!--      >-->
-      <!--        <template v-slot:item.CONCEPT_ID="{ item }">-->
-      <!--          <v-layout flex-end-->
-      <!--            ><router-link :to="getReportRoute(item)">{{-->
-      <!--              item.raw.CONCEPT_ID-->
-      <!--            }}</router-link></v-layout-->
-      <!--          >-->
-      <!--        </template>-->
-      <!--        <template v-slot:item.CONCEPT_NAME="{ item }">-->
-      <!--                <v-row>-->
-      <!--                  <v-col cols="10">-->
-      <!--                    <router-link-->
-      <!--                      :to="getReportRoute(item)"-->
-      <!--                      :title="item.raw.CONCEPT_NAME"-->
-      <!--                      >{{ item.raw.CONCEPT_NAME }}-->
-      <!--                    </router-link>-->
-      <!--                  </v-col>-->
-      <!--                </v-row>-->
-      <!--        </template>-->
-      <!--        <template v-slot:item.NUM_PERSONS="{ item }">-->
-      <!--          <v-layout class="justify-end"-->
-      <!--            ><div-->
-      <!--              :class="helpers.getFontWeight(item.raw.PERCENT_PERSONS_NTILE)"-->
-      <!--            >-->
-      <!--              {{ helpers.formatComma(item.raw.NUM_PERSONS) }}-->
-      <!--            </div></v-layout-->
-      <!--          >-->
-      <!--        </template>-->
-      <!--      <template v-slot:item.DIFF_NUM_PERSONS="{ item }">-->
-      <!--        <v-layout class="justify-end">-->
-      <!--          {{-->
-      <!--            item.raw.DIFF_NUM_PERSONS-->
-      <!--              ? helpers.formatComma(item.raw.DIFF_NUM_PERSONS)-->
-      <!--              : "No data"-->
-      <!--          }}-->
-      <!--        </v-layout>-->
-      <!--      </template>-->
-      <!--        <template v-slot:item.PERCENT_PERSONS="{ item }">-->
-      <!--          <v-layout class="justify-end"-->
-      <!--            ><div-->
-      <!--              :class="helpers.getFontWeight(item.raw.PERCENT_PERSONS_NTILE)"-->
-      <!--            >-->
-      <!--              {{ (item.raw.PERCENT_PERSONS * 100).toFixed(2) }} %-->
-      <!--            </div></v-layout-->
-      <!--          >-->
-      <!--        </template>-->
-      <!--      <template v-slot:item.DIFF_PERCENT_PERSONS="{ item }">-->
-      <!--        <v-layout class="justify-end"-->
-      <!--          ><div-->
-      <!--            :class="helpers.getFontWeight(item.raw.DIFF_PERCENT_PERSONS_NTILE)"-->
-      <!--          >-->
-      <!--            {{-->
-      <!--              item.raw.DIFF_PERCENT_PERSONS-->
-      <!--                ? (item.raw.DIFF_PERCENT_PERSONS * 100).toFixed(2) + " %"-->
-      <!--                : "No data"-->
-      <!--            }}-->
-      <!--          </div></v-layout-->
-      <!--        >-->
-      <!--      </template>-->
-      <!--      <template v-slot:item.RECORDS_PER_PERSON="{ item }">-->
-      <!--        <v-layout class="justify-end"-->
-      <!--          ><div-->
-      <!--            :class="helpers.getFontWeight(item.raw.RECORDS_PER_PERSON_NTILE)"-->
-      <!--          >-->
-      <!--            {{ item.raw.RECORDS_PER_PERSON }}-->
-      <!--          </div></v-layout-->
-      <!--        >-->
-      <!--      </template>-->
-      <!--      <template v-slot:item.DIFF_RECORDS_PER_PERSON="{ item }">-->
-      <!--        {{-->
-      <!--          item.raw.DIFF_RECORDS_PER_PERSON-->
-      <!--            ? item.raw.DIFF_RECORDS_PER_PERSON-->
-      <!--            : "No data"-->
-      <!--        }}-->
-      <!--      </template>-->
-      <!--        <template v-slot:item.PERCENT_MISSING_VALUES="{ item }">-->
-      <!--          <v-layout class="justify-end"-->
-      <!--            >{{-->
-      <!--              item.raw.PERCENT_MISSING_VALUES-->
-      <!--                ? `${((1 - item.raw.PERCENT_MISSING_VALUES) * 100).toFixed(-->
-      <!--                    2-->
-      <!--                  )} %`-->
-      <!--                : "No data"-->
-      <!--            }}-->
-      <!--          </v-layout>-->
-      <!--        </template>-->
-      <!--      </v-data-table>-->
     </div>
     <template #footer>
       <div class="flex flex-row gap-2">

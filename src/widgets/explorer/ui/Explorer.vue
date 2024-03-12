@@ -17,9 +17,9 @@
           optionLabel="name"
         >
           <template #option="slotProps">
-            <div class="flex items-center justify-between gap-5">
-              <div>{{ slotProps.option.name }}</div>
+            <div class="flex items-center gap-2">
               <svg-icon type="mdi" :path="slotProps.option.icon"></svg-icon>
+              <div>{{ slotProps.option.name }}</div>
             </div>
           </template>
         </dropdown>
@@ -67,9 +67,9 @@
           optionLabel="name"
         >
           <template #option="slotProps">
-            <div class="flex items-center justify-between gap-5">
-              <div>{{ slotProps.option.name }}</div>
+            <div class="flex items-center gap-2">
               <svg-icon type="mdi" :path="slotProps.option.icon"></svg-icon>
+              <div>{{ slotProps.option.name }}</div>
             </div>
           </template>
         </dropdown>
