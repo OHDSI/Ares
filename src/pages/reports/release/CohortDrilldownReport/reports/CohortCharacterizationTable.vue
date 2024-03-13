@@ -240,7 +240,7 @@ const headers = ref({
     sortable: true,
     key: "domain_id",
     align: "start",
-    show: false,
+    show: true,
   },
   covariate_name: {
     title: "Covariate Name",
@@ -275,14 +275,14 @@ const headers = ref({
     sortable: true,
     key: "mean",
     align: "end",
-    show: false,
+    show: true,
   },
   sd: {
     title: "Sd",
     sortable: true,
-    key: "concept_id",
+    key: "sd",
     align: "end",
-    show: false,
+    show: true,
   },
 });
 
