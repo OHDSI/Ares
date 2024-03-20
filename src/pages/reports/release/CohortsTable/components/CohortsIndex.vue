@@ -2,6 +2,7 @@
   <Panel v-if="store.getters.dataInStore" header="Cohorts Table">
     <div class="p-5">
       <DataTable
+        removable-sort
         size="small"
         :value="data"
         paginator
@@ -48,6 +49,7 @@
           </template>
         </Column>
         <Column
+          sortable
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="cohort_subjects"
