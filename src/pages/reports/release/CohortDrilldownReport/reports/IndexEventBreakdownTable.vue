@@ -68,6 +68,7 @@
         >
           <template #filter="{ filterModel, filterCallback }">
             <MultiSelect
+              :maxSelectedLabels="2"
               show-clear
               filter
               v-model="filterModel.value"
@@ -89,6 +90,7 @@
         >
           <template #filter="{ filterModel, filterCallback }">
             <MultiSelect
+              :maxSelectedLabels="2"
               show-clear
               filter
               v-model="filterModel.value"
@@ -110,6 +112,7 @@
         >
           <template #filter="{ filterModel, filterCallback }">
             <MultiSelect
+              :maxSelectedLabels="2"
               show-clear
               filter
               v-model="filterModel.value"
@@ -131,6 +134,7 @@
         >
           <template #filter="{ filterModel, filterCallback }">
             <MultiSelect
+              :maxSelectedLabels="2"
               show-clear
               filter
               v-model="filterModel.value"

@@ -72,6 +72,7 @@
       </template>
       <template #filter="{ filterModel, filterCallback }">
         <MultiSelect
+          :maxSelectedLabels="2"
           show-clear
           filter
           v-model="filterModel.value"
@@ -103,7 +104,7 @@
           v-model="filterModel.value"
           @change="filterCallback()"
           :options="cdmTableNamesOptions"
-          :maxSelectedLabels="1"
+          :maxSelectedLabels="2"
           placeholder="Select One"
           class="p-column-filter w-full"
           style="min-width: 12rem"
@@ -115,6 +116,7 @@
       </template>
     </Column>
     <Column
+      :maxSelectedLabels="2"
       :show-filter-menu="false"
       :show-clear-button="false"
       :pt="{ headerContent: 'justify-end' }"
@@ -160,6 +162,7 @@
       </template>
       <template #filter="{ filterModel, filterCallback }">
         <MultiSelect
+          :maxSelectedLabels="2"
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -190,6 +193,7 @@
       </template>
       <template #filter="{ filterModel, filterCallback }">
         <MultiSelect
+          :maxSelectedLabels="2"
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -220,6 +224,7 @@
       </template>
       <template #filter="{ filterModel, filterCallback }">
         <MultiSelect
+          :maxSelectedLabels="2"
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -250,6 +255,7 @@
       </template>
       <template #filter="{ filterModel, filterCallback }">
         <MultiSelect
+          :maxSelectedLabels="2"
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -277,6 +283,7 @@
     >
       <template #filter="{ filterModel, filterCallback }">
         <MultiSelect
+          :maxSelectedLabels="2"
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
@@ -304,6 +311,7 @@
     >
       <template #filter="{ filterModel, filterCallback }">
         <MultiSelect
+          :maxSelectedLabels="2"
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
