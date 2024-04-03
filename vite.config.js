@@ -9,9 +9,6 @@ export default defineConfig({
   plugins: [vue(), vueJsx({})],
   server: {
     port: 8080,
-    watch: {
-      usePolling: true,
-    },
   },
   resolve: {
     alias: [
