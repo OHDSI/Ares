@@ -50,6 +50,7 @@
               :options="getHeaders"
               placeholder="Select Columns"
             >
+              <template #dropdownicon><span></span></template>
               <template #value>
                 <span class="flex flex-row w-full text-white items-center">
                   <svg-icon type="mdi" :path="mdiTable"></svg-icon>

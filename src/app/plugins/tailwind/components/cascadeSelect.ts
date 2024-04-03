@@ -1,31 +1,16 @@
 export default {
-  root: ({ props, state, parent }) => ({
+  root: ({ props, state }) => ({
     class: [
       // Display and Position
       "inline-flex",
       "relative",
 
       // Shape
-      { "rounded-md": parent.instance.$name !== "InputGroup" },
-      {
-        "first:rounded-l-md rounded-none last:rounded-r-md":
-          parent.instance.$name == "InputGroup",
-      },
-      {
-        "border-0 border-y border-l last:border-r":
-          parent.instance.$name == "InputGroup",
-      },
-      {
-        "first:ml-0 ml-[-1px]":
-          parent.instance.$name == "InputGroup" && !props.showButtons,
-      },
+      "rounded-md",
 
       // Color and Background
       "bg-surface-0 dark:bg-surface-800",
-
-      "border border-surface-300",
-      { "dark:border-surface-700": parent.instance.$name != "InputGroup" },
-      { "dark:border-surface-600": parent.instance.$name == "InputGroup" },
+      "border",
       { "border-surface-300 dark:border-surface-600": !props.invalid },
 
       // Invalid State
@@ -55,32 +40,30 @@ export default {
       },
     ],
   }),
-  input: ({ props }) => ({
+  label: ({ props }) => ({
     class: [
       //Font
       "font-sans",
       "leading-none",
 
-      // Display
-      "block",
-      "flex-auto",
+      // Flex & Alignment
+      " flex flex-auto",
+
+      // Sizing and Spacing
+      "w-[1%]",
+      "p-3",
+
+      //Shape
+      "rounded-none",
 
       // Color and Background
       "bg-transparent",
       "border-0",
       {
-        "text-surface-800 dark:text-white/80": props.modelValue != undefined,
-        "text-surface-400 dark:text-surface-500": props.modelValue == undefined,
+        "text-surface-800 dark:text-white/80": props.modelValue,
+        "text-surface-400 dark:text-surface-500": !props.modelValue,
       },
       "placeholder:text-surface-400 dark:placeholder:text-surface-500",
-
-      // Sizing and Spacing
-      "w-[1%]",
-      "p-3",
-      { "pr-7": props.showClear },
-
-      //Shape
-      "rounded-sm",
 
       // Transitions
       "transition",
@@ -97,7 +80,7 @@ export default {
       "appearance-none",
     ],
   }),
-  trigger: {
+  dropdownbutton: {
     class: [
       // Flexbox
       "flex items-center justify-center",
@@ -128,7 +111,7 @@ export default {
       // Color
       "bg-surface-0 dark:bg-surface-800",
       "text-surface-800 dark:text-white/80",
-      "dark:border-surface-700",
+      "dark:border-surface-800",
     ],
   },
   wrapper: {
@@ -149,9 +132,6 @@ export default {
       "font-normal",
       "leading-none",
 
-      // Position
-      "relative",
-
       // Shape
       "rounded",
 
@@ -159,7 +139,7 @@ export default {
       "my-2 mx-1",
       "py-1 px-2",
 
-      // Color
+      //  Colors
       {
         "text-surface-700 dark:text-white/80":
           !context.focused && !context.selected && !context.disabled,
@@ -181,128 +161,72 @@ export default {
           !context.focused && context.selected,
       },
 
-      //States
+      // Hover States
       {
-        "hover:bg-surface-100 dark:hover:bg-surface-600/80":
-          !context.focused && !context.selected,
+        "hover:bg-surface-100 dark:hover:bg-surface-600/80": !context.active,
+        "hover:bg-primary-500/50 dark:hover:bg-primary-300/30 text-primary-700 dark:text-surface-0/80":
+          context.active,
       },
-      {
-        "hover:text-surface-700 hover:bg-surface-100 dark:hover:text-white dark:hover:bg-surface-600/80":
-          context.focused && !context.selected,
-      },
-      "focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring focus-visible:ring-inset focus-visible:ring-primary-400/50 dark:focus-visible:ring-primary-300/50",
 
       // Transitions
       "transition-shadow",
       "duration-200",
 
       // Misc
-      { "pointer-events-none cursor-default": context.disabled },
-      { "cursor-pointer": !context.disabled },
+      "cursor-pointer",
       "overflow-hidden",
       "whitespace-nowrap",
     ],
   }),
-  itemgroup: {
+  content: {
     class: [
-      //Font
-      "font-bold",
+      "relative",
+
+      // Flexbox
+      "flex",
+      "items-center",
 
       // Spacing
-      "m-0",
-      "py-3 px-5",
-
-      // Color
-      "text-surface-800 dark:text-white/80",
-      "bg-surface-0 dark:bg-surface-600/80",
+      // "py-3",
+      // "px-5",
 
       // Misc
-      "cursor-auto",
+      "no-underline",
+      "overflow-hidden",
+      "cursor-pointer",
+      "select-none",
     ],
   },
-  emptymessage: {
+  groupicon: {
     class: [
-      // Font
-      "leading-none",
-
-      // Spacing
-      "py-3 px-5",
-
-      // Color
-      "text-surface-800 dark:text-white/80",
-      "bg-transparent",
+      // Alignment
+      "ml-auto",
     ],
   },
-  header: {
+  sublist: {
     class: [
-      // Spacing
-      "py-3 px-5",
-      "m-0",
-
-      //Shape
-      "border-b",
-      "rounded-tl-md",
-      "rounded-tr-md",
-
-      // Color
-      "text-surface-700 dark:text-white/80",
-      "bg-surface-100 dark:bg-surface-800",
-      "border-surface-300 dark:border-surface-700",
-    ],
-  },
-  filtercontainer: {
-    class: "relative",
-  },
-  filterinput: {
-    class: [
-      // Font
-      "font-sans",
-      "leading-none",
-
-      // Sizing
-      "pr-7 py-3 px-3",
-      "-mr-7",
+      // Size
       "w-full",
 
-      //Color
-      "text-surface-700 dark:text-white/80",
-      "bg-surface-0 dark:bg-surface-900",
-      "border-surface-200 dark:border-surface-700",
+      // Spacing
+      "list-none",
+      "p-1",
+      "m-1",
 
       // Shape
-      "border",
-      "rounded-lg",
-      "appearance-none",
-
-      // Transitions
-      "transition",
-      "duration-200",
-
-      // States
-      "hover:border-primary-500 dark:hover:border-primary-300",
-      "focus:ring focus:outline-none focus:outline-offset-0",
-      "focus:ring-primary-400/50 dark:focus:ring-primary-300/50",
-
-      // Misc
-      "appearance-none",
-    ],
-  },
-  filtericon: {
-    class: ["absolute", "top-1/2 right-3", "-mt-2"],
-  },
-  clearicon: {
-    class: [
-      // Color
-      "text-surface-500",
+      "shadow-none sm:shadow-md",
+      "border-0",
 
       // Position
-      "absolute",
-      "top-1/2",
-      "right-12",
+      "static sm:absolute",
+      "z-10",
 
-      // Spacing
-      "-mt-2",
+      // Color
+      "bg-surface-0 dark:bg-surface-800",
     ],
+  },
+  separator: {
+    class: "border-t border-surface-200 dark:border-surface-600 my-1",
   },
   transition: {
     enterFromClass: "opacity-0 scale-y-[0.8]",

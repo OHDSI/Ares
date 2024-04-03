@@ -63,17 +63,27 @@ const getters = {
       : getters.getReleases[0];
   },
   getSelectedReport: function (state, getters, rootState) {
-    return getters.getFilteredReports.find((report) => {
-      if (report.domain) {
-        return rootState.route.params.domain === report.domain;
-      } else if (rootState.route.params.cohort_id) {
+    const isDomain = rootState.route.params.domain;
+    const isCohort = rootState.route.params.cohort_id;
+    if (isDomain) {
+      const domainTable = getters.getFilteredReports.find(
+        (report) => report.domain
+      );
+      return domainTable.reports.find((report) => {
+        return isDomain === report.domain;
+      });
+    }
+    if (isCohort) {
+      return getters.getFilteredReports.find((report) => {
         return report.routeName === "cohorts";
-      } else {
+      });
+    } else {
+      return getters.getFilteredReports.find((report) => {
         return rootState.route.matched.some(
           (route) => route.name === report.routeName
         );
-      }
-    });
+      });
+    }
   },
 };
 

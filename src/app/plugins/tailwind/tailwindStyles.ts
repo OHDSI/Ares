@@ -22,6 +22,9 @@ import inputGroup from "@/app/plugins/tailwind/components/inputGroup";
 import inputGroupAddon from "@/app/plugins/tailwind/components/inputGroupAddon";
 import treeSelect from "@/app/plugins/tailwind/components/treeSelect";
 import slider from "@/app/plugins/tailwind/components/slider";
+import cascadeSelect from "@/app/plugins/tailwind/components/cascadeSelect";
+import floatLabel from "@/app/plugins/tailwind/components/floatLabel";
+import checkBox from "@/app/plugins/tailwind/components/checkBox";
 
 export const tailwindTheme = {
   tabview,
@@ -48,4 +51,7 @@ export const tailwindTheme = {
   inputGroupAddon,
   treeSelect,
   slider,
+  cascadeSelect,
+  floatLabel,
+  checkBox,
 };
