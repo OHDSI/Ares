@@ -190,11 +190,7 @@
           :hidden="!selectedHeaders.includes('sd')"
         >
           <template #body="slotProps">
-            {{
-              slotProps.data.sd
-                ? `${((1 - slotProps.data.sd) * 100).toFixed(2)} %`
-                : "No data"
-            }}
+            {{ parseFloat(slotProps.data.sd).toFixed(2) }}
           </template>
         </Column>
       </DataTable>
