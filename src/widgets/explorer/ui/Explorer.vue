@@ -8,7 +8,7 @@
       <img :class="iconClass" :src="icon" alt="Ares logo" width="45" />
     </Button>
     <div class="flex flex-row gap-5">
-      <div class="p-float-label">
+      <FloatLabel>
         <dropdown
           inputId="folder"
           :model-value="store.getters.getSelectedFolder"
@@ -23,12 +23,12 @@
             </div>
           </template>
         </dropdown>
-        <label class="left-3 font-light dark:text-white text-black" for="folder"
+        <label class="font-light dark:text-white text-black" for="folder"
           >Report category</label
         >
-      </div>
+      </FloatLabel>
 
-      <div v-if="showSourceSelector" class="p-float-label">
+      <FloatLabel v-if="showSourceSelector">
         <dropdown
           input-id="source"
           :model-value="store.getters.getSelectedSource"
@@ -40,9 +40,9 @@
         <label class="left-3 font-light dark:text-white text-black" for="source"
           >Source</label
         >
-      </div>
+      </FloatLabel>
 
-      <div v-if="showReleaseSelector" class="p-float-label">
+      <FloatLabel v-if="showReleaseSelector">
         <dropdown
           input-id="release"
           :model-value="store.getters.getSelectedRelease"
@@ -52,19 +52,20 @@
         >
         </dropdown>
         <label
-          class="left-3 font-light dark:text-white text-black"
+          class="relative left-3 top-0 font-light dark:text-white text-black"
           for="release"
           >Release</label
         >
-      </div>
-
-      <div class="p-float-label">
-        <dropdown
+      </FloatLabel>
+      <FloatLabel>
+        <CascadeSelect
           input-id="report"
+          :options="store.getters.getFilteredReports"
           :model-value="store.getters.getSelectedReport"
           @update:modelValue="changeReport"
-          :options="store.getters.getFilteredReports"
           optionLabel="name"
+          optionGroupLabel="name"
+          :optionGroupChildren="['reports']"
         >
           <template #option="slotProps">
             <div class="flex items-center gap-2">
@@ -72,36 +73,33 @@
               <div>{{ slotProps.option.name }}</div>
             </div>
           </template>
-        </dropdown>
-        <label class="left-3 font-light dark:text-white text-black" for="report"
+        </CascadeSelect>
+        <label class="font-light dark:text-white text-black" for="concept"
           >Report</label
         >
-      </div>
-
-      <div v-if="showConceptSelector" class="p-float-label">
+      </FloatLabel>
+      <FloatLabel v-if="showConceptSelector">
         <dropdown
           input-id="concept"
           :model-value="showConceptSelector"
           :options="[showConceptSelector]"
           disabled
         />
-        <label
-          class="left-3 font-light dark:text-white text-black"
-          for="concept"
+        <label class="font-light dark:text-white text-black" for="concept"
           >Concept ID</label
         >
-      </div>
-      <div v-if="showCohortSelector" class="p-float-label">
+      </FloatLabel>
+      <FloatLabel v-if="showCohortSelector">
         <dropdown
           input-id="cohort"
           :model-value="showCohortSelector"
           :options="[showCohortSelector]"
           disabled
         />
-        <label class="left-3 font-light dark:text-white text-black" for="cohort"
+        <label class="font-light dark:text-white text-black" for="cohort"
           >Cohort ID</label
         >
-      </div>
+      </FloatLabel>
     </div>
   </div>
 </template>
@@ -120,6 +118,8 @@ import {
   Source,
   SourceRelease,
 } from "@/processes/exploreReports/model/interfaces/files/SourceIndex";
+import CascadeSelect from "primevue/cascadeselect";
+import FloatLabel from "primevue/floatlabel";
 
 const route = useRoute();
 const store = useStore();

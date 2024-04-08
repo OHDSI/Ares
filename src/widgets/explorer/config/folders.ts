@@ -1,18 +1,22 @@
-import { mdiDatabase, mdiDatabaseClock, mdiNetwork } from "@mdi/js";
+import {
+  mdiDatabaseClockOutline,
+  mdiDatabaseOutline,
+  mdiNetworkOutline,
+} from "@mdi/js";
 
 export const folders = [
   {
-    icon: mdiNetwork,
+    icon: mdiNetworkOutline,
     name: "Data Network",
     key: "network",
   },
   {
-    icon: mdiDatabase,
+    icon: mdiDatabaseOutline,
     name: "Data Source",
     key: "datasource",
   },
   {
-    icon: mdiDatabaseClock,
+    icon: mdiDatabaseClockOutline,
     name: "Data Source Release",
     key: "cdm",
   },

@@ -4,13 +4,13 @@
       v-tooltip.top="{
         value: props.tooltip,
         pt: {
-          root: '',
+          root: 'absolute',
           arrow: {
             style: {
               borderRightColor: 'var(--primary-color)',
             },
           },
-          text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-light p-2',
+          text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-light p-2 break-words text-wrap max-w-[20ch]',
         },
       }"
       @click="activate"

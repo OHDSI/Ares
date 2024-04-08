@@ -8,15 +8,11 @@
     </template>
     <MultiSelect
       v-model="selectedMeasurementUnits"
-      class="mr-13"
-      :items="getMeasurementUnits"
-      attach
-      variant="outlined"
-      hide-selected
-      closable-chips
-      chips
-      label="Filter units"
+      class="mr-13 w-full"
+      :options="getMeasurementUnits"
       multiple
+      placeholder="Filter units"
+      display="chip"
     ></MultiSelect>
 
     <Chart
@@ -214,6 +210,7 @@ import { mdiCheckNetwork, mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import MultiSelect from "primevue/multiselect";
 
 const selectedMeasurementUnits: Ref<string[]> = ref([]);
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row gap-5">
+  <div class="flex flex-row gap-5 mb">
     <InputSwitch v-model="darkMode" />
     <div>
       <h3>{{ darkMode ? "Dark Mode" : "Light mode" }}</h3>

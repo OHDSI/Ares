@@ -1,5 +1,5 @@
 <template>
-  <Toolbar class="fixed bottom-0 left-0 right-0">
+  <Toolbar unstyled class="fixed bottom-0 left-0 right-0">
     <template #end>
       <div class="flex flex-row gap-14 mr-3">
         <Button

@@ -63,6 +63,9 @@
                   <span class="uppercase text-base">Columns to display</span>
                 </span>
               </template>
+              <template #dropdownicon>
+                <span></span>
+              </template>
             </MultiSelect>
           </div>
         </template>

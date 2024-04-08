@@ -2,11 +2,10 @@ export default {
   root: ({ context, props }) => ({
     class: [
       // Position and Shadows
-      "bg-grey-200 dark:bg-grey-300",
-
       "absolute",
       "shadow-md",
       "p-fadein",
+      "z-50",
       // Spacing
       {
         "py-0 px-1":
@@ -64,6 +63,7 @@ export default {
   text: {
     class: [
       "p-3",
+      "bg-surface-600 dark:bg-surface-700",
       "text-white",
       "leading-none",
       "rounded-md",
