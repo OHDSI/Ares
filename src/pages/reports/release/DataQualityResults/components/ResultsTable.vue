@@ -35,11 +35,11 @@
         </InputGroup>
         <MultiSelect
           :pt="{
-            root: 'dark:bg-primary-500 bg-primary-400 text-white rounded',
+            root: 'dark:bg-primary-400 bg-primary-500 text-white rounded',
             labelContainer:
-              'dark:bg-primary-500 bg-primary-400 text-white rounded',
+              'dark:bg-primary-400 bg-primary-500 text-white rounded',
             trigger: [
-              'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-500 w-12',
+              'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-400 w-12',
             ],
           }"
           v-model="selectedHeaders"
@@ -47,11 +47,16 @@
           option-label="title"
           option-value="key"
           :options="headers"
-          style="width: 15rem"
           placeholder="Select Columns"
         >
           <template #value>
-            <span class="uppercase text-white">Select Columns</span>
+            <span class="flex flex-row w-full text-white items-center">
+              <svg-icon type="mdi" :path="mdiTable"></svg-icon>
+              <span class="uppercase text-base">Columns to display</span>
+            </span>
+          </template>
+          <template #dropdownicon>
+            <span></span>
           </template>
         </MultiSelect>
       </div>
@@ -528,6 +533,7 @@ import { links } from "@/shared/config/links";
 import { helpers } from "@/shared/lib/mixins";
 import { useStore } from "vuex";
 import { computed, onBeforeMount, Ref, ref, watch } from "vue";
+import SvgIcon from "@jamescoyle/vue-icon";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { debounce } from "lodash";
 import { useRoute, useRouter } from "vue-router";
@@ -545,6 +551,7 @@ import Dropdown from "primevue/dropdown";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import MultiSelect from "primevue/multiselect";
+import { mdiTable } from "@mdi/js";
 
 const checks = ref(store.getters.getData.checkResults);
 
@@ -759,7 +766,7 @@ const updateFiltersFromUrl = function (): void {
 
   for (const key in filters.value) {
     if (parsedParams[key]) {
-      filters.value[key].value = parsedParams[key];
+      filters.value[key].value = [parsedParams[key]];
     } else {
       filters.value[key].value = null;
     }
