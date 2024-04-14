@@ -18,6 +18,7 @@ import {
   Source,
   SourceRelease,
 } from "@/processes/exploreReports/model/interfaces/files/SourceIndex";
+import errorMessages from "@/widgets/error/model/config/errorMessages";
 
 const state = {
   folders: config.folders,
@@ -64,8 +65,9 @@ const getters = {
   },
   getSelectedReport: function (state, getters, rootState) {
     const isDomain = rootState.route.params.domain;
+    const isRelease = rootState.route.params.release;
     const isCohort = rootState.route.params.cohort_id;
-    if (isDomain) {
+    if (isDomain && isRelease) {
       const domainTable = getters.getFilteredReports.find(
         (report) => report.domain
       );
@@ -95,9 +97,14 @@ const actions = {
         commit(EXPLORER_LOADED);
       })
       .catch((error) => {
+        const errorMessage = errorMessages.reportsMissingFiles.index;
+        const url = error.config.url;
+        const errorCode = error.response.status;
+
         dispatch(errorActions.NEW_ERROR, {
-          message: "Unable to load data source index file",
-          details: error.message,
+          userMessage: errorMessage,
+          technicalMessage: { errorCode, url },
+          details: url,
         });
       });
   },
