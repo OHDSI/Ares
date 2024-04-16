@@ -9,7 +9,6 @@
     <Chart
       v-if="store.getters.getData"
       id="viz-recordproportionbyagesexyear"
-      width="90"
       :chartSpec="specRecordProportionByAgeSexYear"
       :data="data"
     />

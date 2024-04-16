@@ -6,7 +6,6 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-deathbytype"
-      width="100"
       :chartSpec="specDeathByType"
       :data="data"
     />

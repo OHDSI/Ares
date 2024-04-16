@@ -7,7 +7,6 @@
       id="viz-measurementsbytype"
       :chartSpec="specMeasurementsByType"
       :data="data"
-      width="85"
     />
     <div v-if="showTable" class="p-4">
       <DataTable

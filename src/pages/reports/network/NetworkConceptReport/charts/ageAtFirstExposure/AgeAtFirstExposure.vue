@@ -7,7 +7,6 @@
       id="viz-ageatfirstexposure"
       :chartSpec="specAgeAtFirstExposure"
       :data="props.data"
-      width="85"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
