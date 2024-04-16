@@ -15,7 +15,6 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-observationbymonth"
-      width="95"
       :annotations-config="{
         chartSpec: specObservationByMonthAnnotation,
         annotationsParentElement: 'g',

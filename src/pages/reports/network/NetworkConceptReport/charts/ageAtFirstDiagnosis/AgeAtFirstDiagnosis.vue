@@ -7,7 +7,6 @@
       id="viz-ageatfirstdiagnosis"
       :chartSpec="specAgeAtFirstDiagnosis"
       :data="data"
-      width="90"
     />
     <div v-if="showTable" class="p-4">
       <DataTable

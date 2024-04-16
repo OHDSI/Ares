@@ -22,7 +22,6 @@
         annotationsParentElement: 'g',
         brushParentElement: 'g g',
       }"
-      width="95"
       :signal-listener="listeners.setSelectionAreaSignal"
       :annotations="annotations"
       :annotation-mode="annotationsMode"

@@ -16,7 +16,6 @@
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
-      width="80"
       :chartSpec="defOverview"
       :annotations-config="{
         chartSpec: defOverviewAnnotation,

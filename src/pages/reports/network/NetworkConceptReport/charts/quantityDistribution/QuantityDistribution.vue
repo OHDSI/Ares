@@ -3,12 +3,7 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
-      id="viz-quantity"
-      :chartSpec="specQuantity"
-      :data="data"
-      width="95"
-    />
+    <Chart id="viz-quantity" :chartSpec="specQuantity" :data="data" />
     <div v-if="showTable" class="p-4">
       <DataTable
         removable-sort

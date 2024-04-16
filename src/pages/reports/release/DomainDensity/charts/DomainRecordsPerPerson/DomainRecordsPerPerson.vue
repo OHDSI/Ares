@@ -17,7 +17,6 @@
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
-      width="80"
       :chartSpec="defRecordsPerPerson"
       :annotations-config="{
         chartSpec: defRecordsPerPersonAnnotation,

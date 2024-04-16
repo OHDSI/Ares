@@ -15,7 +15,6 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-deathrecordproportionbymonth"
-      width="90"
       :annotations="annotations"
       :signal-listener="listeners.setSelectionAreaSignal"
       :annotation-mode="annotationsMode"
