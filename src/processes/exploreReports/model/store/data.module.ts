@@ -17,6 +17,7 @@ import { SourceRelease } from "@/processes/exploreReports/model/interfaces/files
 import db from "@/shared/api/duckdb/instance";
 import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
+import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
 
 const state = {
   data: {},
@@ -26,8 +27,12 @@ const getters = {
   getData: (state) => {
     return state.data;
   },
-  dataInStore: (state) => {
-    return Object.keys(state.data).length;
+  dataInStore: (state, getters, rootState) => {
+    if (getFilesByView({ files: [] })[rootState.route.name]) {
+      return Object.keys(state.data).length;
+    } else {
+      return rootState.explorerStore.dataLoaded;
+    }
   },
 };
 
