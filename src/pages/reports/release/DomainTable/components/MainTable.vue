@@ -17,6 +17,8 @@
     </template>
     <div class="p-5">
       <DataTable
+        sortField="PERCENT_PERSONS"
+        :sortOrder="-1"
         size="small"
         :value="store.getters.getData.domainTable"
         paginator
