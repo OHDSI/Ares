@@ -271,7 +271,6 @@ const save = function (item) {
     errors.value = "This concept has already been loaded";
     return;
   }
-  console.log(environment.DUCKDB_ENABLED);
   store
     .dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
       files:
@@ -304,6 +303,7 @@ const save = function (item) {
         };
         return;
       }
+      let withMeasurement;
       if (environment.DUCKDB_ENABLED === "true") {
         withMeasurement = conceptsData.value.filter(
           (value) =>
