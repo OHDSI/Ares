@@ -65,7 +65,8 @@ const getters = {
   getSelectedReport: function (state, getters, rootState) {
     const isDomain = rootState.route.params.domain;
     const isCohort = rootState.route.params.cohort_id;
-    if (isDomain) {
+    const isRelease = rootState.route.params.release;
+    if (isDomain && isRelease) {
       const domainTable = getters.getFilteredReports.find(
         (report) => report.domain
       );

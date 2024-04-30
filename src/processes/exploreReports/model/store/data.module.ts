@@ -105,6 +105,10 @@ const actions = {
       domain: rootState.route.params.domain,
       concept: rootState.route.params.concept,
     };
+    if (!payload.files) {
+      commit(SET_DATA, { data: [] });
+      return;
+    }
     const promises = payload.files.map((file) => {
       if (
         payload.duckdb_supported &&
@@ -167,6 +171,10 @@ const actions = {
     { commit, dispatch, rootState, rootGetters },
     payload
   ) {
+    if (!payload.files) {
+      commit(SET_DATA, { data: [] });
+      return;
+    }
     const promises = payload.files.reduce(
       (obj, file) => ({
         ...obj,
@@ -262,6 +270,10 @@ const actions = {
     { commit, dispatch, rootState, rootGetters },
     payload
   ) {
+    if (!payload.files) {
+      commit(SET_DATA, { data: [] });
+      return;
+    }
     const promises = payload.files.reduce(
       (obj, file) => ({
         ...obj,
