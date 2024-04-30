@@ -295,16 +295,32 @@ const getFilters = computed(() => {
 const getParsedFiltersForPivotTable = computed(() => {
   const keys = Object.keys(selectedFilterAttributes.value);
   return keys.reduce((acc, current) => {
-    const keyArray = current.split("-");
-    const attribute = keyArray[0];
-    const value = keyArray[1];
-    return {
-      ...acc,
-      [getFilters.value[attribute].data]: {
-        ...acc[getFilters.value[attribute].data],
-        [getFilters.value[attribute].children[value].data]: true,
-      },
-    };
+    if (current.includes("-")) {
+      const keyArray = current.split("-");
+      const attribute = keyArray[0];
+      const value = keyArray[1];
+      return {
+        ...acc,
+        [getFilters.value[attribute].data]: {
+          ...acc[getFilters.value[attribute].data],
+          [getFilters.value[attribute].children[value].data]: true,
+        },
+      };
+    } else {
+      const childrenObj = getFilters.value[current].children.reduce(
+        (obj, curr) => {
+          return { ...obj, [curr.data]: true };
+        },
+        {}
+      );
+      return {
+        ...acc,
+        [getFilters.value[current].data]: {
+          ...acc[getFilters.value[current].data],
+          ...childrenObj,
+        },
+      };
+    }
   }, {});
 });
 
@@ -341,8 +357,8 @@ const removeCols = function (item: string) {
 };
 
 const selectedFilterAttributes: Ref<string[]> = ref([]);
-const selectedFilterValues: Ref<{ [key: string]: { [key: string]: boolean } }> =
-  ref({});
+// const selectedFilterValues: Ref<{ [key: string]: { [key: string]: boolean } }> =
+//   ref({});
 
 const aggregateFunction: Ref<string> = ref("");
 const aggregateValue: Ref<string[]> = ref([""]);
