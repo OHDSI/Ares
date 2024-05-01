@@ -146,6 +146,14 @@ const vgSpec = computed(() => {
 
 let view;
 
+function setChartWidth() {
+  if (containerRef.value) {
+    const { width } = containerRef.value.getClientRects();
+    elementWidth.value = width;
+    const chartSvg = d3.select(`#${props.id} svg`);
+    chartSvg.attr("width", `${width}px`);
+  }
+}
 function rerenderAnnotationsOnClick(view, makeAnnotations, parentContainer) {
   view.addEventListener("click", function () {
     renderAnnotations(view, makeAnnotations(view), parentContainer);
@@ -185,13 +193,13 @@ const load = function (): void {
   };
 
   view.runAsync().then(() => {
-    if (containerRef.value) {
-      const { width } = containerRef.value.getClientRects();
-      elementWidth.value = width;
-      const chartSvg = d3.select(`#${props.id} svg`);
-      chartSvg.attr("width", `${width}px`);
-    }
+    setChartWidth();
     const annotations = initializeAnnotationsInstance(view);
+    view.addEventListener("click", function () {
+      setTimeout(() => {
+        setChartWidth();
+      }, 0);
+    });
 
     if (props.annotationMode) {
       renderAnnotations(
