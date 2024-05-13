@@ -66,7 +66,7 @@ export default {
       "dark:border-primary-300 dark:text-white", // Dark Mode
       "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-400/50 dark:focus:ring-primary-300/50", // Focus
       {
-        "bg-surface-200 border-primary-50 text-primary-700 dark:bg-surface-700":
+        "bg-surface-100 border-primary-50 text-primary-700 dark:bg-surface-700":
           context.active,
       },
     ],

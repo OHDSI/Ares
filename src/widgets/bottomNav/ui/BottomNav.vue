@@ -69,7 +69,7 @@ const store = useStore();
 const router = useRouter();
 
 const iconClass = computed((): string => {
-  return store.getters.getSettings.darkMode ? "" : "inverted";
+  return store.getters.getSettings.darkMode ? "darkmode" : "lightmode";
 });
 
 function redirectTo(path: string) {
@@ -82,7 +82,12 @@ const toggleSettings = function (): void {
 </script>
 
 <style scoped>
-.inverted {
-  filter: invert(1);
+.lightmode {
+  filter: invert(48%) sepia(15%) saturate(363%) hue-rotate(182deg)
+    brightness(89%) contrast(89%);
+}
+.darkmode {
+  filter: sepia(0%) saturate(393%) hue-rotate(238deg) brightness(80%)
+    contrast(90%);
 }
 </style>

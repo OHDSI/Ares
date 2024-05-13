@@ -1,16 +1,31 @@
 export default {
-  root: ({ props, state }) => ({
+  root: ({ props, state, parent }) => ({
     class: [
       // Display and Position
       "inline-flex",
       "relative",
 
       // Shape
-      "rounded-md",
+      { "rounded-md": parent.instance.$name !== "InputGroup" },
+      {
+        "first:rounded-l-md rounded-none last:rounded-r-md":
+          parent.instance.$name == "InputGroup",
+      },
+      {
+        "border-0 border-y border-l last:border-r":
+          parent.instance.$name == "InputGroup",
+      },
+      {
+        "first:ml-0 ml-[-1px]":
+          parent.instance.$name == "InputGroup" && !props.showButtons,
+      },
 
       // Color and Background
       "bg-surface-0 dark:bg-surface-800",
-      "border",
+
+      "border border-surface-300",
+      { "dark:border-surface-700": parent.instance.$name != "InputGroup" },
+      { "dark:border-surface-600": parent.instance.$name == "InputGroup" },
       { "border-surface-300 dark:border-surface-600": !props.invalid },
 
       // Invalid State
@@ -43,8 +58,7 @@ export default {
   label: ({ props }) => ({
     class: [
       //Font
-      "font-sans",
-      "leading-none",
+      "leading-[normal]",
 
       // Flex & Alignment
       " flex flex-auto",
@@ -142,29 +156,19 @@ export default {
       //  Colors
       {
         "text-surface-700 dark:text-white/80":
-          !context.focused && !context.selected && !context.disabled,
-      },
-      {
-        "text-surface-600 dark:text-white/70":
-          !context.focused && !context.selected && context.disabled,
-      },
-      {
-        "bg-surface-200 dark:bg-surface-600/60 text-surface-700 dark:text-white/80":
-          context.focused && !context.selected,
-      },
-      {
-        "bg-primary-100 dark:bg-primary-400/40 text-primary-700 dark:text-white/80":
-          context.focused && context.selected,
-      },
-      {
-        "bg-primary-50 dark:bg-primary-400/40 text-primary-700 dark:text-white/80":
-          !context.focused && context.selected,
+          !context.focused && !context.active,
+        "bg-primary-100 dark:bg-surface-600/60 text-surface-700 dark:text-white/80":
+          context.focused && !context.active,
+        "bg-surface-100 dark:bg-surface-700 text-primary-700 dark:text-white/80":
+          (context.focused && context.active) ||
+          context.active ||
+          (!context.focused && context.active),
       },
 
       // Hover States
       {
-        "hover:bg-surface-100 dark:hover:bg-surface-600/80": !context.active,
-        "hover:bg-primary-500/50 dark:hover:bg-primary-300/30 text-primary-700 dark:text-surface-0/80":
+        "hover:bg-primary-200 dark:hover:bg-surface-600/80": !context.active,
+        "hover:text-surface-700 hover:bg-primary-200 dark:hover:text-white dark:hover:bg-surface-600/80":
           context.active,
       },
 

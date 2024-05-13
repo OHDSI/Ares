@@ -10,7 +10,13 @@
 
   <div v-else class="flex flex-row justify-center gap-5">
     <h3 class="text-2xl">Hello, {{ user.name }}</h3>
-    <Button text @click="user = null" class="align-self-end" plain>
+    <Button
+      v-if="!store.getters.getWebAPIUser"
+      text
+      @click="user = null"
+      class="align-self-end"
+      plain
+    >
       <svg-icon type="mdi" :path="mdiAccountEditOutline"></svg-icon>
     </Button>
   </div>
