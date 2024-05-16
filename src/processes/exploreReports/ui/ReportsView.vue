@@ -1,7 +1,16 @@
 <template>
   <Explorer v-if="showExplorer" />
-  <div v-if="!store.getters.getErrors" class="my-20">
+  <div
+    v-if="!store.getters.getErrors && store.getters.dataInStore"
+    class="my-20"
+  >
     <router-view name="reportsView" />
+  </div>
+  <div
+    v-if="!store.getters.dataInStore && !store.getters.getErrors"
+    class="flex flex-col gap-2 justify-center items-center content-center h-[70vh]"
+  >
+    <ProgressCircle />
   </div>
   <BottomNav />
 
@@ -19,11 +28,6 @@
   />
 </template>
 
-<script lang="ts">
-export default {
-  name: "ReportsView",
-};
-</script>
 <script setup lang="ts">
 import { Error } from "@/widgets/error";
 import { Explorer, explorerActions } from "@/widgets/explorer";
@@ -42,6 +46,7 @@ import { LOAD_NOTES } from "@/widgets/notesPanel/model/store/actions.type";
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
 import SelectionEditDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
+import ProgressCircle from "@/entities/ProgressCircle.vue";
 
 const route = useRoute();
 const store = useStore();

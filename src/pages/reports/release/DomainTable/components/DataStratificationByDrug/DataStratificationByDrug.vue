@@ -23,7 +23,14 @@
       >
         <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
         <Column sortable header="CONCEPT_NAME" field="CONCEPT_NAME"> </Column>
-        <Column sortable header="# Records" field="RECORD_COUNT"> </Column>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          sortable
+          header="# Records"
+          field="RECORD_COUNT"
+        >
+        </Column>
       </DataTable>
     </div>
     <template #footer>

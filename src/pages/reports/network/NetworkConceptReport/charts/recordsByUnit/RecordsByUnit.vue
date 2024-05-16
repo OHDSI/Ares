@@ -3,12 +3,7 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
-      id="viz-recordsbyunit"
-      :chartSpec="specRecordsByUnit"
-      :data="data"
-      width="85"
-    />
+    <Chart id="viz-recordsbyunit" :chartSpec="specRecordsByUnit" :data="data" />
     <div v-if="showTable" class="p-4">
       <DataTable
         removable-sort

@@ -16,6 +16,7 @@ import { errorActions } from "@/widgets/error";
 import db from "@/shared/api/duckdb/instance";
 import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
+import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
 
 const state = {
@@ -26,8 +27,12 @@ const getters = {
   getData: (state) => {
     return state.data;
   },
-  dataInStore: (state) => {
-    return Object.keys(state.data).length;
+  dataInStore: (state, getters, rootState) => {
+    if (getFilesByView({ files: [] })[rootState.route.name]) {
+      return Object.keys(state.data).length;
+    } else {
+      return rootState.explorerStore.dataLoaded;
+    }
   },
 };
 
@@ -162,6 +167,10 @@ const actions = {
       domain: rootState.route.params.domain,
       concept: rootState.route.params.concept,
     };
+    if (!payload.files) {
+      commit(SET_DATA, { data: [] });
+      return;
+    }
     const promises = payload.files.map((file) => {
       if (isDuckDb && file.source !== "axios") {
         return fetchDuckDBData(file, payload, path);
@@ -210,6 +219,10 @@ const actions = {
     { commit, dispatch, rootState, rootGetters },
     payload
   ) {
+    if (!payload.files) {
+      commit(SET_DATA, { data: [] });
+      return;
+    }
     const isDuckDb =
       environment.DUCKDB_ENABLED === "true" && payload.duckdb_supported;
 
@@ -272,6 +285,10 @@ const actions = {
     { commit, dispatch, rootState, rootGetters },
     payload
   ) {
+    if (!payload.files) {
+      commit(SET_DATA, { data: [] });
+      return;
+    }
     const isDuckDb =
       payload.duckdb_supported && environment.DUCKDB_ENABLED === "true";
     const reportName = rootState.route.name;

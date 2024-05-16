@@ -6,7 +6,6 @@ import {
   PERSON,
 } from "@/shared/config/files";
 import { PersonData } from "@/processes/exploreReports/model/interfaces/files/Person";
-import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import { ObservationPeriodType } from "@/processes/exploreReports/model/interfaces/files/ObservationPeriodType";
 import environment from "@/shared/api/environment";
 import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
@@ -42,7 +41,7 @@ export default function feasibility(data) {
   let sources = data[DENSITY_DOMAIN_PERSON];
   const observationPeriod: ObservationPeriodType = data[OBSERVATION_PERIOD];
   const person: PersonData = data[PERSON];
-  if (environment.DUCKDB_ENABLED === "true") {
+  if (environment.DUCKDB_ENABLED === "true" && data[CONCEPT_METADATA]) {
     concept = combineObjectsBySource(data);
   } else {
     concept = data[CONCEPT];

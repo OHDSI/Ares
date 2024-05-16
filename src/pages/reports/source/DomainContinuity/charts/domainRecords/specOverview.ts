@@ -24,7 +24,7 @@ export function specOverview(zeroBaseline = false) {
     },
     spec: {
       height: 75,
-      width: 600,
+      width: "container",
       description: "Domain Continuity",
       encoding: {
         x: {

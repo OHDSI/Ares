@@ -4,6 +4,7 @@
     v-if="store.getters.dataInStore"
   >
     <DataTable
+      removable-sort
       size="small"
       :value="store.getters.getData.personPeriods"
       paginator
@@ -11,17 +12,18 @@
       :rowsPerPageOptions="[5, 10, 20, 50]"
     >
       <Column
+        sortable
         field="CONCEPT_NAME"
         header="Number of Observation Periods"
       ></Column>
-      <Column field="COUNT_VALUE" header="Number of People">
-        <template #body="slotProps">
-          {{ slotProps.data.PERCENT_PEOPLE }}%
-        </template>
-      </Column>
-      <Column field="PERCENT_PEOPLE" header="% of People">
+      <Column sortable field="COUNT_VALUE" header="Number of People">
         <template #body="slotProps">
           {{ helpers.formatComma(slotProps.data.COUNT_VALUE) }}
+        </template>
+      </Column>
+      <Column sortable field="PERCENT_PEOPLE" header="% of People">
+        <template #body="slotProps">
+          {{ slotProps.data.PERCENT_PEOPLE }}%
         </template>
       </Column>
     </DataTable>

@@ -6,7 +6,6 @@
     <Chart
       v-if="store.getters.dataInStore"
       :id="reportId"
-      width="85"
       :chartSpec="specRecordProportionByMonth"
       :data="data"
     />

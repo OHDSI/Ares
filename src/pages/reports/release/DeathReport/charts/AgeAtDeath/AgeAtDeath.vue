@@ -6,7 +6,6 @@
     <Chart
       v-if="store.getters.dataInStore"
       id="viz-ageatdeath"
-      width="100"
       :chartSpec="specAgeAtDeath"
       :data="store.getters.getData.AGE_AT_DEATH"
     />

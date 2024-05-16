@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-5" v-if="store.getters.dataInStore">
+  <div class="flex flex-col gap-5">
     <DomainRequirements
       :data="loadedData.sources"
       @domainsDataChanged="changeDomainData"
@@ -32,7 +32,7 @@ import RequiredConcepts from "@/pages/reports/network/NetworkDataFeasibilityRepo
 import FinalEstimation from "@/pages/reports/network/NetworkDataFeasibilityReport/components/FinalEstimation.vue";
 import DesiredDomains from "@/pages/reports/network/NetworkDataFeasibilityReport/components/DesiredDomains.vue";
 
-import { computed, watch, ref } from "vue";
+import { computed, ref, onBeforeMount } from "vue";
 
 const store = useStore();
 const loadedData = ref({});
@@ -57,19 +57,16 @@ const getData = computed(() => {
   return store.getters.getData;
 });
 
-watch(getData, () => {
-  if (Object.keys(getData.value).length) {
-    if (!Object.keys(loadedData.value).length) {
-      loadedData.value = {
-        sources: getData.value.sources,
-        person: getData.value.person,
-        domainSummary: getData.value.domainSummary,
-        observationPeriod: getData.value.observationPeriod,
-      };
-    }
-  }
-});
+function loadData() {
+  loadedData.value = {
+    sources: getData.value.sources,
+    person: getData.value.person,
+    domainSummary: getData.value.domainSummary,
+    observationPeriod: getData.value.observationPeriod,
+  };
+}
 
+onBeforeMount(loadData);
 function changeDomainData(value) {
   chosenDomains.value = value;
 }

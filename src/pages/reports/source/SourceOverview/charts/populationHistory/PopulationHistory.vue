@@ -13,7 +13,6 @@
     </template>
     <Chart
       :id="reportId"
-      width="95"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
       :chartSpec="specPopulationByRelease"

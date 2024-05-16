@@ -1,7 +1,7 @@
 <template>
-  <div class="p-4">
+  <div ref="containerRef" class="p-4">
     <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
-    <div v-resize="load" :id="id" :style="style"></div>
+    <div ref="chart" v-resize="load" :id="id"></div>
     <ContextMenu v-if="annotationMode" :items="actions" />
   </div>
 </template>
@@ -36,12 +36,12 @@ import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutatio
 import { OPEN_MENU } from "@/entities/contextMenu/model/store/actions.type";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
 import { Annotation } from "@/shared/interfaces/Annotations";
+import { ref } from "vue";
 
 interface Props {
   title?: string;
   data: object[] | string[];
   id: string;
-  width?: string;
   chartSpec: (a?: boolean, b?: boolean, c?: string) => any;
   annotationMode?: boolean;
   annotationsConfig?: {
@@ -62,6 +62,9 @@ interface Props {
   ) => void;
   annotations?: Annotation[];
 }
+
+const containerRef = ref(null);
+const elementWidth = ref(0);
 
 const actions = [
   {
@@ -143,14 +146,19 @@ const vgSpec = computed(() => {
 
 let view;
 
-const style = computed(function (): string {
-  return props.width ? "width: " + props.width + "%" : "width: 100%";
-});
-
+function setChartWidth() {
+  if (containerRef.value) {
+    const { width } = containerRef.value.getClientRects();
+    elementWidth.value = width;
+    const chartSvg = d3.select(`#${props.id} svg`);
+    chartSvg.attr("width", `${width}px`);
+  }
+}
 function rerenderAnnotationsOnClick(view, makeAnnotations, parentContainer) {
   view.addEventListener("click", function () {
     renderAnnotations(view, makeAnnotations(view), parentContainer);
     initializeTooltip();
+    initializeBrush(view);
   });
 }
 
@@ -183,8 +191,15 @@ const load = function (): void {
   view.error = () => {
     return;
   };
+
   view.runAsync().then(() => {
+    setChartWidth();
     const annotations = initializeAnnotationsInstance(view);
+    view.addEventListener("click", function () {
+      setTimeout(() => {
+        setChartWidth();
+      }, 0);
+    });
 
     if (props.annotationMode) {
       renderAnnotations(
@@ -418,6 +433,7 @@ function initializeBrush(view) {
 }
 
 function renderAnnotations(view, makeAnnotations, parentContainer) {
+  console.log("annotations rendered");
   const svg = d3.select(`#${props.id} svg ${parentContainer}`);
 
   svg.selectAll(".annotation-group").remove();
