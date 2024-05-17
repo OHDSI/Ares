@@ -13,11 +13,11 @@ import {
 } from "./actions.type";
 
 import { errorActions } from "@/widgets/error";
-import { SourceRelease } from "@/processes/exploreReports/model/interfaces/files/SourceIndex";
 import db from "@/shared/api/duckdb/instance";
 import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
 import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
+import errorMessages from "@/widgets/error/model/config/errorMessages";
 
 const state = {
   data: {},
@@ -78,6 +78,65 @@ async function fetchDuckDBData(file, payload, path) {
     }));
 }
 
+function commitData(data, { dispatch, commit }, reportName) {
+  try {
+    postprocessing[reportName]
+      ? commit(SET_DATA, postprocessing[reportName](data))
+      : commit(SET_DATA, data);
+  } catch (e) {
+    dispatch(errorActions.NEW_ERROR, {
+      userMessage: errorMessages.technicalError.codeError,
+      name: e.name,
+      details: e.message,
+      stack: e.stack,
+      type: "unexpected",
+      page: reportName,
+    });
+  }
+}
+
+function processData(data, isDuckDb, fileName) {
+  if (isDuckDb) {
+    return convertTableToArray(data);
+  }
+  if (!isDuckDb && preprocessing[fileName]) {
+    return preprocessing[fileName](data);
+  } else {
+    return data;
+  }
+}
+
+function handleNetworkError(responses, { dispatch }, reportName, isDuckDb) {
+  const errorCode = responses[0].reason?.response?.status;
+  let errorMessage;
+  const errorDetails = responses.map((val) => ({
+    url: val.reason?.config?.url,
+    errorCode,
+  }));
+  if (isDuckDb) {
+    errorMessage =
+      "The file is unavailable or the server isn't responding. Please check your internet connection and your data folder then try again";
+  }
+  if (errorCode === 404 && !isDuckDb) {
+    errorMessage = errorMessages.reportsMissingFiles[reportName];
+  }
+  if (
+    ((errorCode && errorCode >= 500) || typeof errorCode !== "number") &&
+    !isDuckDb
+  ) {
+    errorMessage = errorMessages.technicalError.networkError;
+  }
+
+  if (errorMessage) {
+    const message = responses[0].reason.stack;
+    dispatch(errorActions.NEW_ERROR, {
+      userMessage: errorMessage,
+      technicalMessage: { errorCode, errorDetails, message },
+      details: errorDetails,
+    });
+  }
+}
+
 function convertTableToArray(table) {
   const dataTable = [];
   for (const row of table) {
@@ -99,6 +158,9 @@ const actions = {
   },
 
   async [FETCH_FILES]({ commit, dispatch, rootState }, payload) {
+    const isDuckDb =
+      payload.duckdb_supported && environment.DUCKDB_ENABLED === "true";
+    const reportName = rootState.route.name;
     const path = {
       cdm: { cdm_source_key: rootState.route.params.cdm },
       release: rootState.route.params.release,
@@ -110,11 +172,7 @@ const actions = {
       return;
     }
     const promises = payload.files.map((file) => {
-      if (
-        payload.duckdb_supported &&
-        environment.DUCKDB_ENABLED === "true" &&
-        file.source !== "axios"
-      ) {
+      if (isDuckDb && file.source !== "axios") {
         return fetchDuckDBData(file, payload, path);
       } else {
         return fetchAxiosData(file, path);
@@ -122,47 +180,37 @@ const actions = {
     });
 
     let data = {};
-
     await Promise.allSettled(promises).then((responses) => {
       responses.forEach((response, index) => {
         const status = response.status;
         const fileData = response.value?.data;
         const fileName = payload.files[index].name;
+        const isRequired = payload.files[index].required;
 
         if (status === "fulfilled") {
-          data[fileName] =
-            response.value.duckdb_supported &&
-            environment.DUCKDB_ENABLED === "true" &&
-            payload.files[index].source !== "axios"
-              ? convertTableToArray(fileData)
-              : preprocessing[fileName]
-              ? preprocessing[fileName](fileData)
-              : fileData;
-        } else if (status === "rejected" && payload.files[index].required) {
-          const message = response.reason.message;
-          const url = response.reason?.config?.url;
-          dispatch(errorActions.NEW_ERROR, { message, details: url });
-          data = null;
-          return;
+          //data processing
+          data[fileName] = processData(
+            fileData,
+            isDuckDb && payload.files[index].source !== "axios",
+            fileName
+          );
         } else {
+          if (isRequired) {
+            handleNetworkError(
+              [response],
+              { dispatch },
+              reportName,
+              isDuckDb && payload.files[index].source !== "axios"
+            );
+            data = null;
+            return;
+          }
           data[fileName] = [];
         }
       });
-      try {
-        if (data) {
-          postprocessing[rootState.route.name]
-            ? commit(SET_DATA, postprocessing[rootState.route.name](data))
-            : commit(SET_DATA, data);
-        }
-      } catch (e) {
-        dispatch(errorActions.NEW_ERROR, {
-          message: `An unexpected error has occurred (${e.name})`,
-          name: e.name,
-          details: e.message,
-          stack: e.stack,
-          type: "unexpected",
-          page: rootState.route.name,
-        });
+
+      if (data) {
+        commitData(data, { dispatch, commit }, reportName);
       }
     });
   },
@@ -175,94 +223,61 @@ const actions = {
       commit(SET_DATA, { data: [] });
       return;
     }
-    const promises = payload.files.reduce(
-      (obj, file) => ({
-        ...obj,
-        [file.name]: rootGetters.getSources.reduce(
-          (filesArray, currentSource) => {
-            const loadedFiles = file.instanceParams.reduce(
-              (array, currentInstance) => {
-                return [
-                  ...array,
-                  payload.duckdb_supported &&
-                  environment.DUCKDB_ENABLED === "true" &&
-                  file.source !== "axios"
-                    ? fetchDuckDBData(file, payload, {
-                        cdm: currentSource,
-                        release: currentSource.releases[0].release_id,
-                        domain: currentInstance.domain
-                          ? currentInstance.domain
-                          : rootState.route.params.domain,
-                        concept: currentInstance.concept
-                          ? currentInstance.concept
-                          : rootState.route.params.concept,
-                      })
-                    : fetchAxiosData(file, {
-                        cdm: currentSource,
-                        release: currentSource.releases[0].release_id,
-                        domain: currentInstance.domain
-                          ? currentInstance.domain
-                          : rootState.route.params.domain,
-                        concept: currentInstance.concept
-                          ? currentInstance.concept
-                          : rootState.route.params.concept,
-                      }),
-                ];
-              },
-              []
-            );
-            return [...filesArray, ...loadedFiles];
-          },
-          []
-        ),
-      }),
-      {}
-    );
+    const isDuckDb =
+      environment.DUCKDB_ENABLED === "true" && payload.duckdb_supported;
 
-    let data = {};
-    for (const file in promises) {
-      await Promise.allSettled(promises[file]).then((responses) => {
-        data[file] = responses
-          .filter((response) => response.status === "fulfilled")
-          .map(
-            (
-              filtered: PromiseFulfilledResult<{
-                data: never[];
-                payload: { cdm: string };
-              }>
-            ) => ({
-              data:
-                payload.duckdb_supported &&
-                environment.DUCKDB_ENABLED === "true"
-                  ? convertTableToArray(filtered.value.data)
-                  : preprocessing[file]
-                  ? preprocessing[file](filtered.value.data)
-                  : filtered.value?.data,
-              source: filtered.value?.payload.cdm,
-            })
+    const reportName = rootState.route.name;
+    const promises = payload.files.reduce((obj, file) => {
+      obj[file.name] = rootGetters.getSources.reduce(
+        (filesArray, currentSource) => {
+          const loadedFiles = file.instanceParams.reduce(
+            (array, currentInstance) => {
+              const path = {
+                cdm: currentSource,
+                release: currentSource.releases[0].release_id,
+                domain: currentInstance.domain || rootState.route.params.domain,
+                concept:
+                  currentInstance.concept || rootState.route.params.concept,
+              };
+              const fetchData =
+                isDuckDb && file.source !== "axios"
+                  ? fetchDuckDBData(file, payload, path)
+                  : fetchAxiosData(file, path);
+              return [...array, fetchData];
+            },
+            []
           );
-        if (data[file].length === 0 && payload.criticalError) {
-          data = null;
-          dispatch(errorActions.NEW_ERROR, {
-            message: "No files found across data sources",
-            details: "No additional data",
-          });
-        }
-      });
-    }
-    try {
-      if (data) {
-        postprocessing[rootState.route.name]
-          ? commit(SET_DATA, postprocessing[rootState.route.name](data))
-          : commit(SET_DATA, data);
+
+          return [...filesArray, ...loadedFiles];
+        },
+        []
+      );
+
+      return obj;
+    }, {});
+
+    const data = {};
+    for (const file in promises) {
+      const responses = await Promise.allSettled(promises[file]);
+
+      data[file] = responses
+        .filter((response) => response.status === "fulfilled")
+        .map((filtered) => ({
+          data: isDuckDb
+            ? convertTableToArray(filtered.value.data)
+            : preprocessing[file]
+            ? preprocessing[file](filtered.value.data)
+            : filtered.value?.data,
+          source: filtered.value?.payload.cdm,
+        }));
+
+      //handle network error
+      if (data[file].length === 0) {
+        handleNetworkError(responses, { dispatch }, reportName, isDuckDb);
       }
-    } catch (e) {
-      dispatch(errorActions.NEW_ERROR, {
-        message: `An unexpected error has occurred (${e.name})`,
-        details: e.message,
-        stack: e.stack,
-        type: "unexpected",
-      });
+    }
+    if (data) {
+      commitData(data, { dispatch, commit }, reportName);
     }
   },
 
@@ -274,82 +289,61 @@ const actions = {
       commit(SET_DATA, { data: [] });
       return;
     }
-    const promises = payload.files.reduce(
-      (obj, file) => ({
-        ...obj,
-        [file.name]: rootGetters.getSelectedSource.releases.map((release) => {
-          if (
-            payload.duckdb_supported &&
-            environment.DUCKDB_ENABLED === "true" &&
-            file.source !== "axios"
-          ) {
-            return fetchDuckDBData(file, payload, {
-              cdm: rootGetters.getSelectedSource,
-              release: release.release_id,
-              domain: rootState.route.params.domain,
-              concept: rootState.route.params.concept,
-            });
-          } else {
-            return apiService(
-              {
-                url: getFilePath({
-                  cdm: rootGetters.getSelectedSource.cdm_source_key,
-                  release: release.release_id,
-                  domain: rootState.route.params.domain,
-                  concept: rootState.route.params.concept,
-                })[file.name],
-                method: "get",
-              },
-              release.release_name
-            );
-          }
-        }),
-      }),
-      {}
-    );
-    let data = {};
-    for (const file in promises) {
-      await Promise.allSettled(promises[file]).then((responses) => {
-        data[file] = responses
-          .filter((response) => response.status === "fulfilled")
-          .map(
-            (
-              filtered: PromiseFulfilledResult<{
-                data: never;
-                payload: SourceRelease;
-              }>
-            ) => ({
-              data:
-                payload.duckdb_supported &&
-                environment.DUCKDB_ENABLED === "true"
-                  ? convertTableToArray(filtered.value?.data)
-                  : filtered.value.data,
-              release: filtered.value?.payload,
-            })
-          );
-        if (data[file].length === 0) {
-          data = null;
-          dispatch(errorActions.NEW_ERROR, {
-            message: "No files found across current data source releases",
-            details: rootGetters.getSelectedSource.cdm_source_abbreviation,
+    const isDuckDb =
+      payload.duckdb_supported && environment.DUCKDB_ENABLED === "true";
+    const reportName = rootState.route.name;
+    const promises = payload.files.reduce((obj, file) => {
+      const selectedSource = rootGetters.getSelectedSource;
+      const params = {
+        cdm: selectedSource.cdm_source_key,
+        domain: rootState.route.params.domain,
+        concept: rootState.route.params.concept,
+      };
+
+      obj[file.name] = selectedSource.releases.map((release) => {
+        if (isDuckDb && file.source !== "axios") {
+          return fetchDuckDBData(file, payload, {
+            ...params,
+            release: release.release_id,
           });
+        } else {
+          const url = getFilePath({
+            ...params,
+            release: release.release_id,
+          })[file.name];
+
+          return apiService(
+            {
+              url,
+              method: "get",
+            },
+            release.release_name
+          );
         }
       });
-    }
-    try {
-      if (data) {
-        postprocessing[rootState.route.name]
-          ? commit(SET_DATA, postprocessing[rootState.route.name](data))
-          : commit(SET_DATA, data);
+
+      return obj;
+    }, {});
+
+    let data = {};
+    for (const file in promises) {
+      const responses = await Promise.allSettled(promises[file]);
+      data[file] = responses
+        .filter((response) => response.status === "fulfilled")
+        .map((filtered) => {
+          const { data, payload } = filtered.value;
+          return {
+            data: isDuckDb ? convertTableToArray(data) : data,
+            release: payload,
+          };
+        });
+      if (data[file].length === 0) {
+        handleNetworkError(responses[0], { dispatch }, reportName, isDuckDb);
+        data = null;
       }
-    } catch (e) {
-      dispatch(errorActions.NEW_ERROR, {
-        message: `An unexpected error has occurred (${e.name})`,
-        details: e.message,
-        stack: e.stack,
-        type: "unexpected",
-        page: rootState.route.name,
-      });
+    }
+    if (data) {
+      commitData(data, { dispatch, commit }, reportName);
     }
   },
 };
