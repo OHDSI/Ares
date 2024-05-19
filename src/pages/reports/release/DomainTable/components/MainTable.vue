@@ -1,8 +1,5 @@
 <template>
-  <Panel
-    v-if="store.getters.dataInStore"
-    :header="openedDomain.split('_').join(' ')"
-  >
+  <Panel :header="openedDomain.split('_').join(' ')">
     <template #icons>
       <ChartActionIcon
         :icon="mdiDatabase"

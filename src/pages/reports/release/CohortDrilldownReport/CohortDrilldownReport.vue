@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="!store.getters.getErrors && store.getters.dataInStore"
-    class="flex flex-col gap-10"
-  >
+  <div class="flex flex-col gap-10">
     <PageHeader :title="cohortName || 'Report name unknown'">
       <template #default>
         <div class="flex flex-row gap-2">

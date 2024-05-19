@@ -1,5 +1,5 @@
 <template>
-  <Panel v-if="store.getters.dataInStore" header="Index Event Breakdown">
+  <Panel header="Index Event Breakdown">
     <div class="p-5">
       <DataTable
         removable-sort

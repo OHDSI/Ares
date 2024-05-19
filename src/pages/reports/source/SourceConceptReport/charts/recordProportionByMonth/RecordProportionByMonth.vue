@@ -1,8 +1,5 @@
 <template>
-  <Panel
-    header="Record Proportion by Month"
-    v-if="!store.getErrors && store.getters.dataInStore"
-  >
+  <Panel header="Record Proportion by Month">
     <template #icons>
       <ChartHeader
         :notes-count="notes.length"

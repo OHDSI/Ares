@@ -16,7 +16,6 @@
       />
     </template>
     <Chart
-      v-if="store.getters.dataInStore"
       :id="reportId"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
@@ -31,7 +30,6 @@
     <div v-if="showTable" class="p-4">
       <DataTable
         size="small"
-        v-if="store.getters.dataInStore"
         :value="data"
         paginator
         :rows="5"

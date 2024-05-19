@@ -13,7 +13,6 @@
     </template>
 
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-observationbymonth"
       :annotations-config="{
         chartSpec: specObservationByMonthAnnotation,

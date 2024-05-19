@@ -1,7 +1,6 @@
 <template>
   <Panel header="Network Data Quality Issues by CDM Table">
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-table"
       :data="store.getters.getData[NETWORK_QUALITY_SUMMARY]"
       :chartSpec="specIssueStratificationByTable"

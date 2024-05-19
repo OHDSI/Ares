@@ -16,7 +16,6 @@
     ></MultiSelect>
 
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-measurementvaluedistribution"
       ref="measurementvalue"
       :chartSpec="specMeasurementValueDistribution"

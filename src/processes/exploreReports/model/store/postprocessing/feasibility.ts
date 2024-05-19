@@ -36,27 +36,29 @@ function combineObjectsBySource(inputObject) {
 }
 
 export default function feasibility(data) {
-  let concept;
-  let domainSummary = data[DOMAIN_SUMMARY];
-  let sources = data[DENSITY_DOMAIN_PERSON];
   const observationPeriod: ObservationPeriodType = data[OBSERVATION_PERIOD];
   const person: PersonData = data[PERSON];
+
+  let concept, conceptId;
   if (environment.DUCKDB_ENABLED === "true" && data[CONCEPT_METADATA]) {
     concept = combineObjectsBySource(data);
+    conceptId = concept?.[0]?.data[CONCEPT_METADATA]?.[0]?.CONCEPT_ID;
   } else {
     concept = data[CONCEPT];
+    conceptId = concept?.[0]?.data?.CONCEPT_ID?.[0];
   }
-  if (sources && sources.length) {
-    sources = sources.map((file) => ({
-      data: file.data,
-      source: file.source.cdm_source_abbreviation,
-    }));
-  }
-  if (domainSummary && domainSummary.length) {
-    domainSummary = data[DOMAIN_SUMMARY]?.map((file) => ({
-      data: file.data,
-      source: file.source.cdm_source_abbreviation,
-    }));
-  }
-  return { observationPeriod, person, sources, domainSummary, concept };
+
+  const sources = (data[DENSITY_DOMAIN_PERSON] || []).map((file) => ({
+    data: file.data,
+    source: file.source.cdm_source_abbreviation,
+  }));
+
+  const domainSummary = (data[DOMAIN_SUMMARY] || []).map((file) => ({
+    data: file.data,
+    source: file.source.cdm_source_abbreviation,
+  }));
+
+  return conceptId
+    ? { observationPeriod, person, sources, domainSummary, concept }
+    : { observationPeriod, person, sources, domainSummary };
 }

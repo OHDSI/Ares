@@ -15,7 +15,6 @@
       />
     </template>
     <Chart
-      v-if="store.getters.dataInStore"
       :id="maleReportId"
       title="Male"
       :annotations-config="{
@@ -30,7 +29,6 @@
       :annotation-mode="annotationsMode"
     />
     <Chart
-      v-if="store.getters.dataInStore"
       :id="femaleReportId"
       title="Female"
       :annotations-config="{

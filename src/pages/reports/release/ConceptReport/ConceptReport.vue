@@ -1,66 +1,60 @@
 <template>
-  <div v-if="!store.getErrors && store.getters.dataInStore">
-    <div class="flex flex-col gap-10">
-      <PageHeader
-        :title="store.getters.getData.conceptName || 'Report name unknown'"
-      >
-        <template #default>
-          <div class="flex flex-row gap-2">
-            <Button
-              size="small"
-              style="width: 180px; height: 30px"
-              @click="navigateToNetworkConcept"
-            >
-              <svg-icon
-                class="text-white"
-                type="mdi"
-                :path="mdiCheckNetwork"
-              ></svg-icon>
-              <span class="text-white uppercase text-base">
-                Network Report
-              </span>
-            </Button>
-            <ReturnButton />
-          </div>
-        </template>
-      </PageHeader>
-      <InfoPanel
-        :network-concept-report="navigateToNetworkConcept"
-        :concept="store.getters.getData.conceptId"
-        :population="store.getters.getData.numPersons"
-        :percent-people="store.getters.getData.percentPersons"
-        :records-per-person="store.getters.getData.recordsPerPerson"
-        :percent-values="
-          route.params.domain === 'measurement'
-            ? getPercentWithValues
-            : undefined
-        "
-        :count-failed="
-          store.getters.getData.countFailed
-            ? {
-                value: store.getters.getData.countFailed,
-                action: navigateToDataQuality,
-              }
-            : undefined
-        "
-        :not-stationary="store.getters.getData.isNotStationary"
-      />
+  <div class="flex flex-col gap-10">
+    <PageHeader
+      :title="store.getters.getData.conceptName || 'Report name unknown'"
+    >
+      <template #action>
+        <div class="flex flex-row gap-2">
+          <Button
+            size="small"
+            style="width: 180px; height: 30px"
+            @click="navigateToNetworkConcept"
+          >
+            <svg-icon
+              class="text-white"
+              type="mdi"
+              :path="mdiCheckNetwork"
+            ></svg-icon>
+            <span class="text-white uppercase text-base"> Network Report </span>
+          </Button>
+          <ReturnButton />
+        </div>
+      </template>
+    </PageHeader>
+    <InfoPanel
+      :network-concept-report="navigateToNetworkConcept"
+      :concept="store.getters.getData.conceptId"
+      :population="store.getters.getData.numPersons"
+      :percent-people="store.getters.getData.percentPersons"
+      :records-per-person="store.getters.getData.recordsPerPerson"
+      :percent-values="
+        route.params.domain === 'measurement' ? getPercentWithValues : undefined
+      "
+      :count-failed="
+        store.getters.getData.countFailed
+          ? {
+              value: store.getters.getData.countFailed,
+              action: navigateToDataQuality,
+            }
+          : undefined
+      "
+      :not-stationary="store.getters.getData.isNotStationary"
+    />
 
-      <MeasurementValueDistribution />
-      <AgeAtFirstDiagnosis />
-      <AgeAtFirstExposure />
-      <LengthOfEra />
-      <ConditionsByType />
-      <DrugsByType />
-      <RecordsByUnit />
-      <MeasurementsByType />
-      <AgeAtFirstOccurrence />
-      <RecordCountProportionByMonth />
-      <DaysSupply />
-      <QuantityDistribution />
-      <VisitDurationByType />
-      <RecordCountProportionByAgeSexYear />
-    </div>
+    <MeasurementValueDistribution />
+    <AgeAtFirstDiagnosis />
+    <AgeAtFirstExposure />
+    <LengthOfEra />
+    <ConditionsByType />
+    <DrugsByType />
+    <RecordsByUnit />
+    <MeasurementsByType />
+    <AgeAtFirstOccurrence />
+    <RecordCountProportionByMonth />
+    <DaysSupply />
+    <QuantityDistribution />
+    <VisitDurationByType />
+    <RecordCountProportionByAgeSexYear />
   </div>
 </template>
 

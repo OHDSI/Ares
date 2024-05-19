@@ -18,6 +18,7 @@ import db from "@/shared/api/duckdb/instance";
 import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
 import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
+import { webApiActions } from "@/shared/api/webAPI";
 
 const state = {
   data: {},
@@ -25,7 +26,7 @@ const state = {
 
 const getters = {
   getData: (state) => {
-    return state.data;
+    return state.data.data;
   },
   dataInStore: (state, getters, rootState) => {
     if (getFilesByView({ files: [] })[rootState.route.name]) {
@@ -94,8 +95,12 @@ function convertTableToArray(table) {
 }
 
 const actions = {
-  [RESET_DATA_STORAGE]({ commit }) {
-    commit(CLEAR_DATA);
+  [RESET_DATA_STORAGE]({ commit }, payload) {
+    if (payload?.skipLoading) {
+      commit(CLEAR_DATA, payload?.skipLoading);
+    } else {
+      commit(CLEAR_DATA);
+    }
   },
 
   async [FETCH_FILES]({ commit, dispatch, rootState }, payload) {
@@ -106,7 +111,7 @@ const actions = {
       concept: rootState.route.params.concept,
     };
     if (!payload.files) {
-      commit(SET_DATA, { data: [] });
+      commit(SET_DATA, { data: {} });
       return;
     }
     const promises = payload.files.map((file) => {
@@ -149,10 +154,14 @@ const actions = {
         }
       });
       try {
-        if (data) {
+        if (data && Object.keys(data).length) {
           postprocessing[rootState.route.name]
-            ? commit(SET_DATA, postprocessing[rootState.route.name](data))
-            : commit(SET_DATA, data);
+            ? commit(SET_DATA, {
+                data: postprocessing[rootState.route.name](data),
+              })
+            : commit(SET_DATA, { data });
+        } else {
+          commit(SET_DATA, {});
         }
       } catch (e) {
         dispatch(errorActions.NEW_ERROR, {
@@ -172,97 +181,102 @@ const actions = {
     payload
   ) {
     if (!payload.files) {
-      commit(SET_DATA, { data: [] });
+      commit(SET_DATA, { data: {} });
       return;
-    }
-    const promises = payload.files.reduce(
-      (obj, file) => ({
-        ...obj,
-        [file.name]: rootGetters.getSources.reduce(
-          (filesArray, currentSource) => {
-            const loadedFiles = file.instanceParams.reduce(
-              (array, currentInstance) => {
-                return [
-                  ...array,
-                  payload.duckdb_supported &&
-                  environment.DUCKDB_ENABLED === "true" &&
-                  file.source !== "axios"
-                    ? fetchDuckDBData(file, payload, {
-                        cdm: currentSource,
-                        release: currentSource.releases[0].release_id,
-                        domain: currentInstance.domain
-                          ? currentInstance.domain
-                          : rootState.route.params.domain,
-                        concept: currentInstance.concept
-                          ? currentInstance.concept
-                          : rootState.route.params.concept,
-                      })
-                    : fetchAxiosData(file, {
-                        cdm: currentSource,
-                        release: currentSource.releases[0].release_id,
-                        domain: currentInstance.domain
-                          ? currentInstance.domain
-                          : rootState.route.params.domain,
-                        concept: currentInstance.concept
-                          ? currentInstance.concept
-                          : rootState.route.params.concept,
-                      }),
-                ];
-              },
-              []
-            );
-            return [...filesArray, ...loadedFiles];
-          },
-          []
-        ),
-      }),
-      {}
-    );
+    } else {
+      const promises = payload.files.reduce(
+        (obj, file) => ({
+          ...obj,
+          [file.name]: rootGetters.getSources.reduce(
+            (filesArray, currentSource) => {
+              const loadedFiles = file.instanceParams.reduce(
+                (array, currentInstance) => {
+                  return [
+                    ...array,
+                    payload.duckdb_supported &&
+                    environment.DUCKDB_ENABLED === "true" &&
+                    file.source !== "axios"
+                      ? fetchDuckDBData(file, payload, {
+                          cdm: currentSource,
+                          release: currentSource.releases[0].release_id,
+                          domain: currentInstance.domain
+                            ? currentInstance.domain
+                            : rootState.route.params.domain,
+                          concept: currentInstance.concept
+                            ? currentInstance.concept
+                            : rootState.route.params.concept,
+                        })
+                      : fetchAxiosData(file, {
+                          cdm: currentSource,
+                          release: currentSource.releases[0].release_id,
+                          domain: currentInstance.domain
+                            ? currentInstance.domain
+                            : rootState.route.params.domain,
+                          concept: currentInstance.concept
+                            ? currentInstance.concept
+                            : rootState.route.params.concept,
+                        }),
+                  ];
+                },
+                []
+              );
+              return [...filesArray, ...loadedFiles];
+            },
+            []
+          ),
+        }),
+        {}
+      );
 
-    let data = {};
-    for (const file in promises) {
-      await Promise.allSettled(promises[file]).then((responses) => {
-        data[file] = responses
-          .filter((response) => response.status === "fulfilled")
-          .map(
-            (
-              filtered: PromiseFulfilledResult<{
-                data: never[];
-                payload: { cdm: string };
-              }>
-            ) => ({
-              data:
-                payload.duckdb_supported &&
-                environment.DUCKDB_ENABLED === "true"
-                  ? convertTableToArray(filtered.value.data)
-                  : preprocessing[file]
-                  ? preprocessing[file](filtered.value.data)
-                  : filtered.value?.data,
-              source: filtered.value?.payload.cdm,
-            })
-          );
-        if (data[file].length === 0 && payload.criticalError) {
-          data = null;
-          dispatch(errorActions.NEW_ERROR, {
-            message: "No files found across data sources",
-            details: "No additional data",
-          });
-        }
-      });
-    }
-    try {
-      if (data) {
-        postprocessing[rootState.route.name]
-          ? commit(SET_DATA, postprocessing[rootState.route.name](data))
-          : commit(SET_DATA, data);
+      let data = {};
+      for (const file in promises) {
+        await Promise.allSettled(promises[file]).then((responses) => {
+          data[file] = responses
+            .filter((response) => response.status === "fulfilled")
+            .map(
+              (
+                filtered: PromiseFulfilledResult<{
+                  data: never[];
+                  payload: { cdm: string };
+                }>
+              ) => ({
+                data:
+                  payload.duckdb_supported &&
+                  environment.DUCKDB_ENABLED === "true"
+                    ? convertTableToArray(filtered.value.data)
+                    : preprocessing[file]
+                    ? preprocessing[file](filtered.value.data)
+                    : filtered.value?.data,
+                source: filtered.value?.payload.cdm,
+              })
+            );
+          if (data[file].length === 0 && payload.criticalError) {
+            data = null;
+            dispatch(errorActions.NEW_ERROR, {
+              message: "No files found across data sources",
+              details: "No additional data",
+            });
+          }
+        });
       }
-    } catch (e) {
-      dispatch(errorActions.NEW_ERROR, {
-        message: `An unexpected error has occurred (${e.name})`,
-        details: e.message,
-        stack: e.stack,
-        type: "unexpected",
-      });
+      try {
+        if (data && Object.keys(data).length) {
+          postprocessing[rootState.route.name]
+            ? commit(SET_DATA, {
+                data: postprocessing[rootState.route.name](data),
+              })
+            : commit(SET_DATA, { data });
+        } else {
+          commit(SET_DATA, {});
+        }
+      } catch (e) {
+        dispatch(errorActions.NEW_ERROR, {
+          message: `An unexpected error has occurred (${e.name})`,
+          details: e.message,
+          stack: e.stack,
+          type: "unexpected",
+        });
+      }
     }
   },
 
@@ -271,7 +285,7 @@ const actions = {
     payload
   ) {
     if (!payload.files) {
-      commit(SET_DATA, { data: [] });
+      commit(SET_DATA, { data: {} });
       return;
     }
     const promises = payload.files.reduce(
@@ -337,10 +351,12 @@ const actions = {
       });
     }
     try {
-      if (data) {
+      if (data && Object.keys(data).length) {
         postprocessing[rootState.route.name]
           ? commit(SET_DATA, postprocessing[rootState.route.name](data))
           : commit(SET_DATA, data);
+      } else {
+        commit(RESET_DATA_STORAGE);
       }
     } catch (e) {
       dispatch(errorActions.NEW_ERROR, {
@@ -358,9 +374,14 @@ const mutations = {
   [SET_DATA](state, payload) {
     state.data = { ...state.data, ...payload };
   },
-  [CLEAR_DATA](state) {
-    state.data = {};
-    state.webApiData = {};
+  [CLEAR_DATA](state, payload) {
+    if (payload) {
+      state.data = { showLoading: false };
+      state.webApiData = {};
+    } else {
+      state.data = {};
+      state.webApiData = {};
+    }
   },
 };
 

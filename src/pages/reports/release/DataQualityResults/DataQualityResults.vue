@@ -6,16 +6,16 @@
         :active-index="getCurrentTab"
       >
         <TabPanel header="Overview">
-          <OverviewTable v-if="store.getters.dataInStore" />
+          <OverviewTable />
         </TabPanel>
         <TabPanel header="Metadata">
-          <MetadataTable v-if="store.getters.dataInStore" />
+          <MetadataTable />
         </TabPanel>
         <TabPanel header="Results">
-          <ResultsTable v-if="store.getters.dataInStore" />
+          <ResultsTable />
         </TabPanel>
         <TabPanel header="Pivot Table">
-          <PivotDataTable v-if="store.getters.dataInStore" />
+          <PivotDataTable />
         </TabPanel>
       </TabView>
     </template>

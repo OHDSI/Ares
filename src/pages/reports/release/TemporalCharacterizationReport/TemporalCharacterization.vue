@@ -1,5 +1,5 @@
 <template>
-  <Panel v-if="store.getters.dataInStore" header="Temporal Characterization">
+  <Panel header="Temporal Characterization">
     <DataTable
       size="small"
       :globalFilterFields="[

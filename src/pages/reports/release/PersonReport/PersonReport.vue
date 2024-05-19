@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!store.getters.getErrors && store.getters.dataInStore" fluid>
+  <div fluid>
     <div class="flex flex-col gap-10">
       <PageHeader title="Person Report" />
       <InfoPanel

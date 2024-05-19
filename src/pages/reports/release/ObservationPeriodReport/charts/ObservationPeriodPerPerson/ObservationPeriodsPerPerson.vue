@@ -1,8 +1,5 @@
 <template>
-  <Panel
-    header="Observation Periods per Person"
-    v-if="store.getters.dataInStore"
-  >
+  <Panel header="Observation Periods per Person">
     <DataTable
       removable-sort
       size="small"

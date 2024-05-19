@@ -1,5 +1,5 @@
 <template>
-  <Panel v-if="store.getters.dataInStore" header="Cohorts Table">
+  <Panel header="Cohorts Table">
     <div class="p-5">
       <DataTable
         removable-sort

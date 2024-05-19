@@ -3,7 +3,6 @@
     <div class="p-5" v-if="store.getters.getData.metadataData" fluid>
       <DataTable
         size="small"
-        v-if="store.getters.dataInStore"
         :value="store.getters.getData.metadataData"
         paginator
         :rows="10"

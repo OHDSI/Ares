@@ -1,7 +1,6 @@
 <template>
   <Panel
     header="Historical Data Quality by Category"
-    :loading="!store.getters.dataInStore"
     elevation="2"
     class="ma-4"
   >
@@ -17,7 +16,6 @@
       />
     </template>
     <Chart
-      v-if="store.getters.dataInStore"
       :id="reportId"
       :data="data"
       :chartSpec="specDataQualityResultsByCategory"
@@ -32,7 +30,6 @@
     <div v-if="showTable" class="p-4">
       <DataTable
         size="small"
-        v-if="store.getters.dataInStore"
         :value="data"
         paginator
         :rows="5"
