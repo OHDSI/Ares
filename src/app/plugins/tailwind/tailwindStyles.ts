@@ -25,6 +25,7 @@ import slider from "@/app/plugins/tailwind/components/slider";
 import cascadeSelect from "@/app/plugins/tailwind/components/cascadeSelect";
 import floatLabel from "@/app/plugins/tailwind/components/floatLabel";
 import checkBox from "@/app/plugins/tailwind/components/checkBox";
+import accordion from "@/app/plugins/tailwind/components/accordion";
 
 export const tailwindTheme = {
   tabview,
@@ -54,4 +55,5 @@ export const tailwindTheme = {
   cascadeSelect,
   floatLabel,
   checkBox,
+  accordion,
 };

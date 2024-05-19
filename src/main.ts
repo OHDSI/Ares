@@ -20,6 +20,7 @@ import { tailwindTheme } from "@/app/plugins/tailwind/tailwindStyles";
 import ConfirmationService from "primevue/confirmationservice";
 import resize from "@/shared/lib/directives/resize";
 import { errorActions } from "@/widgets/error";
+import errorMessages from "@/widgets/error/model/config/errorMessages";
 // adds reactive router module to global state
 
 sync(store, router);
@@ -34,12 +35,11 @@ environment.load().then(() => {
         app.config.errorHandler = (err) => {
           // Handle the error globally
           store.dispatch(errorActions.NEW_ERROR, {
-            message: `An unexpected error has occurred (${err.name})`,
+            userMessage: errorMessages.technicalError.codeError,
             name: err.name,
             details: err.message,
             stack: err.stack,
             type: "unexpected",
-            page: store.state.route.name,
           });
         };
         app
