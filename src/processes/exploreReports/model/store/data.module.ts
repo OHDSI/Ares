@@ -81,17 +81,15 @@ async function fetchDuckDBData(file, payload, path) {
 
 function commitData(data, { dispatch, commit }, reportName) {
   try {
-    if(data && Object.keys(data).length) {
+    if (data && Object.keys(data).length) {
       postprocessing[reportName]
-          ? commit(SET_DATA, {
+        ? commit(SET_DATA, {
             data: postprocessing[reportName](data),
           })
-          : commit(SET_DATA, { data };
-    }
-    else {
+        : commit(SET_DATA, { data });
+    } else {
       commit(SET_DATA, {});
     }
-
   } catch (e) {
     dispatch(errorActions.NEW_ERROR, {
       userMessage: errorMessages.technicalError.codeError,
@@ -235,36 +233,36 @@ const actions = {
     if (!payload.files) {
       commit(SET_DATA, { data: {} });
       return;
-    }
-    else {
+    } else {
       const isDuckDb =
-          environment.DUCKDB_ENABLED === "true" && payload.duckdb_supported;
+        environment.DUCKDB_ENABLED === "true" && payload.duckdb_supported;
 
       const reportName = rootState.route.name;
       const promises = payload.files.reduce((obj, file) => {
         obj[file.name] = rootGetters.getSources.reduce(
-            (filesArray, currentSource) => {
-              const loadedFiles = file.instanceParams.reduce(
-                  (array, currentInstance) => {
-                    const path = {
-                      cdm: currentSource,
-                      release: currentSource.releases[0].release_id,
-                      domain: currentInstance.domain || rootState.route.params.domain,
-                      concept:
-                          currentInstance.concept || rootState.route.params.concept,
-                    };
-                    const fetchData =
-                        isDuckDb && file.source !== "axios"
-                            ? fetchDuckDBData(file, payload, path)
-                            : fetchAxiosData(file, path);
-                    return [...array, fetchData];
-                  },
-                  []
-              );
+          (filesArray, currentSource) => {
+            const loadedFiles = file.instanceParams.reduce(
+              (array, currentInstance) => {
+                const path = {
+                  cdm: currentSource,
+                  release: currentSource.releases[0].release_id,
+                  domain:
+                    currentInstance.domain || rootState.route.params.domain,
+                  concept:
+                    currentInstance.concept || rootState.route.params.concept,
+                };
+                const fetchData =
+                  isDuckDb && file.source !== "axios"
+                    ? fetchDuckDBData(file, payload, path)
+                    : fetchAxiosData(file, path);
+                return [...array, fetchData];
+              },
+              []
+            );
 
-              return [...filesArray, ...loadedFiles];
-            },
-            []
+            return [...filesArray, ...loadedFiles];
+          },
+          []
         );
 
         return obj;
@@ -275,15 +273,15 @@ const actions = {
         const responses = await Promise.allSettled(promises[file]);
 
         data[file] = responses
-            .filter((response) => response.status === "fulfilled")
-            .map((filtered) => ({
-              data: isDuckDb
-                  ? convertTableToArray(filtered.value.data)
-                  : preprocessing[file]
-                      ? preprocessing[file](filtered.value.data)
-                      : filtered.value?.data,
-              source: filtered.value?.payload.cdm,
-            }));
+          .filter((response) => response.status === "fulfilled")
+          .map((filtered) => ({
+            data: isDuckDb
+              ? convertTableToArray(filtered.value.data)
+              : preprocessing[file]
+              ? preprocessing[file](filtered.value.data)
+              : filtered.value?.data,
+            source: filtered.value?.payload.cdm,
+          }));
 
         //handle network error
         if (data[file].length === 0) {
