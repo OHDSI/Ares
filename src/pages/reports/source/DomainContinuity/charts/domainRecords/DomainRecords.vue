@@ -1,8 +1,5 @@
 <template>
-  <Panel
-    header="Domain Continuity"
-    v-if="!store.getters.getErrors & store.getters.dataInStore"
-  >
+  <Panel header="Domain Continuity">
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
@@ -15,7 +12,6 @@
     <div v-if="showTable" class="p-4">
       <DataTable
         size="small"
-        v-if="store.getters.dataInStore"
         :value="data"
         paginator
         :rows="5"

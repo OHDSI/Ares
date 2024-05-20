@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="store.getters.dataInStore && !store.getters.getErrors"
-    class="pa-1"
-  >
+  <div class="pa-1">
     <div class="flex flex-col gap-5">
       <AchillesPerformance />
       <CohortDiagnosticsPerformance />

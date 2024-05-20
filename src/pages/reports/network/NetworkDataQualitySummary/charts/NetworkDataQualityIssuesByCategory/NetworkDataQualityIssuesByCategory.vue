@@ -1,7 +1,6 @@
 <template>
   <Panel header="Network Data Quality Issues By Category">
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-category"
       :data="store.getters.getData[NETWORK_QUALITY_SUMMARY]"
       :chartSpec="specIssueStratificationByCategory"

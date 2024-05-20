@@ -1,9 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Panel
-      v-if="store.getters.dataInStore"
-      header="Network Unmapped Source Codes"
-    >
+    <Panel header="Network Unmapped Source Codes">
       <DataTable
         removable-sort
         size="small"
@@ -68,7 +65,7 @@
       </DataTable>
     </Panel>
 
-    <Panel v-if="store.getters.dataInStore" header="Pivot Table">
+    <Panel header="Pivot Table">
       <Pivot
         :data="store.getters.getData.domainTable"
         :attributes="[

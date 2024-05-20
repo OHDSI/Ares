@@ -1,8 +1,5 @@
 <template>
-  <Panel
-    header="Record Count Proportion By Age, Sex, Year"
-    :loading="!store.getters.dataInStore"
-  >
+  <Panel header="Record Count Proportion By Age, Sex, Year">
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>

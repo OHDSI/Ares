@@ -4,7 +4,6 @@
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-observationbyage"
       :chartSpec="specObservationByAge"
       :data="data"

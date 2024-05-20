@@ -1,7 +1,6 @@
 <template>
   <Panel header="Race">
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-race"
       :chartSpec="specRace"
       :data="store.getters.getData.raceData"

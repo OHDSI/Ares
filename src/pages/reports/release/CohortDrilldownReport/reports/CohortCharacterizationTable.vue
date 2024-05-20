@@ -1,8 +1,5 @@
 <template>
-  <Panel
-    v-if="store.getters.dataInStore"
-    header="Cohort Characterization report"
-  >
+  <Panel header="Cohort Characterization report">
     <div class="p-5">
       <DataTable
         removable-sort

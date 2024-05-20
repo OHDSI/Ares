@@ -7,7 +7,7 @@
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
     <Chart
-      v-if="store.getters.dataInStore && data"
+      v-if="data"
       id="viz-stratificationbyvisit"
       :chartSpec="specVisitStratification"
       :data="data"

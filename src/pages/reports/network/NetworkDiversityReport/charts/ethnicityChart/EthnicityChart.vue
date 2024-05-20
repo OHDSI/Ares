@@ -1,7 +1,6 @@
 <template>
   <Panel header="Ethnicity">
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-network-ethnicity"
       :chartSpec="specEthnicity"
       :data="store.getters.getData.ethnicityData"

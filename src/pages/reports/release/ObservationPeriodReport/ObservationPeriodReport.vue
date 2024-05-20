@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="flex flex-col gap-10"
-    v-if="!store.getters.getErrors && store.getters.dataInStore"
-  >
+  <div class="flex flex-col gap-10">
     <PageHeader title="Observation Period Report" />
     <div class="flex flex-col gap-5">
       <CumulativeObservation />

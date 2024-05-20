@@ -3,7 +3,7 @@
     <h1 class="font-light uppercase text-2xl text-black dark:text-white">
       {{ props.title }}
     </h1>
-    <slot></slot>
+    <slot name="action"></slot>
   </div>
 </template>
 

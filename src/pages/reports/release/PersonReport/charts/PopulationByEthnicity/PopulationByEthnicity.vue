@@ -8,12 +8,7 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
-      v-if="store.getters.dataInStore"
-      id="viz-ethnicity"
-      :chartSpec="specEthnicity"
-      :data="data"
-    />
+    <Chart id="viz-ethnicity" :chartSpec="specEthnicity" :data="data" />
     <div v-if="showTable" class="p-4">
       <DataTable
         removable-sort

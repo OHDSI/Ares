@@ -1,82 +1,84 @@
 <template>
   <div v-if="!store.getters.getErrors">
-    <div>
-      <div class="flex flex-col gap-5">
-        <PageHeader title="NETWORK CONCEPT REPORT">
-          <template> <ReturnButton /> </template>
-        </PageHeader>
-        <div class="flex flex-row gap-5">
-          <InputText
-            class="rounded-md text-black dark:text-white dark:bg-surface-800 border border-surface-300 dark:border-surface-700"
-            v-model="concept"
-            placeholder="Concept ID"
-          ></InputText>
-          <Dropdown
-            :options="domains"
-            v-model="selected"
-            variant="outlined"
-            density="compact"
-            option-label="text"
-            option-value="value"
-          ></Dropdown>
-          <Button @click="atClick">
-            <span class="uppercase font-light text-white py-1 px-2"
-              >Update Report
-            </span></Button
-          >
-        </div>
-        <div class="flex flex-col gap-5" v-if="store.getters.getData">
-          <info-panel
-            v-if="metadata"
-            :concept="metadata.conceptId"
-            :population="metadata.numPersons"
-          />
-          <AgeAtFirstOccurrence
-            v-if="ageAtFirstOccurrence.length"
-            :data="ageAtFirstOccurrence"
-          />
-          <RecordCountProportionByMonth
-            v-if="recordCountProportionByMonth.length"
-            :data="recordCountProportionByMonth"
-          />
-          <MeasurementValueDistributionChart
-            v-if="measurementValueDistribution.chart.length"
-            :data="measurementValueDistribution"
-          />
-          <AgeAtFirstExposure
-            v-if="ageAtFirstExposure.length"
-            :data="ageAtFirstExposure"
-          />
-          <AgeAtFirstDiagnosis
-            v-if="ageAtFirstDiagnosis.length"
-            :data="ageAtFirstDiagnosis"
-          />
-          <DaysSupply v-if="daysSupply.length" :data="daysSupply" />
-          <DrugsByType v-if="drugsByType.length" :data="drugsByType" />
-          <QuantityDistribution
-            v-if="quantityDistribution.length"
-            :data="quantityDistribution"
-          />
-          <ConditionsByType
-            v-if="conditionsByType.length"
-            :data="conditionsByType"
-          />
-          <VisitDurationByType
-            v-if="visitDurationByType.length"
-            :data="visitDurationByType"
-          />
-          <RecordsByUnit v-if="recordsByUnit.length" :data="recordsByUnit" />
-          <MeasurementsByType
-            v-if="measurementsByType.length"
-            :data="measurementsByType"
-          />
-          <LengthOfEra v-if="lengthOfEra.length" :data="lengthOfEra" />
-        </div>
-        <div v-else>
-          <h3 class="text-center">No data available</h3>
-        </div>
+    <div class="flex flex-col gap-5">
+      <PageHeader title="NETWORK CONCEPT REPORT">
+        <template #action>
+          <div class="flex flex-row gap-2">
+            <Button @click="atClick">
+              <span class="uppercase font-light text-white py-1 px-2">
+                Search concepts
+              </span></Button
+            >
+            <ReturnButton />
+          </div>
+        </template>
+      </PageHeader>
+
+      <div class="flex flex-col gap-5" v-if="data">
+        <info-panel
+          v-if="metadata"
+          :concept="metadata.conceptId"
+          :population="metadata.numPersons"
+          :domain="metadata.domain"
+        />
+        <AgeAtFirstOccurrence
+          v-if="ageAtFirstOccurrence.length"
+          :data="ageAtFirstOccurrence"
+        />
+        <RecordCountProportionByMonth
+          v-if="recordCountProportionByMonth.length"
+          :data="recordCountProportionByMonth"
+        />
+        <MeasurementValueDistributionChart
+          v-if="measurementValueDistribution.chart.length"
+          :data="measurementValueDistribution"
+        />
+        <AgeAtFirstExposure
+          v-if="ageAtFirstExposure.length"
+          :data="ageAtFirstExposure"
+        />
+        <AgeAtFirstDiagnosis
+          v-if="ageAtFirstDiagnosis.length"
+          :data="ageAtFirstDiagnosis"
+        />
+        <DaysSupply v-if="daysSupply.length" :data="daysSupply" />
+        <DrugsByType v-if="drugsByType.length" :data="drugsByType" />
+        <QuantityDistribution
+          v-if="quantityDistribution.length"
+          :data="quantityDistribution"
+        />
+        <ConditionsByType
+          v-if="conditionsByType.length"
+          :data="conditionsByType"
+        />
+        <VisitDurationByType
+          v-if="visitDurationByType.length"
+          :data="visitDurationByType"
+        />
+        <RecordsByUnit v-if="recordsByUnit.length" :data="recordsByUnit" />
+        <MeasurementsByType
+          v-if="measurementsByType.length"
+          :data="measurementsByType"
+        />
+        <LengthOfEra v-if="lengthOfEra.length" :data="lengthOfEra" />
+      </div>
+      <div
+        class="flex items-center content-center justify-center h-[50vh]"
+        v-else
+      >
+        <span class="text-center text-2xl text-black dark:text-white">
+          No data available. Please select a concept.
+        </span>
       </div>
     </div>
+    <ConceptSearchForm
+      :added-concepts="selectedConcept"
+      :success-message="successMessage"
+      :errors="errors"
+      @close="close"
+      @inputChanged="clearMessages"
+      :show="showWebApiSearchForm"
+    />
   </div>
 </template>
 
@@ -103,80 +105,90 @@ import AgeAtFirstOccurrence from "@/pages/reports/network/NetworkConceptReport/c
 import InfoPanel from "@/widgets/infoPanel";
 import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 import Button from "primevue/button";
-import InputText from "primevue/inputtext";
-import Dropdown from "primevue/dropdown";
+import environment from "@/shared/api/environment";
+import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
+import { webApiActions } from "@/shared/api/webAPI";
 
 const store = useStore();
-const router = useRouter();
 const route = useRoute();
 
+const selectedConcept = ref([]);
+
+const isDataLoaded = computed(() => {
+  return Object.keys(data.value).length;
+});
+
+const showWebApiSearchForm = ref(false);
+const clearMessages = function () {
+  errors.value = "";
+  successMessage.value = [];
+};
+
+const data = computed(() => {
+  return store.getters.getData.concept;
+});
+
 function atClick() {
-  router.push({
-    params: {
-      domain: selected.value,
-      concept: concept.value,
-    },
-  });
+  showWebApiSearchForm.value = true;
 }
+
+const errors = ref("");
+const close = function () {
+  showWebApiSearchForm.value = false;
+  store.dispatch(webApiActions.RESET_API_STORAGE);
+  successMessage.value = [];
+};
+
+const successMessage = ref([]);
 
 const concept = ref("");
 const selected = ref(null);
-const domains = [
-  { value: "condition_occurrence", text: "Condition occurrence" },
-  { value: "drug_exposure", text: "Drug exposure" },
-  { value: "visit_occurrence", text: "Visit Occurrence" },
-  { value: "device_exposure", text: "Device exposure" },
-  { value: "measurement", text: "Measurement" },
-  { value: "death", text: "Death" },
-  { value: "procedure_occurrence", text: "Procedure occurrence" },
-  { value: "observation_period", text: "Observation" },
-];
 
 const metadata = computed(() => {
-  return store.getters.getData?.metadata;
+  return data.value?.metadata;
 });
 const recordCountProportionByMonth = computed(() => {
-  return store.getters.getData?.chart?.recordCountProportionByMonth || [];
+  return data.value?.chart?.recordCountProportionByMonth || [];
 });
 
 const ageAtFirstExposure = computed(() => {
-  return store.getters.getData?.chart?.ageAtFirstExposure || [];
+  return data.value?.chart?.ageAtFirstExposure || [];
 });
 const drugsByType = computed(() => {
-  return store.getters.getData?.chart?.drugsByType || [];
+  return data.value?.chart?.drugsByType || [];
 });
 const daysSupply = computed(() => {
-  return store.getters.getData?.chart?.daysSupply || [];
+  return data.value?.chart?.daysSupply || [];
 });
 const measurementValueDistribution = computed(() => {
   return {
-    table: store.getters.getData?.table?.measurementValueDistribution || [],
-    chart: store.getters.getData?.chart?.measurementValueDistribution || [],
+    table: data.value?.table?.measurementValueDistribution || [],
+    chart: data.value?.chart?.measurementValueDistribution || [],
   };
 });
 const quantityDistribution = computed(() => {
-  return store.getters.getData?.chart?.quantityDistribution || [];
+  return data.value?.chart?.quantityDistribution || [];
 });
 const ageAtFirstDiagnosis = computed(() => {
-  return store.getters.getData?.chart?.ageAtFirstDiagnosis || [];
+  return data.value?.chart?.ageAtFirstDiagnosis || [];
 });
 const conditionsByType = computed(() => {
-  return store.getters.getData?.chart?.conditionsByType || [];
+  return data.value?.chart?.conditionsByType || [];
 });
 const visitDurationByType = computed(() => {
-  return store.getters.getData?.chart?.visitDurationByType || [];
+  return data.value?.chart?.visitDurationByType || [];
 });
 const recordsByUnit = computed(() => {
-  return store.getters.getData?.chart?.recordsByUnit || [];
+  return data.value?.chart?.recordsByUnit || [];
 });
 const measurementsByType = computed(() => {
-  return store.getters.getData?.chart?.measurementsByType || [];
+  return data.value?.chart?.measurementsByType || [];
 });
 const lengthOfEra = computed(() => {
-  return store.getters.getData?.chart?.lengthOfEra || [];
+  return data.value?.chart?.lengthOfEra || [];
 });
 const ageAtFirstOccurrence = computed(() => {
-  return store.getters.getData?.chart?.ageAtFirstOccurrence || [];
+  return data.value?.chart?.ageAtFirstOccurrence || [];
 });
 
 onMounted(() => {

@@ -1,10 +1,5 @@
 <template>
-  <Panel
-    header="Historical Data Quality by Domain"
-    :loading="!store.getters.dataInStore"
-    elevation="2"
-    class="ma-4"
-  >
+  <Panel header="Historical Data Quality by Domain" elevation="2" class="ma-4">
     <template #icons>
       <ChartHeader
         title="Historical Data Quality by Domain"
@@ -17,7 +12,6 @@
       />
     </template>
     <Chart
-      v-if="store.getters.dataInStore"
       :id="reportId"
       :chartSpec="specDataQualityResultsByDomain"
       :data="store.getters.getData[QUALITY_INDEX].dataQualityRecordsStratified"
@@ -32,7 +26,6 @@
     <div v-if="showTable" class="p-4">
       <DataTable
         size="small"
-        v-if="store.getters.dataInStore"
         :value="data"
         paginator
         :rows="5"

@@ -12,7 +12,6 @@
       />
     </template>
     <Chart
-      v-if="store.getters.dataInStore"
       :id="reportId"
       :chartSpec="specBirthYear"
       :annotations-config="{

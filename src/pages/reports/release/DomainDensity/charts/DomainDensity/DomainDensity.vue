@@ -1,5 +1,5 @@
 <template>
-  <Panel header="Domain Density" :loading="!store.getters.dataInStore">
+  <Panel header="Domain Density">
     <template #icons>
       <ChartHeader
         title="Domain
@@ -14,7 +14,6 @@
     </template>
 
     <Chart
-      v-if="store.getters.dataInStore"
       :id="reportId"
       :chartSpec="defOverview"
       :annotations-config="{

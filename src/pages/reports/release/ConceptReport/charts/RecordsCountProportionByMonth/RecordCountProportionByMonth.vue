@@ -13,7 +13,6 @@
     </template>
 
     <Chart
-      v-if="store.getters.dataInStore"
       :id="reportId"
       :chartSpec="specRecordProportionByMonth"
       :annotations-config="{

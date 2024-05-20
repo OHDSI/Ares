@@ -1,8 +1,5 @@
 <template>
-  <Panel
-    header="Domain Records per Person"
-    :loading="!store.getters.dataInStore"
-  >
+  <Panel header="Domain Records per Person">
     <template #icons>
       <ChartHeader
         title="Domain Records per Person"
@@ -15,7 +12,6 @@
       />
     </template>
     <Chart
-      v-if="store.getters.dataInStore"
       :id="reportId"
       :chartSpec="defRecordsPerPerson"
       :annotations-config="{

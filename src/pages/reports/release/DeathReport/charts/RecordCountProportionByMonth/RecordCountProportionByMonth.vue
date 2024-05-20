@@ -13,7 +13,6 @@
     </template>
 
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-deathrecordproportionbymonth"
       :annotations="annotations"
       :signal-listener="listeners.setSelectionAreaSignal"

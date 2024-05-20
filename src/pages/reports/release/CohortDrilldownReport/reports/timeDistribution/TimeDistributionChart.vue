@@ -4,21 +4,18 @@
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-beforeIndex"
       :chartSpec="specCohortTimeDistribution"
       :data="priorToIndex"
       title="observation time (days) prior to index"
     />
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-afterIndex"
       :chartSpec="specCohortTimeDistribution"
       :data="afterIndex"
       title="observation time (days) after index"
     />
     <Chart
-      v-if="store.getters.dataInStore"
       id="viz-between"
       :chartSpec="specCohortTimeDistribution"
       :data="betweenStartEnd"

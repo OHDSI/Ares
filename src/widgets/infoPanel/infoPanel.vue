@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row gap-36 px-5">
-    <div v-if="props.concept" class="flex flex-col">
+    <div v-if="props.concept" class="flex flex-col items-center">
       <div class="flex flex-row items-center content-center">
         <svg-icon
           class="text-primary-500"
@@ -11,7 +11,21 @@
       </div>
       <p class="font-light text-xs dark:text-white">Concept Identifier</p>
     </div>
-    <div v-if="props.population" class="flex flex-col">
+    <div v-if="props.domain" class="flex flex-col items-center">
+      <div class="flex flex-row items-center content-center">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiTableRow"
+        ></svg-icon>
+        <Badge
+          severity="info"
+          :value="props.domain.split('_').join(' ').toUpperCase()"
+        />
+      </div>
+      <p class="font-light text-xs dark:text-white">Domain ID</p>
+    </div>
+    <div v-if="props.population" class="flex flex-col items-center">
       <div class="flex flex-row items-center content-center">
         <svg-icon
           class="text-primary-500"
@@ -22,7 +36,7 @@
       </div>
       <p class="font-light text-xs dark:text-white">Number of People</p>
     </div>
-    <div v-if="props.percentPeople" class="flex flex-col">
+    <div v-if="props.percentPeople" class="flex flex-col items-center">
       <div class="flex flex-row items-center content-center">
         <svg-icon
           class="text-primary-500"
@@ -36,7 +50,7 @@
       </div>
       <p class="font-light text-xs dark:text-white">% of People</p>
     </div>
-    <div v-if="props.recordsPerPerson" class="flex flex-col">
+    <div v-if="props.recordsPerPerson" class="flex flex-col items-center">
       <div class="flex flex-row items-center content-center">
         <svg-icon
           class="text-primary-500"
@@ -162,6 +176,7 @@ import Badge from "primevue/badge";
 
 interface Props {
   population?: number;
+  domain?: string;
   concept?: string;
   percentPeople?: number;
   recordsPerPerson?: string;
