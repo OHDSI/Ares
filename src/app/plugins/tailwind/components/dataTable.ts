@@ -80,7 +80,7 @@ export default {
           ? "bg-surface-50 text-primary-700"
           : "bg-transparent text-slate-700", // Sort
         context.sorted
-          ? "dark:text-white/80 dark:bg-primary-300"
+          ? "dark:text-white/80 dark:bg-surface-700"
           : "dark:text-white/80 dark:bg-surface-800", // Dark Mode
         {
           "sticky z-[1]": props.frozen || props.frozen === "", // Frozen Columns

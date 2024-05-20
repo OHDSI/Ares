@@ -434,7 +434,7 @@ export default {
     ],
   },
   list: {
-    class: "py-3 list-none m-0",
+    class: "py-0 px-0 list-none m-1",
   },
   item: ({ context }) => ({
     class: [
@@ -450,37 +450,41 @@ export default {
 
       // Shape
       "border-0",
-      "rounded-none",
+      "rounded",
 
       // Spacing
-      "m-0",
-      "py-3 px-5",
+      "my-2 mx-1",
+      "py-1 px-2",
 
       // Color
       {
         "text-surface-700 dark:text-white/80":
-          !context.focused && !context.selected,
+          !context.focused && !context.selected && !context.disabled,
       },
       {
-        "bg-surface-200 dark:bg-surface-600/60 text-surface-700 dark:text-white/80":
+        "text-surface-600 dark:text-white/70":
+          !context.focused && !context.selected && context.disabled,
+      },
+      {
+        "bg-primary-100 dark:bg-surface-600/60 text-surface-700 dark:text-white/80":
           context.focused && !context.selected,
       },
       {
-        "bg-primary-100 dark:bg-primary-400/40 text-primary-700 dark:text-white/80":
+        "bg-surface-100 dark:bg-surface-700 text-primary-700 dark:text-white/80":
           context.focused && context.selected,
       },
       {
-        "bg-primary-50 dark:bg-primary-400/40 text-primary-700 dark:text-white/80":
+        "bg-surface-100 dark:bg-surface-700 text-primary-700 dark:text-white/80":
           !context.focused && context.selected,
       },
 
       //States
       {
-        "hover:bg-surface-100 dark:hover:bg-surface-600/80":
+        "hover:bg-primary-200 dark:hover:bg-surface-600/80":
           !context.focused && !context.selected,
       },
       {
-        "hover:text-surface-700 hover:bg-surface-100 dark:hover:text-white dark:hover:bg-surface-600/80":
+        "hover:text-surface-700 hover:bg-primary-200 dark:hover:text-white dark:hover:bg-surface-600/80":
           context.focused && !context.selected,
       },
 

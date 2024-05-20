@@ -1,7 +1,7 @@
 import { VEGA_SCHEMA } from "@/shared/config/links";
 import { TopLevelSpec } from "vega-lite";
 
-export function specOverview(zeroBaseline = false) {
+export function specOverview(zeroBaseline = false, minMax, labelColor) {
   return {
     $schema: VEGA_SCHEMA,
     data: { name: "conceptData" },
@@ -16,6 +16,8 @@ export function specOverview(zeroBaseline = false) {
           labelFontSize: 12,
           labelPadding: 2,
           labelFontWeight: "bold",
+          labelColor: labelColor,
+          titleColor: labelColor,
         },
       },
     },
