@@ -284,7 +284,7 @@ const actions = {
           }));
 
         //handle network error
-        if (data[file].length === 0) {
+        if (data[file].length === 0 && payload.criticalError) {
           handleNetworkError(responses, { dispatch }, reportName, isDuckDb);
         }
       }

@@ -17,6 +17,7 @@ import feasibility from "@/processes/exploreReports/model/store/postprocessing/f
 import networkUnmappedSourceCodes from "@/processes/exploreReports/model/store/postprocessing/networkUnmappedSourceCodes";
 import networkDiversityReport from "@/processes/exploreReports/model/store/postprocessing/networkDiversityReport";
 import cohortReport from "@/processes/exploreReports/model/store/postprocessing/cohortReport";
+import networkConceptDashboard from "@/processes/exploreReports/model/store/postprocessing/networkConceptDashboard";
 
 export default {
   dataStrandReport,
@@ -38,4 +39,5 @@ export default {
   feasibility,
   networkUnmappedSourceCodes,
   cohortReport,
+  networkConceptDashboard,
 };
