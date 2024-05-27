@@ -47,6 +47,7 @@
               option-value="key"
               :options="getHeaders"
               placeholder="Select Columns"
+              @update:modelValue="updateSettings"
             >
               <template #dropdownicon><span></span></template>
 
@@ -176,7 +177,7 @@ import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { useStore } from "vuex";
-import { computed, ref, defineProps, onMounted } from "vue";
+import { computed, ref, defineProps, onMounted, toRaw } from "vue";
 import MultiSelect from "primevue/multiselect";
 import { helpers } from "@/shared/lib/mixins";
 import { FilterMatchMode } from "primevue/api";
@@ -185,6 +186,8 @@ import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import SvgIcon from "@jamescoyle/vue-icon";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { useRoute } from "vue-router";
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -244,6 +247,8 @@ const headers = ref({
   },
 });
 
+const route = useRoute();
+
 const selectedHeaders = ref([]);
 
 const getHeaders = computed(() => {
@@ -251,9 +256,29 @@ const getHeaders = computed(() => {
 });
 
 const setDefaultSelectedHeaders = function () {
-  selectedHeaders.value = Object.values(headers.value)
+  const settings =
+    store.getters.getSettings.columnSelection?.[route.name]
+      ?.indexEventBreakdown || [];
+
+  const defaultHeaders = settings.length
+    ? settings.map((val) => ({ ...headers.value[val], show: true }))
+    : Object.values(headers.value);
+  selectedHeaders.value = defaultHeaders
     .filter((value) => value.show)
     .reduce((acc, val) => [...acc, val.key], []);
+};
+
+const updateSettings = () => {
+  const currentSelection =
+    store.getters.getSettings.columnSelection?.[route.name] || {};
+  const updatedSelection = {
+    ...currentSelection,
+    indexEventBreakdown: selectedHeaders.value,
+  };
+
+  store.dispatch(UPDATE_COLUMN_SELECTION, {
+    [route.name]: updatedSelection,
+  });
 };
 
 onMounted(() => {

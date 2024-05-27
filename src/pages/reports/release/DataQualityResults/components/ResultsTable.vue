@@ -42,12 +42,13 @@
               'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-400 w-12',
             ],
           }"
-          v-model="selectedHeaders"
+          :model-value="columnsToDisplay"
           data-key="title"
           option-label="title"
           option-value="key"
-          :options="headers"
+          :options="availableHeaders"
           placeholder="Select Columns"
+          @update:modelValue="updateSelectedHeaders"
         >
           <template #value>
             <span class="flex flex-row w-full text-white items-center">
@@ -64,7 +65,7 @@
     <template #empty> No matching rows </template>
     <Column
       unstyled
-      :hidden="!selectedHeaders.includes('failed')"
+      :hidden="!columnsToDisplay.includes('failed')"
       sortable
       filter-field="failed"
       :show-filter-menu="false"
@@ -92,7 +93,7 @@
     <Column
       :show-filter-menu="false"
       :show-clear-button="false"
-      :hidden="!selectedHeaders.includes('cdmTableName')"
+      :hidden="!columnsToDisplay.includes('cdmTableName')"
       sortable
       header="Table"
       filterField="cdmTableName"
@@ -125,7 +126,7 @@
       :show-filter-menu="false"
       :show-clear-button="false"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('cdmFieldName')"
+      :hidden="!columnsToDisplay.includes('cdmFieldName')"
       sortable
       field="cdmFieldName"
       filter-field="cdmFieldName"
@@ -154,7 +155,7 @@
     <Column
       :show-filter-menu="false"
       :show-clear-button="false"
-      :hidden="!selectedHeaders.includes('checkName')"
+      :hidden="!columnsToDisplay.includes('checkName')"
       sortable
       filter-field="checkName"
       field="checkName"
@@ -187,7 +188,7 @@
       :show-clear-button="false"
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('category')"
+      :hidden="!columnsToDisplay.includes('category')"
       sortable
       filter-field="category"
       field="category"
@@ -218,7 +219,7 @@
       :show-clear-button="false"
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('subcategory')"
+      :hidden="!columnsToDisplay.includes('subcategory')"
       sortable
       filter-field="subcategory"
       field="subcategory"
@@ -249,7 +250,7 @@
       :show-clear-button="false"
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('context')"
+      :hidden="!columnsToDisplay.includes('context')"
       sortable
       filter-field="context"
       field="context"
@@ -280,7 +281,7 @@
       :show-clear-button="false"
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('checkLevel')"
+      :hidden="!columnsToDisplay.includes('checkLevel')"
       sortable
       filter-field="checkLevel"
       field="checkLevel"
@@ -308,7 +309,7 @@
       :show-clear-button="false"
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('notesExist')"
+      :hidden="!columnsToDisplay.includes('notesExist')"
       sortable
       filter-field="notesExist"
       field="notesExist"
@@ -334,7 +335,7 @@
     <Column
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('checkDescription')"
+      :hidden="!columnsToDisplay.includes('checkDescription')"
       sortable
       field="checkDescription"
       header="Description"
@@ -346,7 +347,7 @@
     <Column
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('pctViolatedRows')"
+      :hidden="!columnsToDisplay.includes('pctViolatedRows')"
       sortable
       field="pctViolatedRows"
       header="% Records Failed"
@@ -360,7 +361,7 @@
     <Column
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('numViolatedRows')"
+      :hidden="!columnsToDisplay.includes('numViolatedRows')"
       sortable
       field="numViolatedRows"
       header="# Records Failed"
@@ -372,7 +373,7 @@
     <Column
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('numDenominatorRows')"
+      :hidden="!columnsToDisplay.includes('numDenominatorRows')"
       sortable
       field="numDenominatorRows"
       header="# Total Records"
@@ -386,7 +387,7 @@
     <Column
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!selectedHeaders.includes('executionTime')"
+      :hidden="!columnsToDisplay.includes('executionTime')"
       sortable
       field="executionTime"
       header="Execution Duration"
@@ -540,9 +541,6 @@ import { useRoute, useRouter } from "vue-router";
 import { Codemirror } from "vue-codemirror";
 import { sql } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
-const store = useStore();
-const route = useRoute();
-const router = useRouter();
 import { FilterMatchMode } from "primevue/api";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -552,6 +550,11 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import MultiSelect from "primevue/multiselect";
 import { mdiTable } from "@mdi/js";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
 
 const checks = ref(store.getters.getData.checkResults);
 
@@ -603,111 +606,124 @@ const filters = ref({
 
 const expanded = ref([]);
 
-const headers: Ref<DataTableHeader[]> = ref([
-  {
+const headers = ref({
+  failed: {
     title: "Status",
     sortable: true,
     key: "failed",
     show: true,
     default: true,
   },
-  {
+  cdmTableName: {
     title: "Table",
     sortable: true,
     key: "cdmTableName",
     show: true,
     default: true,
   },
-  {
+  cdmFieldName: {
     title: "Field",
     sortable: true,
     key: "cdmFieldName",
     show: false,
     default: false,
   },
-  {
+  checkName: {
     title: "Check",
     sortable: true,
     key: "checkName",
     show: false,
     default: false,
   },
-  {
+  category: {
     title: "Category",
     sortable: true,
     key: "category",
     show: false,
     default: false,
   },
-  {
+  subcategory: {
     title: "Subcategory",
     sortable: true,
     key: "subcategory",
     show: false,
     default: false,
   },
-  {
+  context: {
     title: "Context",
     sortable: true,
     key: "context",
     show: false,
     default: false,
   },
-  {
+  checkLevel: {
     title: "Level",
     sortable: true,
     key: "checkLevel",
     show: false,
     default: false,
   },
-  {
+  notesExist: {
     title: "Notes",
     sortable: true,
     key: "notesExist",
     show: false,
     default: false,
   },
-  {
+  checkDescription: {
     title: "Description",
     sortable: true,
     key: "checkDescription",
     show: true,
     default: true,
   },
-  {
+  pctViolatedRows: {
     title: "% Records Failed",
     sortable: true,
     key: "pctViolatedRows",
     show: true,
     default: true,
   },
-  {
+  numViolatedRows: {
     title: "# Records Failed",
     sortable: true,
     key: "numViolatedRows",
     show: true,
     default: true,
   },
-  {
+  numDenominatorRows: {
     title: "# Total Records",
     sortable: true,
     key: "numDenominatorRows",
     show: false,
     default: false,
   },
-  {
+  executionTime: {
     title: "Execution Duration",
     sortable: true,
     key: "executionTime",
     show: false,
     default: false,
   },
-]);
+});
+const availableHeaders = computed(() => {
+  return Object.values(headers.value);
+});
 
 const selectedHeaders = ref([]);
+const columnsToDisplay = computed(() => {
+  const parsedParams = Object.keys(JSON.parse(filterParams.value));
+  return [...selectedHeaders.value, ...parsedParams];
+});
 
 const setDefaultSelectedHeaders = function () {
-  selectedHeaders.value = Object.values(headers.value)
+  const settings =
+    store.getters.getSettings.columnSelection?.[route.name] || [];
+
+  const defaultHeaders = settings.length
+    ? settings.map((val) => ({ ...headers.value[val], show: true }))
+    : Object.values(headers.value);
+  selectedHeaders.value = defaultHeaders
     .filter((value) => value.show)
     .reduce((acc, val) => [...acc, val.key], []);
 };
@@ -756,10 +772,6 @@ const filterParams = computed(function () {
       )
   );
 });
-const updateColumnsList = function (): void {
-  const parsedParams = Object.keys(JSON.parse(filterParams.value));
-  selectedHeaders.value = [...selectedHeaders.value, ...parsedParams];
-};
 
 const updateFiltersFromUrl = function (): void {
   const parsedParams = JSON.parse(filterParams.value);
@@ -773,14 +785,22 @@ const updateFiltersFromUrl = function (): void {
   }
 };
 
+const updateSelectedHeaders = function (data) {
+  selectedHeaders.value = data;
+  updateSettings();
+};
+const updateSettings = () => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, {
+    [route.name]: selectedHeaders.value,
+  });
+};
+
 watch(filterParams, (): void => {
-  updateColumnsList();
   updateFiltersFromUrl();
 });
 
 onBeforeMount((): void => {
   setDefaultSelectedHeaders();
-  updateColumnsList();
   updateFiltersFromUrl();
 });
 

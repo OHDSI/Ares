@@ -8,3 +8,5 @@ export const TOGGLE_DEFAULT_ANNOTATIONS_MODE = "changeDefaultAnnotationsMode";
 export const TOGGLE_DEFAULT_ALL_NOTES_MODE = "toggleDefaultNotesMode";
 
 export const EDIT_USER = "editUser";
+
+export const UPDATE_COLUMN_SELECTION = "updateColumnSelection";
