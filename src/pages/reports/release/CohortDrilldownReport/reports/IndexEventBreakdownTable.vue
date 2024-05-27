@@ -7,6 +7,8 @@
         :value="props.data"
         v-model:filters="filters"
         paginator
+        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         filterDisplay="row"
         :globalFilterFields="[
           'concept_code',

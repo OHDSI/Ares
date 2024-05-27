@@ -5,6 +5,8 @@
       size="small"
       :value="store.getters.getData.personPeriods"
       paginator
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       :rows="5"
       :rowsPerPageOptions="[5, 10, 20, 50]"
     >

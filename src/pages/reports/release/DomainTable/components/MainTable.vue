@@ -19,6 +19,8 @@
         size="small"
         :value="store.getters.getData.domainTable"
         paginator
+        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         v-model:filters="newFilters"
         :globalFilterFields="['CONCEPT_ID', 'CONCEPT_NAME', '']"
         :rows="10"
@@ -305,6 +307,7 @@ import InputText from "primevue/inputtext";
 import MultiSelect from "primevue/multiselect";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
+import Paginator from "primevue/paginator";
 import { FilterMatchMode } from "primevue/api";
 import {
   mdiCodeBraces,

@@ -6,6 +6,8 @@
         size="small"
         :value="data"
         paginator
+        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         v-model:filters="newFilters"
         :globalFilterFields="['cohort_id', 'cohort_name', '']"
         :rows="10"

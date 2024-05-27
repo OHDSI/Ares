@@ -6,6 +6,8 @@
         size="small"
         :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
         paginator
+        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         v-model:filters="newFilters"
         :value="store.getters.getData.domainTable"
         :rows="10"

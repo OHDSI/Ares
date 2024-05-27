@@ -8,6 +8,8 @@
     v-model:filters="filters"
     :value="checks"
     paginator
+    currentPageReportTemplate="{first} to {last} of {totalRecords}"
+    paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
     :rows="10"
     filterDisplay="row"
     :globalFilterFields="[

@@ -4,6 +4,8 @@
       size="small"
       :globalFilterFields="['analysis_id', 'analysis_name']"
       paginator
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       v-model:filters="newFilters"
       :value="filteredRecords"
       :rows="10"

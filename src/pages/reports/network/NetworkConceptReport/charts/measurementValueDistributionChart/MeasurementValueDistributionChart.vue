@@ -29,6 +29,8 @@
         removable-sort
         size="small"
         paginator
+        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         :value="
           getSelectedMeasurementUnitsTable
             ? getSelectedMeasurementUnitsTable

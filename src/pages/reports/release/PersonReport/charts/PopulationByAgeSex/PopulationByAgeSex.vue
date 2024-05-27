@@ -46,6 +46,8 @@
         removable-sort
         size="small"
         paginator
+        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         :value="store.getters.getData.personData.AGE_GENDER_DATA"
         :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]"
