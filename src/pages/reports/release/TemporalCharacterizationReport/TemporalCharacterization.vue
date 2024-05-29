@@ -11,6 +11,8 @@
       ]"
       removable-sort
       paginator
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       v-model:filters="newFilters"
       :value="filteredChecks"
       :rows="10"

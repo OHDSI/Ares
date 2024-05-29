@@ -4,6 +4,8 @@
       size="small"
       :globalFilterFields="['task', 'cohortIds', 'parent']"
       paginator
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       v-model:filters="newFilters"
       :value="data"
       :rows="10"

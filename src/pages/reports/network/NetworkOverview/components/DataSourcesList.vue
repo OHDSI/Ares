@@ -7,6 +7,8 @@
       v-model:filters="newFilters"
       :globalFilterFields="['cdm_source_name', 'releases[0].release_name', '']"
       paginator
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       :rows="20"
       :rowsPerPageOptions="[5, 10, 20, 50]"
       tableStyle="min-width: 50rem"
