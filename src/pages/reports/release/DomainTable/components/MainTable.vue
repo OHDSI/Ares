@@ -55,6 +55,7 @@
               option-value="key"
               :options="getHeaders"
               placeholder="Select Columns"
+              @update:modelValue="updateSettings"
             >
               <template #value>
                 <span class="flex flex-row w-full text-white items-center">
@@ -315,6 +316,7 @@ import {
 } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { links } from "@/shared/config/links";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 const route = useRoute();
@@ -471,15 +473,20 @@ const getReportRoute = function (item) {
   };
 };
 
-const setDefaultSelectedHeaders = function () {
-  selectedHeaders.value = Object.values(headers.value)
+const setDefaultSelectedHeaders = () => {
+  const settings =
+    store.getters.getSettings.columnSelection?.[route.name] || [];
+
+  const defaultHeaders = settings.length
+    ? settings.map((val) => ({ ...headers.value[val], show: true }))
+    : Object.values(headers.value);
+
+  selectedHeaders.value = defaultHeaders
     .filter(
-      (value) =>
-        (value.domain.includes("ALL") ||
-          value.domain.includes(openedDomain.value)) &&
-        value.show
+      ({ domain, show }) =>
+        show && (domain.includes("ALL") || domain.includes(openedDomain.value))
     )
-    .reduce((acc, val) => [...acc, val.key], []);
+    .map(({ key }) => key);
 };
 
 onMounted(() => {
@@ -488,6 +495,29 @@ onMounted(() => {
 watch(route, () => {
   setDefaultSelectedHeaders();
 });
+
+const updateSettings = () => {
+  const savedSelection =
+    store.getters.getSettings.columnSelection?.[route.name] || [];
+  const domain = route.params.domain;
+  const valuesToRemove = savedSelection.filter(
+    (columnName) =>
+      !selectedHeaders.value.includes(columnName) &&
+      (headers.value[columnName].domain.includes(domain) ||
+        headers.value[columnName].domain.includes("ALL"))
+  );
+  const updatedSelection = savedSelection.filter(
+    (columnName) => !valuesToRemove.includes(columnName)
+  );
+
+  const finalSelection = updatedSelection.concat(
+    selectedHeaders.value.filter(
+      (columnName) => !updatedSelection.includes(columnName)
+    )
+  );
+
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [route.name]: finalSelection });
+};
 
 const navigateToDataQuality = function () {
   router.push({

@@ -46,6 +46,7 @@
               option-value="key"
               :options="getHeaders"
               placeholder="Select Columns"
+              @update:modelValue="updateSettings"
             >
               <template #dropdownicon><span></span></template>
               <template #value>
@@ -217,6 +218,7 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import { debounce } from "lodash";
 import { useRoute, useRouter } from "vue-router";
 import SvgIcon from "@jamescoyle/vue-icon";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -227,7 +229,7 @@ const filters = ref({
   concept_id: { value: null, matchMode: FilterMatchMode.IN },
 });
 
-const search = ref("");
+const route = useRoute();
 
 interface Props {
   data: [];
@@ -292,9 +294,29 @@ const getHeaders = computed(() => {
 });
 
 const setDefaultSelectedHeaders = function () {
-  selectedHeaders.value = Object.values(headers.value)
+  const settings =
+    store.getters.getSettings.columnSelection?.[route.name]
+      ?.cohortCharacterization || [];
+
+  const defaultHeaders = settings.length
+    ? settings.map((val) => ({ ...headers.value[val], show: true }))
+    : Object.values(headers.value);
+  selectedHeaders.value = defaultHeaders
     .filter((value) => value.show)
     .reduce((acc, val) => [...acc, val.key], []);
+};
+
+const updateSettings = () => {
+  const currentSelection =
+    store.getters.getSettings.columnSelection?.[route.name] || {};
+  const updatedSelection = {
+    ...currentSelection,
+    cohortCharacterization: selectedHeaders.value,
+  };
+
+  store.dispatch(UPDATE_COLUMN_SELECTION, {
+    [route.name]: updatedSelection,
+  });
 };
 
 onMounted(() => {

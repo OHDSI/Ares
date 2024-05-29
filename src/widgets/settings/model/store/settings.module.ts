@@ -9,6 +9,7 @@ import {
   TOGGLE_BASELINE_SETTING,
   EDIT_USER,
   TOGGLE_DEFAULT_ALL_NOTES_MODE,
+  UPDATE_COLUMN_SELECTION,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -24,6 +25,7 @@ const state = {
     annotationsMode: false,
     notesMode: false,
     user: null,
+    columnSelection: {},
   },
   visible: false,
 };
@@ -63,6 +65,12 @@ const actions = {
   },
   [TOGGLE_DEFAULT_ALL_NOTES_MODE]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "notesMode" });
+  },
+  [UPDATE_COLUMN_SELECTION]({ commit, rootGetters }, payload) {
+    commit(SET_SETTINGS, {
+      data: { ...rootGetters.getSettings.columnSelection, ...payload },
+      field: "columnSelection",
+    });
   },
   [EDIT_USER]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "user" });
