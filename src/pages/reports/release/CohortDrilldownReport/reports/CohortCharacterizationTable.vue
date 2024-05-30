@@ -179,7 +179,7 @@
           <template #body="slotProps">
             {{
               slotProps.data.mean
-                ? `${((1 - slotProps.data.mean) * 100).toFixed(2)} %`
+                ? `${(slotProps.data.mean * 100).toFixed(2)} %`
                 : "No data"
             }}
           </template>
