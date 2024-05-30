@@ -5,7 +5,11 @@ import {
 } from "@/shared/config/files";
 
 export default function cohortReport(data) {
-  const characterizationTable = data[COHORT_CHARACTERIZATION];
+  const characterizationTable = data[COHORT_CHARACTERIZATION].map((val) => ({
+    ...val,
+    mean: parseFloat(val.mean),
+    sd: parseFloat(val.sd),
+  }));
   const indexEventBreakdownTable = data[COHORT_INDEX_EVENT_BREAKDOWN];
   const timeMeasures = [
     "observation time (days) prior to index",
@@ -13,7 +17,9 @@ export default function cohortReport(data) {
     "time (days) between cohort start and end",
   ];
   const timeDistribution = data[COHORT_TEMPORAL_COVARIATE_DISTRIBUTION].filter(
-    (val) => timeMeasures.includes(val.covariate_name)
+    (val) => {
+      return timeMeasures.includes(val.covariate_name);
+    }
   );
   return {
     characterizationTable,
