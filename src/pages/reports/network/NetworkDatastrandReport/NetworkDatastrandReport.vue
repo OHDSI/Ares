@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import embed from "vega-embed";
-import { watch, computed, ref } from "vue";
+import { watch, computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -110,7 +110,7 @@ const data = computed(() => store.getters.getData);
 
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 
-watch(data, function () {
+onMounted(() => {
   if (data.value) {
     config.data[0].values = data.value.dataStrandReport;
     renderChart();
