@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import * as d3Format from "d3-format";
 
-import { computed, ref, watch, defineProps, defineEmits, Ref } from "vue";
+import { computed, ref, watch, Ref } from "vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Panel from "primevue/panel";

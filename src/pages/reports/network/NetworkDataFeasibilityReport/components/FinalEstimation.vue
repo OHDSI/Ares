@@ -135,7 +135,7 @@
 
 <script setup lang="ts">
 import * as d3Format from "d3-format";
-import { computed, defineProps } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import Message from "primevue/message";
 import Divider from "primevue/divider";

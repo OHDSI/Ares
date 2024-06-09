@@ -160,7 +160,6 @@
 
 <script setup lang="ts">
 import { helpers } from "@/shared/lib/mixins";
-import { defineProps } from "vue";
 import SvgIcon from "@jamescoyle/vue-icon";
 import {
   mdiAccountGroup,

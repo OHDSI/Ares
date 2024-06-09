@@ -151,15 +151,7 @@
 <script setup lang="ts">
 import { timeParse } from "d3-time-format";
 import * as d3Format from "d3-format";
-import {
-  computed,
-  ref,
-  watch,
-  defineProps,
-  defineEmits,
-  Ref,
-  onMounted,
-} from "vue";
+import { computed, ref, watch, Ref, onMounted } from "vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { ObservationPeriodType } from "@/processes/exploreReports/model/interfaces/files/ObservationPeriodType";
 import { PersonData } from "@/processes/exploreReports/model/interfaces/files/Person";

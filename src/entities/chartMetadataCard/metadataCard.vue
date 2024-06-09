@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, defineEmits, onBeforeMount, computed } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import { Codemirror } from "vue-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { oneDark } from "@codemirror/theme-one-dark";

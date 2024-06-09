@@ -41,8 +41,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, onMounted } from "vue";
-import { defineEmits, ref } from "vue";
+import { onMounted, ref } from "vue";
 import Button from "primevue/button";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { isUndefined } from "lodash";

@@ -133,7 +133,7 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, ref, defineProps } from "vue";
+import { computed, ref } from "vue";
 
 interface Props {
   data: [];

@@ -126,7 +126,7 @@ import { DOMAIN_SUMMARY } from "@/shared/config/files";
 import { useStore } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
 import { helpers } from "@/shared/lib/mixins";
-import { computed, ref, watch, defineEmits, Ref, onBeforeMount } from "vue";
+import { computed, ref, watch, Ref, onBeforeMount } from "vue";
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import { webApiActions } from "@/shared/api/webAPI";
 import DataTable from "primevue/datatable";

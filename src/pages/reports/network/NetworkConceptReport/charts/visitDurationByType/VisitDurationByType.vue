@@ -161,7 +161,6 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specVisitDurationByType } from "./specVisitDurationByType";
 import { useStore } from "vuex";
-import { defineProps } from "vue";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
