@@ -36,7 +36,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from "vue";
+import { ref } from "vue";
 import { onMounted } from "vue";
 import { useStore } from "vuex";
 import ToggleIcon from "@/entities/toggleIcon/ToggleIcon.vue";

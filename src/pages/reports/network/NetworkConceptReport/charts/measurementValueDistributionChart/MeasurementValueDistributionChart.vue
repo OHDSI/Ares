@@ -203,7 +203,7 @@ import { Chart } from "@/widgets/chart";
 import { specMeasurementValueDistribution } from "./specMeasurementValueDistribution";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { computed, ref, Ref, defineProps } from "vue";
+import { computed, ref, Ref } from "vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { useRouter } from "vue-router";

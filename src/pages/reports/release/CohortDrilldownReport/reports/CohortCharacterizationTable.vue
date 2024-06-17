@@ -209,7 +209,7 @@ import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { useStore } from "vuex";
-import { computed, ref, defineProps, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import MultiSelect from "primevue/multiselect";
 import { helpers } from "@/shared/lib/mixins";
 import { FilterMatchMode } from "primevue/api";

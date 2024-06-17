@@ -87,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import MetadataCard from "@/entities/chartMetadataCard/metadataCard.vue";
 import { useStore } from "vuex";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";

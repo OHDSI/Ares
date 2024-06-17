@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineEmits, watch, Ref, defineProps } from "vue";
+import { computed, ref, watch } from "vue";
 import Message from "primevue/message";
 import Divider from "primevue/divider";
 import DataTable from "primevue/datatable";

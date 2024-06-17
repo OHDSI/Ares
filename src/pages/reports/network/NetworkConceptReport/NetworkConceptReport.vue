@@ -86,11 +86,10 @@
 import ReturnButton from "@/features/returnToPreviousPage";
 
 import { useStore } from "vuex";
-import MeasurementValueDistributionTable from "@/pages/reports/network/NetworkConceptReport/charts/measurementValueDistributionTable/MeasurementValueDistributionTable.vue";
 import MeasurementValueDistributionChart from "@/pages/reports/network/NetworkConceptReport/charts/measurementValueDistributionChart/MeasurementValueDistributionChart.vue";
 import { computed, onMounted, ref } from "vue";
 import RecordCountProportionByMonth from "@/pages/reports/network/NetworkConceptReport/charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import AgeAtFirstExposure from "@/pages/reports/network/NetworkConceptReport/charts/ageAtFirstExposure/AgeAtFirstExposure.vue";
 import DrugsByType from "@/pages/reports/network/NetworkConceptReport/charts/drugsByType/DrugsByType.vue";
 import DaysSupply from "@/pages/reports/network/NetworkConceptReport/charts/daysSupply/DaysSupply.vue";

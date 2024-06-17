@@ -21,7 +21,7 @@ import * as d3 from "d3";
 import * as d3_annotations from "d3-svg-annotation";
 
 import { darkTheme, lightTheme } from "@/widgets/chart/model/themes";
-import { computed, watch, defineProps, onMounted, withDefaults } from "vue";
+import { computed, watch, onMounted, withDefaults } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import { TopLevelSpec } from "vega-lite";
 import { Handler } from "vega-tooltip";
