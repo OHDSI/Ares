@@ -10,7 +10,7 @@
     >
       <template #header>
         <div class="flex flex-row justify-end">
-          <Button @click="dialog = !dialog" plain>
+          <Button @click="renderForm" plain>
             <span class="uppercase font-thin text-grey"
               >Add concepts
             </span></Button
@@ -19,10 +19,10 @@
 
         <ConceptSearchForm
           :added-concepts="addedConcepts"
-          @close="close"
+          @close="closeForm"
           @save="(item) => save(item)"
           @missing-concepts-changed="(item) => (missingConcepts = item)"
-          :show="dialog"
+          :show="showWebApiSearchForm"
           multi-selection
         />
       </template>
@@ -126,9 +126,11 @@ import { DOMAIN_SUMMARY } from "@/shared/config/files";
 import { useStore } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
 import { helpers } from "@/shared/lib/mixins";
-import { computed, ref, watch, defineEmits, Ref, onBeforeMount } from "vue";
-import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
-import { webApiActions } from "@/shared/api/webAPI";
+import { computed, ref, watch, defineEmits, onBeforeMount } from "vue";
+import {
+  ConceptSearchForm,
+  useConceptSearchForm,
+} from "@/widgets/conceptSearchForm";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Message from "primevue/message";
@@ -138,13 +140,13 @@ import environment from "@/shared/api/environment";
 import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 
 const store = useStore();
-const dialog: Ref<boolean> = ref(false);
 const addedConcepts = ref({});
 const conceptsData = ref([]);
-const successMessage = ref([]);
 const expanded = ref([]);
 const sources = ref([]);
 const missingConcepts = ref([]);
+
+const { closeForm, renderForm, showWebApiSearchForm } = useConceptSearchForm();
 
 const addedConceptsCount = computed(function () {
   return Object.keys(addedConcepts.value).filter(
@@ -258,12 +260,6 @@ const getConceptsForRequest = (measurement = []) => {
         missingData !== null ? ((1 - missingData) * 100).toFixed(2) : null,
     };
   });
-};
-
-const close = function () {
-  dialog.value = false;
-  store.dispatch(webApiActions.RESET_API_STORAGE);
-  successMessage.value = [];
 };
 const save = function (item) {
   conceptsData.value = store.getters.getData.concept;

@@ -87,13 +87,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -105,7 +99,7 @@ import { Chart } from "@/widgets/chart";
 import { specAgeSex } from "./specAgeSex";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -116,21 +110,25 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
-import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
-
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
+
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
+);
 
 const femaleReportId = "viz-populationbyageandsexFemale";
 const maleReportId = "viz-populationbyageandsexMale";
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
+const {
+  notesMode,
+  annotationsMode,
+  toggleNotesMode,
+  toggleAnnotationsMode,
+  showTable,
+  toggleTable,
+} = useChartControls();
 
 const notesMale = useAnnotations(maleReportId);
 

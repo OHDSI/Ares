@@ -10,7 +10,6 @@ import { authActions } from "@/shared/api/webAPI";
 import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
 
-//todo: Think how to improve auth
 import { settingsActions } from "@/widgets/settings";
 import "primeicons/primeicons.css";
 import clickOutside from "@/shared/lib/directives/clickOutside";
@@ -21,37 +20,62 @@ import ConfirmationService from "primevue/confirmationservice";
 import resize from "@/shared/lib/directives/resize";
 import { errorActions } from "@/widgets/error";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
-// adds reactive router module to global state
 
+// adds reactive router module to global state
 sync(store, router);
-environment.load().then(() => {
-  store
-    .dispatch(authActions.GET_AUTH_TOKEN)
-    .then(() => store.dispatch(authActions.GET_USER))
+
+async function initializeEnvironment() {
+  await environment.load();
+}
+
+async function initializeAuth() {
+  await store.dispatch(authActions.GET_AUTH_TOKEN);
+  await store.dispatch(authActions.GET_USER);
+}
+
+async function initializeSettings() {
+  await store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE);
+}
+
+function initializeErrorHandler(app) {
+  app.config.errorHandler = (err) => {
+    // Handle the error globally
+    store.dispatch(errorActions.NEW_ERROR, {
+      userMessage: errorMessages.technicalError.codeError,
+      name: err.name,
+      details: err.message,
+      stack: err.stack,
+      type: "unexpected",
+    });
+  };
+}
+
+function initializeDirectives(app) {
+  app
+    .directive("click-outside", clickOutside)
+    .directive("resize", resize)
+    .directive("tooltip", Tooltip);
+}
+
+function initializePlugins(app) {
+  app
+    .use(store)
+    .use(router)
+    .use(PrimeVue, { pt: tailwindTheme })
+    .use(ConfirmationService)
+    .use(ToastService);
+}
+
+initializeEnvironment().then(() => {
+  initializeAuth()
     .catch()
     .finally(() => {
-      store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE).then(() => {
+      initializeSettings().then(() => {
         const app = createApp(App);
-        app.config.errorHandler = (err) => {
-          // Handle the error globally
-          store.dispatch(errorActions.NEW_ERROR, {
-            userMessage: errorMessages.technicalError.codeError,
-            name: err.name,
-            details: err.message,
-            stack: err.stack,
-            type: "unexpected",
-          });
-        };
-        app
-          .directive("click-outside", clickOutside)
-          .directive("resize", resize)
-          .directive("tooltip", Tooltip)
-          .use(store)
-          .use(router)
-          .use(PrimeVue, { pt: tailwindTheme })
-          .use(ConfirmationService)
-          .use(ToastService)
-          .mount("#app");
+        initializeErrorHandler(app);
+        initializeDirectives(app);
+        initializePlugins(app);
+        app.mount("#app");
       });
     });
 });

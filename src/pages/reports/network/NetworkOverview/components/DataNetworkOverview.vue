@@ -37,7 +37,6 @@
 import { useStore } from "vuex";
 import { computed } from "vue";
 import * as d3 from "d3-format";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { mdiAccount, mdiDatabase, mdiDatabaseAlert, mdiHistory } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 import Panel from "primevue/panel";

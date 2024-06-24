@@ -23,11 +23,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -43,6 +39,10 @@ import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 
 const store = useStore();
+
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.CDM_SOURCE[0]
+);
 </script>
 
 <style scoped></style>

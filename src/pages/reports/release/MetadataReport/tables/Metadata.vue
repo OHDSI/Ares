@@ -31,11 +31,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(store.getters.getQueryIndex.METADATA[0])
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         /></div
     ></template>
   </Panel>
@@ -53,6 +49,7 @@ import Column from "primevue/column";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 
 const store = useStore();
+const sqlLink = links.getSqlQueryLink(store.getters.getQueryIndex.METADATA[0]);
 </script>
 
 <style scoped></style>

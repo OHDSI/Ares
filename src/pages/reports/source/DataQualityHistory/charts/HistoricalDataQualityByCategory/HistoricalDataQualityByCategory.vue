@@ -93,7 +93,7 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { helpers } from "@/shared/lib/mixins";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
-import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 import { useRoute } from "vue-router";
 
 const store = useStore();
@@ -102,16 +102,16 @@ const route = useRoute();
 
 const reportId = "viz-sourcedataqualityresultsbycategory";
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
+const {
+  notesMode,
+  annotationsMode,
+  toggleNotesMode,
+  toggleAnnotationsMode,
+  showTable,
+  toggleTable,
+} = useChartControls();
 
 const { annotations, notes } = useAnnotations(reportId);
-
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
 
 const data = computed(() => {
   return store.getters.getData[QUALITY_INDEX].dataQualityRecordsStratified;

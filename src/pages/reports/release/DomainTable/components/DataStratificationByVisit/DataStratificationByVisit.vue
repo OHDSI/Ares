@@ -51,16 +51,13 @@ import { mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
 const route = useRoute();
 
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 
 const data = computed(() => {
   return store.getters.getData.domainStratification;

@@ -356,17 +356,7 @@ const searchApi = function () {
       }
     });
 };
-const saveChanges = async (item) => {
-  if (props.addedConcepts[item.CONCEPT_ID] === "Loaded") {
-    errors.value = "This concept has already been loaded";
-    return;
-  }
-
-  loadingItem.value = item.CONCEPT_ID;
-
-  const domain = webApiKeyMap.domains[item.DOMAIN_ID];
-  const conceptId = item.CONCEPT_ID;
-
+const loadConcept = async (domain, conceptId) => {
   const files =
     environment.DUCKDB_ENABLED === "true"
       ? getDuckDBTables({ domain, concept: conceptId })[domain]
@@ -383,9 +373,9 @@ const saveChanges = async (item) => {
     duckdb_supported: true,
     skipLoading: true,
   });
+};
 
-  loadingItem.value = "";
-
+const handleConceptData = (conceptId) => {
   const conceptData = toRaw(store.getters.getData.concept) || {};
 
   if (!Object.keys(conceptData).length) {
@@ -400,6 +390,24 @@ const saveChanges = async (item) => {
       : { [conceptId]: "Loaded" };
     successMessage.value = ["Concept loaded"];
   }
+};
+
+const saveChanges = async (item) => {
+  if (props.addedConcepts[item.CONCEPT_ID] === "Loaded") {
+    errors.value = "This concept has already been loaded";
+    return;
+  }
+
+  loadingItem.value = item.CONCEPT_ID;
+
+  const domain = webApiKeyMap.domains[item.DOMAIN_ID];
+  const conceptId = item.CONCEPT_ID;
+
+  await loadConcept(domain, conceptId);
+
+  loadingItem.value = "";
+
+  handleConceptData(conceptId);
 };
 </script>
 

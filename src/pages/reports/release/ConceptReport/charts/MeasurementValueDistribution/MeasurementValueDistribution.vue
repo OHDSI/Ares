@@ -1,8 +1,5 @@
 <template>
-  <Panel
-    header="Measurement Value Distributions By Unit"
-    v-if="store.getters.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION"
-  >
+  <Panel header="Measurement Value Distributions By Unit">
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
@@ -28,7 +25,7 @@
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="store.getters.getData.measurementTable"
+        :value="table"
         :rows="10"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
@@ -182,14 +179,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .MEASUREMENT_VALUE_DISTRIBUTION[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -212,26 +202,25 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import MultiSelect from "primevue/multiselect";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const selectedMeasurementUnits: Ref<string[]> = ref([]);
 
 const getMeasurementUnits = computed((): string[] => {
-  if (store.getters.getData?.conceptData?.MEASUREMENT_VALUE_DISTRIBUTION) {
-    return store.getters.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.map(
-      (value) => value.CATEGORY
-    );
+  if (data.value) {
+    return data.value.map((value) => value.CATEGORY);
   } else {
     return [];
   }
 });
 
 const getSelectedMeasurementUnits = computed((): string[] => {
-  if (store.getters.getData?.conceptData?.MEASUREMENT_VALUE_DISTRIBUTION) {
+  if (data.value) {
     return selectedMeasurementUnits.value.length
-      ? store.getters.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION.filter(
-          (value) => selectedMeasurementUnits.value.includes(value.CATEGORY)
+      ? data.value.filter((value) =>
+          selectedMeasurementUnits.value.includes(value.CATEGORY)
         )
-      : store.getters.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION;
+      : data.value;
   } else {
     return [];
   }
@@ -251,14 +240,18 @@ const store = useStore();
 const route = useRoute();
 const router = useRouter();
 
-const showTable = ref(false);
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.MEASUREMENT_VALUE_DISTRIBUTION[0]
+);
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 
 const data = computed(() => {
-  return store.getters.getData.conceptData.MEASUREMENTS_BY_TYPE;
+  return store.getters.getData?.conceptData?.MEASUREMENT_VALUE_DISTRIBUTION;
+});
+
+const table = computed(() => {
+  return store.getters.getData?.measurementTable;
 });
 </script>
 

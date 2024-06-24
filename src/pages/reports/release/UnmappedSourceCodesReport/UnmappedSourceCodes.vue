@@ -62,13 +62,7 @@
             tooltip="This report identifies columns in tables within the CDM where values are
     mapped to 0 (unknown concept). It provides a listing of all unmapped source
     values to be reviewed for potential inclusion or remediation."
-            @iconClicked="
-              helpers.openNewTab(
-                links.getSqlQueryLink(
-                  store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
-                )
-              )
-            "
+            @iconClicked="helpers.openNewTab(sqlLink)"
           />
         </div>
       </template>
@@ -107,6 +101,12 @@ import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Pivot from "@/widgets/pivot/ui/Pivot.vue";
 
 const store = useStore();
+
+const sqlLink = computed(() => {
+  return links.getSqlQueryLink(
+    store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+  );
+});
 
 const filters = ref({});
 const newFilters = ref({

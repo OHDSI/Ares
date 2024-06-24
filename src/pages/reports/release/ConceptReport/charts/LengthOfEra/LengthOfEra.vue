@@ -1,5 +1,5 @@
 <template>
-  <Panel header="Length of Era" v-if="data">
+  <Panel header="Length of Era">
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
@@ -80,14 +80,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .LENGTH_OF_ERA[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -99,7 +92,6 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specLengthOfEra } from "./specLengthOfEra";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -107,16 +99,16 @@ import { mdiCodeBraces } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
-const route = useRoute();
 
-const showTable = ref(false);
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.LENGTH_OF_ERA[0]
+);
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 
 const data = computed(() => {
   return store.getters.getData.conceptData.LENGTH_OF_ERA;

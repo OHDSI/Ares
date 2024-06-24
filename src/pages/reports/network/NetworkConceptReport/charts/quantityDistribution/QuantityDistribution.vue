@@ -142,17 +142,10 @@
           @iconClicked="router.push({ name: 'help' })"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .QUANTITY_DISTRIBUTION[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -176,6 +169,7 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
 const route = useRoute();
@@ -187,11 +181,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const showTable = ref(false);
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.QUANTITY_DISTRIBUTION?.[0]
+);
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 
 const data = computed(() => {
   return props.data;

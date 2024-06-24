@@ -68,13 +68,7 @@
           "
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -97,6 +91,10 @@ import { FilterMatchMode } from "primevue/api";
 import { mdiCodeBraces } from "@mdi/js";
 
 const store = useStore();
+
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
+);
 const newFilters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });

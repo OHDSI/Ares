@@ -181,17 +181,10 @@
           @iconClicked="router.push({ name: 'help' })"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.MEASUREMENT
-                  .MEASUREMENT_VALUE_DISTRIBUTION[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -214,6 +207,7 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
 const router = useRouter();
@@ -223,6 +217,10 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.MEASUREMENT.MEASUREMENT_VALUE_DISTRIBUTION?.[0]
+);
 
 const getMeasurementUnits = computed(function () {
   return [...new Set(props.data.chart.map((value) => value.CATEGORY))];
@@ -246,11 +244,7 @@ const getSelectedMeasurementUnitsTable = computed(function () {
     : props.data.table;
 });
 
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 </script>
 
 <style scoped></style>

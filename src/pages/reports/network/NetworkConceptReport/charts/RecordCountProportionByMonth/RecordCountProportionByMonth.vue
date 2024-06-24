@@ -59,17 +59,10 @@
           tooltip="Proportion of people with at least one record per 1000 people."
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .PREVALENCE_BY_MONTH[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -82,7 +75,6 @@ import { links } from "@/shared/config/links";
 import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { useStore } from "vuex";
 import { defineProps } from "vue";
-import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
@@ -90,24 +82,23 @@ import Panel from "primevue/panel";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 interface Props {
   data: [];
 }
 
 const props = defineProps<Props>();
-
 const store = useStore();
-const route = useRoute();
 
 const reportId = "viz-networkrecordproportionbymonth";
 
-const showTable = ref(false);
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.PREVALENCE_BY_MONTH?.[0]
+);
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 
 const data = computed(() => {
   return props.data;

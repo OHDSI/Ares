@@ -1,16 +1,14 @@
 <template>
   <div ref="containerRef" class="p-4">
     <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
-    <div ref="chart" v-resize="load" :id="id"></div>
-    <ContextMenu v-if="annotationMode" :items="actions" />
+    <div ref="chart" v-resize="loadChart" :id="id"></div>
+    <ContextMenu
+      :location="contextMenuLocation"
+      v-if="annotationMode"
+      :items="actions"
+    />
   </div>
 </template>
-
-<script lang="ts">
-export default {
-  name: "VegaChart",
-};
-</script>
 
 <script setup lang="ts">
 import { vegaLite } from "vega-embed";
@@ -20,7 +18,7 @@ import { useStore } from "vuex";
 import * as d3 from "d3";
 import * as d3_annotations from "d3-svg-annotation";
 
-import { darkTheme, lightTheme } from "@/widgets/chart/model/themes";
+import { darkTheme, lightTheme } from "@/widgets/chart/lib/themes";
 import { computed, watch, defineProps, onMounted, withDefaults } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import { TopLevelSpec } from "vega-lite";
@@ -33,10 +31,10 @@ import {
   SHOW_DIALOG,
 } from "@/widgets/notesPanel/model/store/actions.type";
 import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
-import { OPEN_MENU } from "@/entities/contextMenu/model/store/actions.type";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
 import { Annotation } from "@/shared/interfaces/Annotations";
 import { ref } from "vue";
+import { View } from "vega";
 
 interface Props {
   title?: string;
@@ -50,21 +48,13 @@ interface Props {
     brushParentElement: string;
   };
   clickListener?: (a: any, b: RouteLocationNormalizedLoaded, c: any) => void;
-  signalListener?: (
-    a: any,
-    b: any,
-    c: any,
-    d: any,
-    e: any,
-    f: any,
-    g: any,
-    h: any
-  ) => void;
+  signalListener?: (a: any, b: any, c: any) => void;
   annotations?: Annotation[];
 }
 
 const containerRef = ref(null);
 const elementWidth = ref(0);
+const contextMenuLocation = ref(null);
 
 const actions = [
   {
@@ -111,42 +101,42 @@ const computedNotes = computed(() => {
   return props.annotations ? [...props.annotations] : [];
 });
 
-const processedConfig = function (): TopLevelSpec {
+function processedConfig(): TopLevelSpec {
+  const commonSpec = props.annotationMode
+    ? props.annotationsConfig.chartSpec
+    : props.chartSpec;
+  const datasets = { conceptData: props.data };
   if (props.annotationMode) {
-    return {
-      ...props.annotationsConfig.chartSpec(
-        store.getters.getSettings.zeroBaseline,
-        store.getters.getSettings.minMax,
-        store.getters.getSettings.darkMode ? "white" : "black"
-      ),
-      datasets: {
-        conceptData: props.data,
-        notesData: props.annotations ? [...props.annotations] : [],
-      },
-      config: store.getters.getSettings.darkMode ? darkTheme : lightTheme,
-    };
-  } else {
-    return {
-      ...props.chartSpec(
-        store.getters.getSettings.zeroBaseline,
-        store.getters.getSettings.minMax,
-        store.getters.getSettings.darkMode ? "white" : "black"
-      ),
-      datasets: {
-        conceptData: props.data,
-      },
-      config: store.getters.getSettings.darkMode ? darkTheme : lightTheme,
-    };
+    datasets.notesData = props.annotations ? [...props.annotations] : [];
   }
-};
 
+  return {
+    ...commonSpec(
+      store.getters.getSettings.zeroBaseline,
+      store.getters.getSettings.minMax,
+      store.getters.getSettings.darkMode ? "white" : "black"
+    ),
+    datasets,
+    config: store.getters.getSettings.darkMode ? darkTheme : lightTheme,
+  };
+}
 const vgSpec = computed(() => {
   return vegaLite.compile(processedConfig(), {}).spec;
 });
 
 let view;
 
-function setChartWidth() {
+//Chart rendering
+
+function createViewInstance() {
+  return new vega.View(vega.parse(vgSpec.value, {}), {
+    renderer: "svg",
+    container: `#${props.id}`,
+    hover: true,
+  }).tooltip(new Handler().call);
+}
+
+function updateChartWidth() {
   if (containerRef.value) {
     const { width } = containerRef.value.getClientRects();
     elementWidth.value = width;
@@ -154,66 +144,46 @@ function setChartWidth() {
     chartSvg.attr("width", `${width}px`);
   }
 }
-function rerenderAnnotationsOnClick(view, makeAnnotations, parentContainer) {
+//required for setting the chart back to its desired width. Otherwise, would cause overflow issues.
+function setupChartResizeListener(): void {
   view.addEventListener("click", function () {
-    renderAnnotations(view, makeAnnotations(view), parentContainer);
-    initializeTooltip();
-    initializeBrush(view);
+    setTimeout(() => {
+      updateChartWidth();
+    }, 0);
   });
 }
 
-const load = function (): void {
-  view = new vega.View(vega.parse(vgSpec.value, {}), {
-    renderer: "svg",
-    container: `#${props.id}`,
-    hover: true,
-  }).tooltip(new Handler().call);
-
-  if (props.signalListener && props.annotationMode) {
-    props.signalListener(
-      view,
-      store,
-      props.annotationsConfig.annotationsParentElement,
-      props.annotationsConfig.brushParentElement,
-      renderAnnotations,
-      initializeAnnotationsInstance,
-      initializeTooltip,
-      initializeBrush
-    );
-    if (props.annotationMode) {
-      rerenderAnnotationsOnClick(
-        view,
-        initializeAnnotationsInstance,
-        props.annotationsConfig.annotationsParentElement
-      );
-    }
+async function runViewAsync(): Promise<void> {
+  try {
+    view.error = (err) => {
+      console.error(err);
+    };
+    await view.runAsync();
+    updateChartWidth();
+  } catch (err) {
+    console.error(err);
   }
-  view.error = () => {
-    return;
+}
+
+//Annotations rendering
+function getScales() {
+  return {
+    xScale:
+      view._runtime?.scales?.x?.value ||
+      view._runtime?.scales?.concat_0_x?.value,
+    yScale:
+      view._runtime.scales?.y?.value ||
+      view._runtime?.scales?.concat_0_y?.value,
   };
+}
 
-  view.runAsync().then(() => {
-    setChartWidth();
-    const annotations = initializeAnnotationsInstance(view);
-    view.addEventListener("click", function () {
-      setTimeout(() => {
-        setChartWidth();
-      }, 0);
-    });
+function getRenderedAnnotationsObject() {
+  return d3
+    .select(`#${props.id} svg g .annotation-group .annotations`)
+    .selectAll(".annotation");
+}
 
-    if (props.annotationMode) {
-      renderAnnotations(
-        view,
-        annotations,
-        props.annotationsConfig.annotationsParentElement
-      );
-      initializeTooltip();
-      initializeBrush(view);
-    }
-  });
-};
-
-function getD3AnnotationObject(note, type, xScale, yScale) {
+function createD3AnnotationObject(note, type, { xScale, yScale }) {
   return {
     type: type,
     disable: ["note", "connector"],
@@ -231,55 +201,54 @@ function getD3AnnotationObject(note, type, xScale, yScale) {
   };
 }
 
-function getAnnotationsArray(view) {
+function createAnnotationsArray() {
   const type = d3_annotations.annotationCalloutRect;
 
-  const xScale =
-    view._runtime?.scales?.x?.value || view._runtime?.scales?.concat_0_x?.value;
-
-  const yScale =
-    view._runtime.scales?.y?.value || view._runtime?.scales?.concat_0_y?.value;
+  const { xScale, yScale } = getScales();
 
   return props.annotations.map((note) =>
-    getD3AnnotationObject(note, type, xScale, yScale)
+    createD3AnnotationObject(note, type, { xScale, yScale })
   );
 }
 
-function editSelection(xScale, yScale) {
-  return function (annotation) {
-    const x1Axis = xScale.invert(annotation._x);
-    const x2Axis = xScale.invert(annotation.subject.width + annotation._x);
-    const y1Axis = yScale.invert(annotation._y);
-    const y2Axis = yScale.invert(annotation.subject.height + annotation._y);
-    const width = xScale.invert(annotation.subject.width);
-    const height = yScale.invert(annotation.subject.height);
-    const note = annotation.data.originalNote;
-
-    const newData = createSelection(
-      { x1Axis, x2Axis, y1Axis, y2Axis, width, height },
-      note
-    );
-    store.dispatch(EDIT_SELECTION, {
-      report: view.container().id,
-      save: true,
-      data: newData,
-    });
+function calculateUpdatedCoordinates(annotation) {
+  const { xScale, yScale } = getScales();
+  return {
+    x1Axis: xScale.invert(annotation._x),
+    x2Axis: xScale.invert(annotation.subject.width + annotation._x),
+    y1Axis: yScale.invert(annotation._y),
+    y2Axis: yScale.invert(annotation.subject.height + annotation._y),
+    width: xScale.invert(annotation.subject.width),
+    height: yScale.invert(annotation.subject.height),
   };
 }
 
-function setSelectedAnnotation(annotation) {
-  store.commit(SET_SELECTED_RECTANGLE, {
-    item: annotation.data.originalNote,
-    report: annotation.report,
+function dispatchEditSelection(newData) {
+  store.dispatch(EDIT_SELECTION, {
+    report: view.container().id,
+    save: true,
+    data: newData,
   });
 }
 
-function initializeAnnotationsInstance(view) {
-  const xScale =
-    view._runtime?.scales?.x?.value || view._runtime?.scales?.concat_0_x?.value;
+function updateSelection() {
+  return function (annotation) {
+    const coordinates = calculateUpdatedCoordinates(annotation);
+    const note = annotation.data.originalNote;
+    const newData = createSelection(coordinates, note);
+    dispatchEditSelection(newData);
+  };
+}
 
-  const yScale =
-    view._runtime.scales?.y?.value || view._runtime?.scales?.concat_0_y?.value;
+function updateSelectedAnnotation(annotation) {
+  store.commit(SET_SELECTED_RECTANGLE, {
+    item: annotation.data.originalNote,
+    report: annotation.data.report,
+  });
+}
+
+function createAnnotationsInstance() {
+  const { xScale, yScale } = getScales();
   return d3_annotations
     .annotation()
     .editMode(true)
@@ -292,93 +261,24 @@ function initializeAnnotationsInstance(view) {
       x: (d) => xScale.invert(d.x),
       y: (d) => yScale.invert(d.y),
     })
-    .on("subjectclick", setSelectedAnnotation)
-    .on("dragend", editSelection(xScale, yScale))
-    .annotations(getAnnotationsArray(view));
+    .on("subjectclick", updateSelectedAnnotation)
+    .on("dragend", updateSelection())
+    .annotations(createAnnotationsArray());
 }
 
-function handleContextMenu(event) {
-  event.preventDefault();
-  const originalNote = event.target.__data__.data.originalNote;
-  store.commit(SET_SELECTED_RECTANGLE, {
-    item: originalNote,
-    report: view.container().id,
-  });
-
-  const menuData = {
-    visibility: true,
-    location: {
-      x: event.clientX,
-      y: event.clientY,
-      element: view.container().id,
-      event,
-    },
-    clickEventData: {
-      reportName: view.container().id,
-      date: new Date(),
-      item: originalNote,
-    },
+function getNewAnnotationCoordinates(selection) {
+  const { xScale, yScale } = getScales();
+  return {
+    y1Axis: yScale.invert(selection[0][1]),
+    y2Axis: yScale.invert(selection[1][1]),
+    x1Axis: xScale.invert(selection[1][0]),
+    x2Axis: xScale.invert(selection[0][0]),
+    width: xScale.invert(selection[0][0] - selection[1][0]),
+    height: yScale.invert(selection[1][1] - selection[0][1]),
   };
-
-  store.dispatch(OPEN_MENU, menuData);
 }
 
-function initializeTooltip() {
-  const svg = d3.select(`#${props.id}`);
-  svg.select(".tooltip").remove();
-  const parseTime = d3.timeFormat("%B %d, %Y, %I:%M %p");
-  const Tooltip = createTooltipContainer();
-
-  const annotations = d3
-    .select(`#${props.id} svg g .annotation-group .annotations`)
-    .selectAll(".annotation");
-
-  function createTooltipContainer() {
-    return svg
-      .append("div")
-      .attr("class", "tooltip")
-      .style("display", "none")
-      .style("border-radius", "10px")
-      .style("position", "absolute")
-      .style("padding", "8px");
-  }
-
-  function getTooltipMarkup(data, parseTime) {
-    return `<span class="tooltip-field-title">Title:</span> ${
-      data.originalNote.body.title
-    }<br><span class="tooltip-field-title">Description:</span> ${
-      data.originalNote.body.description
-    }<br><span class="tooltip-field-title">Author</span>: ${
-      data.originalNote.metadata.createdBy
-    }<br><span class="tooltip-field-title">Created at:</span> ${parseTime(
-      data.originalNote.metadata.createdAt
-    )}<br><span class="tooltip-field-title">Updated at:</span> ${parseTime(
-      data.originalNote.metadata.updatedAt
-    )}`;
-  }
-  const handleMouseOver = function () {
-    Tooltip.style("display", "initial");
-    d3.select(this).style("stroke", "black").style("opacity", 1);
-  };
-
-  const handleMouseMove = function (event, d) {
-    Tooltip.html(getTooltipMarkup(d.data, parseTime))
-      .style("left", event.layerX + 10 + "px")
-      .style("top", event.layerY + 10 + "px");
-  };
-  const handleMouseLeave = function () {
-    Tooltip.style("display", "none");
-    d3.select(this).style("stroke", "none").style("opacity", 0.7);
-  };
-
-  annotations
-    .on("contextmenu", handleContextMenu)
-    .on("mouseover", handleMouseOver)
-    .on("mousemove", handleMouseMove)
-    .on("mouseleave", handleMouseLeave);
-}
-
-function createAnnotation(xScale, yScale) {
+function createAnnotation() {
   return function (event) {
     if (!event.selection) {
       return;
@@ -394,25 +294,132 @@ function createAnnotation(xScale, yScale) {
     store.dispatch(SHOW_DIALOG, {
       show: true,
       data: null,
-      coordinates: {
-        y1Axis: yScale.invert(event.selection[0][1]),
-        y2Axis: yScale.invert(event.selection[1][1]),
-        x1Axis: xScale.invert(event.selection[1][0]),
-        x2Axis: xScale.invert(event.selection[0][0]),
-        width: xScale.invert(event.selection[0][0] - event.selection[1][0]),
-        height: yScale.invert(event.selection[1][1] - event.selection[0][1]),
-      },
+      coordinates: getNewAnnotationCoordinates(event.selection),
       action: action(event.selection),
     });
   };
 }
 
-function initializeBrush(view) {
-  const xScale =
-    view._runtime?.scales?.x?.value || view._runtime?.scales?.concat_0_x?.value;
+function renderAnnotations(makeAnnotations, parentContainer) {
+  const svg = d3.select(`#${props.id} svg ${parentContainer}`);
 
-  const yScale =
-    view._runtime.scales?.y?.value || view._runtime?.scales?.concat_0_y?.value;
+  svg.selectAll(".annotation-group").remove();
+
+  svg.append("g").attr("class", "annotation-group").call(makeAnnotations);
+}
+
+function refreshAnnotationsOnClick(view: View) {
+  view.addEventListener("click", function () {
+    setupAnnotationMode();
+  });
+}
+
+//Context menu
+
+function contextMenuHandler(event) {
+  event.preventDefault();
+  const originalNote = event.target.__data__.data.originalNote;
+  store.commit(SET_SELECTED_RECTANGLE, {
+    item: originalNote,
+    report: view.container().id,
+  });
+
+  contextMenuLocation.value = {
+    visibility: true,
+    location: {
+      x: event.clientX,
+      y: event.clientY,
+      element: view.container().id,
+      event,
+    },
+    clickEventData: {
+      reportName: view.container().id,
+      date: new Date(),
+      item: originalNote,
+    },
+  };
+}
+
+function addContextMenuListener() {
+  const annotations = getRenderedAnnotationsObject();
+
+  annotations.on("contextmenu", contextMenuHandler);
+}
+
+//tooltip
+
+function createTooltipContainer(svg) {
+  return svg
+    .append("div")
+    .attr("class", "tooltip")
+    .style("display", "none")
+    .style("border-radius", "10px")
+    .style("position", "absolute")
+    .style("padding", "8px");
+}
+
+function getTooltipMarkup(data) {
+  const parseTime = d3.timeFormat("%B %d, %Y, %I:%M %p");
+
+  return `
+    <span class="tooltip-field-title">Title:</span> ${
+      data.originalNote.body.title
+    }
+    <br>
+    <span class="tooltip-field-title">Description:</span> ${
+      data.originalNote.body.description
+    }
+    <br>
+    <span class="tooltip-field-title">Author</span>: ${
+      data.originalNote.metadata.createdBy
+    }
+    <br>
+    <span class="tooltip-field-title">Created at:</span> ${parseTime(
+      data.originalNote.metadata.createdAt
+    )}
+    <br>
+    <span class="tooltip-field-title">Updated at:</span> ${parseTime(
+      data.originalNote.metadata.updatedAt
+    )}`;
+}
+
+function handleMouseOver(tooltip) {
+  return function () {
+    tooltip.style("display", "initial");
+    d3.select(this).style("stroke", "black").style("opacity", 1);
+  };
+}
+
+function handleMouseMove(tooltip) {
+  return function (event, d) {
+    tooltip
+      .html(getTooltipMarkup(d.data))
+      .style("left", event.layerX + 10 + "px")
+      .style("top", event.layerY + 10 + "px");
+  };
+}
+function handleMouseLeave(tooltip) {
+  return function () {
+    tooltip.style("display", "none");
+    d3.select(this).style("stroke", "none").style("opacity", 0.7);
+  };
+}
+
+function createTooltip() {
+  const svg = d3.select(`#${props.id}`);
+  svg.select(".tooltip").remove();
+  const Tooltip = createTooltipContainer(svg);
+
+  const annotations = getRenderedAnnotationsObject();
+
+  annotations
+    .on("mouseover", handleMouseOver(Tooltip))
+    .on("mousemove", handleMouseMove(Tooltip))
+    .on("mouseleave", handleMouseLeave(Tooltip));
+}
+
+function createBrush() {
+  const { xScale, yScale } = getScales();
   const parentContainer = props.annotationsConfig.brushParentElement;
   const svg = d3.select(`#${props.id} svg ${parentContainer}`);
 
@@ -428,38 +435,67 @@ function initializeBrush(view) {
           [xScale.range()[0], yScale.range()[1]],
           [xScale.range()[1], yScale.range()[0]],
         ])
-        .on("end", createAnnotation(xScale, yScale))
+        .on("end", createAnnotation())
     );
 }
 
-function renderAnnotations(view, makeAnnotations, parentContainer) {
-  console.log("annotations rendered");
-  const svg = d3.select(`#${props.id} svg ${parentContainer}`);
+//setup
 
-  svg.selectAll(".annotation-group").remove();
+function setupSignalListener(): void {
+  const annotationsParentElement =
+    props.annotationsConfig?.annotationsParentElement;
+  const brushParentElement = props.annotationsConfig?.brushParentElement;
+  const renderFunctions = {
+    renderAnnotations,
+    initializeAnnotationsInstance: createAnnotationsInstance,
+    initializeTooltip: createTooltip,
+    initializeBrush: createBrush,
+  };
 
-  svg.append("g").attr("class", "annotation-group").call(makeAnnotations);
+  const elementIds = {
+    annotationsParentElement,
+    brushParentElement,
+  };
+
+  if (props.signalListener && props.annotationMode) {
+    props.signalListener(view, elementIds, renderFunctions);
+    refreshAnnotationsOnClick(view);
+  }
+}
+
+function setupAnnotationMode(): void {
+  const annotations = createAnnotationsInstance();
+  const parentElement = props.annotationsConfig.annotationsParentElement;
+
+  renderAnnotations(annotations, parentElement);
+  createTooltip();
+  addContextMenuListener();
+  createBrush();
+}
+
+async function loadChart(): Promise<void> {
+  view = createViewInstance();
+  setupSignalListener();
+  await runViewAsync();
+  setupChartResizeListener();
+
+  if (props.annotationMode) {
+    setupAnnotationMode();
+  }
 }
 
 watch(updateValues, (): void => {
-  load();
+  loadChart();
 });
 
 watch(computedNotes, (): void => {
   if (props.annotationMode) {
-    const parentContainer = props.annotationsConfig.annotationsParentElement;
-    renderAnnotations(
-      view,
-      initializeAnnotationsInstance(view),
-      parentContainer
-    );
-    initializeTooltip();
-    initializeBrush(view);
+    setupAnnotationMode();
   }
 });
 
 onMounted((): void => {
-  load();
+  loadChart();
 });
 </script>
 

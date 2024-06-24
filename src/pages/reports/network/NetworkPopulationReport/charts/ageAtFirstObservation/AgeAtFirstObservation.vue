@@ -46,14 +46,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.OBSERVATION_PERIOD
-                  .AGE_AT_FIRST_OBSERVATION[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -71,17 +64,18 @@ import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
 
-const showTable = ref(false);
+const { showTable, toggleTable } = useChartControls();
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.OBSERVATION_PERIOD.AGE_AT_FIRST_OBSERVATION[0]
+);
 
 const data = computed(() => {
   return store.getters.getData.allAgeAtFirstObservationData;

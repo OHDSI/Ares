@@ -278,15 +278,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.DOMAIN_SUMMARY[
-                  route.params.domain.toUpperCase()
-                ]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -464,6 +456,10 @@ const domainIssue = computed(function (): DomainIssues | [] {
     return [];
   }
 });
+
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.DOMAIN_SUMMARY[route.params.domain.toUpperCase()]
+);
 
 const issueCount = computed(function (): number {
   return domainIssue.value?.count_failed || 0;

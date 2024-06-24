@@ -13,8 +13,6 @@ import { NETWORK_QUALITY_SUMMARY } from "@/shared/config/files";
 import { Chart } from "@/widgets/chart";
 import { specIssueStratificationByTable } from "./specIssueStratificationByTable";
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { specIssueStratificationByCategory } from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCategory/specIssueStratificationByCategory";
 import Panel from "primevue/panel";
 const store = useStore();
 </script>

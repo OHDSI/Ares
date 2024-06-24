@@ -1,5 +1,5 @@
 <template>
-  <Panel header="Measurements by Type" v-if="data">
+  <Panel header="Measurements by Type">
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
@@ -50,14 +50,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .MEASUREMENTS_BY_TYPE[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         /></div
     ></template>
   </Panel>
@@ -68,7 +61,6 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specMeasurementsByType } from "./specMeasurementsByType";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -76,16 +68,16 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
-const route = useRoute();
 
-const showTable = ref(false);
+const { showTable, toggleTable } = useChartControls();
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.MEASUREMENTS_BY_TYPE[0]
+);
 
 const data = computed(() => {
   return store.getters.getData.conceptData.MEASUREMENTS_BY_TYPE;

@@ -160,7 +160,6 @@ import {
   Ref,
   onMounted,
 } from "vue";
-import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { ObservationPeriodType } from "@/processes/exploreReports/model/interfaces/files/ObservationPeriodType";
 import { PersonData } from "@/processes/exploreReports/model/interfaces/files/Person";
 import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/interfaces/MultipleFilesRawInterface";
@@ -184,39 +183,63 @@ const rangeYear: Ref<number[]> = ref([]);
 
 const continuousObservation: Ref<number[]> = ref([]);
 
+const getFilteredData = (value, rangeYear) => {
+  const timeparse = timeParse("%Y%m");
+  return value.data.OBSERVED_BY_MONTH.filter((filtered) => {
+    const parsedYear = parseInt(timeparse(filtered.MONTH_YEAR).getFullYear());
+    return parsedYear >= rangeYear.value[0] && parsedYear <= rangeYear.value[1];
+  });
+};
+
+const getReducedData = (filteredData) => {
+  const timeparse = timeParse("%Y%m");
+  return filteredData.reduce((prevObj, current) => {
+    const parsedYear = parseInt(timeparse(current.MONTH_YEAR).getFullYear());
+    return {
+      ...prevObj,
+      [parsedYear]: {
+        population: prevObj[parsedYear]?.population
+          ? prevObj[parsedYear].population + current.COUNT_VALUE
+          : 0 + current.COUNT_VALUE,
+        percent: prevObj[parsedYear]?.percent
+          ? prevObj[parsedYear].percent + current.PERCENT_VALUE
+          : 0 + current.PERCENT_VALUE,
+      },
+    };
+  }, {});
+};
+
+const getObservationData = (value, rangeYear, continuousObservation) => {
+  const filteredData = getFilteredData(value, rangeYear);
+  const reducedData = getReducedData(filteredData);
+  const filteredDuration = value.data.CUMULATIVE_DURATION.filter(
+    (data) => data.YEARS <= continuousObservation.value[0]
+  );
+  return {
+    cdm_name: value.source.cdm_source_abbreviation,
+    data: reducedData,
+    filtered_duration: filteredDuration,
+  };
+};
+
+const getPersonData = (person, rangeAge) => {
+  return person.map((value) => {
+    const filteredPopulationCount = value.data.AGE_GENDER_DATA.filter(
+      (data) => data.AGE >= rangeAge.value[0] && data.AGE <= rangeAge.value[1]
+    ).reduce((prevValue, current) => prevValue + current.COUNT_VALUE, 0);
+    return {
+      cdm_name: value.source.cdm_source_abbreviation,
+      population_age: filteredPopulationCount,
+      population_age_percent:
+        filteredPopulationCount / value.data.SUMMARY[1].ATTRIBUTE_VALUE,
+    };
+  });
+};
+
 const getRangeData = computed(function () {
   const person = props.person;
-  const timeparse = timeParse("%Y%m");
   const observationData = props.observationPeriod
-    .map((value) => ({
-      cdm_name: value.source.cdm_source_abbreviation,
-      data: value.data.OBSERVED_BY_MONTH.filter((filtered) => {
-        const parsedYear = parseInt(
-          timeparse(filtered.MONTH_YEAR).getFullYear()
-        );
-        return (
-          parsedYear >= rangeYear.value[0] && parsedYear <= rangeYear.value[1]
-        );
-      }).reduce((prevObj, current) => {
-        const parsedYear = parseInt(
-          timeparse(current.MONTH_YEAR).getFullYear()
-        );
-        return {
-          ...prevObj,
-          [parsedYear]: {
-            population: prevObj[parsedYear]?.population
-              ? prevObj[parsedYear].population + current.COUNT_VALUE
-              : 0 + current.COUNT_VALUE,
-            percent: prevObj[parsedYear]?.percent
-              ? prevObj[parsedYear].percent + current.PERCENT_VALUE
-              : 0 + current.PERCENT_VALUE,
-          },
-        };
-      }, {}),
-      filtered_duration: value.data.CUMULATIVE_DURATION.filter(
-        (data) => data.YEARS <= continuousObservation.value[0]
-      ),
-    }))
+    .map((value) => getObservationData(value, rangeYear, continuousObservation))
     .map((value) => ({
       cdm_name: value.cdm_name,
       population_observed: (
@@ -235,23 +258,12 @@ const getRangeData = computed(function () {
         ...value.filtered_duration.map((value) => value.PERCENT_PEOPLE)
       ),
     }));
-  const personData = person.map((value) => {
-    const filteredPopulationCount = value.data.AGE_GENDER_DATA.filter(
-      (data) => data.AGE >= rangeAge.value[0] && data.AGE <= rangeAge.value[1]
-    ).reduce((prevValue, current) => prevValue + current.COUNT_VALUE, 0);
-    return {
-      cdm_name: value.source.cdm_source_abbreviation,
-      population_age: filteredPopulationCount,
-      population_age_percent:
-        filteredPopulationCount / value.data.SUMMARY[1].ATTRIBUTE_VALUE,
-    };
-  });
+  const personData = getPersonData(person, rangeAge);
   return observationData.map((value) => ({
     ...value,
-    ...personData.filter((data) => data.cdm_name === value.cdm_name)[0],
+    ...personData.find((data) => data.cdm_name === value.cdm_name),
   }));
 });
-
 const getAgeMinMax = computed(function () {
   const data = props.person.reduce(
     (prevValue, current) => [

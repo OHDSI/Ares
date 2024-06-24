@@ -4,7 +4,7 @@
       <PageHeader title="NETWORK CONCEPT REPORT">
         <template #action>
           <div class="flex flex-row gap-2">
-            <Button @click="atClick">
+            <Button @click="renderForm">
               <span class="uppercase font-light text-white py-1 px-2">
                 Search concepts
               </span></Button
@@ -73,10 +73,7 @@
     </div>
     <ConceptSearchForm
       :added-concepts="selectedConcept"
-      :success-message="successMessage"
-      :errors="errors"
-      @close="close"
-      @inputChanged="clearMessages"
+      @close="closeForm"
       :show="showWebApiSearchForm"
     />
   </div>
@@ -86,11 +83,10 @@
 import ReturnButton from "@/features/returnToPreviousPage";
 
 import { useStore } from "vuex";
-import MeasurementValueDistributionTable from "@/pages/reports/network/NetworkConceptReport/charts/measurementValueDistributionTable/MeasurementValueDistributionTable.vue";
 import MeasurementValueDistributionChart from "@/pages/reports/network/NetworkConceptReport/charts/measurementValueDistributionChart/MeasurementValueDistributionChart.vue";
 import { computed, onMounted, ref } from "vue";
 import RecordCountProportionByMonth from "@/pages/reports/network/NetworkConceptReport/charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import AgeAtFirstExposure from "@/pages/reports/network/NetworkConceptReport/charts/ageAtFirstExposure/AgeAtFirstExposure.vue";
 import DrugsByType from "@/pages/reports/network/NetworkConceptReport/charts/drugsByType/DrugsByType.vue";
 import DaysSupply from "@/pages/reports/network/NetworkConceptReport/charts/daysSupply/DaysSupply.vue";
@@ -105,41 +101,19 @@ import AgeAtFirstOccurrence from "@/pages/reports/network/NetworkConceptReport/c
 import InfoPanel from "@/widgets/infoPanel";
 import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 import Button from "primevue/button";
-import environment from "@/shared/api/environment";
-import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
-import { webApiActions } from "@/shared/api/webAPI";
+import {
+  ConceptSearchForm,
+  useConceptSearchForm,
+} from "@/widgets/conceptSearchForm";
 
 const store = useStore();
 const route = useRoute();
 
 const selectedConcept = ref([]);
-
-const isDataLoaded = computed(() => {
-  return Object.keys(data.value).length;
-});
-
-const showWebApiSearchForm = ref(false);
-const clearMessages = function () {
-  errors.value = "";
-  successMessage.value = [];
-};
-
+const { closeForm, renderForm, showWebApiSearchForm } = useConceptSearchForm();
 const data = computed(() => {
   return store.getters.getData.concept;
 });
-
-function atClick() {
-  showWebApiSearchForm.value = true;
-}
-
-const errors = ref("");
-const close = function () {
-  showWebApiSearchForm.value = false;
-  store.dispatch(webApiActions.RESET_API_STORAGE);
-  successMessage.value = [];
-};
-
-const successMessage = ref([]);
 
 const concept = ref("");
 const selected = ref(null);
@@ -192,13 +166,9 @@ const ageAtFirstOccurrence = computed(() => {
 });
 
 onMounted(() => {
-  concept.value = route.params.concept;
+  concept.value = Array.isArray(route.params.concept)
+    ? route.params.concept[0]
+    : route.params.concept;
   selected.value = route.params.domain;
 });
 </script>
-
-<style scoped>
-.viz-container {
-  width: 90%;
-}
-</style>

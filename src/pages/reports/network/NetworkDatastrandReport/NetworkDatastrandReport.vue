@@ -52,13 +52,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -67,16 +61,8 @@
 
 <script setup lang="ts">
 import embed from "vega-embed";
-import { watch, computed, ref } from "vue";
+import { watch, computed } from "vue";
 import { useRouter } from "vue-router";
-
-const router = useRouter();
-const store = useStore();
-
-import { specDatastrand } from "./specDatastrand";
-import { links } from "@/shared/config/links";
-
-const config = specDatastrand;
 
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
@@ -86,6 +72,14 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import useChartControls from "@/shared/lib/composables/useChartControls";
+import { specDatastrand } from "./specDatastrand";
+import { links } from "@/shared/config/links";
+
+const router = useRouter();
+const store = useStore();
+
+const config = specDatastrand;
 
 const renderChart = function () {
   embed("#viz-datastrand", config, {
@@ -110,6 +104,10 @@ const data = computed(() => store.getters.getData);
 
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
+);
+
 watch(data, function () {
   if (data.value) {
     config.data[0].values = data.value.dataStrandReport;
@@ -121,11 +119,7 @@ watch(darkMode, () => {
   renderChart();
 });
 
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 </script>
 
 <style scoped>

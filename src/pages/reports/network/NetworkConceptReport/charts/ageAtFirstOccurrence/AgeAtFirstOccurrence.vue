@@ -146,17 +146,10 @@
           @iconClicked="router.push({ name: 'help' })"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .AGE_AT_FIRST_EXPOSURE[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -169,7 +162,7 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specAgeAtFirstOccurrence } from "./specAgeAtFirstOccurrence";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { defineProps } from "vue";
@@ -179,7 +172,8 @@ import Panel from "primevue/panel";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 interface Props {
   data: DistributionType[];
@@ -187,14 +181,13 @@ interface Props {
 
 const props = defineProps<Props>();
 const store = useStore();
-const route = useRoute();
 const router = useRouter();
 
-const showTable = ref(false);
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.AGE_AT_FIRST_EXPOSURE?.[0]
+);
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 
 const data = computed(() => {
   return props.data;

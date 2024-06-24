@@ -9,7 +9,7 @@
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         v-model:filters="newFilters"
-        :value="store.getters.getData.domainTable"
+        :value="domainTableData"
         :rows="10"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
@@ -69,7 +69,7 @@
 
     <Panel header="Pivot Table">
       <Pivot
-        :data="store.getters.getData.domainTable"
+        :data="domainTableData"
         :attributes="[
           'CDM_TABLE_NAME',
           'CDM_FIELD_NAME',
@@ -97,11 +97,16 @@ import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
 import { helpers } from "@/shared/lib/mixins";
 import Pivot from "@/widgets/pivot/ui/Pivot.vue";
+import { computed } from "vue";
 
 const store = useStore();
 
 const newFilters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+const domainTableData = computed(() => {
+  return store.getters.getData.domainTable;
 });
 </script>
 

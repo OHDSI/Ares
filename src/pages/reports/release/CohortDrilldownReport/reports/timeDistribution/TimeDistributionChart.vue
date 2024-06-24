@@ -134,6 +134,7 @@ import Panel from "primevue/panel";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref, defineProps } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 interface Props {
   data: [];
@@ -159,13 +160,7 @@ const betweenStartEnd = computed(() => {
 
 const props = defineProps<Props>();
 
-const store = useStore();
-
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 </script>
 
 <style scoped></style>

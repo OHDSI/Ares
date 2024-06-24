@@ -1,7 +1,7 @@
 <template>
   <Panel header="Network Concept Dashboard">
     <template #icons>
-      <Button @click="atClick">
+      <Button @click="renderForm">
         <span class="uppercase font-light text-white py-1 px-2"
           >Add concepts
         </span></Button
@@ -56,53 +56,33 @@
   </Panel>
   <ConceptSearchForm
     :added-concepts="selectedConcept"
-    :success-message="successMessage"
-    :errors="errors"
-    @close="close"
-    @inputChanged="clearMessages"
+    @close="closeForm"
     :show="showWebApiSearchForm"
   />
 </template>
 
 <script setup lang="ts">
-import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import "./index.css";
+import {
+  ConceptSearchForm,
+  useConceptSearchForm,
+} from "@/widgets/conceptSearchForm";
 
-import { computed, Ref, ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
-const store = useStore();
-
 import { helpers } from "@/shared/lib/mixins";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { webApiActions } from "@/shared/api/webAPI";
 
-const successMessage: Ref<string[]> = ref([]);
-const errors: Ref<string> = ref("");
-const showWebApiSearchForm = ref(false);
+const store = useStore();
 const selectedConcept = ref([]);
 const data = computed(() => {
   return store.getters.getData?.concept || [];
 });
-function atClick() {
-  showWebApiSearchForm.value = true;
-}
-const clearMessages = function () {
-  errors.value = "";
-  successMessage.value = [];
-};
-const close = function () {
-  showWebApiSearchForm.value = false;
-  store.dispatch(webApiActions.RESET_API_STORAGE);
-  successMessage.value = [];
-};
-</script>
-<script lang="ts">
-export default {
-  name: "NetworkConceptDashboard",
-};
+
+const { closeForm, renderForm, showWebApiSearchForm } = useConceptSearchForm();
 </script>
 
 <style scoped>
