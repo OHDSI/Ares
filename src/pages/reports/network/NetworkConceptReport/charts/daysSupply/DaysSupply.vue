@@ -161,7 +161,6 @@ import { useRouter } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
-import { defineProps } from "vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Panel from "primevue/panel";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";

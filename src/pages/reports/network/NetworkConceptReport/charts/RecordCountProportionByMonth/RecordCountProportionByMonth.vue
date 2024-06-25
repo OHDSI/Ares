@@ -74,7 +74,6 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { useStore } from "vuex";
-import { defineProps } from "vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";

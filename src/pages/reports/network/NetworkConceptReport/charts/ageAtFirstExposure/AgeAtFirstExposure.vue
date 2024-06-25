@@ -165,7 +165,6 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
-import { defineProps } from "vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";

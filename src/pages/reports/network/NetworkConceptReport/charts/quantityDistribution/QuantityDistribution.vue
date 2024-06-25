@@ -161,8 +161,6 @@ import { specQuantity } from "./specQuantity";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
-
-import { defineProps } from "vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";

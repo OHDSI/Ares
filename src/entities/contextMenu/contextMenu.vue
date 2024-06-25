@@ -13,7 +13,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, computed, watch, ref, Ref, toRef } from "vue";
+import { computed, watch, ref, Ref, toRef } from "vue";
 
 interface Item {
   title: string;

@@ -126,7 +126,7 @@ import { DOMAIN_SUMMARY } from "@/shared/config/files";
 import { useStore } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
 import { helpers } from "@/shared/lib/mixins";
-import { computed, ref, watch, defineEmits, onBeforeMount } from "vue";
+import { computed, ref, watch, onBeforeMount } from "vue";
 import {
   ConceptSearchForm,
   useConceptSearchForm,

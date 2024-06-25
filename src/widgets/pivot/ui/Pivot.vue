@@ -218,7 +218,7 @@
 <script setup lang="ts">
 import { VuePivottable } from "vue-pivottable";
 import "./vue-pivottable.scss";
-import { computed, defineProps, Ref, ref, onBeforeMount } from "vue";
+import { computed, Ref, ref, onBeforeMount } from "vue";
 import draggable from "vuedraggable";
 
 import SvgIcon from "@jamescoyle/vue-icon";

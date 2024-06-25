@@ -14,11 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import Button from "primevue/button";
 import { useRouter } from "vue-router";
 import { mdiArrowLeft } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
+
 const props = defineProps<Props>();
 
 interface Props {

@@ -151,7 +151,6 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specLengthOfEra } from "./specLengthOfEra";
 import { useStore } from "vuex";
-import { defineProps } from "vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";

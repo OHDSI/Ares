@@ -63,7 +63,6 @@ import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 
-import { defineProps } from "vue";
 import { RecordsCountType } from "@/processes/exploreReports/model/interfaces/reportTypes/RecordsCountType";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Panel from "primevue/panel";

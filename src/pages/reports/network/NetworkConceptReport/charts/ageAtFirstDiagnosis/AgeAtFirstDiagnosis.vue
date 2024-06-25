@@ -162,8 +162,6 @@
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { defineProps } from "vue";
-
 import { specAgeAtFirstDiagnosis } from "./specAgeAtFirstDiagnosis";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";

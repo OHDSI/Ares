@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import embed from "vega-embed";
-import { watch, computed } from "vue";
+import { watch, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import { useStore } from "vuex";
@@ -105,10 +105,10 @@ const data = computed(() => store.getters.getData);
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
+    store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
 );
 
-watch(data, function () {
+onMounted(() => {
   if (data.value) {
     config.data[0].values = data.value.dataStrandReport;
     renderChart();

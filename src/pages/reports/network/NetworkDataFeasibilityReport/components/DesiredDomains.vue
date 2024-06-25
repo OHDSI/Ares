@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, defineProps, defineEmits } from "vue";
+import { computed, ref, watch } from "vue";
 import Message from "primevue/message";
 import Panel from "primevue/panel";
 import Divider from "primevue/divider";

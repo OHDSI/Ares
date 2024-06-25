@@ -55,7 +55,6 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specRecordsByUnit } from "./specRecordsByUnit";
 import { useStore } from "vuex";
-import { defineProps } from "vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { RecordsCountType } from "@/processes/exploreReports/model/interfaces/reportTypes/RecordsCountType";
