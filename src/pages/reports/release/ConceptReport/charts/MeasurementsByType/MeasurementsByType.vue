@@ -47,7 +47,7 @@
           @iconClicked="helpers.openNewTab(links.getDocsLink('MEASUREMENT'))"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="helpers.openNewTab(sqlLink)"
@@ -76,7 +76,7 @@ const store = useStore();
 const { showTable, toggleTable } = useChartControls();
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.MEASUREMENTS_BY_TYPE[0]
+  store.getters.getQueryIndex.MEASUREMENTS_BY_TYPE?.[0]
 );
 
 const data = computed(() => {

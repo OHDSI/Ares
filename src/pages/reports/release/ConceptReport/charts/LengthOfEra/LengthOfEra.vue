@@ -77,7 +77,7 @@
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="helpers.openNewTab(sqlLink)"
@@ -105,7 +105,7 @@ import useChartControls from "@/shared/lib/composables/useChartControls";
 const store = useStore();
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.LENGTH_OF_ERA[0]
+  store.getters.getQueryIndex.LENGTH_OF_ERA?.[0]
 );
 
 const { showTable, toggleTable } = useChartControls();

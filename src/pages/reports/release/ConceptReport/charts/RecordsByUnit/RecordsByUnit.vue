@@ -38,7 +38,7 @@
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="helpers.openNewTab(sqlLink)"
@@ -68,7 +68,7 @@ const store = useStore();
 const { showTable, toggleTable } = useChartControls();
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.RECORDS_BY_UNIT[0]
+  store.getters.getQueryIndex.RECORDS_BY_UNIT?.[0]
 );
 
 const data = computed(() => {

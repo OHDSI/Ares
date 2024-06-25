@@ -41,7 +41,7 @@
           tooltip="Proportion of people with at least one record per 1000 people."
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="helpers.openNewTab(sqlLink)"
@@ -72,7 +72,7 @@ const store = useStore();
 const { showTable, toggleTable } = useChartControls();
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.PREVALENCE_BY_GENDER_AGE_YEAR[0]
+  store.getters.getQueryIndex.PREVALENCE_BY_GENDER_AGE_YEAR?.[0]
 );
 
 const data = computed(() => {

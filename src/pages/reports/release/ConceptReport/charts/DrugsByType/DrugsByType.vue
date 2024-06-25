@@ -43,7 +43,7 @@
           @iconClicked="helpers.openNewTab(links.getDocsLink('DRUG_EXPOSURE'))"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="helpers.openNewTab(sqlLink)"
@@ -70,7 +70,7 @@ import useChartControls from "@/shared/lib/composables/useChartControls";
 const store = useStore();
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.DRUGS_BY_TYPE[0]
+  store.getters.getQueryIndex.DRUGS_BY_TYPE?.[0]
 );
 
 const { showTable, toggleTable } = useChartControls();

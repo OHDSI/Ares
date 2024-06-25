@@ -92,7 +92,7 @@
           @iconClicked="router.push({ name: 'help' })"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="helpers.openNewTab(sqlLink)"
@@ -124,7 +124,7 @@ const router = useRouter();
 
 const sqlLink = computed(() => {
   return links.getSqlQueryLink(
-    store.getters.getQueryIndex.AGE_AT_FIRST_DIAGNOSIS[0]
+    store.getters.getQueryIndex.AGE_AT_FIRST_DIAGNOSIS?.[0]
   );
 });
 

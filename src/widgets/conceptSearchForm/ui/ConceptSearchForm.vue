@@ -221,6 +221,7 @@ import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import { CONCEPT } from "@/shared/config/files";
 import { mdiAlertCircleOutline } from "@mdi/js";
+import { useRouter } from "vue-router";
 
 interface Props {
   addedConcepts: object;
@@ -253,6 +254,7 @@ const loadedConcepts = ref({});
 const form: Ref<HTMLFormElement> = ref(null);
 const props = defineProps<Props>();
 const store = useStore();
+const router = useRouter();
 const emit = defineEmits([
   "inputChanged",
   "save",
@@ -384,6 +386,15 @@ const handleConceptData = (conceptId) => {
   }
 };
 
+const navigateToNetworkConcept = function (domain, conceptId) {
+  router.push({
+    params: {
+      domain,
+      concept: conceptId,
+    },
+  });
+};
+
 const saveChanges = async (item) => {
   if (props.addedConcepts[item.CONCEPT_ID] === "Loaded") {
     errors.value = "This concept has already been loaded";
@@ -394,6 +405,7 @@ const saveChanges = async (item) => {
 
   const domain = webApiKeyMap.domains[item.DOMAIN_ID];
   const conceptId = item.CONCEPT_ID;
+  navigateToNetworkConcept(domain, conceptId);
 
   await loadConcept(domain, conceptId);
 

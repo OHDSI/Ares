@@ -83,7 +83,7 @@
           @iconClicked="router.push({ name: 'help' })"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="helpers.openNewTab(sqlLink)"
@@ -114,7 +114,7 @@ const store = useStore();
 const router = useRouter();
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.DAYS_SUPPLY_DISTRIBUTION[0]
+  store.getters.getQueryIndex.DAYS_SUPPLY_DISTRIBUTION?.[0]
 );
 
 const { showTable, toggleTable } = useChartControls();

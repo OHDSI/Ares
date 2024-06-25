@@ -219,7 +219,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.MEASUREMENT.MEASUREMENT_VALUE_DISTRIBUTION?.[0]
+  store.getters.getQueryIndex.MEASUREMENT_VALUE_DISTRIBUTION?.[0]
 );
 
 const getMeasurementUnits = computed(function () {

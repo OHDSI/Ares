@@ -83,7 +83,7 @@
           @iconClicked="router.push(getSourceConceptReportLink())"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="helpers.openNewTab(sqlLink)"
@@ -145,7 +145,7 @@ const {
 const { annotations, notes } = useAnnotations(reportId);
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.PREVALENCE_BY_MONTH[0]
+  store.getters.getQueryIndex.PREVALENCE_BY_MONTH?.[0]
 );
 
 const data = computed(() => {

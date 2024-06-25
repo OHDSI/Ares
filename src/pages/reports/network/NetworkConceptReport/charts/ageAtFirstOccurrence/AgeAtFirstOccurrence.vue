@@ -183,7 +183,7 @@ const store = useStore();
 const router = useRouter();
 
 const sqlLink = links.getSqlQueryLink(
-  store.getters.getQueryIndex.AGE_AT_FIRST_EXPOSURE?.[0]
+  store.getters.getQueryIndex.AGE_AT_FIRST_OCCURRENCE?.[0]
 );
 
 const { showTable, toggleTable } = useChartControls();
