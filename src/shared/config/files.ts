@@ -37,3 +37,5 @@ export const COHORT_INDEX_EVENT_BREAKDOWN = "cohortIndexEventBreakdown";
 
 export const COHORT_TEMPORAL_COVARIATE_DISTRIBUTION =
   "cohortTemporalCovariateDistribution";
+
+export const LOCATION = "location";
