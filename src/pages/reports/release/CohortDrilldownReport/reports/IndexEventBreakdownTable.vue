@@ -30,7 +30,8 @@
                 class="rounded-r-lg"
                 style="width: 45rem"
                 unstyled
-                v-model="filters.global.value"
+                :value="filters.global.value"
+                @update:model-value="debouncedSearch($event, 'global')"
                 placeholder="Search in Table"
               />
             </InputGroup>
@@ -64,6 +65,8 @@
         </template>
 
         <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
           sortable
           :show-filter-menu="false"
           :show-clear-button="false"
@@ -71,18 +74,13 @@
           header="Concept ID"
           :hidden="!selectedHeaders.includes('concept_id')"
         >
-          <template #filter="{ filterModel, filterCallback }">
-            <MultiSelect
-              :maxSelectedLabels="2"
-              show-clear
-              filter
-              v-model="filterModel.value"
-              @change="filterCallback()"
-              :options="concept_id_options"
-              placeholder="Filter values"
-              class="p-column-filter w-full"
-              style="min-width: 12rem"
-            ></MultiSelect>
+          <template #filter="{}">
+            <InputText
+              class="rounded-r-lg"
+              :value="filters.concept_id.value"
+              @update:model-value="debouncedSearch($event, 'concept_id')"
+              placeholder="Search concepts"
+            />
           </template>
         </Column>
         <Column
@@ -159,6 +157,13 @@
           header="Persons"
           :hidden="!selectedHeaders.includes('subject_count')"
         >
+          <template #body="slotProps">
+            {{
+              slotProps.data.subject_count
+                ? formatComma(slotProps.data.subject_count)
+                : "No data"
+            }}
+          </template>
         </Column>
         <Column
           sortable
@@ -190,6 +195,8 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 import { useRoute } from "vue-router";
+import { formatComma } from "../../../../../shared/lib/mixins/methods/formatComma";
+import { debounce } from "lodash";
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -197,7 +204,7 @@ const filters = ref({
   concept_name: { value: null, matchMode: FilterMatchMode.IN },
   concept_code: { value: null, matchMode: FilterMatchMode.IN },
   vocabulary_id: { value: null, matchMode: FilterMatchMode.IN },
-  concept_id: { value: null, matchMode: FilterMatchMode.IN },
+  concept_id: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
 });
 
 interface Props {
@@ -287,6 +294,10 @@ onMounted(() => {
   setDefaultSelectedHeaders();
 });
 
+const debouncedSearch = debounce(function (data: string, field: string): void {
+  filters.value[field].value = data;
+}, 300);
+
 const props = defineProps<Props>();
 
 const store = useStore();
@@ -302,10 +313,10 @@ const concept_options = computed(() => {
 const vocabulary_id_options = computed(() => {
   return helpers.getValuesArray(props.data, "vocabulary_id", true);
 });
-
-const concept_id_options = computed(() => {
-  return helpers.getValuesArray(props.data, "concept_id", true);
-});
 </script>
 
-<style scoped></style>
+<style scoped>
+.p-inputtext {
+  width: 100%;
+}
+</style>
