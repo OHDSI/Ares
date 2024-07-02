@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-10">
     <PageHeader :title="cohortName || 'Report name unknown'">
-      <template #default>
+      <template #action>
         <div class="flex flex-row gap-2">
           <ReturnButton />
         </div>
@@ -18,7 +18,6 @@ import { useStore } from "vuex";
 import CohortCharacterizationReport from "@/pages/reports/release/CohortDrilldownReport/reports/CohortCharacterizationTable.vue";
 import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 import { computed } from "vue";
-import { COHORT_REPORT } from "@/shared/config/files";
 import { useRoute } from "vue-router";
 import ReturnButton from "@/features/returnToPreviousPage";
 import IndexEventBreakdownTable from "@/pages/reports/release/CohortDrilldownReport/reports/IndexEventBreakdownTable.vue";

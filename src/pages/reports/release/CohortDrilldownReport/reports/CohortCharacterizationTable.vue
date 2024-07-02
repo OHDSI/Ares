@@ -29,7 +29,8 @@
                 class="rounded-r-lg"
                 style="width: 45rem"
                 unstyled
-                v-model="filters.global.value"
+                :value="filters.global.value"
+                @update:model-value="debouncedSearch($event, 'global')"
                 placeholder="Search in Table"
               />
             </InputGroup>
@@ -62,24 +63,21 @@
         </template>
         <Column
           sortable
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
           :show-filter-menu="false"
           :show-clear-button="false"
           field="concept_id"
           header="Concept ID"
           :hidden="!selectedHeaders.includes('concept_id')"
         >
-          <template #filter="{ filterModel, filterCallback }">
-            <MultiSelect
-              :maxSelectedLabels="2"
-              show-clear
-              filter
-              v-model="filterModel.value"
-              @change="filterCallback()"
-              :options="concept_id_options"
-              placeholder="Filter values"
-              class="p-column-filter w-full"
-              style="min-width: 12rem"
-            ></MultiSelect>
+          <template #filter="{}">
+            <InputText
+              class="rounded-r-lg"
+              :value="filters.concept_id.value"
+              @update:model-value="debouncedSearch($event, 'concept_id')"
+              placeholder="Search concepts"
+            />
           </template>
         </Column>
 
@@ -91,18 +89,13 @@
           header="Covariate Name"
           :hidden="!selectedHeaders.includes('covariate_name')"
         >
-          <template #filter="{ filterModel, filterCallback }">
-            <MultiSelect
-              :maxSelectedLabels="2"
-              show-clear
-              filter
-              v-model="filterModel.value"
-              @change="filterCallback()"
-              :options="covariate_options"
-              placeholder="Filter values"
-              class="p-column-filter w-full"
-              style="min-width: 12rem"
-            ></MultiSelect>
+          <template #filter="{}">
+            <InputText
+              class="rounded-r-lg"
+              :value="filters.covariate_name.value"
+              @update:model-value="debouncedSearch($event, 'covariate_name')"
+              placeholder="Search covariates"
+            />
           </template>
         </Column>
         <Column
@@ -225,10 +218,10 @@ import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   domain_id: { value: null, matchMode: FilterMatchMode.IN },
-  covariate_name: { value: null, matchMode: FilterMatchMode.IN },
+  covariate_name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   analysis_name: { value: null, matchMode: FilterMatchMode.IN },
   temporal_choice: { value: null, matchMode: FilterMatchMode.IN },
-  concept_id: { value: null, matchMode: FilterMatchMode.IN },
+  concept_id: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
 });
 
 const route = useRoute();
@@ -295,6 +288,10 @@ const getHeaders = computed(() => {
   return Object.values(headers.value);
 });
 
+const debouncedSearch = debounce(function (data: string, field: string): void {
+  filters.value[field].value = data;
+}, 300);
+
 const setDefaultSelectedHeaders = function () {
   const settings =
     store.getters.getSettings.columnSelection?.[route.name]
@@ -336,17 +333,13 @@ const analysis_options = computed(() => {
   return helpers.getValuesArray(props.data, "analysis_name", true);
 });
 
-const covariate_options = computed(() => {
-  return helpers.getValuesArray(props.data, "covariate_name", true);
-});
-
 const temporal_choice_options = computed(() => {
   return helpers.getValuesArray(props.data, "temporal_choice", true);
 });
-
-const concept_id_options = computed(() => {
-  return helpers.getValuesArray(props.data, "concept_id", true);
-});
 </script>
 
-<style scoped></style>
+<style scoped>
+.p-inputtext {
+  width: 100%;
+}
+</style>
