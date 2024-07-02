@@ -41,10 +41,10 @@ export default function networkConceptDashboard(data) {
         concept: concept.map((val) => ({
           CDM_NAME: val.source.cdm_source_name,
           CONCEPT_NAME: val.data[CONCEPT_METADATA][0]?.CONCEPT_NAME,
-          CONCEPT_ID: val.data[CONCEPT_METADATA][0].CONCEPT_ID,
-          PEOPLE_COUNT: val.data[CONCEPT_METADATA][0].NUM_PERSONS,
+          CONCEPT_ID: val.data[CONCEPT_METADATA][0]?.CONCEPT_ID,
+          PEOPLE_COUNT: val.data[CONCEPT_METADATA][0]?.NUM_PERSONS,
           PEOPLE_PERCENT: (
-            val.data[CONCEPT_METADATA][0].PERCENT_PERSONS * 100
+            val.data[CONCEPT_METADATA][0]?.PERCENT_PERSONS * 100
           ).toFixed(2),
         })),
       };
