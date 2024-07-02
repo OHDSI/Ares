@@ -22,6 +22,7 @@ import {
   mdiHospitalBuilding,
   mdiNeedle,
   mdiHeartFlash,
+  mdiMapMarkerOutline,
 } from "@mdi/js";
 
 export const reports = [
@@ -37,6 +38,13 @@ export const reports = [
     icon: mdiAccountOutline,
     name: "Person",
     routeName: "person",
+    reports: [],
+  },
+  {
+    folder: "Data Source Release",
+    icon: mdiMapMarkerOutline,
+    name: "Location",
+    routeName: "location",
     reports: [],
   },
   {

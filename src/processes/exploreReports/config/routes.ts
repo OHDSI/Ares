@@ -29,6 +29,7 @@ import NetworkConceptDashboard from "@/pages/reports/network/NetworkConceptDashb
 import NetworkDiversityReport from "@/pages/reports/network/NetworkDiversityReport/NetworkDiversityReport.vue";
 import CohortsTable from "@/pages/reports/release/CohortsTable/CohortsTable.vue";
 import CohortDrilldownReport from "@/pages/reports/release/CohortDrilldownReport/CohortDrilldownReport.vue";
+import LocationReport from "@/pages/reports/release/Location/LocationReport.vue";
 
 import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 
@@ -159,6 +160,11 @@ export const routes: RouteRecordRaw[] = [
         path: "observation_period",
         name: "observationPeriod",
         components: { reportsView: ObservationPeriodReport },
+      },
+      {
+        path: "location",
+        name: "location",
+        components: { reportsView: LocationReport },
       },
       {
         path: "temporal_characterization",

@@ -42,5 +42,6 @@ export default function getFilePath(params: Params) {
     [files.COHORT_DIAGNOSTICS_PERFORMANCE]: `data/${params.cdm}/${params.release}/cohort_diagnostics_performance.csv`,
     [files.COHORT_INDEX_EVENT_BREAKDOWN]: `data/${params.cdm}/${params.release}/cohort_index_event_breakdown.csv`,
     [files.COHORT_TEMPORAL_COVARIATE_DISTRIBUTION]: `data/${params.cdm}/${params.release}/cohort_temporal_covariate_distribution.csv`,
+    [files.LOCATION]: `data/${params.cdm}/${params.release}/location.csv`,
   };
 }

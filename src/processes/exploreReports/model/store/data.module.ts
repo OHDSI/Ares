@@ -18,7 +18,6 @@ import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
 import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
-import { webApiActions } from "@/shared/api/webAPI";
 
 const state = {
   data: {},

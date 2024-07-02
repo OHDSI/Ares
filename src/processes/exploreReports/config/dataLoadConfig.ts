@@ -15,6 +15,7 @@ import {
   DOMAIN_ISSUES,
   DOMAIN_SUMMARY,
   DOMAIN_VISIT_STRATIFICATION,
+  LOCATION,
   METADATA,
   NETWORK_PERFORMANCE,
   NETWORK_QUALITY_SUMMARY,
@@ -103,6 +104,12 @@ export default function getFilesByView(params = null) {
       loadMethod: FETCH_FILES,
       payload: {
         files: [{ name: COHORT_INDEX, required: true }],
+      },
+    },
+    location: {
+      loadMethod: FETCH_FILES,
+      payload: {
+        files: [{ name: LOCATION, required: true }],
       },
     },
     cohortReport: {

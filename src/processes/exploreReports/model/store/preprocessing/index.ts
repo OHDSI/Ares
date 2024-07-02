@@ -20,6 +20,7 @@ import {
   COHORT_DIAGNOSTICS_PERFORMANCE,
   COHORT_INDEX_EVENT_BREAKDOWN,
   COHORT_TEMPORAL_COVARIATE_DISTRIBUTION,
+  LOCATION,
 } from "@/shared/config/files";
 import csvParse from "@/processes/exploreReports/model/store/preprocessing/csvParse";
 
@@ -45,4 +46,5 @@ export default {
   [COHORT_DIAGNOSTICS_PERFORMANCE]: csvParse,
   [COHORT_INDEX_EVENT_BREAKDOWN]: csvParse,
   [COHORT_TEMPORAL_COVARIATE_DISTRIBUTION]: csvParse,
+  [LOCATION]: csvParse,
 };

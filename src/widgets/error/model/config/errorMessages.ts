@@ -27,6 +27,8 @@ export default {
     domainContinuity: "Requested files not found",
     sourceConceptOverlay: "Requested files not found",
     index: "Index file is missing. Please run AresIndexer then try again",
+    location:
+      "Location data is not available. Please run the latest version of achilles then try again",
   },
   technicalError: {
     codeError:
