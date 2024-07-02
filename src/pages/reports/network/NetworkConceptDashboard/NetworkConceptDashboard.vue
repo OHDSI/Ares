@@ -72,12 +72,11 @@ import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
-const store = useStore();
-
 import { helpers } from "@/shared/lib/mixins";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { webApiActions } from "@/shared/api/webAPI";
+const store = useStore();
 
 const successMessage: Ref<string[]> = ref([]);
 const errors: Ref<string> = ref("");
