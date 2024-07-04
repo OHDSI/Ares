@@ -1,10 +1,6 @@
 <template>
   <Panel header="Race">
-    <Chart
-      id="viz-race"
-      :chartSpec="specRace"
-      :data="store.getters.getData.raceData"
-    />
+    <Chart id="viz-race" :chartSpec="specRace" :data="raceData" />
   </Panel>
 </template>
 
@@ -13,8 +9,13 @@ import Panel from "primevue/panel";
 import { useStore } from "vuex";
 import { specRace } from "@/pages/reports/network/NetworkDiversityReport/charts/raceChart/specRace";
 import { Chart } from "@/widgets/chart";
+import { computed } from "vue";
 
 const store = useStore();
+
+const raceData = computed(() => {
+  return store.getters.getData.raceData;
+});
 </script>
 
 <style scoped></style>

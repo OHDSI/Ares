@@ -1,17 +1,17 @@
 export const setSelectionAreaSignal = function (
   view,
-  store,
-  annotationsParentElement,
-  brushParentElement,
-  createAnnotations,
-  makeAnnotations,
-  createTooltip,
-  createBrush
+  { annotationsParentElement, brushParentElement },
+  {
+    renderAnnotations,
+    initializeAnnotationsInstance,
+    initializeTooltip,
+    initializeBrush,
+  }
 ) {
   return view.addSignalListener("brush", () => {
-    const annotations = makeAnnotations(view);
-    createAnnotations(view, annotations, annotationsParentElement);
-    createTooltip(view);
-    createBrush(view, brushParentElement);
+    const annotations = initializeAnnotationsInstance(view);
+    renderAnnotations(annotations, annotationsParentElement);
+    initializeTooltip(view);
+    initializeBrush(view, brushParentElement);
   });
 };

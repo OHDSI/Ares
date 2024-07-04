@@ -77,14 +77,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.OBSERVATION_PERIOD
-                  .AGE_AT_FIRST_OBSERVATION[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -97,7 +90,7 @@ import { links } from "@/shared/config/links";
 import { specAgeAtFirstObservation } from "./specAgeAtFirstObservation";
 import { specAgeAtFirstObservationAnnotation } from "./specAgeAtFirstObservationAnnotation";
 import { useStore } from "vuex";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
@@ -105,7 +98,7 @@ import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
-import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 
@@ -113,16 +106,20 @@ const store = useStore();
 
 const reportId = "viz-ageatfirstobservation";
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.OBSERVATION_PERIOD.AGE_AT_FIRST_OBSERVATION[0]
+);
+
+const {
+  notesMode,
+  annotationsMode,
+  toggleNotesMode,
+  toggleAnnotationsMode,
+  showTable,
+  toggleTable,
+} = useChartControls();
 
 const { annotations, notes } = useAnnotations(reportId);
-
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
 
 const data = computed(() => {
   return store.getters.getData.observationPeriodData.AGE_AT_FIRST_OBSERVATION;

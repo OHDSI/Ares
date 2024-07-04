@@ -1,5 +1,7 @@
 const getSqlQueryLink = function (val: string): string {
-  return `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${val}`;
+  return val
+    ? `https://github.com/OHDSI/Achilles/tree/main/inst/sql/sql_server/${val}`
+    : undefined;
 };
 const getAchillesLink = function (): string {
   return "https://github.com/ohdsi/achilles";

@@ -357,8 +357,6 @@ const removeCols = function (item: string) {
 };
 
 const selectedFilterAttributes: Ref<string[]> = ref([]);
-// const selectedFilterValues: Ref<{ [key: string]: { [key: string]: boolean } }> =
-//   ref({});
 
 const aggregateFunction: Ref<string> = ref("");
 const aggregateValue: Ref<string[]> = ref([""]);
@@ -436,13 +434,4 @@ onBeforeMount(() => {
   padding: 10px;
   height: 100%;
 }
-
-//:deep(.v-text-field__prefix) {
-//  font-size: 0.875rem !important;
-//  color: white;
-//}
-//
-//:deep(.v-list-item__title) {
-//  font-size: 0.875rem !important;
-//}
 </style>

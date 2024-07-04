@@ -29,8 +29,12 @@ const state = {
 };
 
 const getters = {
-  getQueryIndex: function (state): QueryIndexType {
-    return state.queryIndex;
+  getQueryIndex: function (state, getters, rootState): QueryIndexType {
+    const domain = rootState.route.params.domain;
+    const route = rootState.route.name;
+    return domain && route !== "domainTable"
+      ? state.queryIndex[domain.toUpperCase()]
+      : state.queryIndex;
   },
   getSources: function (state): Source[] {
     return state.sources;

@@ -88,41 +88,57 @@ const sourcesFilter = ref({
 });
 
 const getVisitTypes = computed(function () {
-  const data = props.data.reduce(
-    (prev, current) => [...prev, ...current.data],
-    []
-  );
-  return [
-    ...new Set(
-      data.map((object) =>
-        JSON.stringify({
-          concept_id: object.CONCEPT_ID,
-          concept_name: object.CONCEPT_NAME,
-        })
-      )
-    ),
-  ].map((string) => JSON.parse(string));
+  const flattenData = (data) => {
+    return data.reduce((prev, current) => [...prev, ...current.data], []);
+  };
+
+  const createUniqueObject = (data) => {
+    return {
+      concept_id: data.CONCEPT_ID,
+      concept_name: data.CONCEPT_NAME,
+    };
+  };
+
+  const getUniqueObjects = (data) => {
+    const uniqueStrings = new Set(data.map(JSON.stringify));
+    return Array.from(uniqueStrings).map(JSON.parse);
+  };
+
+  const data = flattenData(props.data);
+  const uniqueObjects = data.map(createUniqueObject);
+  return getUniqueObjects(uniqueObjects);
 });
+
+const visitTypes = computed(() =>
+  visitTypesSelected.value.map((obj) => obj.concept_id)
+);
 
 const filterSelectedVisitTypes = computed(function () {
-  const visitTypes = visitTypesSelected.value.map((obj) => obj.concept_id);
-  const filtered = props.data.map((source) => ({
-    data: source.data.filter((value) => visitTypes.includes(value.CONCEPT_ID)),
-    source: source.source,
-  }));
-
-  return filtered.filter((value) => value.data.length === visitTypes.length);
+  return props.data
+    .map((source) => ({
+      data: source.data.filter((value) =>
+        visitTypes.value.includes(value.CONCEPT_ID)
+      ),
+      source: source.source,
+    }))
+    .filter((value) =>
+      value.data.every((data) => visitTypes.value.includes(data.CONCEPT_ID))
+    );
 });
+
+const getSmallestPercentage = (data) => {
+  return data.map((data) => data.PERCENT_PERSONS).sort((a, b) => a - b)[0];
+};
+
+const hasPercentage = (value) => value.percentage;
 
 const getSmallestVisitTypeValue = computed(function () {
   return filterSelectedVisitTypes.value
     .map((value) => ({
       cdm_name: value.source,
-      percentage: value.data
-        .map((data) => data.PERCENT_PERSONS)
-        .sort((a, b) => a - b)[0],
+      percentage: getSmallestPercentage(value.data),
     }))
-    .filter((value) => value.percentage);
+    .filter(hasPercentage);
 });
 
 const emit = defineEmits(["visitTypesChanged"]);

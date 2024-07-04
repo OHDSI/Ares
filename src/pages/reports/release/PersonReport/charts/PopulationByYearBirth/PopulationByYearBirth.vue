@@ -61,13 +61,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -91,21 +85,26 @@ import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
-import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
 
 const reportId = "viz-birthyearnote";
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
+);
+
+const {
+  notesMode,
+  annotationsMode,
+  toggleNotesMode,
+  toggleAnnotationsMode,
+  showTable,
+  toggleTable,
+} = useChartControls();
 
 const { annotations, notes } = useAnnotations(reportId);
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
 
 const data = computed(() => {
   return store.getters.getData.personData.BIRTH_YEAR_DATA;

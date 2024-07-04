@@ -51,17 +51,10 @@
           "
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .CONDITIONS_BY_TYPE[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -73,7 +66,6 @@ import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { specConditionsByType } from "./specConditionsByType";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { RecordsCountType } from "@/processes/exploreReports/model/interfaces/reportTypes/RecordsCountType";
@@ -82,21 +74,20 @@ import Panel from "primevue/panel";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
-const route = useRoute();
 interface Props {
   data: RecordsCountType[];
 }
 
 const props = defineProps<Props>();
+const { showTable, toggleTable } = useChartControls();
 
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.CONDITIONS_BY_TYPE?.[0]
+);
 
 const data = computed(() => {
   return props.data;

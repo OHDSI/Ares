@@ -32,11 +32,7 @@
           <div>
             <a
               target="_new"
-              :href="
-                links.getSqlQueryLink(
-                  `analyses/${slotProps.data.analysis_id}.sql`
-                )
-              "
+              :href="sqlAnalysisLink(slotProps.data.analysis_id)"
               >{{ slotProps.data.analysis_id }}</a
             >
           </div>
@@ -67,13 +63,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.ACHILLES_PERFORMANCE[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlPerformanceLink)"
         />
       </div>
     </template>
@@ -96,6 +86,13 @@ import { FilterMatchMode } from "primevue/api";
 import { mdiCodeBraces, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
 
 const store = useStore();
+
+const sqlAnalysisLink = (analysisId: number) =>
+  links.getSqlQueryLink(`analyses/${analysisId}.sql`);
+
+const sqlPerformanceLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.ACHILLES_PERFORMANCE[0]
+);
 
 const filters = ref({});
 const newFilters = ref({

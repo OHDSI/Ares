@@ -62,13 +62,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.DATA_DENSITY.DATADENSITY_TOTAL[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -81,7 +75,7 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { defRecordsPerPerson } from "./defRecordsPerPerson";
 import { defRecordsPerPersonAnnotation } from "./defRecordsPerPersonAnnotation";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import * as listeners from "@/pages/model/lib/listeners";
@@ -92,22 +86,26 @@ import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
-import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
 
 const reportId = "viz-recordsperperson";
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
+const {
+  notesMode,
+  annotationsMode,
+  toggleNotesMode,
+  toggleAnnotationsMode,
+  showTable,
+  toggleTable,
+} = useChartControls();
 
 const { annotations, notes } = useAnnotations(reportId);
 
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.DATA_DENSITY.DATADENSITY_TOTAL[0]
+);
 
 const data = computed(() => {
   return store.getters.getData.domainRecords;

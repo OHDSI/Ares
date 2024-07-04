@@ -46,13 +46,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex.PERSON.ETHNICITY_DATA
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -71,15 +65,16 @@ import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
 
-const showTable = ref(false);
+const { showTable, toggleTable } = useChartControls();
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.PERSON.ETHNICITY_DATA
+);
 
 const data = computed(() => {
   return store.getters.getData.personData.ETHNICITY_DATA;

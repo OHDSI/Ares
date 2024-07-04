@@ -41,20 +41,22 @@
       :not-stationary="store.getters.getData.isNotStationary"
     />
 
-    <MeasurementValueDistribution />
-    <AgeAtFirstDiagnosis />
-    <AgeAtFirstExposure />
-    <LengthOfEra />
-    <ConditionsByType />
-    <DrugsByType />
-    <RecordsByUnit />
-    <MeasurementsByType />
-    <AgeAtFirstOccurrence />
-    <RecordCountProportionByMonth />
-    <DaysSupply />
-    <QuantityDistribution />
-    <VisitDurationByType />
-    <RecordCountProportionByAgeSexYear />
+    <MeasurementValueDistribution v-if="hasMeasurementValueDistribution" />
+    <AgeAtFirstDiagnosis v-if="hasAgeAtFirstDiagnosis" />
+    <AgeAtFirstExposure v-if="hasAgeAtFirstExposure" />
+    <LengthOfEra v-if="hasLengthOfEra" />
+    <ConditionsByType v-if="hasConditionsByType" />
+    <DrugsByType v-if="hasDrugsByType" />
+    <RecordsByUnit v-if="hasRecordsByUnit" />
+    <MeasurementsByType v-if="hasMeasurementsByType" />
+    <AgeAtFirstOccurrence v-if="hasAgeAtFirstOccurrence" />
+    <RecordCountProportionByMonth v-if="hasRecordCountProportionByMonth" />
+    <DaysSupply v-if="hasDaysSupply" />
+    <QuantityDistribution v-if="hasQuantityDistribution" />
+    <VisitDurationByType v-if="hasVisitDurationByType" />
+    <RecordCountProportionByAgeSexYear
+      v-if="hasRecordCountProportionByAgeSexYear"
+    />
   </div>
 </template>
 
@@ -87,6 +89,60 @@ const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
+const hasMeasurementValueDistribution = computed(
+  () => store.getters.getData.conceptData.MEASUREMENT_VALUE_DISTRIBUTION
+);
+const hasLengthOfEra = computed(
+  () => store.getters.getData.conceptData.LENGTH_OF_ERA
+);
+
+const hasConditionsByType = computed(
+  () => store.getters.getData.conceptData.CONDITIONS_BY_TYPE
+);
+
+const hasMeasurementsByType = computed(
+  () => store.getters.getData.conceptData.MEASUREMENTS_BY_TYPE
+);
+
+const hasVisitDurationByType = computed(
+  () => store.getters.getData.conceptData.VISIT_DURATION_BY_TYPE
+);
+
+const hasRecordsByUnit = computed(
+  () => store.getters.getData.conceptData.RECORDS_BY_UNIT
+);
+
+const hasDaysSupply = computed(
+  () => store.getters.getData.conceptData.DAYS_SUPPLY_DISTRIBUTION
+);
+
+const hasAgeAtFirstDiagnosis = computed(
+  () => store.getters.getData.conceptData.AGE_AT_FIRST_DIAGNOSIS
+);
+
+const hasAgeAtFirstExposure = computed(
+  () => store.getters.getData.conceptData.AGE_AT_FIRST_EXPOSURE
+);
+
+const hasDrugsByType = computed(
+  () => store.getters.getData.conceptData.DRUGS_BY_TYPE
+);
+
+const hasAgeAtFirstOccurrence = computed(
+  () => store.getters.getData.conceptData.AGE_AT_FIRST_OCCURRENCE
+);
+
+const hasQuantityDistribution = computed(
+  () => store.getters.getData.conceptData.QUANTITY_DISTRIBUTION
+);
+
+const hasRecordCountProportionByAgeSexYear = computed(
+  () => store.getters.getData.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR
+);
+
+const hasRecordCountProportionByMonth = computed(
+  () => store.getters.getData.conceptData.PREVALENCE_BY_MONTH
+);
 const getPercentWithValues = computed((): string => {
   const missingData = store.getters.getData.domainSummary.filter(
     (data) => data.CONCEPT_ID === route.params.concept

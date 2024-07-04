@@ -117,7 +117,7 @@ const items = ref([
   { value: "observation_period", text: "Observation" },
 ]);
 
-const domainMap = ref({
+const domainMap = {
   condition_occurrence: "1000000",
   drug_exposure: "0100000",
   device_exposure: "0010000",
@@ -125,75 +125,48 @@ const domainMap = ref({
   death: "0000100",
   procedure_occurrence: "0000010",
   observation_period: "0000001",
-});
+};
 
 const switchDomains = ref([]);
+
+const getDomainData = (domainKey, valueData) => {
+  return {
+    data: valueData.filter(
+      (bits) => domainMap[domainKey] === bits.DOMAIN_BITS
+    )[0]?.COUNT_VALUE,
+    show: switchDomains.value.includes(domainKey),
+  };
+};
+
 const getDomainsData = computed(function () {
   if (switchDomains.value.length) {
     return props.data.map((value) => ({
       cdm_name: value.source,
-      condition_occurrence: {
-        data: value.data.filter(
-          (bits) => domainMap.value.condition_occurrence === bits.DOMAIN_BITS
-        )[0]?.COUNT_VALUE,
-
-        show: switchDomains.value.includes("condition_occurrence"),
-      },
-      drug_exposure: {
-        data: value.data.filter(
-          (bits) => domainMap.value.drug_exposure === bits.DOMAIN_BITS
-        )[0]?.COUNT_VALUE,
-
-        show: switchDomains.value.includes("drug_exposure"),
-      },
-      device_exposure: {
-        data: value.data.filter(
-          (bits) => domainMap.value.device_exposure === bits.DOMAIN_BITS
-        )[0]?.COUNT_VALUE,
-
-        show: switchDomains.value.includes("device_exposure"),
-      },
-      measurement: {
-        data: value.data.filter(
-          (bits) => domainMap.value.measurement === bits.DOMAIN_BITS
-        )[0]?.COUNT_VALUE,
-
-        show: switchDomains.value.includes("measurement"),
-      },
-      death: {
-        data: value.data.filter(
-          (bits) => domainMap.value.death === bits.DOMAIN_BITS
-        )[0]?.COUNT_VALUE,
-
-        show: switchDomains.value.includes("death"),
-      },
-      procedure_occurrence: {
-        data: value.data.filter(
-          (bits) => domainMap.value.procedure_occurrence === bits.DOMAIN_BITS
-        )[0]?.COUNT_VALUE,
-
-        show: switchDomains.value.includes("procedure_occurrence"),
-      },
-      observation_period: {
-        data: value.data.filter(
-          (bits) => domainMap.value.observation_period === bits.DOMAIN_BITS
-        )[0]?.COUNT_VALUE,
-
-        show: switchDomains.value.includes("observation_period"),
-      },
+      condition_occurrence: getDomainData("condition_occurrence", value.data),
+      drug_exposure: getDomainData("drug_exposure", value.data),
+      device_exposure: getDomainData("device_exposure", value.data),
+      measurement: getDomainData("measurement", value.data),
+      death: getDomainData("death", value.data),
+      procedure_occurrence: getDomainData("procedure_occurrence", value.data),
+      observation_period: getDomainData("observation_period", value.data),
     }));
   } else {
     return [];
   }
 });
 
-const getDesiredDomainsOverview = computed(function () {
+const isAllDomainsPresent = (value) => {
+  return (
+    Object.values(value).filter((domain) => domain.data && domain.show)
+      .length === switchDomains.value.length
+  );
+};
+
+const getDesiredDomainsOverview = computed(() => {
   if (switchDomains.value.length && getDomainsData.value.length) {
     return getDomainsData.value.map((value) => ({
       cdm_name: value.cdm_name,
-      allDomainsPresent:
-        Object.values(value).filter((domain) => domain.data && domain.show)
-          .length === switchDomains.value.length,
+      allDomainsPresent: isAllDomainsPresent(value),
     }));
   } else {
     return [];

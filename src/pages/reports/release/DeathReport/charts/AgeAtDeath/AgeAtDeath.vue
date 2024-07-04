@@ -84,14 +84,7 @@
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.name.toUpperCase()]
-                  .AGE_AT_DEATH[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -104,7 +97,6 @@ import { specAgeAtDeath } from "./specAgeAtDeath";
 import { links } from "@/shared/config/links";
 
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -112,16 +104,16 @@ import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
-const route = useRoute();
 
-const showTable = ref(false);
+const { showTable, toggleTable } = useChartControls();
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.DEATH.AGE_AT_DEATH[0]
+);
 
 const data = computed(() => {
   return store.getters.getData.AGE_AT_DEATH;

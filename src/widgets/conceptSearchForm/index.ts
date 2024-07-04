@@ -1,3 +1,4 @@
-import ConceptSearchForm from "@/widgets/conceptSearchForm/ui/ConceptSearchForm.vue";
+import ConceptSearchForm from "./ui/ConceptSearchForm.vue";
+import useConceptSearchForm from "./composables";
 
-export { ConceptSearchForm };
+export { ConceptSearchForm, useConceptSearchForm };

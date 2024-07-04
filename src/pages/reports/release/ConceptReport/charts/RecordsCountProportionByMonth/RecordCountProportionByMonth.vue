@@ -83,17 +83,10 @@
           @iconClicked="router.push(getSourceConceptReportLink())"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .PREVALENCE_BY_MONTH[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -107,7 +100,7 @@ import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import * as listeners from "@/pages/model/lib/listeners";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
@@ -123,7 +116,7 @@ import {
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
-import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
@@ -140,16 +133,20 @@ const getSourceConceptReportLink = function () {
   };
 };
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
+const {
+  notesMode,
+  annotationsMode,
+  toggleNotesMode,
+  toggleAnnotationsMode,
+  showTable,
+  toggleTable,
+} = useChartControls();
 
 const { annotations, notes } = useAnnotations(reportId);
 
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const sqlLink = links.getSqlQueryLink(
+  store.getters.getQueryIndex.PREVALENCE_BY_MONTH?.[0]
+);
 
 const data = computed(() => {
   return store.getters.getData.conceptData.PREVALENCE_BY_MONTH;

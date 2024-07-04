@@ -123,22 +123,22 @@ import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
-import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
 const route = useRoute();
 const reportId = "viz-dataqualityresults";
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
+const {
+  notesMode,
+  annotationsMode,
+  toggleNotesMode,
+  toggleAnnotationsMode,
+  showTable,
+  toggleTable,
+} = useChartControls();
 
 const { annotations, notes } = useAnnotations(reportId);
-
-const showTable = ref(false);
-
-function toggleTable(mode) {
-  showTable.value = mode;
-}
 
 const data = computed(() => {
   return store.getters.getData[QUALITY_INDEX].dataQualityRecords;

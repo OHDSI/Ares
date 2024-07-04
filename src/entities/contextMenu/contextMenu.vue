@@ -13,8 +13,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, watch, ref, Ref } from "vue";
-import { useStore } from "vuex";
+import { computed, watch, ref, Ref, toRef } from "vue";
 
 interface Item {
   title: string;
@@ -22,12 +21,13 @@ interface Item {
 }
 interface Props {
   items: Item[];
+  location: object;
 }
 
 const props = defineProps<Props>();
 const context = ref(null);
 
-const store = useStore();
+const location = toRef(props, "location");
 
 function onClickOutside() {
   close();
@@ -44,10 +44,6 @@ const style = computed(() => {
   };
 });
 
-const coordinates = computed(() => {
-  return store.getters.getContextMenuLocation;
-});
-
 function clickAction(item) {
   item.action();
   close();
@@ -59,13 +55,13 @@ function close() {
   top.value = 0;
 }
 function open() {
-  const e = store.getters.getContextMenuLocation.event;
+  const e = location.value.location.event;
   left.value = e.pageX || e.clientX;
   top.value = (e.pageY || e.clientY) - window.pageYOffset;
   show.value = true;
 }
 
-watch(coordinates, () => {
+watch(location, () => {
   open();
 });
 </script>

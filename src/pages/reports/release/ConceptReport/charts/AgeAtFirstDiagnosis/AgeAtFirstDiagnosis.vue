@@ -1,5 +1,5 @@
 <template>
-  <Panel header="Age at First Diagnosis" v-if="data">
+  <Panel header="Age at First Diagnosis">
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
@@ -92,17 +92,10 @@
           @iconClicked="router.push({ name: 'help' })"
         />
         <ChartActionIcon
-          v-if="store.getters.getQueryIndex"
+          v-if="sqlLink"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
-          @iconClicked="
-            helpers.openNewTab(
-              links.getSqlQueryLink(
-                store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .AGE_AT_FIRST_DIAGNOSIS[0]
-              )
-            )
-          "
+          @iconClicked="helpers.openNewTab(sqlLink)"
         />
       </div>
     </template>
@@ -123,17 +116,19 @@ import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import useChartControls from "@/shared/lib/composables/useChartControls";
 
 const store = useStore();
-const route = useRoute();
 const router = useRouter();
 
-const showTable = ref(false);
+const sqlLink = computed(() => {
+  return links.getSqlQueryLink(
+    store.getters.getQueryIndex.AGE_AT_FIRST_DIAGNOSIS?.[0]
+  );
+});
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
+const { showTable, toggleTable } = useChartControls();
 
 const data = computed(() => {
   return store.getters.getData.conceptData.AGE_AT_FIRST_DIAGNOSIS;

@@ -71,32 +71,27 @@ const items = ref([
 
 const domainBits: Ref<string> = ref("0000000");
 
-const getDomainsData = computed(function () {
+const getDomainsData = computed(() => {
   if (domainBits.value === "0000000") {
     return [];
-  } else {
-    return props.data.map((value) => {
-      const data = value.data.filter((d) => d.DOMAIN_BITS === domainBits.value);
-      return {
-        cdm_name: value.source,
-        percentage: data[0]?.PERCENT_VALUE,
-        population: data[0]?.COUNT_VALUE,
-      };
-    });
   }
+
+  return props.data.map(({ data, source }) => {
+    const filteredData = data.filter(
+      (d) => d.DOMAIN_BITS === domainBits.value
+    )[0];
+    return {
+      cdm_name: source,
+      percentage: filteredData?.PERCENT_VALUE,
+      population: filteredData?.COUNT_VALUE,
+    };
+  });
 });
 
 const updateBits = function (): void {
-  domainBits.value = "";
-  domainBits.value = domainBits.value.concat(
-    switchDomains.value.includes("condition_occurrence") ? "1" : "0",
-    switchDomains.value.includes("drug_exposure") ? "1" : "0",
-    switchDomains.value.includes("device_exposure") ? "1" : "0",
-    switchDomains.value.includes("measurement") ? "1" : "0",
-    switchDomains.value.includes("death") ? "1" : "0",
-    switchDomains.value.includes("procedure_occurrence") ? "1" : "0",
-    switchDomains.value.includes("observation") ? "1" : "0"
-  );
+  domainBits.value = items.value
+    .map((item) => (switchDomains.value.includes(item.value) ? "1" : "0"))
+    .join("");
 };
 
 const emit = defineEmits(["domainsDataChanged"]);

@@ -7,7 +7,6 @@ import { settingsStore } from "@/widgets/settings";
 import { webApiStore, authStore } from "@/shared/api/webAPI";
 import { snackbarStore } from "@/widgets/snackbar";
 import notesStore from "@/widgets/notesPanel/model/store/notes.module";
-import contextMenuStore from "@/entities/contextMenu/model/store/contextMenu.module";
 export default new Store({
   modules: {
     explorerStore,
@@ -18,6 +17,5 @@ export default new Store({
     snackbarStore,
     authStore,
     notesStore,
-    contextMenuStore,
   },
 });
