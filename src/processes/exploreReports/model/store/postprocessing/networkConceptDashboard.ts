@@ -1,5 +1,4 @@
 import { CONCEPT } from "@/shared/config/files";
-import _ from "lodash";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/interfaces/MultipleFilesRawInterface";
 import environment from "@/shared/api/environment";
@@ -31,43 +30,40 @@ function combineObjectsBySource(inputObject) {
 }
 
 export default function networkConceptDashboard(data) {
-  let concept: MultipleFilesRawInterface<ConceptType>[],
-    conceptName,
-    conceptId,
-    numPersons,
-    percent_people;
+  let concept: MultipleFilesRawInterface<ConceptType>[], conceptId: string;
   if (environment.DUCKDB_ENABLED === "true") {
     concept = combineObjectsBySource(data);
-    conceptName = concept[0].data[CONCEPT_METADATA]?.[0]?.CONCEPT_NAME;
-    percent_people = (
-      concept[0].data[CONCEPT_METADATA]?.[0]?.PERCENT_PERSONS * 100
-    ).toFixed(2);
     conceptId = concept[0].data[CONCEPT_METADATA]?.[0]?.CONCEPT_ID;
-    numPersons = _.sumBy(concept, (r) =>
-      r.data[CONCEPT_METADATA]?.[0]?.NUM_PERSONS
-        ? r.data[CONCEPT_METADATA]?.[0]?.NUM_PERSONS
-        : 0
-    );
+    if (!conceptId) {
+      return {};
+    } else {
+      return {
+        concept: concept.map((val) => ({
+          CDM_NAME: val.source.cdm_source_name,
+          CONCEPT_NAME: val.data[CONCEPT_METADATA][0]?.CONCEPT_NAME,
+          CONCEPT_ID: val.data[CONCEPT_METADATA][0]?.CONCEPT_ID,
+          PEOPLE_COUNT: val.data[CONCEPT_METADATA][0]?.NUM_PERSONS,
+          PEOPLE_PERCENT: (
+            val.data[CONCEPT_METADATA][0]?.PERCENT_PERSONS * 100
+          ).toFixed(2),
+        })),
+      };
+    }
   } else {
     concept = data[CONCEPT];
-    conceptName = concept[0]?.data.CONCEPT_NAME[0];
     conceptId = concept[0]?.data.CONCEPT_ID[0];
-    percent_people = (concept[0]?.data?.PERCENT_PERSONS * 100).toFixed(2);
-    numPersons = _.sumBy(concept, (r) =>
-      r.data.NUM_PERSONS[0] ? r.data.NUM_PERSONS[0] : 0
-    );
-  }
-  if (!conceptId) {
-    return {};
-  } else {
-    return {
-      concept: concept.map((val) => ({
-        CDM_NAME: val.source.cdm_source_name,
-        CONCEPT_NAME: conceptName,
-        CONCEPT_ID: conceptId,
-        PEOPLE_COUNT: numPersons,
-        PEOPLE_PERCENT: percent_people,
-      })),
-    };
+    if (!conceptId) {
+      return {};
+    } else {
+      return {
+        concept: concept.map((val) => ({
+          CDM_NAME: val.source.cdm_source_name,
+          CONCEPT_NAME: val.data?.CONCEPT_NAME[0],
+          CONCEPT_ID: val.data.CONCEPT_ID[0],
+          PEOPLE_COUNT: val.data.NUM_PERSONS,
+          PEOPLE_PERCENT: (val.data.PERCENT_PERSONS * 100).toFixed(2),
+        })),
+      };
+    }
   }
 }
