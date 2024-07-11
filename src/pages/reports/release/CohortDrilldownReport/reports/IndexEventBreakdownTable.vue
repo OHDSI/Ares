@@ -173,6 +173,13 @@
           header="Records"
           :hidden="!selectedHeaders.includes('concept_count')"
         >
+          <template #body="slotProps">
+            {{
+              slotProps.data.concept_count
+                ? formatComma(slotProps.data.concept_count)
+                : "No data"
+            }}
+          </template>
         </Column>
       </DataTable>
     </div>

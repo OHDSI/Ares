@@ -57,6 +57,14 @@
           field="cohort_subjects"
           header="# People"
         >
+          <template #body="slotProps">
+            {{
+              parseFloat(slotProps.data.cohort_subjects) &&
+              !isNaN(parseFloat(slotProps.data.cohort_subjects))
+                ? formatComma(slotProps.data.cohort_subjects)
+                : "No data"
+            }}
+          </template>
         </Column>
       </DataTable>
     </div>
@@ -76,6 +84,7 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 import { COHORT_INDEX } from "@/shared/config/files";
+import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
 
 const store = useStore();
 const route = useRoute();
