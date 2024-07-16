@@ -77,6 +77,7 @@ export const reports = [
     icon: mdiDatabaseSearch,
     name: "Web API",
     routeName: "webApi",
+    webApiRequired: true,
   },
   {
     folder: "Data Network",

@@ -19,6 +19,7 @@ import {
   SourceRelease,
 } from "@/processes/exploreReports/model/interfaces/files/SourceIndex";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
+import environment from "@/shared/api/environment";
 
 const state = {
   folders: config.folders,
@@ -43,10 +44,13 @@ const getters = {
       rootState.route.matched.some((route) => route.name === folder.key)
     );
   },
-  getFilteredReports: function (state, getters) {
-    return state.reports.filter(
-      (report) => report.folder === getters.getSelectedFolder.name
-    );
+  getFilteredReports: function (state, getters, rootState) {
+    const webApiEnabled = environment.WEB_API_ENABLED === "true";
+    return state.reports.filter((report) => {
+      const folderMatch = report.folder === getters.getSelectedFolder.name;
+      const webApiCondition = webApiEnabled || !report.webApiRequired;
+      return folderMatch && webApiCondition;
+    });
   },
   getSelectedSource: function (state, getters, rootState): Source {
     return getters.getSources.find(

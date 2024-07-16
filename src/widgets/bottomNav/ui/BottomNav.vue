@@ -3,6 +3,7 @@
     <template #end>
       <div class="flex flex-row gap-14 mr-3">
         <Button
+          v-if="webApiEnabled"
           severity="secondary"
           @click="redirectTo('/network/web_api')"
           icon="pi pi-check"
@@ -64,6 +65,8 @@ import environment from "@/shared/api/environment";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiCog, mdiDatabase, mdiHelpCircleOutline, mdiServer } from "@mdi/js";
 import { useRouter } from "vue-router";
+
+const webApiEnabled = environment.WEB_API_ENABLED === "true";
 
 const store = useStore();
 const router = useRouter();

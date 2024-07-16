@@ -18,6 +18,7 @@ import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
 import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
+import { root } from "postcss";
 
 const state = {
   data: {},
@@ -28,6 +29,9 @@ const getters = {
     return state.data.data;
   },
   dataInStore: (state, getters, rootState) => {
+    if (rootState.route.name === "webApi") {
+      return Object.keys(rootState.webApiStore.apiData).length;
+    }
     if (getFilesByView({ files: [] })[rootState.route.name]) {
       return Object.keys(state.data).length;
     } else {
