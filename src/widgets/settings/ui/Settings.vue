@@ -32,6 +32,9 @@
         <div class="relative bottom-0 mt-4">
           <ExportNotes></ExportNotes>
         </div>
+        <!--        <div class="relative bottom-0 mt-4">-->
+        <!--          <cookie-test />-->
+        <!--        </div>-->
       </div>
     </div>
   </Sidebar>
@@ -57,6 +60,7 @@ import { TOGGLE_UI_VISIBILITY } from "@/widgets/settings/model/store/actions.typ
 import ToggleDefaultNotesMode from "@/widgets/settings/ui/components/toggleDefaultNotesMode/ToggleDefaultNotesMode.vue";
 import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccount.vue";
 import Sidebar from "primevue/sidebar";
+import CookieTest from "@/widgets/settings/ui/components/cookieTest.vue";
 
 const store = useStore();
 
