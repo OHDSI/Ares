@@ -52,6 +52,23 @@ html {
   font-size: 14px;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 25px;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-surface-400 dark:bg-surface-200;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-surface-500 dark:bg-surface-300;
+}
+
 a {
   @apply text-primary-500 dark:text-primary-400 #{!important};
 }
