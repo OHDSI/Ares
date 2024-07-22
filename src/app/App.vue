@@ -62,11 +62,15 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-surface-400 dark:bg-surface-200;
+  border-radius: 25px;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  @apply bg-surface-400;
+  border-radius: 25px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-surface-500 dark:bg-surface-300;
+html.dark ::-webkit-scrollbar-thumb {
+  @apply bg-surface-200;
 }
 
 a {
