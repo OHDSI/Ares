@@ -52,6 +52,27 @@ html {
   font-size: 14px;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 25px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 25px;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  @apply bg-surface-400;
+  border-radius: 25px;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  @apply bg-surface-200;
+}
+
 a {
   @apply text-primary-500 dark:text-primary-400 #{!important};
 }
