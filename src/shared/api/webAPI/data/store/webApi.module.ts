@@ -55,7 +55,7 @@ const actions = {
         });
       })
       .catch((err) => {
-        commit(SET_WEBAPI, { loading: false, error: err.error });
+        commit(SET_WEBAPI, { loading: false, error: err });
       });
   },
   [RESET_API_STORAGE]({ commit }) {
