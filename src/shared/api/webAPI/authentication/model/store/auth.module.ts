@@ -1,17 +1,16 @@
-import { SAVE_TOKEN, SET_USER } from "./mutations.type";
+import { SAVE_TOKEN, SET_AUTHENTICATED, SET_USER } from "./mutations.type";
 import { WEB_API_LOG_IN, GET_USER, LOG_OUT } from "./actions.type";
 import { authService } from "@/shared/api/webAPI/services/authService";
 import { ADD_ALERT } from "@/widgets/snackbar/model/store/actions.type";
 import environment from "@/shared/api/environment";
-import CookiesService from "@/shared/api/cookiesService";
 import { jwtDecode } from "jwt-decode";
-import localStorageService from "@/shared/api/localStorageService";
 import LocalStorageService from "@/shared/api/localStorageService";
 
 const tokenKey = "bearerToken";
 
 const state = {
   user: null,
+  authenticated: false,
 };
 
 function checkExpiryDate(token) {
@@ -29,8 +28,9 @@ function getExpiryDate(token) {
 
 const getters = {
   authenticated: function (state) {
-    const token = LocalStorageService.get(tokenKey);
-    return token && !checkExpiryDate(token);
+    // const token = LocalStorageService.get(tokenKey);
+    // return token && !checkExpiryDate(token);
+    return state.authenticated;
   },
   getWebAPIUser: function (state) {
     return state.user;
@@ -105,15 +105,17 @@ const actions = {
     user.exp = new Date(
       getExpiryDate(LocalStorageService.get(tokenKey)) * 1000
     ).toLocaleString();
+    commit(SET_AUTHENTICATED, true);
     commit(SET_USER, user);
   },
   async [LOG_OUT]({ commit, dispatch, rootGetters }) {
-    LocalStorageService.remove(tokenKey);
-    LocalStorageService.remove("user");
+    commit(SET_AUTHENTICATED, false);
     commit(SET_USER, null);
     if (!checkExpiryDate(LocalStorageService.get(tokenKey))) {
       await authService.token.logout(LocalStorageService.get(tokenKey));
     }
+    LocalStorageService.remove(tokenKey);
+    LocalStorageService.remove("user");
   },
 };
 const mutations = {
@@ -123,6 +125,9 @@ const mutations = {
   },
   [SAVE_TOKEN](state, token) {
     LocalStorageService.set("bearerToken", token);
+  },
+  [SET_AUTHENTICATED](state, authenticated) {
+    state.authenticated = authenticated;
   },
 };
 

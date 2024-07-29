@@ -1,4 +1,11 @@
 class LocalStorageService {
+  watch(key, callback) {
+    window.addEventListener("storage", (event) => {
+      if (event.key === key) {
+        callback(event.newValue);
+      }
+    });
+  }
   get(key: string) {
     const data = window.localStorage.getItem(key);
 
