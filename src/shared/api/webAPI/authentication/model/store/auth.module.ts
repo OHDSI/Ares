@@ -104,7 +104,7 @@ const actions = {
     const user = await userData.data;
     user.exp = new Date(
       getExpiryDate(LocalStorageService.get(tokenKey)) * 1000
-    ).toUTCString();
+    ).toLocaleString();
     commit(SET_USER, user);
   },
   async [LOG_OUT]({ commit, dispatch, rootGetters }) {
