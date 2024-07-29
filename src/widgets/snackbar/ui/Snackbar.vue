@@ -1,5 +1,5 @@
 <template>
-  <Toast></Toast>
+  <Toast position="top-left"></Toast>
 </template>
 
 <script setup lang="ts">
@@ -8,13 +8,17 @@ import { useStore } from "vuex";
 
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
-import { watch } from "vue";
+import { computed, watch } from "vue";
 
 const toast = useToast();
 
 const store = useStore();
 
-watch(store.getters.getAlertVisibility, () => {
+const showAlert = computed(() => {
+  return store.getters.getAlertVisibility;
+});
+
+watch(showAlert, () => {
   if (store.getters.getAlertVisibility) {
     toast.add({
       severity: "error",

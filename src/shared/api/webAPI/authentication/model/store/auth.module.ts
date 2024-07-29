@@ -6,6 +6,7 @@ import environment from "@/shared/api/environment";
 import CookiesService from "@/shared/api/cookiesService";
 import { jwtDecode } from "jwt-decode";
 import localStorageService from "@/shared/api/localStorageService";
+import LocalStorageService from "@/shared/api/localStorageService";
 
 const tokenKey = "bearerToken";
 
@@ -28,7 +29,7 @@ function getExpiryDate(token) {
 
 const getters = {
   authenticated: function (state) {
-    const token = CookiesService.get(tokenKey);
+    const token = LocalStorageService.get(tokenKey);
     return token && !checkExpiryDate(token);
   },
   getWebAPIUser: function (state) {
@@ -70,7 +71,7 @@ const actions = {
       return;
     }
     try {
-      const savedToken = CookiesService.get(tokenKey);
+      const savedToken = LocalStorageService.get(tokenKey);
       const isExpired = checkExpiryDate(savedToken);
 
       let token = savedToken;
@@ -78,7 +79,7 @@ const actions = {
         const { headers } = await authService.token.get();
         token = headers?.["bearer"];
         if (!token) throw new Error("Token not found");
-        CookiesService.set(tokenKey, token, getExpiryDate(token));
+        LocalStorageService.set(tokenKey, token);
       }
       dispatch(GET_USER);
     } catch (error) {
@@ -90,36 +91,38 @@ const actions = {
   },
   async [GET_USER]({ commit, dispatch, rootGetters }) {
     if (environment.WEB_API_ENABLED === "false") return;
-    if (!CookiesService.get(tokenKey)) return;
-    const isExpired = checkExpiryDate(CookiesService.get(tokenKey));
+    if (!LocalStorageService.get(tokenKey)) return;
+    const isExpired = checkExpiryDate(LocalStorageService.get(tokenKey));
 
     if (isExpired) {
       dispatch(LOG_OUT);
       return;
     }
-    const userData = await authService.user.get(CookiesService.get(tokenKey));
+    const userData = await authService.user.get(
+      LocalStorageService.get(tokenKey)
+    );
     const user = await userData.data;
     user.exp = new Date(
-      getExpiryDate(CookiesService.get(tokenKey)) * 1000
+      getExpiryDate(LocalStorageService.get(tokenKey)) * 1000
     ).toUTCString();
     commit(SET_USER, user);
   },
   async [LOG_OUT]({ commit, dispatch, rootGetters }) {
-    CookiesService.remove(tokenKey);
-    localStorageService.remove("user");
+    LocalStorageService.remove(tokenKey);
+    LocalStorageService.remove("user");
     commit(SET_USER, null);
-    if (!checkExpiryDate(CookiesService.get(tokenKey))) {
-      await authService.token.logout(CookiesService.get(tokenKey));
+    if (!checkExpiryDate(LocalStorageService.get(tokenKey))) {
+      await authService.token.logout(LocalStorageService.get(tokenKey));
     }
   },
 };
 const mutations = {
   [SET_USER](state, user) {
     state.user = user;
-    localStorageService.set("user", user);
+    LocalStorageService.set("user", user);
   },
   [SAVE_TOKEN](state, token) {
-    CookiesService.set("bearerToken", token, 1);
+    LocalStorageService.set("bearerToken", token);
   },
 };
 
