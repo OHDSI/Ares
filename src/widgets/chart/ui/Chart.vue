@@ -104,6 +104,7 @@ const updateValues = computed(() => {
     minMax: store.getters.getSettings.minMax,
     darkMode: store.getters.getSettings.darkMode,
     annotationMode: props.annotationMode,
+    data: props.data,
   };
 });
 
