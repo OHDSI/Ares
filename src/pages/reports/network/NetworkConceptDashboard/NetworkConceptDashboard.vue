@@ -61,6 +61,7 @@
     @close="close"
     @inputChanged="clearMessages"
     :show="showWebApiSearchForm"
+    multi-selection
   />
 </template>
 
