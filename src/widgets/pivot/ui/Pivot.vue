@@ -54,7 +54,7 @@
                     </MultiSelect>
 
                     <draggable
-                      class="overflow-scroll"
+                      class="overflow-auto"
                       item-key="id"
                       v-model="selectedRows"
                       v-if="selectedRows.length"
@@ -96,7 +96,7 @@
                     </MultiSelect>
 
                     <draggable
-                      class="overflow-scroll"
+                      class="overflow-auto"
                       item-key="id"
                       v-model="selectedCols"
                       v-if="selectedCols.length"
@@ -181,7 +181,7 @@
         </div>
       </TabView>
     </div>
-    <div style="width: 75%; height: 100%" class="table-card overflow-scroll">
+    <div style="width: 75%; height: 100%" class="table-card overflow-auto">
       <div
         v-if="selectedCols.length || selectedRows.length"
         style="width: 100%"

@@ -754,6 +754,7 @@ const debouncedSearch = debounce(function (data: string): void {
     .push({
       query: {
         search: data,
+        tab: 2,
       },
     })
     .then(() => {

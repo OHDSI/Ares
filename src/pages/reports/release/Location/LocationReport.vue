@@ -27,6 +27,14 @@
           header="# of People"
           field="COUNT_PERSONS"
         >
+          <template #body="slotProps">
+            {{
+              parseInt(slotProps.data.COUNT_PERSONS) &&
+              !isNaN(parseInt(slotProps.data.COUNT_PERSONS))
+                ? formatComma(slotProps.data.COUNT_PERSONS)
+                : "No data"
+            }}
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -51,6 +59,7 @@ import Column from "primevue/column";
 import { useStore } from "vuex";
 import { computed } from "vue";
 import { LOCATION } from "@/shared/config/files";
+import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
 
 const store = useStore();
 
