@@ -395,6 +395,53 @@
       header="Execution Duration"
     >
     </Column>
+    <Column
+      v-if="checks[0].Status"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      sortable
+      filter-field="Status"
+      field="Status"
+      :show-clear-button="false"
+      :show-filter-menu="false"
+    >
+      <template #header>
+        <svg-icon type="mdi" :path="mdiDelta"></svg-icon
+      ></template>
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          :maxSelectedLabels="2"
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="deltaOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+      <template #body="slotProps">
+        <div v-if="slotProps.data.Status === 'NEW'" class="text-red-600">
+          {{ slotProps.data.Status }}
+        </div>
+        <div
+          v-if="slotProps.data.Status === 'EXISTING'"
+          class="text-yellow-600"
+        >
+          {{ slotProps.data.Status }}
+        </div>
+        <div v-if="slotProps.data.Status === 'RESOLVED'" class="text-green-600">
+          {{ slotProps.data.Status }}
+        </div>
+        <div v-if="slotProps.data.Status === 'STABLE'" class="text-blue-600">
+          {{ slotProps.data.Status }}
+        </div>
+      </template>
+    </Column>
 
     <Column expander style="width: 5rem" />
 
@@ -551,7 +598,7 @@ import Dropdown from "primevue/dropdown";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import MultiSelect from "primevue/multiselect";
-import { mdiTable } from "@mdi/js";
+import { mdiDelta, mdiTable } from "@mdi/js";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
@@ -592,6 +639,9 @@ const checkLevelOptions = computed(() => {
 const notesExistOptions = computed(() => {
   return helpers.getValuesArray(checks.value, "notesExist", true);
 });
+const deltaOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "Status", true);
+});
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -604,6 +654,7 @@ const filters = ref({
   context: { value: null, matchMode: FilterMatchMode.IN },
   checkLevel: { value: null, matchMode: FilterMatchMode.IN },
   notesExist: { value: null, matchMode: FilterMatchMode.IN },
+  Status: { value: null, matchMode: FilterMatchMode.IN },
 });
 
 const expanded = ref([]);
@@ -613,6 +664,13 @@ const headers = ref({
     title: "Status",
     sortable: true,
     key: "failed",
+    show: true,
+    default: true,
+  },
+  delta: {
+    title: "Delta",
+    sortable: true,
+    key: "status",
     show: true,
     default: true,
   },

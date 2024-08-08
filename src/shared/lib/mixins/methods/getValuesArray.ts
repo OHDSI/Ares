@@ -3,6 +3,7 @@ export const getValuesArray = function (
   val: string,
   unique?: boolean
 ): never[] {
+  if (!array) return [];
   if (unique) {
     return [...new Set(array.map((d) => d[val]))];
   } else {
