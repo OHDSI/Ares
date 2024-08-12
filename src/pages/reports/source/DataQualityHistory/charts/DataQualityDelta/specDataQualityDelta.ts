@@ -36,59 +36,53 @@ export function specDataQualityDelta(zeroBaseline = false) {
             bind: "legend",
           },
         ],
-        // encoding: {
-        //   opacity: {
-        //     condition: { param: "source", value: 1 },
-        //     value: 0.2,
-        //   },
-        // },
         transform: [
           {
             filter: { param: "source" },
           },
         ],
       },
-      // {
-      //   selection: {
-      //     release: {
-      //       type: "multi",
-      //       fields: ["copiedVariable"],
-      //       bind: "legend",
-      //     },
-      //     x: {
-      //       type: "single",
-      //       on: "mousemove",
-      //       fields: ["copiedVariable"],
-      //       nearest: true,
-      //     },
-      //   },
-      //   transform: [
-      //     {
-      //       filter: { selection: "release" },
-      //     },
-      //   ],
-      //   mark: { type: "point", tooltip: true },
-      // },
-      // {
-      //   transform: [
-      //     {
-      //       filter: {
-      //         and: ["x.Release", { selection: "x" }],
-      //       },
-      //     },
-      //     { filter: { selection: "release" } },
-      //   ],
-      //   layer: [
-      //     {
-      //       mark: "rule",
-      //       encoding: {
-      //         y: {
-      //           height: 1,
-      //         },
-      //       },
-      //     },
-      //   ],
-      // },
+      {
+        selection: {
+          release: {
+            type: "multi",
+            fields: ["variable"],
+            bind: "legend",
+          },
+          x: {
+            type: "single",
+            on: "mousemove",
+            fields: ["Release"],
+            nearest: true,
+          },
+        },
+        transform: [
+          {
+            filter: { selection: "release" },
+          },
+        ],
+        mark: { type: "point", tooltip: true },
+      },
+      {
+        transform: [
+          {
+            filter: {
+              and: ["x.Release", { selection: "x" }],
+            },
+          },
+          { filter: { selection: "release" } },
+        ],
+        layer: [
+          {
+            mark: "rule",
+            encoding: {
+              y: {
+                height: 1,
+              },
+            },
+          },
+        ],
+      },
     ],
   };
 }

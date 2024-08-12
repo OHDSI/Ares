@@ -12,7 +12,7 @@ export default function getFilePath(params: Params) {
     [files.INDEX]: "data/index.json",
     [files.CONCEPT]: `data/${params.cdm}/${params.release}/concepts/${params.domain}/concept_${params.concept}.json`,
     [files.QUALITY_INDEX]: `data/${params.cdm}/data-quality-index.json`,
-    [files.QUALITY_RESULTS]: `data/${params.cdm}/${params.release}/updated_dq-result.json`,
+    [files.QUALITY_RESULTS]: `data/${params.cdm}/${params.release}/dq-result.json`,
     [files.QUALITY_DELTA]: `data/${params.cdm}/data-quality-delta.csv`,
     [files.DEATH]: `data/${params.cdm}/${params.release}/death.json`,
     [files.SOURCE_HISTORY_INDEX]: `data/${params.cdm}/data-source-history-index.json`,

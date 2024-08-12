@@ -396,12 +396,12 @@
     >
     </Column>
     <Column
-      v-if="checks[0].Status"
+      v-if="checks[0].delta"
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
       sortable
-      filter-field="Status"
-      field="Status"
+      filter-field="delta"
+      field="delta"
       :show-clear-button="false"
       :show-filter-menu="false"
     >
@@ -425,20 +425,17 @@
         </MultiSelect>
       </template>
       <template #body="slotProps">
-        <div v-if="slotProps.data.Status === 'NEW'" class="text-red-600">
-          {{ slotProps.data.Status }}
+        <div v-if="slotProps.data.delta === 'NEW'" class="text-red-600">
+          {{ slotProps.data.delta }}
         </div>
-        <div
-          v-if="slotProps.data.Status === 'EXISTING'"
-          class="text-yellow-600"
-        >
-          {{ slotProps.data.Status }}
+        <div v-if="slotProps.data.delta === 'EXISTING'" class="text-yellow-600">
+          {{ slotProps.data.delta }}
         </div>
-        <div v-if="slotProps.data.Status === 'RESOLVED'" class="text-green-600">
-          {{ slotProps.data.Status }}
+        <div v-if="slotProps.data.delta === 'RESOLVED'" class="text-green-600">
+          {{ slotProps.data.delta }}
         </div>
-        <div v-if="slotProps.data.Status === 'STABLE'" class="text-blue-600">
-          {{ slotProps.data.Status }}
+        <div v-if="slotProps.data.delta === 'STABLE'" class="text-blue-600">
+          {{ slotProps.data.delta }}
         </div>
       </template>
     </Column>
@@ -640,7 +637,7 @@ const notesExistOptions = computed(() => {
   return helpers.getValuesArray(checks.value, "notesExist", true);
 });
 const deltaOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "Status", true);
+  return helpers.getValuesArray(checks.value, "delta", true);
 });
 
 const filters = ref({
@@ -654,7 +651,7 @@ const filters = ref({
   context: { value: null, matchMode: FilterMatchMode.IN },
   checkLevel: { value: null, matchMode: FilterMatchMode.IN },
   notesExist: { value: null, matchMode: FilterMatchMode.IN },
-  Status: { value: null, matchMode: FilterMatchMode.IN },
+  delta: { value: null, matchMode: FilterMatchMode.IN },
 });
 
 const expanded = ref([]);
@@ -670,7 +667,7 @@ const headers = ref({
   delta: {
     title: "Delta",
     sortable: true,
-    key: "status",
+    key: "delta",
     show: true,
     default: true,
   },

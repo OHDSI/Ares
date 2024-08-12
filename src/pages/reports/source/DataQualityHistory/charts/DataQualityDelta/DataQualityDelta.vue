@@ -3,26 +3,11 @@
     <template #icons>
       <ChartHeader
         title="Historical Data Quality by Category"
-        :notes-count="notes.length"
-        :annotations-count="annotations.length"
-        @annotations-mode-toggled="toggleAnnotationsMode"
-        @notes-mode-toggled="toggleNotesMode"
         table-toggle
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
-      :id="reportId"
-      :data="data"
-      :chartSpec="specDataQualityDelta"
-      :annotations="annotations"
-      :annotation-mode="annotationsMode"
-      :annotations-config="{
-        chartSpec: specDataQualityResultsByCategoryAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-    />
+    <Chart :id="reportId" :data="data" :chartSpec="specDataQualityDelta" />
     <div v-if="showTable" class="p-4">
       <DataTable
         size="small"
@@ -33,7 +18,7 @@
         :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
-        <Column field="Release" header="Release"> </Column>
+        <Column field="release" header="Release"> </Column>
         <Column field="NEW" header="New"> </Column>
         <Column field="EXISTING" header="Existing"> </Column>
         <Column field="RESOLVED" header="Resolved"> </Column>
@@ -51,7 +36,6 @@ import { specDataQualityDelta } from "./specDataQualityDelta";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import { specDataQualityResultsByCategoryAnnotation } from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByCategory/specDataQualityResultsByCategoryAnnotation";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
@@ -63,10 +47,9 @@ const store = useStore();
 
 const reportId = "viz-sourcedataqualitydelta";
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
+const { notesMode } = useAnnotationControls();
 
-const { annotations, notes } = useAnnotations(reportId);
+const { notes } = useAnnotations(reportId);
 
 const showTable = ref(false);
 
