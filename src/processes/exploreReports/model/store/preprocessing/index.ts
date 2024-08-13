@@ -21,6 +21,7 @@ import {
   COHORT_INDEX_EVENT_BREAKDOWN,
   COHORT_TEMPORAL_COVARIATE_DISTRIBUTION,
   LOCATION,
+  QUALITY_DELTA,
 } from "@/shared/config/files";
 import csvParse from "@/processes/exploreReports/model/store/preprocessing/csvParse";
 
@@ -47,4 +48,5 @@ export default {
   [COHORT_INDEX_EVENT_BREAKDOWN]: csvParse,
   [COHORT_TEMPORAL_COVARIATE_DISTRIBUTION]: csvParse,
   [LOCATION]: csvParse,
+  [QUALITY_DELTA]: csvParse,
 };

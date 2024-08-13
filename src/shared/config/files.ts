@@ -2,6 +2,7 @@ export const INDEX = "index";
 export const CONCEPT = "concept";
 export const QUALITY_INDEX = "qualityIndex";
 export const QUALITY_RESULTS = "qualityResults";
+export const QUALITY_DELTA = "qualityDelta";
 
 export const NOTES = "notes";
 export const DEATH = "death";

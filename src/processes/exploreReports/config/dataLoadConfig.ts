@@ -23,6 +23,7 @@ import {
   OBSERVATION_PERIOD,
   PERSON,
   QUALITY_COMPLETENESS,
+  QUALITY_DELTA,
   QUALITY_INDEX,
   QUALITY_RESULTS,
   RECORDS_DOMAIN,
@@ -220,7 +221,10 @@ export default function getFilesByView(params = null) {
     dataQualityHistory: {
       loadMethod: FETCH_FILES,
       payload: {
-        files: [{ name: QUALITY_INDEX, required: true }],
+        files: [
+          { name: QUALITY_INDEX, required: true },
+          { name: QUALITY_DELTA, required: false },
+        ],
       },
     },
     domainContinuity: {
