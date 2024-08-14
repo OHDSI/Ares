@@ -5,6 +5,7 @@ import { ADD_ALERT } from "@/widgets/snackbar/model/store/actions.type";
 import environment from "@/shared/api/environment";
 import { jwtDecode } from "jwt-decode";
 import LocalStorageService from "@/shared/api/localStorageService";
+import cookiesService from "@/shared/api/cookiesService";
 
 const tokenKey = "bearerToken";
 
@@ -28,8 +29,6 @@ function getExpiryDate(token) {
 
 const getters = {
   authenticated: function (state) {
-    // const token = LocalStorageService.get(tokenKey);
-    // return token && !checkExpiryDate(token);
     return state.authenticated;
   },
   getWebAPIUser: function (state) {
@@ -38,34 +37,6 @@ const getters = {
 };
 
 const actions = {
-  // async [WEB_API_LOG_IN]({ commit, dispatch }) {
-  //   if (environment.WEB_API_ENABLED === "false") {
-  //     return;
-  //   }
-  //   const savedToken = CookiesService.get(bearerToken);
-  //   const isExpired = checkExpiryDate(savedToken);
-  //
-  //   if (!savedToken || isExpired) {
-  //     return await authService.token
-  //       .get()
-  //       .then((data) => {
-  //         const token = data.headers?.["bearer"];
-  //         CookiesService.set(bearerToken, token, getExpiryDate(token));
-  //         authService.user.get(token).then((data) => {
-  //           const user = data.data;
-  //           commit(SET_USER, user);
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         dispatch(ADD_ALERT, {
-  //           message: "Could not authenticate",
-  //           status: error.message ? error.message : "No additional data",
-  //         });
-  //         return;
-  //       });
-  //   }
-  // },
-
   async [WEB_API_LOG_IN]({ commit, dispatch }) {
     if (environment.WEB_API_ENABLED === "false") {
       return;
@@ -79,7 +50,7 @@ const actions = {
         const { headers } = await authService.token.get();
         token = headers?.["bearer"];
         if (!token) throw new Error("Token not found");
-        LocalStorageService.set(tokenKey, token);
+        commit(SAVE_TOKEN, token);
       }
       dispatch(GET_USER);
     } catch (error) {
@@ -107,15 +78,27 @@ const actions = {
     ).toLocaleString();
     commit(SET_AUTHENTICATED, true);
     commit(SET_USER, user);
+    setInterval(() => {
+      if (checkExpiryDate(LocalStorageService.get(tokenKey))) {
+        dispatch(LOG_OUT, {
+          message: "The session has expired. Please log in again",
+        });
+      }
+    }, 1000);
   },
-  async [LOG_OUT]({ commit, dispatch, rootGetters }) {
+  async [LOG_OUT]({ commit, dispatch, rootGetters }, payload) {
     commit(SET_AUTHENTICATED, false);
     commit(SET_USER, null);
     if (!checkExpiryDate(LocalStorageService.get(tokenKey))) {
       await authService.token.logout(LocalStorageService.get(tokenKey));
     }
     LocalStorageService.remove(tokenKey);
+    cookiesService.remove(tokenKey);
     LocalStorageService.remove("user");
+    dispatch(ADD_ALERT, {
+      message: payload.message ? payload.message : "You have been logged out",
+      status: "",
+    });
   },
 };
 const mutations = {
@@ -125,6 +108,7 @@ const mutations = {
   },
   [SAVE_TOKEN](state, token) {
     LocalStorageService.set("bearerToken", token);
+    cookiesService.set("bearerToken", token, getExpiryDate(token));
   },
   [SET_AUTHENTICATED](state, authenticated) {
     state.authenticated = authenticated;

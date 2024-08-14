@@ -70,7 +70,7 @@
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import "./index.css";
 
-import { computed, Ref, ref } from "vue";
+import { Ref, ref } from "vue";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
