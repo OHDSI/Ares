@@ -8,7 +8,7 @@ export function specDataQualityDelta(zeroBaseline = false) {
     height: 150,
     data: { name: "conceptData" },
     encoding: {
-      x: { field: "Release", type: "nominal", title: "Release Name" },
+      x: { field: "release", type: "nominal", title: "Release Name" },
       y: { field: "value", type: "quantitative", title: "Count" },
       color: {
         field: "variable",
