@@ -129,6 +129,12 @@ export default function getFilesByView(params = null) {
         files: [{ name: RECORDS_DOMAIN, instanceParams: [{}] }],
       },
     },
+    dataSourceOverview: {
+      loadMethod: FETCH_MULTIPLE_FILES_BY_RELEASE,
+      payload: {
+        files: [{ name: RECORDS_DOMAIN }],
+      },
+    },
     population: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
       payload: {

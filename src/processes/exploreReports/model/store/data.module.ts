@@ -349,7 +349,7 @@ const actions = {
         .map((filtered) => {
           const { data, payload } = filtered.value;
           return {
-            data: isDuckDb ? convertTableToArray(data) : data,
+            data: processData(data, isDuckDb, file),
             release: payload,
           };
         });
