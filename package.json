@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "vite --open --base=${BASE:-/ares/}",
     "preview": "vite preview --open --port 8080",
-    "build": "vite build --out-dir dist --base=${BASE:-/ares/}",
+    "build": "vite build --base=${BASE:-/ares/} --out-dir dist",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix"
   },
