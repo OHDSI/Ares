@@ -18,6 +18,7 @@ import networkUnmappedSourceCodes from "@/processes/exploreReports/model/store/p
 import networkDiversityReport from "@/processes/exploreReports/model/store/postprocessing/networkDiversityReport";
 import cohortReport from "@/processes/exploreReports/model/store/postprocessing/cohortReport";
 import networkConceptDashboard from "@/processes/exploreReports/model/store/postprocessing/networkConceptDashboard";
+import dataSourceOverview from "@/processes/exploreReports/model/store/postprocessing/dataSourceOverview";
 
 export default {
   dataStrandReport,
@@ -40,4 +41,5 @@ export default {
   networkUnmappedSourceCodes,
   cohortReport,
   networkConceptDashboard,
+  dataSourceOverview,
 };

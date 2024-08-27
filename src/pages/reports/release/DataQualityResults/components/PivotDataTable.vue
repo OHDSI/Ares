@@ -13,6 +13,7 @@
         'subcategory',
         'cdmTableName',
         'failed',
+        'delta',
       ]"
       :aggregator-names-list="['Count']"
     >

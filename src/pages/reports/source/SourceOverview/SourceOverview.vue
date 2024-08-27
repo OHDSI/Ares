@@ -9,6 +9,7 @@
       <PopulationHistory class="basis-full" />
       <DataQualityIssuesHistory class="basis-full" />
     </div>
+    <SourceDataStrand />
     <ReleaseListing />
   </div>
 </template>
@@ -19,6 +20,7 @@ import OverviewDisplay from "@/pages/reports/source/SourceOverview/charts/overvi
 import PopulationHistory from "@/pages/reports/source/SourceOverview/charts/populationHistory/PopulationHistory.vue";
 import DataQualityIssuesHistory from "@/pages/reports/source/SourceOverview/charts/dataQualityIssuesHistory/DataQualityIssuesHistory.vue";
 import ReleaseListing from "@/pages/reports/source/SourceOverview/charts/releaseListing/ReleaseListing.vue";
+import SourceDataStrand from "@/pages/reports/source/SourceOverview/charts/sourceDataStrand/SourceDataStrand.vue";
 
 const store = useStore();
 </script>

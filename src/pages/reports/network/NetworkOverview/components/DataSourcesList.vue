@@ -3,7 +3,7 @@
     <DataTable
       size="small"
       showGridlines
-      :value="store.getters.getSources"
+      :value="augmentedData"
       v-model:filters="newFilters"
       :globalFilterFields="['cdm_source_name', 'releases[0].release_name', '']"
       paginator
@@ -67,7 +67,28 @@
         header="Data Quality Issues"
       >
         <template #body="slotProps">
-          {{ slotProps.data.releases[0].count_data_quality_issues }}
+          <div class="flex items-center justify-end">
+            {{ slotProps.data.releases[0].count_data_quality_issues }}
+
+            <svg-icon
+              v-if="slotProps.data.issue_delta === 1"
+              class="text-red-600 text-lg"
+              type="mdi"
+              :path="mdiArrowUp"
+            ></svg-icon>
+            <svg-icon
+              v-if="slotProps.data.issue_delta === -1"
+              class="text-green-600 text-lg"
+              type="mdi"
+              :path="mdiArrowDown"
+            ></svg-icon>
+            <svg-icon
+              v-if="slotProps.data.issue_delta === 0"
+              class="text-gray-600 text-lg"
+              type="mdi"
+              :path="mdiMinus"
+            ></svg-icon>
+          </div>
         </template>
       </Column>
       <Column
@@ -106,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { debounce } from "lodash";
 import Panel from "primevue/panel";
@@ -118,10 +139,37 @@ import InputGroup from "primevue/inputgroup";
 import { useRoute, useRouter } from "vue-router";
 import { FilterMatchMode } from "primevue/api";
 import { helpers } from "@/shared/lib/mixins";
+import { mdiArrowDown, mdiArrowLeft, mdiArrowUp, mdiMinus } from "@mdi/js";
+import SvgIcon from "@jamescoyle/vue-icon";
 
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
+
+const data = ref(store.getters.getSources);
+
+const augmentedData = computed(() => {
+  return data.value.map((source) => {
+    const releases = source.releases;
+    let status;
+    if (releases.length > 1) {
+      const moreIssues =
+        releases[0].count_data_quality_issues >
+        releases[1].count_data_quality_issues;
+
+      const noChanges =
+        releases[0].count_data_quality_issues ===
+        releases[1].count_data_quality_issues;
+      status = moreIssues ? 1 : noChanges ? 0 : -1;
+    } else {
+      status = 0;
+    }
+    return {
+      ...source,
+      issue_delta: status,
+    };
+  });
+});
 
 const newFilters = computed(() => ({
   global: { value: route.query.search, matchMode: FilterMatchMode.CONTAINS },

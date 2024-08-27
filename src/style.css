@@ -1,3 +1,5 @@
+@import "@/roboto.css";
+
 @layer base {
     body {
         @apply min-h-screen bg-surface-0 dark:bg-surface-900;
