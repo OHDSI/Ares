@@ -5,9 +5,9 @@
   "author": "Frank DeFalco",
   "private": true,
   "scripts": {
-    "serve": "vite --open --base=${BASE:-/ares/}",
+    "serve": "vite --open",
     "preview": "vite preview --open --port 8080",
-    "build": "vite build --base=${BASE:-/ares/} --out-dir dist",
+    "build": "vite build --out-dir dist",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix"
   },
