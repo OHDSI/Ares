@@ -4,13 +4,16 @@
     id="network-data-quality-overview"
     class="flex flex-col gap-10"
   >
-    <OverviewDisplay />
+    <div class="flex flex-row gap-5">
+      <OverviewDisplay class="basis-full"/>
+      <ReleaseListing class="basis-full"/>
+    </div>
+ 
     <div class="flex flex-row gap-5">
       <PopulationHistory class="basis-full" />
       <DataQualityIssuesHistory class="basis-full" />
     </div>
     <SourceDataStrand />
-    <ReleaseListing />
   </div>
 </template>
 
