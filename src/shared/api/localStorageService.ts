@@ -16,8 +16,12 @@ class LocalStorageService {
     }
   }
 
-  set(key: string, data: object) {
-    window.localStorage.setItem(key, JSON.stringify(data));
+  set(key: string, data: any) {
+    if (typeof data === "string") {
+      window.localStorage.setItem(key, data);
+    } else {
+      window.localStorage.setItem(key, JSON.stringify(data));
+    }
   }
 
   remove(key: string) {

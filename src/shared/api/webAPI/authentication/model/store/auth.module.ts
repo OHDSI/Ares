@@ -6,6 +6,7 @@ import environment from "@/shared/api/environment";
 import { jwtDecode } from "jwt-decode";
 import LocalStorageService from "@/shared/api/localStorageService";
 import cookiesService from "@/shared/api/cookiesService";
+import localStorageService from "@/shared/api/localStorageService";
 
 const tokenKey = "bearerToken";
 
@@ -78,11 +79,15 @@ const actions = {
     ).toLocaleString();
     commit(SET_AUTHENTICATED, true);
     commit(SET_USER, user);
-    setInterval(() => {
-      if (checkExpiryDate(LocalStorageService.get(tokenKey))) {
+    const checkAuthStatus = setInterval(() => {
+      if (
+        checkExpiryDate(LocalStorageService.get(tokenKey)) ||
+        !localStorageService.get(tokenKey)
+      ) {
         dispatch(LOG_OUT, {
           message: "The session has expired. Please log in again",
         });
+        clearInterval(checkAuthStatus);
       }
     }, 1000);
   },
@@ -96,7 +101,7 @@ const actions = {
     cookiesService.remove(tokenKey);
     LocalStorageService.remove("user");
     dispatch(ADD_ALERT, {
-      message: payload.message ? payload.message : "You have been logged out",
+      message: payload?.message ? payload.message : "You have been logged out",
       status: "",
     });
   },
