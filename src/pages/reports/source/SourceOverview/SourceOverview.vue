@@ -7,9 +7,13 @@
     <div class="flex flex-row gap-5">
       <ReleaseListing class="basis-full" />
     </div>
-    <div class="flex flex-row gap-5 items-stretch">
-      <PopulationHistory class="basis-full h-full" />
-      <DataQualityIssuesHistory class="basis-full h-full" />
+    <div class="grid grid-cols-2 gap-5">
+      <div>
+        <PopulationHistory class="min-h-[425px]" />
+      </div>
+      <div>
+        <DataQualityIssuesHistory class="min-h-[425px]" />
+      </div>
     </div>
     <SourceDataStrand />
   </div>
