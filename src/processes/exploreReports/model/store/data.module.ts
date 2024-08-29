@@ -63,7 +63,8 @@ async function fetchAxiosData(file, path) {
     payload: path,
   }));
 }
-async function fetchDuckDBData(file, payload, path) {
+
+async function fetchDuckDBData(file, payload, path, filter) {
   const c = await db.connect();
   return c
     .query(
@@ -72,7 +73,7 @@ async function fetchDuckDBData(file, payload, path) {
           cdm: path.cdm.cdm_source_key,
           release: path.release,
         })[file.name]
-      }') WHERE DOMAIN == '${path.domain}' AND CONCEPT_ID == ${path.concept};`
+      }') ${filter};`
     )
     .then((data) => ({
       data: data,
@@ -180,6 +181,7 @@ const actions = {
       release: rootState.route.params.release,
       domain: rootState.route.params.domain,
       concept: rootState.route.params.concept,
+      cohortId: rootState.route.params.cohort_id,
     };
     if (!payload.files) {
       commit(SET_DATA, { data: {} });
@@ -187,7 +189,14 @@ const actions = {
     }
     const promises = payload.files.map((file) => {
       if (isDuckDb && file.source !== "axios") {
-        return fetchDuckDBData(file, payload, path);
+        const filterConcept = `WHERE DOMAIN == '${path.domain}' AND CONCEPT_ID == ${path.concept}`;
+        const filterCohort = `WHERE COHORT_ID == ${path.cohortId}`;
+        return fetchDuckDBData(
+          file,
+          payload,
+          path,
+          path.concept ? filterConcept : path.cohortId ? filterCohort : ""
+        );
       } else {
         return fetchAxiosData(file, path);
       }
@@ -254,9 +263,11 @@ const actions = {
                   concept:
                     currentInstance.concept || rootState.route.params.concept,
                 };
+                const filter = `WHERE DOMAIN == '${path.domain}' AND CONCEPT_ID == ${path.concept}`;
+
                 const fetchData =
                   isDuckDb && file.source !== "axios"
-                    ? fetchDuckDBData(file, payload, path)
+                    ? fetchDuckDBData(file, payload, path, filter)
                     : fetchAxiosData(file, path);
                 return [...array, fetchData];
               },
@@ -318,10 +329,17 @@ const actions = {
 
       obj[file.name] = selectedSource.releases.map((release) => {
         if (isDuckDb && file.source !== "axios") {
-          return fetchDuckDBData(file, payload, {
-            ...params,
-            release: release.release_id,
-          });
+          const filter = `WHERE DOMAIN == '${params.domain}' AND CONCEPT_ID == ${params.concept}`;
+
+          return fetchDuckDBData(
+            file,
+            payload,
+            {
+              ...params,
+              release: release.release_id,
+            },
+            filter
+          );
         } else {
           const url = getFilePath({
             ...params,

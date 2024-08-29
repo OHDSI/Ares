@@ -1,3 +1,10 @@
+import {
+  COHORT_CHARACTERIZATION,
+  COHORT_INDEX,
+  COHORT_INDEX_EVENT_BREAKDOWN,
+  COHORT_TEMPORAL_COVARIATE_DISTRIBUTION,
+} from "@/shared/config/files";
+
 export const CONCEPT_METADATA = "CONCEPT_METADATA";
 export const DAYS_SUPPLY_DISTRIBUTION = "DAYS_SUPPLY_DISTRIBUTION";
 export const DEVICE_FREQUENCY_DISTRIBUTION = "DEVICE_FREQUENCY_DISTRIBUTION";
@@ -63,6 +70,10 @@ function getFilePath(params: { cdm: string; release: string }) {
     [DEVICES_BY_TYPE]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/devices_by_type.parquet`,
     [PROCEDURES_BY_TYPE]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/procedures_by_type.parquet`,
     [OBSERVATIONS_BY_TYPE]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/observations_by_type.parquet`,
+    [COHORT_INDEX]: `${baseUrl}/data/${params.cdm}/${params.release}/cohort_index.parquet`,
+    [COHORT_CHARACTERIZATION]: `${baseUrl}/data/${params.cdm}/${params.release}/cohort_characterization.parquet`,
+    [COHORT_INDEX_EVENT_BREAKDOWN]: `${baseUrl}/data/${params.cdm}/${params.release}/cohort_index_event_breakdown.parquet`,
+    [COHORT_TEMPORAL_COVARIATE_DISTRIBUTION]: `${baseUrl}/data/${params.cdm}/${params.release}/cohort_temporal_covariate_distribution.parquet`,
   };
 }
 

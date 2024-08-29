@@ -7,9 +7,9 @@
         </div>
       </template>
     </PageHeader>
-    <CohortCharacterizationReport :data="getFilteredCharacterizationTable" />
-    <IndexEventBreakdownTable :data="getFilteredIndexEventBreakdownTable" />
-    <TimeDistributionChart :data="getFilteredTimeDistributionChart" />
+    <CohortCharacterizationReport :data="characterizationTable" />
+    <IndexEventBreakdownTable :data="indexEventBreakdownTable" />
+    <TimeDistributionChart :data="timeDistributionChart" />
   </div>
 </template>
 
@@ -38,26 +38,26 @@ const timeDistributionChart = computed(() => {
   return store.getters.getData.timeDistribution || [];
 });
 
-const getFilteredCharacterizationTable = computed(() => {
-  return characterizationTable.value.filter((val) => {
-    return route.params.cohort_id === val.cohort_id;
-  });
-});
+// const getFilteredCharacterizationTable = computed(() => {
+//   return characterizationTable.value.filter((val) => {
+//     return route.params.cohort_id === val.cohort_id;
+//   });
+// });
 
-const getFilteredIndexEventBreakdownTable = computed(() => {
-  return indexEventBreakdownTable.value.filter((val) => {
-    return route.params.cohort_id === val.cohort_id;
-  });
-});
+// const getFilteredIndexEventBreakdownTable = computed(() => {
+//   return indexEventBreakdownTable.value.filter((val) => {
+//     return route.params.cohort_id === val.cohort_id;
+//   });
+// });
 
-const getFilteredTimeDistributionChart = computed(() => {
-  return timeDistributionChart.value.filter((val) => {
-    return route.params.cohort_id === val.cohort_id;
-  });
-});
+// const getFilteredTimeDistributionChart = computed(() => {
+//   return timeDistributionChart.value.filter((val) => {
+//     return route.params.cohort_id === val.cohort_id;
+//   });
+// });
 
 const cohortName = computed(() => {
-  return getFilteredCharacterizationTable.value[0]?.cohort_name;
+  return characterizationTable.value[0]?.cohort_name;
 });
 </script>
 

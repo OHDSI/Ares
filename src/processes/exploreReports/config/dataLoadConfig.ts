@@ -121,6 +121,7 @@ export default function getFilesByView(params = null) {
           { name: COHORT_INDEX_EVENT_BREAKDOWN, required: true },
           { name: COHORT_TEMPORAL_COVARIATE_DISTRIBUTION, required: true },
         ],
+        duckdb_supported: true,
       },
     },
     dataStrandReport: {
