@@ -32,7 +32,7 @@
             ? 'dark:bg-primary-50 dark:text-black bg-black text-white '
             : 'bg-primary-500 dark:bg-primary-400 text-white'
         } px-2 py-1 rounded-full z-10 top-0 right-0 absolute indent-0 text-xs`"
-        :style="{ right: '-3px' }"
+        :style="{ right: '-5px', top: '-5px' }"
       >
         {{ props.count }}
       </span>
