@@ -1,6 +1,11 @@
 export default {
   root: {
     class: [
+      //positioning
+
+      "flex",
+      "flex-col",
+      "justify-between",
       //Shape
       "rounded-lg",
       "shadow-md",
@@ -36,7 +41,7 @@ export default {
   },
   footer: {
     class: [
-      "rounded-bl-lg rounded-br-lg bg-gray-100 dark:text-white text-black dark:border-surface-700 dark:bg-surface-700 p-2",
+      "rounded-bl-lg rounded-br-lg bg-gray-100 dark:text-white text-black dark:border-surface-700 dark:bg-surface-700 p-2 relative bottom-0",
     ],
   },
 };

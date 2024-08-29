@@ -51,16 +51,28 @@
         </template>
       </Column>
     </DataTable>
+    <template #footer>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          v-if="store.getters.getQueryIndex"
+          :icon="mdiClockOutline"
+          tooltip="Average days between releases"
+          :count="getDaysBetweenReleases"
+        />
+      </div>
+    </template>
   </Panel>
 </template>
 
 <script setup lang="ts">
 import Panel from "primevue/panel";
 import { helpers } from "@/shared/lib/mixins";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import { mdiClockOutline } from "@mdi/js";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 
 const store = useStore();
 
@@ -91,6 +103,28 @@ const getPersonLink = function (item) {
     },
   };
 };
+
+const getDaysBetweenReleases = computed(function () {
+  if (store.getters.explorerLoaded) {
+    const dates = store.getters.getSelectedSource.releases.map(
+      (value) => new Date(value.release_name)
+    );
+    const numbers = [];
+
+    for (let i = 0; i < dates.length - 1; i++) {
+      numbers.push((dates[i] - dates[i + 1]) / (1000 * 60 * 60 * 24));
+    }
+
+    return numbers.length
+      ? (
+          numbers.reduce((prevValue, current) => prevValue + current, 0) /
+          numbers.length
+        ).toFixed(0)
+      : 0;
+  } else {
+    return [];
+  }
+});
 </script>
 
 <style scoped></style>
