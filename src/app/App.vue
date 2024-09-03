@@ -16,7 +16,12 @@ import { useRoute } from "vue-router";
 const store = useStore();
 const route = useRoute();
 
-import { computed, watch, onBeforeMount } from "vue";
+import { computed, watch, onBeforeMount, onMounted } from "vue";
+import {
+  GET_USER,
+  LOG_OUT,
+} from "@/shared/api/webAPI/authentication/model/store/actions.type";
+import LocalStorageService from "@/shared/api/localStorageService";
 
 const favicon = document.getElementById("faviconTag");
 
@@ -44,6 +49,15 @@ watch(route, (): void => {
 
 onBeforeMount((): void => {
   setColorMode();
+});
+onMounted(() => {
+  store.dispatch(GET_USER);
+});
+
+LocalStorageService.watch("bearerToken", (newToken) => {
+  if (!newToken) {
+    store.dispatch(LOG_OUT);
+  }
 });
 </script>
 

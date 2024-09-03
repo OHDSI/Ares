@@ -1,3 +1,3 @@
-export const SET_ACCESS_TOKEN = "setAccessToken";
-
 export const SET_USER = "setUser";
+export const SAVE_TOKEN = "saveToken";
+export const SET_AUTHENTICATED = "setAuthenticated";

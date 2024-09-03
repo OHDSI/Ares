@@ -221,6 +221,7 @@ import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import { CONCEPT } from "@/shared/config/files";
 import { mdiAlertCircleOutline } from "@mdi/js";
+import errorMessages from "@/widgets/error/model/config/errorMessages";
 
 interface Props {
   addedConcepts: object;
@@ -283,10 +284,11 @@ const clearMessages = function () {
 onBeforeMount((): void => {
   if (environment.WEB_API_ENABLED === "true" && store.getters.authenticated) {
     store.dispatch(webApiActions.FETCH_WEBAPI_INFO).then(() => {
-      if (store.getters.getApiData?.error) {
+      const error = store.getters.getApiData?.error;
+      if (error) {
         store.dispatch(ADD_ALERT, {
-          message: "WebAPI server replied with status code",
-          status: store.getters.getApiData.error.request.status,
+          message: `WebAPI server replied with status code ${error.response.status}`,
+          status: errorMessages.webApiErrors[error.response.status],
         });
         return;
       }
@@ -340,10 +342,11 @@ const searchApi = function () {
       source: vocabularySource.value,
     })
     .then(() => {
-      if (store.getters.getApiData?.error) {
+      const error = store.getters.getApiData?.error;
+      if (error) {
         store.dispatch(ADD_ALERT, {
-          message: "WebAPI server replied with status code",
-          status: store.getters.getApiData.error.request.status,
+          message: `WebAPI server replied with status code ${error.response.status}`,
+          status: errorMessages.webApiErrors[error.response.status],
         });
       }
     });

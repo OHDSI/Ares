@@ -13,12 +13,12 @@
         rowGroupMode="subheader"
         groupRowsBy="CONCEPT_NAME"
         class="table"
-        v-if="data.length"
+        v-if="concepts.length"
         size="small"
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
+        :value="concepts"
         :rows="10"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
@@ -61,6 +61,8 @@
     @close="close"
     @inputChanged="clearMessages"
     :show="showWebApiSearchForm"
+    multi-selection
+    @save="save"
   />
 </template>
 
@@ -68,7 +70,7 @@
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import "./index.css";
 
-import { computed, Ref, ref } from "vue";
+import { Ref, ref } from "vue";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
@@ -82,9 +84,13 @@ const successMessage: Ref<string[]> = ref([]);
 const errors: Ref<string> = ref("");
 const showWebApiSearchForm = ref(false);
 const selectedConcept = ref([]);
-const data = computed(() => {
-  return store.getters.getData?.concept || [];
-});
+
+const concepts = ref([]);
+
+const save = function () {
+  const newConcept = store.getters.getData?.concept;
+  concepts.value = [...concepts.value, ...newConcept];
+};
 function atClick() {
   showWebApiSearchForm.value = true;
 }

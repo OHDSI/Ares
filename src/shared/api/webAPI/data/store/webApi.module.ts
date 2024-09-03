@@ -9,6 +9,8 @@ import {
   SET_WEBAPI,
 } from "@/shared/api/webAPI/data/store/mutations.type";
 import { VocabularyService } from "@/shared/api/webAPI/services/vocabularyService";
+import CookiesService from "@/shared/api/cookiesService";
+import LocalStorageService from "@/shared/api/localStorageService";
 
 const state = {
   apiData: {},
@@ -24,8 +26,12 @@ const getters = {
 const actions = {
   async [FETCH_WEBAPI_INFO]({ commit, dispatch, rootState, rootGetters }) {
     commit(SET_WEBAPI, { loading: true });
-    const webApiInfo = InfoService.webApi.get(rootGetters.getWebAPIToken);
-    const sources = InfoService.sources.get(rootGetters.getWebAPIToken);
+    const webApiInfo = InfoService.webApi.get(
+      LocalStorageService.get("bearerToken")
+    );
+    const sources = InfoService.sources.get(
+      LocalStorageService.get("bearerToken")
+    );
     return await Promise.all([webApiInfo, sources])
       .then((res) => {
         commit(SET_WEBAPI, {
@@ -43,7 +49,11 @@ const actions = {
   ) {
     commit(SET_WEBAPI, { loading: true });
     await VocabularyService.search
-      .get(payload.search, payload.source, rootGetters.getWebAPIToken)
+      .get(
+        payload.search,
+        payload.source,
+        LocalStorageService.get("bearerToken")
+      )
       .then((data) => {
         commit(SET_WEBAPI, {
           data: data.data,
@@ -52,7 +62,7 @@ const actions = {
         });
       })
       .catch((err) => {
-        commit(SET_WEBAPI, { loading: false, error: err.error });
+        commit(SET_WEBAPI, { loading: false, error: err });
       });
   },
   [RESET_API_STORAGE]({ commit }) {
