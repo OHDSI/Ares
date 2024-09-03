@@ -105,6 +105,7 @@ export default function getFilesByView(params = null) {
       loadMethod: FETCH_FILES,
       payload: {
         files: [{ name: COHORT_INDEX, required: true }],
+        duckdb_supported: true,
       },
     },
     location: {
