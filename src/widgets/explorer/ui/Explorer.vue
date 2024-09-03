@@ -2,12 +2,23 @@
   <div
     v-if="store.getters.explorerLoaded"
     id="explorer"
-    class="container flex flex-row gap-16 my-10 items-center"
+    :class="{
+      container: true,
+      flex: true,
+      'flex-row': true,
+      'gap-16': true,
+      'p-2': true,
+      'pb-3': true,
+      'pt-6': true,
+      'items-end': true,
+      'content-center': true,
+      sticky: isSticky,
+    }"
   >
     <Button class="logo-button" text @click="router.push('/')">
       <img :class="iconClass" :src="icon" alt="Ares logo" width="45" />
     </Button>
-    <div class="flex flex-row gap-5">
+    <div class="flex flex-row gap-5 items-end">
       <FloatLabel>
         <dropdown
           inputId="folder"
@@ -128,6 +139,9 @@ const router = useRouter();
 const iconClass = computed((): string => {
   return store.getters.getSettings.darkMode ? "" : "inverted";
 });
+const isSticky = computed(() => {
+  return store.getters.getSettings.stickyNavBar;
+});
 
 function changeSource(data: Source): void {
   const folder = store.getters.getSelectedFolder;
@@ -201,7 +215,7 @@ const showReleaseSelector = computed(function (): boolean {
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 tr:hover {
   background-color: transparent !important;
 }
@@ -222,5 +236,21 @@ tr:hover {
 .logo-button:hover {
   opacity: 1;
   transition: 0.3s;
+}
+.sticky {
+  position: fixed;
+  top: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  .dark & {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  }
+}
+
+#explorer {
+  width: 100vw;
+  max-width: 100%;
+  z-index: 1000;
+  @apply dark:bg-surface-900 bg-white;
+  box-sizing: border-box;
 }
 </style>

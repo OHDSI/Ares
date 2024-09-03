@@ -1,6 +1,14 @@
 <template>
-  <div class="p-3 min-w-[1250px]">
-    <div class="flex flex-col justify-center px-14 md:px-20 lg:px-24">
+  <Explorer class="min-w-[1250px] px-28" v-if="showExplorer" />
+
+  <div
+    :class="{
+      'px-3': true,
+      'py-20': isSticky,
+      'min-w-[1250px]': true,
+    }"
+  >
+    <div class="flex flex-col justify-center px-14 md:px-20 lg:px-24 mx-1">
       <router-view name="main" />
     </div>
   </div>
@@ -16,7 +24,24 @@ import { useRoute } from "vue-router";
 const store = useStore();
 const route = useRoute();
 
+const isSticky = computed(() => {
+  return store.getters.getSettings.stickyNavBar;
+});
+
+const path = computed(function () {
+  return route.path;
+});
+
+const showExplorer = computed(function () {
+  return (
+    path.value.includes("network") ||
+    path.value.includes("cdm") ||
+    path.value.includes("datasource")
+  );
+});
+
 import { computed, watch, onBeforeMount } from "vue";
+import { Explorer } from "@/widgets/explorer";
 
 const favicon = document.getElementById("faviconTag");
 
