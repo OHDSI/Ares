@@ -4,7 +4,7 @@
   <div
     :class="{
       'px-3': true,
-      'py-20': isSticky,
+      'pt-20': isSticky,
       'min-w-[1250px]': true,
     }"
   >
@@ -46,9 +46,9 @@ const path = computed(function () {
 
 const showExplorer = computed(function () {
   return (
-      path.value.includes("network") ||
-      path.value.includes("cdm") ||
-      path.value.includes("datasource")
+    path.value.includes("network") ||
+    path.value.includes("cdm") ||
+    path.value.includes("datasource")
   );
 });
 

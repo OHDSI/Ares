@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!store.getters.getErrors && store.getters.dataInStore"
-    class="my-10"
+    class="mt-10 mb-16"
   >
     <router-view name="reportsView" />
   </div>
