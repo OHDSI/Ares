@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import environment from "@/shared/api/environment";
 
 const loadFile = (config: AxiosRequestConfig, payload: object) => {
-  const instance = axios.create({ baseURL: "/ares" });
+  const instance = axios.create();
   instance.interceptors.response.use(
     function (response: AxiosResponse) {
       return response;

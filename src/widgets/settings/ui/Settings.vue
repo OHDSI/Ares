@@ -33,6 +33,9 @@
         <div class="relative bottom-0 mt-4">
           <ExportNotes></ExportNotes>
         </div>
+        <!--        <div class="relative bottom-0 mt-4">-->
+        <!--          <cookie-test />-->
+        <!--        </div>-->
       </div>
     </div>
   </Sidebar>

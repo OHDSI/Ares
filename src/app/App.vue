@@ -20,9 +20,21 @@ import { webApiActions } from "@/shared/api/webAPI";
 
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-
+import { computed, watch, onBeforeMount, onMounted } from "vue";
+import {
+  GET_USER,
+  LOG_OUT,
+} from "@/shared/api/webAPI/authentication/model/store/actions.type";
+import LocalStorageService from "@/shared/api/localStorageService";
 const store = useStore();
 const route = useRoute();
+import { Explorer } from "@/widgets/explorer";
+
+const favicon = document.getElementById("faviconTag");
+
+const darkMode = computed(function (): boolean {
+  return store.getters.getSettings.darkMode;
+});
 
 const isSticky = computed(() => {
   return store.getters.getSettings.stickyNavBar;
@@ -34,19 +46,10 @@ const path = computed(function () {
 
 const showExplorer = computed(function () {
   return (
-    path.value.includes("network") ||
-    path.value.includes("cdm") ||
-    path.value.includes("datasource")
+      path.value.includes("network") ||
+      path.value.includes("cdm") ||
+      path.value.includes("datasource")
   );
-});
-
-import { computed, watch, onBeforeMount } from "vue";
-import { Explorer } from "@/widgets/explorer";
-
-const favicon = document.getElementById("faviconTag");
-
-const darkMode = computed(function (): boolean {
-  return store.getters.getSettings.darkMode;
 });
 
 function setColorMode() {
@@ -69,6 +72,15 @@ watch(route, (): void => {
 
 onBeforeMount((): void => {
   setColorMode();
+});
+onMounted(() => {
+  store.dispatch(GET_USER);
+});
+
+LocalStorageService.watch("bearerToken", (newToken) => {
+  if (!newToken) {
+    store.dispatch(LOG_OUT);
+  }
 });
 </script>
 
