@@ -1,8 +1,7 @@
 <template>
-  <Explorer v-if="showExplorer" />
   <div
     v-if="!store.getters.getErrors && store.getters.dataInStore"
-    class="my-20"
+    class="mt-10 mb-16"
   >
     <router-view name="reportsView" />
   </div>

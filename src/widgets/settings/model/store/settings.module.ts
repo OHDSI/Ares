@@ -10,6 +10,7 @@ import {
   EDIT_USER,
   TOGGLE_DEFAULT_ALL_NOTES_MODE,
   UPDATE_COLUMN_SELECTION,
+  TOGGLE_STICKY_NAV_BAR,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -26,6 +27,7 @@ const state = {
     notesMode: false,
     user: null,
     columnSelection: {},
+    stickyNavBar: true,
   },
   visible: false,
 };
@@ -65,6 +67,9 @@ const actions = {
   },
   [TOGGLE_DEFAULT_ALL_NOTES_MODE]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "notesMode" });
+  },
+  [TOGGLE_STICKY_NAV_BAR]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "stickyNavBar" });
   },
   [UPDATE_COLUMN_SELECTION]({ commit, rootGetters }, payload) {
     commit(SET_SETTINGS, {

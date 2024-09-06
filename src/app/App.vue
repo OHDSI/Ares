@@ -1,6 +1,14 @@
 <template>
-  <div class="p-3 min-w-[1250px]">
-    <div class="flex flex-col justify-center px-14 md:px-20 lg:px-24">
+  <Explorer class="min-w-[1250px] px-28" v-if="showExplorer" />
+
+  <div
+    :class="{
+      'px-3': true,
+      'pt-20': isSticky,
+      'min-w-[1250px]': true,
+    }"
+  >
+    <div class="flex flex-col justify-center px-14 md:px-20 lg:px-24 mx-1">
       <router-view name="main" />
     </div>
   </div>
@@ -12,21 +20,36 @@ import { webApiActions } from "@/shared/api/webAPI";
 
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-
-const store = useStore();
-const route = useRoute();
-
 import { computed, watch, onBeforeMount, onMounted } from "vue";
 import {
   GET_USER,
   LOG_OUT,
 } from "@/shared/api/webAPI/authentication/model/store/actions.type";
 import LocalStorageService from "@/shared/api/localStorageService";
+const store = useStore();
+const route = useRoute();
+import { Explorer } from "@/widgets/explorer";
 
 const favicon = document.getElementById("faviconTag");
 
 const darkMode = computed(function (): boolean {
   return store.getters.getSettings.darkMode;
+});
+
+const isSticky = computed(() => {
+  return store.getters.getSettings.stickyNavBar;
+});
+
+const path = computed(function () {
+  return route.path;
+});
+
+const showExplorer = computed(function () {
+  return (
+    path.value.includes("network") ||
+    path.value.includes("cdm") ||
+    path.value.includes("datasource")
+  );
 });
 
 function setColorMode() {

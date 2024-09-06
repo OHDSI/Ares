@@ -58,7 +58,7 @@ export default {
   label: ({ props }) => ({
     class: [
       //Font
-      "leading-[normal]",
+      "leading-none",
 
       // Flex & Alignment
       " flex flex-auto",

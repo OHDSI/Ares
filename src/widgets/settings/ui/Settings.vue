@@ -21,6 +21,7 @@
         <div class="flex flex-col gap-5">
           <h3 class="text-left font-thin text-md">Appearance</h3>
           <ToggleDarkMode />
+          <StickyNavBar />
         </div>
         <Divider></Divider>
 
@@ -52,6 +53,7 @@ import ToggleBaseLine from "./components/toggleBaseLine";
 import ToggleMinMax from "./components/toggleMinMax";
 import Divider from "primevue/divider";
 import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode/ToggleDefaultAnnotatonsMode.vue";
+import StickyNavBar from "@/widgets/settings/ui/components/stickyNavBar";
 
 import { computed } from "vue";
 import { useStore } from "vuex";
