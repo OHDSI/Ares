@@ -7,9 +7,9 @@
         </div>
       </template>
     </PageHeader>
-    <CohortCharacterizationReport :data="getFilteredCharacterizationTable" />
-    <IndexEventBreakdownTable :data="getFilteredIndexEventBreakdownTable" />
-    <TimeDistributionChart :data="getFilteredTimeDistributionChart" />
+    <CohortCharacterizationReport :data="characterizationTable" />
+    <IndexEventBreakdownTable :data="indexEventBreakdownTable" />
+    <TimeDistributionChart :data="timeDistributionChart" />
   </div>
 </template>
 
@@ -24,7 +24,6 @@ import IndexEventBreakdownTable from "@/pages/reports/release/CohortDrilldownRep
 import TimeDistributionChart from "@/pages/reports/release/CohortDrilldownReport/reports/timeDistribution/TimeDistributionChart.vue";
 
 const store = useStore();
-const route = useRoute();
 
 const characterizationTable = computed(() => {
   return store.getters.getData.characterizationTable || [];
@@ -38,26 +37,8 @@ const timeDistributionChart = computed(() => {
   return store.getters.getData.timeDistribution || [];
 });
 
-const getFilteredCharacterizationTable = computed(() => {
-  return characterizationTable.value.filter((val) => {
-    return route.params.cohort_id === val.cohort_id;
-  });
-});
-
-const getFilteredIndexEventBreakdownTable = computed(() => {
-  return indexEventBreakdownTable.value.filter((val) => {
-    return route.params.cohort_id === val.cohort_id;
-  });
-});
-
-const getFilteredTimeDistributionChart = computed(() => {
-  return timeDistributionChart.value.filter((val) => {
-    return route.params.cohort_id === val.cohort_id;
-  });
-});
-
 const cohortName = computed(() => {
-  return getFilteredCharacterizationTable.value[0]?.cohort_name;
+  return characterizationTable.value[0]?.cohort_name;
 });
 </script>
 
