@@ -175,6 +175,7 @@ import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
+import Panel from "primevue/panel";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
 
