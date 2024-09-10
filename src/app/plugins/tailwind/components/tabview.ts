@@ -123,7 +123,7 @@ export default {
         {
           "hover:bg-surface-0 dark:hover:bg-surface-800/80":
             parent.state.d_activeIndex !== context.index,
-          "hover:border-surface-400 dark:hover:border-primary-400":
+          "hover:border-surface-400 dark:hover:border-surface-600":
             parent.state.d_activeIndex !== context.index,
           "hover:text-surface-900 dark:hover:text-surface-0":
             parent.state.d_activeIndex !== context.index,
