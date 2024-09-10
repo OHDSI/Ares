@@ -12,21 +12,21 @@
       </div>
       <div class="flex flex-col">
         <div class="flex flex-col gap-5">
-          <h3 class="text-left font-thin text-md">Charts</h3>
+          <h3 class="text-left font-normal text-md">Charts</h3>
           <ToggleBaseLine />
           <ToggleMinMax />
         </div>
         <Divider></Divider>
 
         <div class="flex flex-col gap-5">
-          <h3 class="text-left font-thin text-md">Appearance</h3>
+          <h3 class="text-left font-normal text-md">Appearance</h3>
           <ToggleDarkMode />
           <StickyNavBar />
         </div>
         <Divider></Divider>
 
         <div class="flex flex-col gap-5">
-          <h3 class="text-left font-thin text-md">Annotations</h3>
+          <h3 class="text-left font-normal text-md">Annotations</h3>
           <ToggleDefaultAnnotatonsMode />
           <ToggleDefaultNotesMode />
         </div>
