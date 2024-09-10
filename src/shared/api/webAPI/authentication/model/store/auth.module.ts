@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import LocalStorageService from "@/shared/api/localStorageService";
 import cookiesService from "@/shared/api/cookiesService";
 import localStorageService from "@/shared/api/localStorageService";
+import { EDIT_USER } from "@/widgets/settings/model/store/actions.type";
 
 const tokenKey = "bearerToken";
 
@@ -63,13 +64,13 @@ const actions = {
   },
   async [GET_USER]({ commit, dispatch, rootGetters }) {
     if (environment.WEB_API_ENABLED === "false") return;
-    if (!LocalStorageService.get(tokenKey)) return;
     const isExpired = checkExpiryDate(LocalStorageService.get(tokenKey));
 
-    if (isExpired) {
+    if (isExpired || !LocalStorageService.get(tokenKey)) {
       dispatch(LOG_OUT);
       return;
     }
+
     const userData = await authService.user.get(
       LocalStorageService.get(tokenKey)
     );
@@ -78,7 +79,7 @@ const actions = {
       getExpiryDate(LocalStorageService.get(tokenKey)) * 1000
     ).toLocaleString();
     commit(SET_AUTHENTICATED, true);
-    commit(SET_USER, user);
+    dispatch(EDIT_USER, user);
     const checkAuthStatus = setInterval(() => {
       if (
         checkExpiryDate(LocalStorageService.get(tokenKey)) ||
@@ -92,18 +93,22 @@ const actions = {
     }, 1000);
   },
   async [LOG_OUT]({ commit, dispatch, rootGetters }, payload) {
-    commit(SET_AUTHENTICATED, false);
-    commit(SET_USER, null);
-    if (!checkExpiryDate(LocalStorageService.get(tokenKey))) {
-      await authService.token.logout(LocalStorageService.get(tokenKey));
+    dispatch(EDIT_USER, null);
+    if (environment.WEB_API_ENABLED === "true") {
+      commit(SET_AUTHENTICATED, false);
+      if (!checkExpiryDate(LocalStorageService.get(tokenKey))) {
+        await authService.token.logout(LocalStorageService.get(tokenKey));
+      }
+      LocalStorageService.remove(tokenKey);
+      cookiesService.remove(tokenKey);
+      dispatch(ADD_ALERT, {
+        message: payload?.message
+          ? payload.message
+          : "You have been logged out",
+        status: "",
+      });
     }
-    LocalStorageService.remove(tokenKey);
-    cookiesService.remove(tokenKey);
-    LocalStorageService.remove("user");
-    dispatch(ADD_ALERT, {
-      message: payload?.message ? payload.message : "You have been logged out",
-      status: "",
-    });
+    dispatch(EDIT_USER, null);
   },
 };
 const mutations = {

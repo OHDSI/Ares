@@ -7,49 +7,32 @@
       </Button>
     </InputGroupAddon>
   </InputGroup>
+  <div v-if="!user && !webApiDisabled">
+    <Button
+      @click="logIn"
+      style="width: 100%; height: 30px"
+      severity="secondary"
+      >Log in to WebAPI</Button
+    >
+  </div>
 
-  <!--  <InputGroup v-if="!user && !webApiDisabled">-->
-  <!--    <InputGroupAddon>-->
-  <!--      <Button text @click="save" icon="pi pi-times" severity="info">-->
-  <!--        Log in-->
-  <!--        <svg-icon type="mdi" :path="mdiContentSaveOutline"></svg-icon>-->
-  <!--      </Button>-->
-  <!--    </InputGroupAddon>-->
-  <!--  </InputGroup>-->
-
-  <Button
-    v-if="!user"
-    @click="logIn"
-    style="width: 100%; height: 30px"
-    severity="secondary"
-    >Log in to WebAPI</Button
-  >
-
-  <div v-else class="flex flex-col gap-2">
-    <!--    <h3 class="text-2xl">Hello, {{ user.name }}</h3>-->
+  <div v-if="user" class="flex flex-col gap-2">
     <div class="flex flex-row items-center gap-2">
       <SvgIcon type="mdi" :path="mdiAccountCircle" size="60" />
       <div>
-        <div class="text-2xl">{{ user.name }}</div>
-        <div class="font-thin">Expires: {{ user.exp }}</div>
+        <div class="text-2xl">{{ user?.name }}</div>
+        <div v-if="!webApiDisabled" class="font-thin">
+          Expires: {{ user?.exp }}
+        </div>
       </div>
     </div>
     <Button
-      v-if="user && !webApiDisabled"
+      v-if="user"
       @click="logout"
       severity="secondary"
       class="align-self-end"
       >Log out</Button
     >
-    <!--    <Button-->
-    <!--      v-if="!store.getters.getWebAPIUser"-->
-    <!--      text-->
-    <!--      @click="user = null"-->
-    <!--      class="align-self-end"-->
-    <!--      plain-->
-    <!--    >-->
-    <!--      <svg-icon type="mdi" :path="mdiAccountEditOutline"></svg-icon>-->
-    <!--    </Button>-->
   </div>
 </template>
 
