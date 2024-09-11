@@ -9,6 +9,7 @@ export default function cohortReport(data) {
     ...val,
     mean: parseFloat(val.mean),
     sd: parseFloat(val.sd),
+    temporal_choice: val.temporal_choice || "N/A",
   }));
   const indexEventBreakdownTable = data[COHORT_INDEX_EVENT_BREAKDOWN];
   const timeMeasures = [
