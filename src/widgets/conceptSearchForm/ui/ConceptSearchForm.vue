@@ -192,7 +192,7 @@
           severity="info"
           size="large"
           @click="saveChanges(editedItem)"
-          >SAVE</Button
+          >LOAD</Button
         >
       </div>
     </div>
@@ -216,7 +216,10 @@ import { computed } from "vue";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
-import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
+import {
+  FETCH_MULTIPLE_FILES_BY_SOURCE,
+  RESET_DATA_STORAGE,
+} from "@/processes/exploreReports/model/store/actions.type";
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import { CONCEPT } from "@/shared/config/files";
@@ -239,7 +242,7 @@ const displayForm = computed({
     return props.show;
   },
   set: function () {
-    emit("close");
+    emit("close", { loading: false });
   },
 });
 const domains: Ref<DataTableHeader[]> = ref([
@@ -355,6 +358,11 @@ const saveChanges = async (item) => {
   if (props.addedConcepts[item.CONCEPT_ID] === "Loaded") {
     errors.value = "This concept has already been loaded";
     return;
+  }
+  const webapiEnabled = environment.WEB_API_ENABLED === "true";
+
+  if (!webapiEnabled) {
+    emit("close", { loading: true });
   }
 
   loadingItem.value = item.CONCEPT_ID;

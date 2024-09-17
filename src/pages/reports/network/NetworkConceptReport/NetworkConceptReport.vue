@@ -107,15 +107,12 @@ import Button from "primevue/button";
 import environment from "@/shared/api/environment";
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import { webApiActions } from "@/shared/api/webAPI";
+import { RESET_DATA_STORAGE } from "@/processes/exploreReports/model/store/actions.type";
 
 const store = useStore();
 const route = useRoute();
 
 const selectedConcept = ref([]);
-
-const isDataLoaded = computed(() => {
-  return Object.keys(data.value).length;
-});
 
 const showWebApiSearchForm = ref(false);
 const clearMessages = function () {
@@ -132,11 +129,14 @@ function atClick() {
 }
 
 const errors = ref("");
-const close = function () {
+function close(event) {
   showWebApiSearchForm.value = false;
   store.dispatch(webApiActions.RESET_API_STORAGE);
+  if (event.loading) {
+    store.dispatch(RESET_DATA_STORAGE);
+  }
   successMessage.value = [];
-};
+}
 
 const successMessage = ref([]);
 
