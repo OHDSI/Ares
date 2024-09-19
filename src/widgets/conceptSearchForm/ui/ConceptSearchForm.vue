@@ -288,7 +288,7 @@ const authenticated = computed(() => {
   return store.getters.authenticated;
 });
 
-const webapiEnabled = environment.WEB_API_ENABLED === "true";
+const webapiEnabled = environment.WEB_API_ENABLED;
 
 function fetchVocabularies() {
   store.dispatch(webApiActions.FETCH_WEBAPI_INFO).then(() => {
@@ -310,7 +310,7 @@ function fetchVocabularies() {
 }
 
 onBeforeMount((): void => {
-  if (environment.WEB_API_ENABLED === "true" && authenticated.value) {
+  if (webapiEnabled && authenticated.value) {
     fetchVocabularies();
   }
 });
@@ -384,15 +384,14 @@ const saveChanges = async (item) => {
   const domain = webApiKeyMap.domains[item.DOMAIN_ID];
   const conceptId = item.CONCEPT_ID;
 
-  const files =
-    environment.DUCKDB_ENABLED === "true"
-      ? getDuckDBTables({ domain, concept: conceptId })[domain]
-      : [
-          {
-            name: CONCEPT,
-            instanceParams: [{ domain, concept: conceptId }],
-          },
-        ];
+  const files = environment.DUCKDB_ENABLED
+    ? getDuckDBTables({ domain, concept: conceptId })[domain]
+    : [
+        {
+          name: CONCEPT,
+          instanceParams: [{ domain, concept: conceptId }],
+        },
+      ];
 
   await store.dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
     files,

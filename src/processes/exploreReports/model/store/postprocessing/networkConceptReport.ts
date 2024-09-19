@@ -53,7 +53,7 @@ export default function networkConcept(data) {
     conceptId,
     numPersons,
     conceptDomain;
-  if (environment.DUCKDB_ENABLED === "true") {
+  if (environment.DUCKDB_ENABLED) {
     concept = combineObjectsBySource(data);
     conceptName = concept[0].data[CONCEPT_METADATA]?.[0]?.CONCEPT_NAME;
     conceptDomain = concept[0].data[CONCEPT_METADATA]?.[0]?.DOMAIN;

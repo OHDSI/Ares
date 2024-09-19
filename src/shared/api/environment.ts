@@ -9,6 +9,8 @@ class Environment {
     const promise: Promise<AxiosResponse> = axios.get(envUrl);
     return promise.then((res) => {
       Object.assign(this, res.data);
+      this.WEB_API_ENABLED = this.WEB_API_ENABLED === "true";
+      this.DUCKDB_ENABLED = this.DUCKDB_ENABLED === "true";
     });
   }
 }

@@ -20,7 +20,7 @@ export default function concept(data) {
   let seasonalityScore: string | string[];
   let seasonalityComment: string;
 
-  if (environment.DUCKDB_ENABLED === "true") {
+  if (environment.DUCKDB_ENABLED) {
     if (metadata) {
       conceptData = { ...data, ...metadata };
     } else {
