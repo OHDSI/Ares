@@ -66,7 +66,7 @@ async function fetchAxiosData(file, path) {
 
 async function fetchDuckDBData(file, payload, path, filter) {
   const c = await db.connect();
-  return c
+  const data = c
     .query(
       `SELECT * FROM read_parquet('${
         getDuckDBFilePath({
@@ -81,6 +81,8 @@ async function fetchDuckDBData(file, payload, path, filter) {
       duckdb_supported: payload.duckdb_supported,
       payload: path,
     }));
+  await db.disconnect();
+  return data;
 }
 
 function commitData(data, { dispatch, commit }, reportName) {
