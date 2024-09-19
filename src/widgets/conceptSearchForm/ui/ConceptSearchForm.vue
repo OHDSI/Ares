@@ -326,7 +326,7 @@ const rules = {
 const apiSources = ref([]);
 
 const close = function (): void {
-  emit("close");
+  emit("close", { loading: false });
   if (form.value) {
     form.value.resetValidation();
   }
