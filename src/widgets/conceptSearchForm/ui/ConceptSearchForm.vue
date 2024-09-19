@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-if="environment.WEB_API_ENABLED === 'true' && authenticated"
+    v-if="webapiEnabled && authenticated"
     :pt="{
       root: { class: 'w-[850px]' },
     }"
@@ -288,6 +288,8 @@ const authenticated = computed(() => {
   return store.getters.authenticated;
 });
 
+const webapiEnabled = environment.WEB_API_ENABLED === "true";
+
 function fetchVocabularies() {
   store.dispatch(webApiActions.FETCH_WEBAPI_INFO).then(() => {
     const error = store.getters.getApiData?.error;
@@ -373,9 +375,7 @@ const saveChanges = async (item) => {
     errors.value = "This concept has already been loaded";
     return;
   }
-  const webapiEnabled = environment.WEB_API_ENABLED === "true";
-
-  if (!webapiEnabled) {
+  if (!webapiEnabled || !authenticated.value) {
     emit("close", { loading: true });
   }
 
