@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-if="environment.WEB_API_ENABLED === 'true' && store.getters.authenticated"
+    v-if="environment.WEB_API_ENABLED === 'true' && authenticated"
     :pt="{
       root: { class: 'w-[850px]' },
     }"
@@ -284,24 +284,38 @@ const clearMessages = function () {
   successMessage.value = [];
 };
 
+const authenticated = computed(() => {
+  return store.getters.authenticated;
+});
+
+function fetchVocabularies() {
+  store.dispatch(webApiActions.FETCH_WEBAPI_INFO).then(() => {
+    const error = store.getters.getApiData?.error;
+    if (error) {
+      store.dispatch(ADD_ALERT, {
+        message: `WebAPI server replied with status code ${error.response.status}`,
+        status: errorMessages.webApiErrors[error.response.status],
+      });
+      return;
+    }
+    apiSources.value = store.getters.getApiData.apiSources.filter((source) =>
+      source.daimons
+        .reduce((array, current) => [...array, current.daimonType], [])
+        .includes("Vocabulary")
+    );
+    vocabularySource.value = apiSources.value[0].sourceKey;
+  });
+}
+
 onBeforeMount((): void => {
-  if (environment.WEB_API_ENABLED === "true" && store.getters.authenticated) {
-    store.dispatch(webApiActions.FETCH_WEBAPI_INFO).then(() => {
-      const error = store.getters.getApiData?.error;
-      if (error) {
-        store.dispatch(ADD_ALERT, {
-          message: `WebAPI server replied with status code ${error.response.status}`,
-          status: errorMessages.webApiErrors[error.response.status],
-        });
-        return;
-      }
-      apiSources.value = store.getters.getApiData.apiSources.filter((source) =>
-        source.daimons
-          .reduce((array, current) => [...array, current.daimonType], [])
-          .includes("Vocabulary")
-      );
-      vocabularySource.value = apiSources.value[0].sourceKey;
-    });
+  if (environment.WEB_API_ENABLED === "true" && authenticated.value) {
+    fetchVocabularies();
+  }
+});
+
+watch(authenticated, () => {
+  if (authenticated.value) {
+    fetchVocabularies();
   }
 });
 
