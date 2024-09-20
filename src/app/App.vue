@@ -72,8 +72,6 @@ watch(route, (): void => {
 
 onBeforeMount((): void => {
   setColorMode();
-});
-onMounted(() => {
   store.dispatch(GET_USER);
 });
 

@@ -7,13 +7,13 @@
         </span></Button
       >
     </template>
-    <div class="table-container">
+    <div class="table-container items-center">
       <DataTable
         removable-sort
         rowGroupMode="subheader"
         groupRowsBy="CONCEPT_NAME"
-        class="table"
-        v-if="concepts.length"
+        class="table self-start"
+        v-if="concepts.length && !loading"
         size="small"
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -49,9 +49,13 @@
           </template>
         </Column>
       </DataTable>
-      <div v-else class="placeholder table-placeholder">
+      <div
+        v-if="!concepts.length && !loading"
+        class="placeholder table-placeholder"
+      >
         Add at least one concept to display the results
       </div>
+      <ProgressCircle v-if="loading" />
     </div>
   </Panel>
   <ConceptSearchForm
@@ -63,6 +67,7 @@
     :show="showWebApiSearchForm"
     multi-selection
     @save="save"
+    @missingConceptsChanged="handleFailedLoading"
   />
 </template>
 
@@ -70,7 +75,7 @@
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import "./index.css";
 
-import { Ref, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
@@ -78,6 +83,7 @@ import { helpers } from "@/shared/lib/mixins";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { webApiActions } from "@/shared/api/webAPI";
+import ProgressCircle from "@/entities/ProgressCircle.vue";
 const store = useStore();
 
 const successMessage: Ref<string[]> = ref([]);
@@ -85,11 +91,18 @@ const errors: Ref<string> = ref("");
 const showWebApiSearchForm = ref(false);
 const selectedConcept = ref([]);
 
+const loading = ref(false);
+
 const concepts = ref([]);
+
+const handleFailedLoading = function () {
+  loading.value = false;
+};
 
 const save = function () {
   const newConcept = store.getters.getData?.concept;
   concepts.value = [...concepts.value, ...newConcept];
+  loading.value = false;
 };
 function atClick() {
   showWebApiSearchForm.value = true;
@@ -98,7 +111,10 @@ const clearMessages = function () {
   errors.value = "";
   successMessage.value = [];
 };
-const close = function () {
+const close = function (event) {
+  if (event.loading) {
+    loading.value = true;
+  }
   showWebApiSearchForm.value = false;
   store.dispatch(webApiActions.RESET_API_STORAGE);
   successMessage.value = [];
