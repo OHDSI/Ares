@@ -57,7 +57,7 @@ import {
   LOG_OUT,
 } from "@/shared/api/webAPI/authentication/model/store/actions.type";
 
-const webApiDisabled = environment.WEB_API_ENABLED === "false";
+const webApiDisabled = !environment.WEB_API_ENABLED;
 
 const store = useStore();
 

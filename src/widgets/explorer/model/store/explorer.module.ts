@@ -45,7 +45,7 @@ const getters = {
     );
   },
   getFilteredReports: function (state, getters, rootState) {
-    const webApiEnabled = environment.WEB_API_ENABLED === "true";
+    const webApiEnabled = environment.WEB_API_ENABLED;
     return state.reports.filter((report) => {
       const folderMatch = report.folder === getters.getSelectedFolder.name;
       const webApiCondition = webApiEnabled || !report.webApiRequired;

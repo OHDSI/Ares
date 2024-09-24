@@ -88,10 +88,9 @@ export default function getFilesByView(params = null) {
     networkConcept: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,
       payload: {
-        files:
-          environment.DUCKDB_ENABLED === "true"
-            ? params.files
-            : [{ name: CONCEPT, instanceParams: [{}] }],
+        files: environment.DUCKDB_ENABLED
+          ? params.files
+          : [{ name: CONCEPT, instanceParams: [{}] }],
         duckdb_supported: true,
       },
     },
@@ -146,13 +145,12 @@ export default function getFilesByView(params = null) {
     concept: {
       loadMethod: FETCH_FILES,
       payload: {
-        files:
-          environment.DUCKDB_ENABLED === "true"
-            ? params.files
-            : [
-                { name: DOMAIN_SUMMARY, required: true },
-                { name: CONCEPT, required: true },
-              ],
+        files: environment.DUCKDB_ENABLED
+          ? params.files
+          : [
+              { name: DOMAIN_SUMMARY, required: true },
+              { name: CONCEPT, required: true },
+            ],
         duckdb_supported: true,
       },
     },
@@ -244,10 +242,9 @@ export default function getFilesByView(params = null) {
     sourceConceptOverlay: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_RELEASE,
       payload: {
-        files:
-          environment.DUCKDB_ENABLED === "true"
-            ? params.files
-            : [{ name: SOURCE_CONCEPT }],
+        files: environment.DUCKDB_ENABLED
+          ? params.files
+          : [{ name: SOURCE_CONCEPT }],
         duckdb_supported: true,
       },
     },

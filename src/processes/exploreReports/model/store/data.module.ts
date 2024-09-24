@@ -173,8 +173,7 @@ const actions = {
   },
 
   async [FETCH_FILES]({ commit, dispatch, rootState }, payload) {
-    const isDuckDb =
-      payload.duckdb_supported && environment.DUCKDB_ENABLED === "true";
+    const isDuckDb = payload.duckdb_supported && environment.DUCKDB_ENABLED;
     const reportName = rootState.route.name;
     const path = {
       cdm: { cdm_source_key: rootState.route.params.cdm },
@@ -246,8 +245,7 @@ const actions = {
       commit(SET_DATA, { data: {} });
       return;
     } else {
-      const isDuckDb =
-        environment.DUCKDB_ENABLED === "true" && payload.duckdb_supported;
+      const isDuckDb = environment.DUCKDB_ENABLED && payload.duckdb_supported;
 
       const reportName = rootState.route.name;
       const promises = payload.files.reduce((obj, file) => {
@@ -316,8 +314,7 @@ const actions = {
       commit(SET_DATA, { data: {} });
       return;
     }
-    const isDuckDb =
-      payload.duckdb_supported && environment.DUCKDB_ENABLED === "true";
+    const isDuckDb = payload.duckdb_supported && environment.DUCKDB_ENABLED;
     const reportName = rootState.route.name;
     const promises = payload.files.reduce((obj, file) => {
       const selectedSource = rootGetters.getSelectedSource;

@@ -218,7 +218,7 @@ const getConceptsForRequest = (measurement = []) => {
       timeSeries,
       issues;
 
-    if (environment.DUCKDB_ENABLED === "true") {
+    if (environment.DUCKDB_ENABLED) {
       const metadata = value?.data[CONCEPT_METADATA][0];
       conceptId = metadata.CONCEPT_ID;
       conceptName = metadata.CONCEPT_NAME;
@@ -272,7 +272,7 @@ const save = function (item) {
     return;
   }
   let withMeasurement;
-  if (environment.DUCKDB_ENABLED === "true") {
+  if (environment.DUCKDB_ENABLED) {
     withMeasurement = conceptsData.value.filter(
       (value) => value.data[CONCEPT_METADATA].CDM_TABLE_NAME === "MEASUREMENT"
     );

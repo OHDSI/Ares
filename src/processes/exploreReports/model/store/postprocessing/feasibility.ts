@@ -40,7 +40,7 @@ export default function feasibility(data) {
   const person: PersonData = data[PERSON];
 
   let concept, conceptId;
-  if (environment.DUCKDB_ENABLED === "true" && data[CONCEPT_METADATA]) {
+  if (environment.DUCKDB_ENABLED && data[CONCEPT_METADATA]) {
     concept = combineObjectsBySource(data);
     conceptId = concept?.[0]?.data[CONCEPT_METADATA]?.[0]?.CONCEPT_ID;
   } else {

@@ -32,7 +32,7 @@ export default function sourceConceptOverlay(data) {
   let conceptName;
   let conceptId;
   let numPersons;
-  if (environment.DUCKDB_ENABLED === "true") {
+  if (environment.DUCKDB_ENABLED) {
     parsedResponses = combineObjectsByRelease(data);
     conceptName = parsedResponses[0].data[CONCEPT_METADATA][0].CONCEPT_NAME;
     conceptId = parsedResponses[0].data[CONCEPT_METADATA][0].CONCEPT_ID;

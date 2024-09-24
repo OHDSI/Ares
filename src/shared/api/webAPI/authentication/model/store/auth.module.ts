@@ -40,7 +40,7 @@ const getters = {
 
 const actions = {
   async [WEB_API_LOG_IN]({ commit, dispatch }) {
-    if (environment.WEB_API_ENABLED === "false") {
+    if (!environment.WEB_API_ENABLED) {
       return;
     }
     try {
@@ -63,7 +63,7 @@ const actions = {
     }
   },
   async [GET_USER]({ commit, dispatch, rootGetters }) {
-    if (environment.WEB_API_ENABLED === "false") return;
+    if (!environment.WEB_API_ENABLED) return;
     const isExpired = checkExpiryDate(LocalStorageService.get(tokenKey));
 
     if (isExpired || !LocalStorageService.get(tokenKey)) {
@@ -94,7 +94,7 @@ const actions = {
   },
   async [LOG_OUT]({ commit, dispatch, rootGetters }, payload) {
     dispatch(EDIT_USER, null);
-    if (environment.WEB_API_ENABLED === "true") {
+    if (environment.WEB_API_ENABLED) {
       commit(SET_AUTHENTICATED, false);
       if (!checkExpiryDate(LocalStorageService.get(tokenKey))) {
         await authService.token.logout(LocalStorageService.get(tokenKey));

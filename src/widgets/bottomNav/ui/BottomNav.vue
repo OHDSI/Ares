@@ -66,7 +66,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiCog, mdiDatabase, mdiHelpCircleOutline, mdiServer } from "@mdi/js";
 import { useRouter } from "vue-router";
 
-const webApiEnabled = environment.WEB_API_ENABLED === "true";
+const webApiEnabled = environment.WEB_API_ENABLED;
 
 const store = useStore();
 const router = useRouter();
