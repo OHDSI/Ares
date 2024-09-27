@@ -6,7 +6,9 @@ import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 
 function combineObjectsBySource(inputObject) {
   const resultArray = [];
-  const sources = inputObject[CONCEPT_METADATA].map((data) => data.source);
+  const sources = inputObject[CONCEPT_METADATA].filter(
+    (val) => val.data.length
+  ).map((data) => data.source);
 
   sources.forEach((source) => {
     const combinedData = {};

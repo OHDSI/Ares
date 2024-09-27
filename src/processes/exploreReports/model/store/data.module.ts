@@ -18,7 +18,6 @@ import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
 import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
-import { root } from "postcss";
 
 const state = {
   data: {},
@@ -159,7 +158,6 @@ function convertTableToArray(table) {
     }
     dataTable.push(rowData);
   }
-
   return dataTable;
 }
 
@@ -283,7 +281,6 @@ const actions = {
       const data = {};
       for (const file in promises) {
         const responses = await Promise.allSettled(promises[file]);
-
         data[file] = responses
           .filter((response) => response.status === "fulfilled")
           .map((filtered) => ({
