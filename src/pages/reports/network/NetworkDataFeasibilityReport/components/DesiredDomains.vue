@@ -9,6 +9,7 @@
     >
       <template #header>
         <MultiSelect
+          style="width: 100%"
           v-model="switchDomains"
           :options="items"
           display="chip"

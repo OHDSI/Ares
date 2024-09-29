@@ -2,8 +2,8 @@
   <div class="flex flex-row gap-5">
     <InputSwitch v-model="annotationsMode" />
     <div>
-      <h3>{{ annotationsMode ? "On" : "Off" }}</h3>
-      <p class="font-thin">Switch default annotations mode</p>
+      <h3 class="text-lg leading-none">{{ annotationsMode ? "On" : "Off" }}</h3>
+      <p class="font-light">Switch default annotations mode</p>
     </div>
   </div>
 </template>

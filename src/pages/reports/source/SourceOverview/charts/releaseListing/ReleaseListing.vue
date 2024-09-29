@@ -2,7 +2,6 @@
   <Panel header="Release listing">
     <DataTable
       size="small"
-      showGridlines
       :value="getTable"
       paginator
       currentPageReportTemplate="{first} to {last} of {totalRecords}"

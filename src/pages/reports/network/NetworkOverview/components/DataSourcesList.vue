@@ -2,7 +2,6 @@
   <Panel header="Data Sources">
     <DataTable
       size="small"
-      showGridlines
       :value="augmentedData"
       v-model:filters="newFilters"
       :globalFilterFields="['cdm_source_name', 'releases[0].release_name', '']"

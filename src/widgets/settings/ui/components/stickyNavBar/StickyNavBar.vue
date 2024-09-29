@@ -2,8 +2,8 @@
   <div class="flex flex-row gap-5">
     <InputSwitch v-model="stickyNavBar" />
     <div>
-      <h3>Sticky navigation bar</h3>
-      <p class="font-thin">
+      <h3 class="text-lg leading-none">Sticky navigation bar</h3>
+      <p class="font-light">
         Keep the navigation bar fixed at the top while scrolling
       </p>
     </div>

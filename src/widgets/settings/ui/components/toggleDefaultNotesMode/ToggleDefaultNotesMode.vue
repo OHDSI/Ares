@@ -2,8 +2,8 @@
   <div class="flex flex-row gap-5">
     <InputSwitch v-model="notesMode" />
     <div>
-      <h3>{{ notesMode ? "On" : "Off" }}</h3>
-      <p class="font-thin">Switch default notes mode</p>
+      <h3 class="text-lg leading-none">{{ notesMode ? "On" : "Off" }}</h3>
+      <p class="font-light">Switch default notes mode</p>
     </div>
   </div>
 </template>
