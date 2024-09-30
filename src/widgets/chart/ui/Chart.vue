@@ -149,10 +149,11 @@ let view;
 
 function setChartWidth() {
   if (containerRef.value) {
-    const { width } = containerRef.value.getClientRects();
+    const { width, height } = containerRef.value.getClientRects();
     elementWidth.value = width;
     const chartSvg = d3.select(`#${props.id} svg`);
     chartSvg.attr("width", `${width}px`);
+    chartSvg.attr("height", `${height}px`);
   }
 }
 function rerenderAnnotationsOnClick(view, makeAnnotations, parentContainer) {
@@ -434,7 +435,6 @@ function initializeBrush(view) {
 }
 
 function renderAnnotations(view, makeAnnotations, parentContainer) {
-  console.log("annotations rendered");
   const svg = d3.select(`#${props.id} svg ${parentContainer}`);
 
   svg.selectAll(".annotation-group").remove();

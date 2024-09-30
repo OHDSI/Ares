@@ -1,9 +1,11 @@
 <template>
-  <div class="flex flex-row gap-5 mb">
+  <div class="flex flex-row gap-5">
     <InputSwitch v-model="darkMode" />
     <div>
-      <h3>{{ darkMode ? "Dark Mode" : "Light mode" }}</h3>
-      <p class="font-thin">Select the Color mode</p>
+      <h3 class="text-lg leading-none">
+        {{ darkMode ? "Dark Mode" : "Light mode" }}
+      </h3>
+      <p class="font-light">Select the Color mode</p>
     </div>
   </div>
 </template>

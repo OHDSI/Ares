@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-row gap-5 mb">
+  <div class="flex flex-row gap-5">
     <InputSwitch v-model="minMax" />
     <div>
-      <h3>{{ minMax ? "MIN/MAX" : "P10/P90" }}</h3>
-      <p class="font-thin">
+      <h3 class="text-lg leading-none">{{ minMax ? "MIN/MAX" : "P10/P90" }}</h3>
+      <p class="font-light">
         Applicable to some reports. Determines whether to use Min/Max or P10/P90
       </p>
     </div>

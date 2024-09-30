@@ -2,8 +2,10 @@
   <div class="flex flex-row gap-5">
     <InputSwitch v-model="zeroBaseLine" />
     <div>
-      <h3>{{ zeroBaseLine ? "Zero Baseline" : "Non-zero baseline" }}</h3>
-      <p class="font-thin">
+      <h3 class="text-lg leading-none">
+        {{ zeroBaseLine ? "Zero Baseline" : "Non-zero baseline" }}
+      </h3>
+      <p class="font-light">
         Determines whether the axis starts from the 0 or the lowest value in the
         set
       </p>

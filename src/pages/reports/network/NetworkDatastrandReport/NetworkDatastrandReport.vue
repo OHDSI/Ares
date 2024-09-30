@@ -76,7 +76,13 @@ const store = useStore();
 import { specDatastrand } from "./specDatastrand";
 import { links } from "@/shared/config/links";
 
-const config = specDatastrand;
+const darkMode = computed(() => {
+  return store.getters.getSettings.darkMode;
+});
+
+const config = computed(() => {
+  return specDatastrand(darkMode.value ? "white" : "black");
+});
 
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
@@ -86,10 +92,12 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import { darkTheme } from "@/widgets/chart/model/themes";
 
 const renderChart = function () {
-  embed("#viz-datastrand", config, {
-    theme: store.getters.getSettings.darkMode ? "dark" : "",
+  embed("#viz-datastrand", config.value, {
+    theme: store.getters.getSettings.darkMode ? darkTheme : "",
+    actions: false,
   }).then((result) => {
     result.view.addSignalListener("selectDomain", (name, value) => {
       const domainKey = value.domain.toLowerCase().replace(" ", "_");
@@ -108,16 +116,15 @@ const renderChart = function () {
 
 const data = computed(() => store.getters.getData);
 
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-
 onMounted(() => {
   if (data.value) {
-    config.data[0].values = data.value.dataStrandReport;
+    config.value.data[0].values = data.value.dataStrandReport;
     renderChart();
   }
 });
 
 watch(darkMode, () => {
+  config.value.data[0].values = data.value.dataStrandReport;
   renderChart();
 });
 

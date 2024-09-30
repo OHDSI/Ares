@@ -21,7 +21,7 @@
       <SvgIcon type="mdi" :path="mdiAccountCircle" size="60" />
       <div>
         <div class="text-2xl">{{ user?.name }}</div>
-        <div v-if="!webApiDisabled" class="font-thin">
+        <div v-if="!webApiDisabled" class="font-light">
           Expires: {{ user?.exp }}
         </div>
       </div>

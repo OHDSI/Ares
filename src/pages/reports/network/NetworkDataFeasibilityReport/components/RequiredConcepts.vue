@@ -11,7 +11,7 @@
       <template #header>
         <div class="flex flex-row justify-end">
           <Button @click="dialog = !dialog" plain>
-            <span class="uppercase font-thin text-grey"
+            <span class="uppercase font-light text-grey"
               >Add concepts
             </span></Button
           >

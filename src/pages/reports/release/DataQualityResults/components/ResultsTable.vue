@@ -1,6 +1,5 @@
 <template>
   <DataTable
-    show-gridlines
     unstyled
     removableSort
     v-model:expandedRows="expanded"

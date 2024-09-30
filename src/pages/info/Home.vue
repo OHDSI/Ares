@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col bg-surface-0 dark:bg-surface-800 dark:text-white justify-center items-center gap-5 shadow-xl my-6 p-20"
+    class="flex flex-col bg-surface-0 dark:bg-surface-800 dark:text-white justify-center items-center gap-5 shadow-md my-6 p-20"
   >
     <h1 class="text-2xl">A R E S</h1>
     <img :class="iconClass" :src="logo" height="64" width="64" />
