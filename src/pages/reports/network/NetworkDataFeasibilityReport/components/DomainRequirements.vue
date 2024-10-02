@@ -1,6 +1,7 @@
 <template>
   <Panel header="Domain Requirements" toggleable fluid>
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       removable-sort
       size="small"
       :value="getDomainsData"
@@ -48,12 +49,15 @@ import Panel from "primevue/panel";
 import MultiSelect from "primevue/multiselect";
 import Divider from "primevue/divider";
 import Message from "primevue/message";
+import { useStore } from "vuex";
 
 interface Props {
   data: [];
 }
 
 const props = defineProps<Props>();
+
+const store = useStore();
 
 const formatComma = function (value) {
   return d3Format.format(",")(value);

@@ -1,6 +1,7 @@
 <template>
   <Panel toggleable header="Concept Requirements" fluid>
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       v-model:expandedRows="expanded"
       removable-sort
       size="small"
@@ -51,6 +52,7 @@
       <Column style="width: 5rem" expander> </Column>
       <template #expansion="slotProps">
         <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
           removable-sort
           size="small"
           :value="slotProps.data.concepts"

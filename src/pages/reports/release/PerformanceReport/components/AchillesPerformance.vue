@@ -1,6 +1,7 @@
 <template>
   <Panel header="Achilles Performance">
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       size="small"
       :globalFilterFields="['analysis_id', 'analysis_name']"
       paginator

@@ -11,6 +11,7 @@ import {
   TOGGLE_DEFAULT_ALL_NOTES_MODE,
   UPDATE_COLUMN_SELECTION,
   TOGGLE_STICKY_NAV_BAR,
+  TOGGLE_STRIPPED_ROWS,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -28,6 +29,7 @@ const state = {
     user: null,
     columnSelection: {},
     stickyNavBar: true,
+    strippedRows: false,
   },
   visible: false,
 };
@@ -70,6 +72,9 @@ const actions = {
   },
   [TOGGLE_STICKY_NAV_BAR]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "stickyNavBar" });
+  },
+  [TOGGLE_STRIPPED_ROWS]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "strippedRows" });
   },
   [UPDATE_COLUMN_SELECTION]({ commit, rootGetters }, payload) {
     commit(SET_SETTINGS, {

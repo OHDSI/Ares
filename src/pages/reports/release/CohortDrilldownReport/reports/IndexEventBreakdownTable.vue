@@ -2,6 +2,7 @@
   <Panel header="Index Event Breakdown">
     <div class="p-5">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
         :value="props.data"

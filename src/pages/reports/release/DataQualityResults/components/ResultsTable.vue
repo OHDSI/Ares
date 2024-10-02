@@ -1,5 +1,6 @@
 <template>
   <DataTable
+    :striped-rows="store.getters.getSettings.strippedRows"
     unstyled
     removableSort
     v-model:expandedRows="expanded"
