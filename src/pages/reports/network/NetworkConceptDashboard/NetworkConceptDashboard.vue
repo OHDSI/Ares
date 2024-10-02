@@ -9,6 +9,7 @@
     </template>
     <div class="table-container items-center">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         rowGroupMode="subheader"
         groupRowsBy="CONCEPT_NAME"

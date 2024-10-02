@@ -26,6 +26,7 @@
     />
     <div v-if="showTable" class="p-4">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         removable-sort

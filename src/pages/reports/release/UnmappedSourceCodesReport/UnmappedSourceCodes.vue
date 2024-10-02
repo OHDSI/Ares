@@ -2,6 +2,7 @@
   <div class="flex flex-col gap-5">
     <Panel header="Unmapped Source Codes">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         filterDisplay="row"
         size="small"

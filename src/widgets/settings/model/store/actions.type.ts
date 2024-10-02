@@ -9,3 +9,4 @@ export const TOGGLE_DEFAULT_ALL_NOTES_MODE = "toggleDefaultNotesMode";
 export const EDIT_USER = "editUser";
 export const UPDATE_COLUMN_SELECTION = "updateColumnSelection";
 export const TOGGLE_STICKY_NAV_BAR = "toggleStickyNavBar";
+export const TOGGLE_STRIPPED_ROWS = "toggleStrippedRows";

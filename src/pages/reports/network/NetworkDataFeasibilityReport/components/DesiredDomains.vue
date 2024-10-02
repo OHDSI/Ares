@@ -1,6 +1,7 @@
 <template>
   <Panel toggleable header="Desired Domains" fluid>
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       removable-sort
       size="small"
       :value="getDomainsData"
@@ -101,11 +102,13 @@ import Divider from "primevue/divider";
 import MultiSelect from "primevue/multiselect";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import { useStore } from "vuex";
 
 interface Props {
   data: [];
 }
 
+const store = useStore();
 const props = defineProps<Props>();
 
 const items = ref([

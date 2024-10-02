@@ -1,6 +1,7 @@
 <template>
   <Panel header="Temporal Characterization">
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       size="small"
       :globalFilterFields="[
         'CDM_TABLE_NAME',
