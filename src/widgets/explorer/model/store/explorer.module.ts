@@ -71,7 +71,11 @@ const getters = {
     const isDomain = rootState.route.params.domain;
     const isRelease = rootState.route.params.release;
     const isCohort = rootState.route.params.cohort_id;
-    if (isDomain && isRelease) {
+    if (
+      isDomain &&
+      isRelease &&
+      rootState.route.name !== "networkComparisonTool"
+    ) {
       const domainTable = getters.getFilteredReports.find(
         (report) => report.domain
       );
