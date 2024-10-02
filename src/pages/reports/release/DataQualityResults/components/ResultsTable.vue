@@ -444,130 +444,132 @@
     <template #expansion="slotProps">
       <div class="p-3 flex flex-col gap-2">
         <table>
-          <tr>
-            <td>
-              <h3 class="font-bold" cols="2">Check Name</h3>
-            </td>
-            <td>
-              <p>{{ slotProps.data.checkName }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold">Description</h3></td>
-            <td>
-              <div>
-                {{ slotProps.data.checkDescription }} (threshold
-                {{ slotProps.data.thresholdValue }}%)
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2">Threshold</h3></td>
-            <td>
-              <p>{{ slotProps.data.thresholdValue }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2">Notes</h3></td>
-            <td>
-              <p>{{ slotProps.data.noteValue }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2">Check Level</h3></td>
-            <td>
-              <p>{{ slotProps.data.checkLevel }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2">Table</h3></td>
-            <td>
-              <p>
-                <a
-                  :href="links.getDocsLink(slotProps.data.cdmTableName)"
-                  target="_blank"
-                >
-                  {{ slotProps.data.cdmTableName }}
-                  <!--                <v-icon small>mdi-open-in-new</v-icon>-->
-                </a>
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <h3 class="font-bold" cols="2">Field</h3>
-            </td>
-            <td>
-              <p>{{ slotProps.data.cdmFieldName }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <h3 class="font-bold" cols="2">Concept Id</h3>
-            </td>
-            <td>
-              <p>
-                <router-link
-                  v-if="slotProps.data.conceptId != undefined"
-                  :to="getConceptDrilldown(slotProps.data)"
-                  color="primary"
-                >
-                  {{ slotProps.data.conceptId }}
-                  <!--                <v-icon small>mdi-open-in-new</v-icon>-->
-                </router-link>
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2">Unit Concept Id</h3></td>
-            <td>
-              <p>{{ slotProps.data.UNIT_conceptId }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <h3 class="font-bold" cols="2"># Rows Violated</h3>
-            </td>
-            <td>
-              <p>{{ slotProps.data.numViolatedRows }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2"># Rows Total</h3></td>
-            <td>
-              <p>{{ slotProps.data.numDenominatorRows }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <h3 class="font-bold" cols="2">% Rows Violated</h3>
-            </td>
-            <td>
-              <p>{{ (slotProps.data.pctViolatedRows * 100).toFixed(2) }} %</p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2">Execution Time</h3></td>
-            <td>
-              <p>{{ slotProps.data.executionTime }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2">Errors</h3></td>
-            <td>
-              <p>{{ slotProps.data.ERROR }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td><h3 class="font-bold" cols="2">SQL Query</h3></td>
-            <td>
-              <Codemirror
-                :model-value="slotProps.data.queryText"
-                :extensions="extensions"
-                disabled
-              ></Codemirror>
-            </td>
-          </tr>
+          <tbody>
+            <tr>
+              <td>
+                <h3 class="font-bold" cols="2">Check Name</h3>
+              </td>
+              <td>
+                <p>{{ slotProps.data.checkName }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold">Description</h3></td>
+              <td>
+                <div>
+                  {{ slotProps.data.checkDescription }} (threshold
+                  {{ slotProps.data.thresholdValue }}%)
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2">Threshold</h3></td>
+              <td>
+                <p>{{ slotProps.data.thresholdValue }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2">Notes</h3></td>
+              <td>
+                <p>{{ slotProps.data.noteValue }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2">Check Level</h3></td>
+              <td>
+                <p>{{ slotProps.data.checkLevel }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2">Table</h3></td>
+              <td>
+                <p>
+                  <a
+                    :href="links.getDocsLink(slotProps.data.cdmTableName)"
+                    target="_blank"
+                  >
+                    {{ slotProps.data.cdmTableName }}
+                    <!--                <v-icon small>mdi-open-in-new</v-icon>-->
+                  </a>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h3 class="font-bold" cols="2">Field</h3>
+              </td>
+              <td>
+                <p>{{ slotProps.data.cdmFieldName }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h3 class="font-bold" cols="2">Concept Id</h3>
+              </td>
+              <td>
+                <p>
+                  <router-link
+                    v-if="slotProps.data.conceptId != undefined"
+                    :to="getConceptDrilldown(slotProps.data)"
+                    color="primary"
+                  >
+                    {{ slotProps.data.conceptId }}
+                    <!--                <v-icon small>mdi-open-in-new</v-icon>-->
+                  </router-link>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2">Unit Concept Id</h3></td>
+              <td>
+                <p>{{ slotProps.data.UNIT_conceptId }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h3 class="font-bold" cols="2"># Rows Violated</h3>
+              </td>
+              <td>
+                <p>{{ slotProps.data.numViolatedRows }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2"># Rows Total</h3></td>
+              <td>
+                <p>{{ slotProps.data.numDenominatorRows }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h3 class="font-bold" cols="2">% Rows Violated</h3>
+              </td>
+              <td>
+                <p>{{ (slotProps.data.pctViolatedRows * 100).toFixed(2) }} %</p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2">Execution Time</h3></td>
+              <td>
+                <p>{{ slotProps.data.executionTime }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2">Errors</h3></td>
+              <td>
+                <p>{{ slotProps.data.ERROR }}</p>
+              </td>
+            </tr>
+            <tr>
+              <td><h3 class="font-bold" cols="2">SQL Query</h3></td>
+              <td>
+                <Codemirror
+                  :model-value="slotProps.data.queryText"
+                  :extensions="extensions"
+                  disabled
+                ></Codemirror>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </template>
