@@ -169,7 +169,11 @@
                 helpers.getFontWeight(slotProps.data.DIFF_PERCENT_PERSONS_NTILE)
               "
             >
-              {{ helpers.formatComma(slotProps.data.DIFF_PERCENT_PERSONS) }}
+              {{
+                slotProps.data.DIFF_PERCENT_PERSONS
+                  ? helpers.formatComma(slotProps.data.DIFF_PERCENT_PERSONS)
+                  : "No Data"
+              }}
             </div>
           </template>
         </Column>
