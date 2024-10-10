@@ -34,6 +34,7 @@ import LocationReport from "@/pages/reports/release/Location/LocationReport.vue"
 import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 
 import { RouteRecordRaw } from "vue-router";
+import NetworkComparisonTool from "@/pages/reports/network/NetworkComparisonTool/NetworkComparisonTool.vue";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -83,6 +84,11 @@ export const routes: RouteRecordRaw[] = [
         path: "network_performance",
         name: "networkPerformance",
         components: { reportsView: NetworkPerformance },
+      },
+      {
+        path: "network_comparison_tool/:cdm?/:release?/:domain?",
+        name: "networkComparisonTool",
+        components: { reportsView: NetworkComparisonTool },
       },
       {
         path: "network_diversity",

@@ -174,11 +174,23 @@ const actions = {
     const isDuckDb = payload.duckdb_supported && environment.DUCKDB_ENABLED;
     const reportName = rootState.route.name;
     const path = {
-      cdm: { cdm_source_key: rootState.route.params.cdm },
-      release: rootState.route.params.release,
-      domain: rootState.route.params.domain,
-      concept: rootState.route.params.concept,
-      cohortId: rootState.route.params.cohort_id,
+      cdm: {
+        cdm_source_key: payload.params?.cdm
+          ? payload.params?.cdm
+          : rootState.route.params.cdm,
+      },
+      release: payload.params?.release
+        ? payload.params?.release
+        : rootState.route.params.release,
+      domain: payload.params?.domain
+        ? payload.params?.domain
+        : rootState.route.params.domain,
+      concept: payload.params?.concept
+        ? payload.params?.concept
+        : rootState.route.params.concept,
+      cohortId: payload.params?.cohort_id
+        ? payload.params?.cohort_id
+        : rootState.route.params.cohort_id,
     };
     if (!payload.files) {
       commit(SET_DATA, { data: {} });

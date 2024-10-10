@@ -27,6 +27,7 @@ import floatLabel from "@/app/plugins/tailwind/components/floatLabel";
 import checkBox from "@/app/plugins/tailwind/components/checkBox";
 import accordion from "@/app/plugins/tailwind/components/accordion";
 import toast from "@/app/plugins/tailwind/components/toast";
+import chip from "@/app/plugins/tailwind/components/chip";
 
 export const tailwindTheme = {
   tabview,
@@ -58,4 +59,5 @@ export const tailwindTheme = {
   checkBox,
   accordion,
   toast,
+  chip,
 };

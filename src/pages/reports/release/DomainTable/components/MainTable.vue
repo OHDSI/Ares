@@ -1,16 +1,23 @@
 <template>
   <Panel :header="openedDomain.split('_').join(' ')">
     <template #icons>
-      <ChartActionIcon
-        :icon="mdiDatabase"
-        :tooltip="
-          issueCount > 0
-            ? 'Data quality issues were identified for this domain'
-            : ''
-        "
-        :count="issueCount"
-        @iconClicked="navigateToDataQuality"
-      />
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          :icon="mdiCompareHorizontal"
+          :tooltip="'Compare across the network'"
+          @iconClicked="compareToOtherSources"
+        />
+        <ChartActionIcon
+          :icon="mdiDatabase"
+          :tooltip="
+            issueCount > 0
+              ? 'Data quality issues were identified for this domain'
+              : ''
+          "
+          :count="issueCount"
+          @iconClicked="navigateToDataQuality"
+        />
+      </div>
     </template>
     <div class="p-5">
       <DataTable
@@ -316,6 +323,7 @@ import Paginator from "primevue/paginator";
 import { FilterMatchMode } from "primevue/api";
 import {
   mdiCodeBraces,
+  mdiCompareHorizontal,
   mdiDatabase,
   mdiEye,
   mdiHelpCircle,
@@ -330,6 +338,20 @@ const route = useRoute();
 const router = useRouter();
 
 const openedDomain = computed(() => route.params.domain?.toUpperCase());
+
+const compareToOtherSources = function () {
+  const source = route.params.cdm;
+  const domain = route.params.domain;
+  const release = route.params.release;
+  router.push({
+    name: "networkComparisonTool",
+    params: {
+      cdm: source,
+      domain: domain,
+      release: release,
+    },
+  });
+};
 
 const newFilters = computed(() => ({
   global: { value: route.query.search, matchMode: FilterMatchMode.CONTAINS },
