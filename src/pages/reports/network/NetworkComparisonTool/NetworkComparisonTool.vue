@@ -31,7 +31,7 @@
           }"
           class="px-2"
           @click="newSourceForm = true"
-          >ADD SOURCE</Button
+          >DATA SOURCES</Button
         >
       </div>
       <div class="flex flex-col gap-5" v-if="Object.keys(dataSources).length">
@@ -101,11 +101,12 @@
     <Dialog
       style="width: 600px"
       show-header
-      header="NEW SOURCE"
+      header="DATA SOURCES"
       v-model:visible="newSourceForm"
     >
       <div class="px-5 py-3 flex flex-col gap-5">
         <div class="flex flex-col gap-4">
+          SELECTED DATA SOURCES
           <ul
             class="flex flex-row gap-2 w-full rounded border-surface-700 border-solid flex-wrap"
           >
@@ -128,10 +129,11 @@
           </ul>
         </div>
         <div class="flex flex-col gap-5">
+          ADD A DATA SOURCE
           <Dropdown
             option-value="cdm_source_key"
             option-label="cdm_source_key"
-            placeholder="Select source"
+            placeholder="Select Data Source"
             :options="availableSources"
             v-model="selectedSource.source"
             class="w-full"
@@ -139,17 +141,19 @@
           <Dropdown
             option-label="release_name"
             option-value="release_id"
-            placeholder="Select release"
+            placeholder="Select Release"
             :options="availableReleases"
             v-model="selectedSource.release"
             class="w-full"
           ></Dropdown>
         </div>
       </div>
-      <div class="px-5 py-3 pt-5 flex flex-row justify-between">
-        <Button text @click="addToLoadList">Add to list</Button>
+      <div class="px-5 py-3 pt-5 flex flex-row justify-end">
+        <Button text @click="addToLoadList">ADD TO SELECTED DATA SOURCES</Button>
+      </div>
+      <div class="px-5 py-3 pt-5 flex flex-row justify-center">
         <Button text @click="() => fetchMultiple(loadList)"
-          >Load selected</Button
+          >LOAD SELECTED</Button
         >
       </div>
     </Dialog>
