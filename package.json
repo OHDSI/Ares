@@ -9,7 +9,8 @@
     "preview": "vite preview --open --port 8080",
     "build": "vite build --out-dir dist",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src --fix",
+    "postinstall": "npm install --prefix ./doc"
   },
   "dependencies": {
     "@codemirror/lang-markdown": "^6.2.2",
