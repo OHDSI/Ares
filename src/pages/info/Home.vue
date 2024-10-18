@@ -1,50 +1,49 @@
 <template>
-  <v-card elevation="10" class="ma-5 pa-7">
-    <v-layout class="ma-4" justify-center>
-      <h2>A R E S</h2>
-    </v-layout>
-    <v-layout justify-center>
-      <v-img
-        class="inverted"
-        :src="require('../../shared/assets/icon.png')"
-        max-height="64"
-        max-width="64"
-      ></v-img>
-    </v-layout>
-    <div class="ma-4 introduction">
+  <div
+    class="flex flex-col bg-surface-0 dark:bg-surface-800 dark:text-white justify-center items-center gap-5 shadow-md my-6 p-20"
+  >
+    <h1 class="text-2xl">A R E S</h1>
+    <img :class="iconClass" :src="logo" height="64" width="64" />
+    <p class="text-lg font-light">
       <b>A</b> <b>R</b>esearch <b>E</b>xploration <b>S</b>ystem that facilitates
       exploration of patient level, observational data research accompanied by
       source data characterization and quality assessment ensuring that results
       are presented with proper context.
-    </div>
-    <v-card-actions>
-      <v-layout justify-center>
-        <v-btn class="ma-2" dark color="primary" to="/network/overview">
-          <v-icon left>mdi-database</v-icon>Explore Data Sources
-        </v-btn>
-        <!--
-        <v-btn class="ma-2" disabled text outlined to="/_network">
-          <v-icon left>mdi-file-document</v-icon>Explore Vocabularies
-        </v-btn>
-        <v-btn class="ma-2" disabled text outlined to="/_network">
-          <v-icon left>mdi-file-document</v-icon>Explore Research Papers
-        </v-btn>
-        -->
-      </v-layout>
-    </v-card-actions>
-  </v-card>
+    </p>
+    <Button link @click="redirectToHome">
+      <svg-icon
+        class="text-primary-500"
+        type="mdi"
+        :path="mdiDatabase"
+      ></svg-icon>
+      <span class="text-primary-500 uppercase">Explore Data Sources</span>
+    </Button>
+  </div>
 </template>
+<script setup lang="ts">
+import { useStore } from "vuex";
+import { computed } from "vue";
+import logo from "@/shared/assets/icon.png";
 
-<script>
-export default {
-  name: "Home",
-};
+import Button from "primevue/button";
+import { useRouter } from "vue-router";
+
+import { mdiDatabase } from "@mdi/js";
+import SvgIcon from "@jamescoyle/vue-icon";
+
+const store = useStore();
+const router = useRouter();
+
+const iconClass = computed((): string => {
+  return store.getters.getSettings.darkMode ? "" : "inverted";
+});
+
+function redirectToHome() {
+  router.push("/network/overview");
+}
 </script>
 
 <style scoped>
-.v-card__text {
-  line-height: 28px;
-}
 .inverted {
   filter: invert(1);
 }

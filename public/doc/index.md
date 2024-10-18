@@ -208,7 +208,7 @@ ARES presents research generated through the suite of OHDSI related packages.
 ARES leverages many open source libraries and tools to achieve its goals without which the task would be entirely insurmountable.
 
 - Vue
-- Vuetify
+- PrimeVue
 - axios
 - Vega
 - Vega-lite

@@ -1,37 +1,96 @@
 <template>
-  <v-bottom-navigation fixed dark dense>
-    <v-layout justify-end>
-      <v-btn to="/help">
-        <v-icon dark>mdi-help-circle-outline</v-icon>
-      </v-btn>
-      <v-btn to="/network/overview">
-        <v-icon dark>mdi-database</v-icon>
-      </v-btn>
-      <v-btn to="/">
-        <v-img
-          :src="require('@/shared/assets/icon.png')"
-          max-height="20"
-          max-width="20"
-        ></v-img>
-      </v-btn>
-      <v-btn @click="toggleSettings">
-        <v-icon dark>mdi-cog-outline</v-icon>
-      </v-btn>
-    </v-layout>
-  </v-bottom-navigation>
+  <Toolbar unstyled class="fixed bottom-0 left-0 right-0">
+    <template #end>
+      <div class="flex flex-row gap-14 mr-3">
+        <Button
+          v-if="webApiEnabled"
+          severity="secondary"
+          @click="redirectTo('/network/web_api')"
+          icon="pi pi-check"
+          text
+        >
+          <svg-icon type="mdi" :path="mdiServer"></svg-icon>
+        </Button>
+        <Button
+          severity="secondary"
+          @click="redirectTo('/help')"
+          icon="pi pi-check"
+          text
+        >
+          <svg-icon type="mdi" :path="mdiHelpCircleOutline"></svg-icon>
+        </Button>
+        <Button
+          severity="secondary"
+          @click="redirectTo('/network/overview')"
+          icon="pi pi-check"
+          text
+        >
+          <svg-icon type="mdi" :path="mdiDatabase"></svg-icon>
+        </Button>
+        <Button
+          severity="secondary"
+          @click="redirectTo('/')"
+          icon="pi pi-check"
+          text
+        >
+          <img :class="iconClass" :src="logo" width="20" />
+        </Button>
+        <Button
+          severity="secondary"
+          icon="pi pi-check"
+          text
+          @click="toggleSettings"
+        >
+          <svg-icon type="mdi" :path="mdiCog"></svg-icon>
+        </Button>
+      </div>
+    </template>
+  </Toolbar>
 </template>
 
-<script>
-import { SET_VISIBILITY } from "@/widgets/settings/model/store/mutations.type";
-
+<script lang="ts">
 export default {
   name: "BottomNav",
-  methods: {
-    toggleSettings: function () {
-      this.$store.commit(SET_VISIBILITY, !this.$store.getters.getVisibility);
-    },
-  },
 };
 </script>
 
-<style scoped></style>
+<script setup lang="ts">
+import { SET_VISIBILITY } from "@/widgets/settings/model/store/mutations.type";
+import Toolbar from "primevue/toolbar";
+import Button from "primevue/button";
+import logo from "@/shared/assets/icon.png";
+import { useStore } from "vuex";
+import { computed } from "vue";
+import environment from "@/shared/api/environment";
+import SvgIcon from "@jamescoyle/vue-icon";
+import { mdiCog, mdiDatabase, mdiHelpCircleOutline, mdiServer } from "@mdi/js";
+import { useRouter } from "vue-router";
+
+const webApiEnabled = environment.WEB_API_ENABLED;
+
+const store = useStore();
+const router = useRouter();
+
+const iconClass = computed((): string => {
+  return store.getters.getSettings.darkMode ? "darkmode" : "lightmode";
+});
+
+function redirectTo(path: string) {
+  router.push(path);
+}
+
+const toggleSettings = function (): void {
+  store.commit(SET_VISIBILITY, !store.getters.getVisibility);
+};
+</script>
+
+<style scoped>
+.lightmode {
+  filter: invert(48%) sepia(15%) saturate(363%) hue-rotate(182deg)
+    brightness(89%) contrast(89%);
+}
+.darkmode {
+  filter: sepia(0%) saturate(393%) hue-rotate(238deg) brightness(80%)
+    contrast(90%);
+}
+</style>

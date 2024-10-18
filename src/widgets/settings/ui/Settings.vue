@@ -1,53 +1,78 @@
 <template>
-  <v-row justify="center">
-    <v-navigation-drawer v-model="showMenu" width="30%" fixed temporary right>
-      <v-card>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click="showMenu = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title>Settings</v-toolbar-title>
-          <v-spacer></v-spacer>
-        </v-toolbar>
-        <v-list three-line subheader>
-          <v-subheader>Charts</v-subheader>
-          <!--Features-->
+  <Sidebar class="w-2/6" v-model:visible="showMenu" position="right">
+    <template #header>
+      <div>
+        <h2 class="font-bold">Settings</h2>
+      </div>
+    </template>
+    <div class="flex flex-col">
+      <div>
+        <UserAccount />
+        <Divider />
+      </div>
+      <div class="flex flex-col">
+        <div class="flex flex-col gap-5">
+          <h3 class="text-left font-normal text-md">Charts</h3>
           <ToggleBaseLine />
           <ToggleMinMax />
-        </v-list>
-        <v-divider></v-divider>
-        <v-list three-line subheader>
-          <v-subheader>General</v-subheader>
-          <!--Features-->
+        </div>
+        <Divider></Divider>
+
+        <div class="flex flex-col gap-5">
+          <h3 class="text-left font-normal text-md">Appearance</h3>
           <ToggleDarkMode />
-        </v-list>
-      </v-card>
-    </v-navigation-drawer>
-  </v-row>
+          <StickyNavBar />
+        </div>
+        <Divider></Divider>
+
+        <div class="flex flex-col gap-5">
+          <h3 class="text-left font-normal text-md">Annotations</h3>
+          <ToggleDefaultAnnotatonsMode />
+          <ToggleDefaultNotesMode />
+        </div>
+        <div class="relative bottom-0 mt-4">
+          <ExportNotes></ExportNotes>
+        </div>
+        <!--        <div class="relative bottom-0 mt-4">-->
+        <!--          <cookie-test />-->
+        <!--        </div>-->
+      </div>
+    </div>
+  </Sidebar>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-import { settingsActions } from "@/widgets/settings";
-import ToggleDarkMode from "@/features/toggleDarkMode/";
-import ToggleBaseLine from "@/features/toggleBaseLine/";
-import ToggleMinMax from "@/features/toggleMinMax/";
-
+<script lang="ts">
 export default {
-  name: "Settings",
-  components: { ToggleMinMax, ToggleBaseLine, ToggleDarkMode },
-  computed: {
-    ...mapGetters(["getVisibility"]),
-    showMenu: {
-      get: function () {
-        return this.getVisibility;
-      },
-      set: function (value) {
-        this.$store.dispatch(settingsActions.CHANGE_UI_VISIBILITY, value);
-      },
-    },
-  },
+  name: "SettingsMenu",
 };
+</script>
+
+<script setup lang="ts">
+import ToggleDarkMode from "./components/toggleDarkMode";
+import ToggleBaseLine from "./components/toggleBaseLine";
+import ToggleMinMax from "./components/toggleMinMax";
+import Divider from "primevue/divider";
+import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode/ToggleDefaultAnnotatonsMode.vue";
+import StickyNavBar from "@/widgets/settings/ui/components/stickyNavBar";
+
+import { computed } from "vue";
+import { useStore } from "vuex";
+import ExportNotes from "@/widgets/settings/ui/components/exportNotes/ExportNotes.vue";
+import { TOGGLE_UI_VISIBILITY } from "@/widgets/settings/model/store/actions.type";
+import ToggleDefaultNotesMode from "@/widgets/settings/ui/components/toggleDefaultNotesMode/ToggleDefaultNotesMode.vue";
+import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccount.vue";
+import Sidebar from "primevue/sidebar";
+
+const store = useStore();
+
+const showMenu = computed({
+  get: function (): boolean {
+    return store.getters.getVisibility;
+  },
+  set: function (value: boolean): void {
+    store.dispatch(TOGGLE_UI_VISIBILITY, value);
+  },
+});
 </script>
 
 <style scoped></style>

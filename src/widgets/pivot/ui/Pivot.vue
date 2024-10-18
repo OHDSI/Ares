@@ -1,332 +1,391 @@
 <template>
-  <v-row>
-    <v-col cols="3">
-      <v-tabs fixed-tabs class="tab-group elevation-10">
-        <v-tab>
-          <v-icon left> mdi-table </v-icon>
-          Table
-        </v-tab>
-        <v-tab>
-          <v-icon left> mdi-database-cog </v-icon>
-          Result manipulation
-        </v-tab>
-
-        <v-tab-item>
-          <v-card class="attr-box elevation-10">
-            <v-list class="pa-3">
-              <v-select
-                v-model="selectedRows"
-                solo
-                :menu-props="{ bottom: true, offsetY: true }"
-                background-color="primary"
-                prefix="Row attributes"
-                hide-selected
-                multiple
-                :items="getDisplayedAttributes"
-              >
-                <template #selection="{}"></template>
-                <template #append>
-                  <v-icon color="white">mdi-plus-box</v-icon> </template
-                >filter
-              </v-select>
-              <draggable v-if="selectedRows.length" v-model="selectedRows">
-                <template v-for="(item, i) in selectedRows">
-                  <v-list-item :key="i" class="list-item">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item }}</v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <v-btn icon @click="removeRows(i)"
-                        ><v-icon>mdi-close</v-icon></v-btn
-                      >
-                    </v-list-item-action>
-                  </v-list-item>
-                </template>
-              </draggable>
-              <v-card-text v-else class="placeholder"
-                >Select attributes to display</v-card-text
-              >
-            </v-list>
-          </v-card>
-          <v-card class="attr-box elevation-10">
-            <v-list class="pa-3">
-              <v-select
-                v-model="selectedCols"
-                solo
-                :menu-props="{ bottom: true, offsetY: true }"
-                background-color="primary"
-                prefix="Column attributes"
-                hide-selected
-                multiple
-                :items="getDisplayedAttributes"
-              >
-                <template #selection="{}"> </template>
-                <template #append>
-                  <v-icon color="white">mdi-plus-box</v-icon>
-                </template>
-              </v-select>
-              <draggable v-if="selectedCols.length" v-model="selectedCols">
-                <template v-for="(item, i) in selectedCols">
-                  <v-list-item :key="i" class="list-item">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item }}</v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <v-btn icon @click="removeCols(i)"
-                        ><v-icon>mdi-close</v-icon></v-btn
-                      >
-                    </v-list-item-action>
-                  </v-list-item>
-                </template>
-              </draggable>
-              <v-card-text v-else class="placeholder align-self-center"
-                >Select attributes to display</v-card-text
-              >
-            </v-list>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item>
-          <v-card>
-            <v-select
-              v-model="selectedFilterAttributes"
-              hide-details
-              outlined
-              class="pa-3 pb-6"
-              :menu-props="{ bottom: true, offsetY: true }"
-              hide-selected
-              clearable
-              :items="getDisplayedAttributes"
-              chips
-              multiple
-              label="Filters"
-              @click:clear="removeFilterAttributes()"
+  <div
+    class="flex flex-row gap-5 bg-white dark:bg-surface-800 w-full h-[650px]"
+    v-if="data"
+  >
+    <div style="width: 25%; height: 100%">
+      <TabView
+        :pt="{
+          navContent: {
+            class: [''],
+          },
+          nav: {
+            class: [
+              'flex flex-row justify-around flex-1',
+              'bg-surface-0 dark:bg-surface-800',
+              'border-b-2 border-surface-200 dark:border-surface-700',
+              'text-surface-900 dark:text-surface-0/80',
+            ],
+          },
+          inkbar: {
+            class: ['hidden'],
+          },
+        }"
+      >
+        <div class="flex flex-row justify-between">
+          <TabPanel
+            :pt="{
+              header: {
+                class: ['flex-1 basis-0'],
+              },
+              headerAction: {
+                class: ['justify-center'],
+              },
+            }"
+          >
+            <template #header>
+              <svg-icon type="mdi" :path="mdiTable"></svg-icon>
+              <h3 class="uppercase">Table</h3></template
             >
-              <template #selection="{ item, select, selected }">
-                <v-menu
-                  allow-overflow
-                  offset-y
-                  bottom
-                  max-height="500"
-                  :close-on-content-click="false"
-                >
-                  <template #activator="{ on, attrs }">
-                    <v-chip
-                      color="primary"
-                      :input-value="selected"
-                      close
-                      v-bind="attrs"
-                      @click="select"
-                      v-on="on"
-                      @click:close="removeFilterAttributes(item)"
+            <div class="flex flex-col gap-3">
+              <Card class="attr-box">
+                <template #content>
+                  <div class="flex flex-col gap-5 h-[275px]">
+                    <MultiSelect
+                      style="width: 100%; height: 50px"
+                      placeholder="Row Attributes"
+                      v-model="selectedRows"
+                      :options="getDisplayedAttributes"
+                      :pt="{
+                        label: { class: ['self-center pl-4 font-light'] },
+                      }"
                     >
-                      {{ item }} ({{
-                        selectedFilterValues[item]
-                          ? Object.keys(selectedFilterValues[item]).length
-                          : 0
-                      }})
-                    </v-chip>
-                  </template>
+                      <template #value>Row Attributes</template>
+                      <template #dropdownicon>
+                        <svg-icon type="mdi" :path="mdiPlusBox"></svg-icon>
+                      </template>
+                    </MultiSelect>
 
-                  <v-list>
-                    <v-list-item
-                      v-for="value in getUniqueAttributeValues[item]"
-                      :key="value"
+                    <draggable
+                      class="overflow-auto"
+                      item-key="id"
+                      v-model="selectedRows"
+                      v-if="selectedRows.length"
                     >
-                      <v-checkbox
-                        :input-value="
-                          selectedFilterValues[item]
-                            ? !selectedFilterValues[item][value]
-                            : true
-                        "
-                        :label="value ? value.toString() : value"
-                        @change="changeFilterValues(item, value, $event)"
-                      ></v-checkbox>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </template>
-            </v-select>
-            <div>
-              <v-select
-                v-model="aggregateFunction"
-                hide-details
-                outlined
-                class="px-3"
-                label="Aggregate function"
-                :menu-props="{ bottom: true, offsetY: true }"
-                :items="aggregatorNamesList"
-              ></v-select>
-              <v-select
-                v-if="aggregateFunction === 'Sum'"
-                v-model="aggregateValue[0]"
-                hide-details
-                outlined
-                class="pa-3"
-                label="Aggregate attribute"
-                :menu-props="{ bottom: true, offsetY: true }"
-                :items="getAggregateValues"
-              ></v-select>
+                      <template #item="{ element }">
+                        <div
+                          class="p-5 list-item bg-surface-200 dark:bg-surface-700"
+                        >
+                          <h3>{{ element }}</h3>
+
+                          <Button plain text @click="removeRows(element)">
+                            <svg-icon type="mdi" :path="mdiClose"></svg-icon>
+                          </Button>
+                        </div>
+                      </template>
+                    </draggable>
+                    <h3 v-else class="placeholder">
+                      Select attributes to display
+                    </h3>
+                  </div>
+                </template>
+              </Card>
+              <Card class="attr-box">
+                <template #content>
+                  <div class="flex flex-col gap-5 h-[275px]">
+                    <MultiSelect
+                      style="width: 100%; height: 50px"
+                      placeholder="Column Attributes"
+                      v-model="selectedCols"
+                      :options="getDisplayedAttributes"
+                      :pt="{
+                        label: { class: ['self-center pl-4 font-light'] },
+                      }"
+                    >
+                      <template #value>Column Attributes</template>
+                      <template #dropdownicon>
+                        <svg-icon type="mdi" :path="mdiPlusBox"></svg-icon>
+                      </template>
+                    </MultiSelect>
+
+                    <draggable
+                      class="overflow-auto"
+                      item-key="id"
+                      v-model="selectedCols"
+                      v-if="selectedCols.length"
+                    >
+                      <template #item="{ element }">
+                        <div
+                          class="p-5 list-item bg-surface-200 dark:bg-surface-700"
+                        >
+                          <h3>{{ element }}</h3>
+
+                          <Button plain text @click="removeCols(element)">
+                            <svg-icon type="mdi" :path="mdiClose"></svg-icon>
+                          </Button>
+                        </div>
+                      </template>
+                    </draggable>
+                    <h3 v-else class="placeholder">
+                      Select attributes to display
+                    </h3>
+                  </div>
+                </template>
+              </Card>
             </div>
-          </v-card>
-        </v-tab-item>
-      </v-tabs>
-    </v-col>
-    <v-col class="overflow-hidden">
-      <v-card class="elevation-10 pa-3 table-card">
-        <div
-          v-if="selectedCols.length || selectedRows.length"
-          class="table-container"
-        >
-          <v-row>
-            <vue-pivottable
-              v-if="selectedCols.length || selectedRows.length"
-              class="align-self-start"
-              :data="data"
-              :rows="selectedRows"
-              :cols="selectedCols"
-              :aggregators="aggregators"
-              :attributes="getDisplayedAttributes"
-              :value-filter="selectedFilterValues"
-              :aggregator-name="aggregateFunction"
-              :vals="aggregateValue"
-              :table-options="eventListener(this)"
-            >
-            </vue-pivottable>
-          </v-row>
+          </TabPanel>
+          <TabPanel
+            :pt="{
+              header: {
+                class: ['flex-1 basis-0'],
+              },
+              headerAction: {
+                class: ['justify-center'],
+              },
+            }"
+          >
+            <template #header>
+              <svg-icon type="mdi" :path="mdiDatabaseCog"></svg-icon>
+              <h3 class="uppercase">Settings</h3>
+            </template>
+            <Card>
+              <template #content>
+                <div class="flex flex-col gap-5">
+                  <TreeSelect
+                    :pt="{
+                      label: { class: ['self-center pl-4 font-light'] },
+                    }"
+                    style="width: 100%; height: 50px"
+                    v-model="selectedFilterAttributes"
+                    :options="getFilters"
+                    :meta-key-selection="false"
+                    selectionMode="multiple"
+                    placeholder="Exclude values"
+                    class="md:w-20rem w-full"
+                  />
+                  <Dropdown
+                    :pt="{
+                      label: { class: ['self-center pl-4 font-light'] },
+                    }"
+                    style="width: 100%; height: 50px"
+                    v-model="aggregateFunction"
+                    placeholder="Aggregate function"
+                    :options="aggregatorNamesList"
+                  ></Dropdown>
+                  <Dropdown
+                    :pt="{
+                      label: { class: ['self-center pl-4 font-light'] },
+                    }"
+                    v-if="aggregateFunction === 'Sum'"
+                    v-model="aggregateValue[0]"
+                    hide-details
+                    outlined
+                    :placeholder="aggregateValue[0]"
+                    :options="getAggregateValues"
+                  >
+                    <template #value>
+                      {{ aggregateValue[0] }}
+                    </template>
+                  </Dropdown>
+                </div>
+              </template>
+            </Card>
+          </TabPanel>
         </div>
-        <v-card-text v-else class="placeholder table-placeholder"
-          >Choose at least one attribute to display the results</v-card-text
+      </TabView>
+    </div>
+    <div style="width: 75%; height: 100%" class="table-card overflow-auto">
+      <div
+        v-if="selectedCols.length || selectedRows.length"
+        style="width: 100%"
+        class="table-container"
+      >
+        <VuePivottable
+          v-if="selectedCols.length || selectedRows.length"
+          class="align-self-start"
+          :data="data"
+          :rows="selectedRows"
+          :cols="selectedCols"
+          :aggregators="aggregators"
+          :attributes="getDisplayedAttributes"
+          :value-filter="getParsedFiltersForPivotTable"
+          :aggregator-name="aggregateFunction"
+          :vals="aggregateValue"
+          :table-options="
+            eventListener
+              ? eventListener(router, route, getUniqueAttributeValues)
+              : {}
+          "
         >
-      </v-card>
-    </v-col>
-  </v-row>
+        </VuePivottable>
+      </div>
+      <div class="placeholder-container h-full" v-else>
+        <h2 class="placeholder table-placeholder text-black dark:text-white">
+          Choose at least one attribute to display the results
+        </h2>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { VuePivottable } from "vue-pivottable";
-import "./vue-pivottable.css";
+import "./vue-pivottable.scss";
+import { computed, Ref, ref, onBeforeMount } from "vue";
 import draggable from "vuedraggable";
-import { mixins } from "@/shared/lib/mixins";
 
-export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: "Pivot",
-  components: {
-    VuePivottable,
-    draggable,
-  },
+import SvgIcon from "@jamescoyle/vue-icon";
+import { mdiClose, mdiDatabaseCog, mdiPlusBox, mdiTable } from "@mdi/js";
 
-  mixins: [mixins],
+import Card from "primevue/card";
+import Dropdown from "primevue/dropdown";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
+import Button from "primevue/button";
+import MultiSelect from "primevue/multiselect";
 
-  props: {
-    data: { type: Array, required: true, default: () => [] },
-    attributes: { type: Array, required: false, default: () => [] },
-    aggregatorNamesList: { type: Array, required: false, default: () => [] },
-    aggregators: { type: Object, required: false, default: () => {} },
-    aggregateAttrs: { type: Array, required: false, default: () => [] },
-    defaults: { type: Object, required: false, default: () => {} },
-    eventListener: { type: Function, required: false, default: function () {} },
-  },
-  data() {
+import {
+  useRouter,
+  useRoute,
+  Router,
+  RouteLocationNormalizedLoaded,
+} from "vue-router";
+import TreeSelect from "primevue/treeselect";
+
+const router = useRouter();
+const route = useRoute();
+
+interface Props {
+  data: object[];
+  attributes?: string[];
+  aggregatorNamesList?: string[];
+  aggregators?: object;
+  aggregateAttrs?: string[];
+  defaults?: {
+    rows?: string[];
+    columns?: string[];
+    aggregateValue?: string[];
+    aggregateFunction?: string;
+  };
+  aggregateFunction?: string;
+  eventListener?: (
+    a: Router,
+    b: RouteLocationNormalizedLoaded,
+    c: string[]
+  ) => {
+    clickCallBack: (
+      e: any,
+      value: any,
+      axisAttributes: any,
+      pivotData: any
+    ) => void;
+  };
+}
+
+const props = defineProps<Props>();
+
+const getDisplayedAttributes = computed(function () {
+  return props.attributes;
+});
+
+const getFilters = computed(() => {
+  return getDisplayedAttributes.value.map((field, index) => {
     return {
-      selectedRows: [],
-      selectedFilterAttributes: [],
-      selectedCols: [],
-      selectedFilterValues: {},
-      aggregateFunction: "",
-      aggregateValue: [""],
+      key: index,
+      label: field,
+      data: field,
+      children: getUniqueAttributeValues.value[field].map((value, valIndex) => {
+        return {
+          key: `${index}-${valIndex}`,
+          label: value,
+          data: value,
+        };
+      }),
     };
-  },
+  });
+});
 
-  computed: {
-    getUniqueAttributeValues: function () {
-      return this.getDisplayedAttributes.reduce(
-        (prevState, currAttribute) => ({
-          ...prevState,
-          [currAttribute]: [
-            ...new Set(this.data.map((datum) => datum[currAttribute])),
-          ],
-        }),
+const getParsedFiltersForPivotTable = computed(() => {
+  const keys = Object.keys(selectedFilterAttributes.value);
+  return keys.reduce((acc, current) => {
+    if (current.includes("-")) {
+      const keyArray = current.split("-");
+      const attribute = keyArray[0];
+      const value = keyArray[1];
+      return {
+        ...acc,
+        [getFilters.value[attribute].data]: {
+          ...acc[getFilters.value[attribute].data],
+          [getFilters.value[attribute].children[value].data]: true,
+        },
+      };
+    } else {
+      const childrenObj = getFilters.value[current].children.reduce(
+        (obj, curr) => {
+          return { ...obj, [curr.data]: true };
+        },
         {}
       );
-    },
-    getAggregateValues: function () {
-      if (this.aggregateAttrs.length) {
-        return this.aggregateAttrs;
-      } else {
-        return this.getDisplayedAttributes;
-      }
-    },
-    getDisplayedAttributes: function () {
-      return this.attributes;
-    },
-  },
-  created() {
-    this.load();
-  },
-  methods: {
-    load: function () {
-      this.selectedRows = this.defaults?.rows ? this.defaults.rows : [];
-      this.selectedCols = this.defaults?.columns ? this.defaults.columns : [];
-      this.aggregateFunction = this.defaults?.aggregateFunction
-        ? this.defaults?.aggregateFunction
-        : this.aggregatorNamesList[0];
-      this.aggregateValue = this.defaults?.aggregateValue
-        ? this.defaults?.aggregateValue
-        : [this.getAggregateValues[0]];
-    },
-    removeRows(i) {
-      this.$delete(this.selectedRows, i);
-    },
-    removeCols(i) {
-      this.$delete(this.selectedCols, i);
-    },
-    removeFilterAttributes: function (attribute = null) {
-      if (attribute) {
-        this.selectedFilterAttributes = this.selectedFilterAttributes.filter(
-          (value) => attribute !== value
-        );
-        this.selectedFilterValues = Object.keys(this.selectedFilterValues)
-          .filter((value) => value !== attribute)
-          .reduce(
-            (acc, key) => ({ ...acc, [key]: this.selectedFilterValues[key] }),
-            {}
-          );
-      } else {
-        this.selectedFilterAttributes = [];
-        this.selectedFilterValues = {};
-      }
-    },
-    changeFilterValues: function (attribute, attrValue, value) {
-      if (!value) {
-        this.selectedFilterValues = {
-          ...this.selectedFilterValues,
-          [attribute]: {
-            ...this.selectedFilterValues[attribute],
-            [attrValue]: true,
-          },
-        };
-      } else {
-        this.selectedFilterValues[attribute] = Object.keys(
-          this.selectedFilterValues[attribute]
-        )
-          .filter((attr) => attr !== attrValue)
-          .reduce(
-            (acc, key) => ({
-              ...acc,
-              [key]: true,
-            }),
-            {}
-          );
-      }
-    },
-  },
+      return {
+        ...acc,
+        [getFilters.value[current].data]: {
+          ...acc[getFilters.value[current].data],
+          ...childrenObj,
+        },
+      };
+    }
+  }, {});
+});
+
+const getAggregateValues = computed(function () {
+  if (props.aggregateAttrs) {
+    return props.aggregateAttrs;
+  } else {
+    return getDisplayedAttributes;
+  }
+});
+const getUniqueAttributeValues = computed(function () {
+  return getDisplayedAttributes.value.reduce(
+    (prevState, currAttribute) => ({
+      ...prevState,
+      [currAttribute]: [
+        ...new Set(props.data.map((datum) => datum[currAttribute])),
+      ],
+    }),
+    {}
+  );
+});
+
+const selectedRows: Ref<string[]> = ref([]);
+const removeRows = function (item: string) {
+  selectedRows.value = selectedRows.value.filter((val) => {
+    return val !== item;
+  });
 };
+const selectedCols: Ref<string[]> = ref([]);
+const removeCols = function (item: string) {
+  selectedCols.value = selectedCols.value.filter((val) => {
+    return val !== item;
+  });
+};
+
+const selectedFilterAttributes: Ref<string[]> = ref([]);
+// const selectedFilterValues: Ref<{ [key: string]: { [key: string]: boolean } }> =
+//   ref({});
+
+const aggregateFunction: Ref<string> = ref("");
+const aggregateValue: Ref<string[]> = ref([""]);
+
+const load = function () {
+  selectedRows.value = props.defaults?.rows ? props.defaults.rows : [];
+  selectedCols.value = props.defaults?.columns ? props.defaults.columns : [];
+  aggregateFunction.value = props.defaults?.aggregateFunction
+    ? props.defaults?.aggregateFunction
+    : props.aggregatorNamesList[0];
+  aggregateValue.value = props.defaults?.aggregateValue
+    ? props.defaults?.aggregateValue
+    : [getAggregateValues.value[0]];
+};
+
+onBeforeMount(() => {
+  load();
+});
 </script>
 
-<style scoped>
+<style lang="scss">
+@import "vue-pivottable";
 .attr-box {
-  min-height: 300px;
+  min-height: 270px;
   min-width: 200px;
 }
 
@@ -335,10 +394,8 @@ export default {
 }
 
 .table-card {
-  padding: 10px;
   width: 100%;
   height: 100%;
-  display: flex !important;
   align-items: center;
   justify-content: center;
 }
@@ -355,10 +412,13 @@ export default {
   background-color: inherit;
 }
 .list-item {
-  background-color: var(--v-accent-base);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(var(--surface-300));
   margin: 0px 8px;
   border-radius: 5px;
-  height: 20px;
+  height: 40px;
   cursor: move;
 }
 
@@ -367,17 +427,25 @@ export default {
 }
 
 .table-container {
-  padding: 10px;
   width: 100%;
   height: 100%;
 }
 
->>> .v-text-field__prefix {
-  font-size: 0.875rem !important;
-  color: white;
+.placeholder-container {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  height: 100%;
 }
 
->>> .v-list-item__title {
-  font-size: 0.875rem !important;
-}
+//:deep(.v-text-field__prefix) {
+//  font-size: 0.875rem !important;
+//  color: white;
+//}
+//
+//:deep(.v-list-item__title) {
+//  font-size: 0.875rem !important;
+//}
 </style>
