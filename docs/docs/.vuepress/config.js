@@ -4,17 +4,17 @@ import { viteBundler } from '@vuepress/bundler-vite'
 
 export default defineUserConfig({
   lang: 'en-US',
-
+  base: '/Ares/',
   title: 'Ares',
   description: 'A Research Exploration System',
 
   theme: defaultTheme({
-    logo: '../icon.png',
-
+    logo: './icon.png',
     navbar: ['/', '/ares-docs'],
     colorMode: 'dark',
     colorModeSwitch: false,
 
   }),
   bundler: viteBundler(),
+  dest: '.vuepress/dist'
 })

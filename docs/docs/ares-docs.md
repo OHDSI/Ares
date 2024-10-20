@@ -101,10 +101,12 @@ cdmSourceName = 'synthea'
 cdmVersion = "5.4" #do not change
 
 aresDataDirectory = "./data" #output directory
-sourceReleaseKey = AresIndexer::getSourceReleaseKey(connectionDetails, cdmDatabaseSchema)
 sourceFolders = "./data" #source files folder for indexers.
 
 connectionDetails <- Eunomia::getEunomiaConnectionDetails() #Provides a sample dataset
+
+sourceReleaseKey = AresIndexer::getSourceReleaseKey(connectionDetails, cdmDatabaseSchema)
+
 
 # Example connection details 
 #connectionDetails <- DatabaseConnector::createConnectionDetails(

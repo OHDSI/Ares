@@ -1,7 +1,7 @@
 ---
 home: true
 title: Home
-heroImage: /icon.png
+heroImage: ./icon.png
 actions:
   - text: Get Started
     link: /ares-docs.html#installation
