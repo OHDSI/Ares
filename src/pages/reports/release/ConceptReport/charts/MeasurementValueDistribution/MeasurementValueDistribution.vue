@@ -176,7 +176,7 @@
           :icon="mdiHelpCircle"
           tooltip="Learn how
                   to interpret this plot."
-          @iconClicked="router.push({ name: 'help' })"
+          @iconClicked="openNewTab(links.getAresDocsLink())"
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
@@ -212,6 +212,7 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import MultiSelect from "primevue/multiselect";
+import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
 
 const selectedMeasurementUnits: Ref<string[]> = ref([]);
 

@@ -138,7 +138,7 @@
         <ChartActionIcon
           :icon="mdiHelpCircle"
           tooltip="Learn how to interpret this plot"
-          @iconClicked="router.push({ name: 'help' })"
+          @iconClicked="openNewTab(links.getAresDocsLink())"
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
@@ -174,6 +174,7 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
+import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
 
 interface Props {
   data: DistributionType[];

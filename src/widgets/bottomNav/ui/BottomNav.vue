@@ -13,7 +13,7 @@
         </Button>
         <Button
           severity="secondary"
-          @click="redirectTo('/help')"
+          @click="openNewTab(links.getAresDocsLink())"
           icon="pi pi-check"
           text
         >
@@ -65,6 +65,8 @@ import environment from "@/shared/api/environment";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiCog, mdiDatabase, mdiHelpCircleOutline, mdiServer } from "@mdi/js";
 import { useRouter } from "vue-router";
+import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import { links } from "@/shared/config/links";
 
 const webApiEnabled = environment.WEB_API_ENABLED;
 

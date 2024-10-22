@@ -143,7 +143,7 @@
           :icon="mdiHelpCircle"
           tooltip="Learn how
               to interpret this plot."
-          @iconClicked="router.push({ name: 'help' })"
+          @iconClicked="openNewTab(links.getAresDocsLink())"
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
@@ -178,6 +178,7 @@ import DataTable from "primevue/datatable";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
+import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
 
 interface Props {
   data: [];

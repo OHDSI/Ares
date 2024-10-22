@@ -22,6 +22,10 @@ const getNewIssueLink = function (title = "", body = "") {
   return `https://github.com/OHDSI/Ares/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=${title}&body=${body}`;
 };
 
+const getAresDocsLink = function (): string {
+  return `https://ohdsi.github.io/Ares/`;
+};
+
 export const links = {
   getSqlQueryLink,
   getDocsLink,
@@ -30,4 +34,5 @@ export const links = {
   getDatavizDatasheetLink,
   getDataQualityDashboardLink,
   getNewIssueLink,
+  getAresDocsLink,
 };
