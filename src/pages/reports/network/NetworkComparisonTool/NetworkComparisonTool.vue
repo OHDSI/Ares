@@ -14,6 +14,14 @@
           />
         </InputGroup>
         <Dropdown
+          option-label="name"
+          option-value="value"
+          v-model="selectedReport"
+          :options="reports"
+          placeholder="Select report"
+        ></Dropdown>
+        <Dropdown
+          v-if="selectedReport === DOMAIN_SUMMARY"
           placeholder="Select domain"
           option-label="name"
           option-value="value"
@@ -40,44 +48,48 @@
             <thead>
               <tr>
                 <th
-                  class="conceptCol"
+                  class="rowNameCol"
                   :class="{ scrolled: isScrolled }"
                   rowspan="2"
                 >
-                  Concept Name
+                  {{ selectedConfig.rowHeader.name }}
                 </th>
-                <th v-for="source in sources" :colspan="2" :key="source">
+                <th
+                  v-for="source in sources"
+                  :colspan="selectedConfig.group.children.length"
+                  :key="source"
+                >
                   {{ source }}
                 </th>
               </tr>
               <tr>
                 <template v-for="source in sources" :key="source">
-                  <th># Persons</th>
-                  <th>% Persons</th>
+                  <th
+                    v-for="child in selectedConfig.group.children"
+                    :key="child.name"
+                  >
+                    {{ child.name }}
+                  </th>
                 </template>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="concept in slicedArray" :key="concept">
-                <td :class="{ scrolled: isScrolled }" class="conceptCol">
-                  {{ concept }}
+              <tr v-for="rowName in slicedArray" :key="rowName">
+                <td :class="{ scrolled: isScrolled }" class="rowNameCol">
+                  {{ rowName }}
                 </td>
-                <template v-for="source in sources">
-                  <td>
+                <template v-for="source in sources" :key="source">
+                  <td
+                    v-for="child in selectedConfig.group.children"
+                    :key="child.value"
+                  >
                     {{
-                      getSourceData(source, concept).NUM_PERSONS
-                        ? helpers.formatComma(
-                            getSourceData(source, concept).NUM_PERSONS
-                          )
-                        : "N/A"
-                    }}
-                  </td>
-                  <td>
-                    {{
-                      getSourceData(source, concept).PERCENT_PERSONS
-                        ? helpers.formatPercent(
-                            getSourceData(source, concept).PERCENT_PERSONS
-                          )
+                      getSourceData(source, rowName)[child.value]
+                        ? child.processingFunction
+                          ? child.processingFunction(
+                              getSourceData(source, rowName)[child.value]
+                            )
+                          : getSourceData(source, rowName)[child.value]
                         : "N/A"
                     }}
                   </td>
@@ -149,7 +161,9 @@
         </div>
       </div>
       <div class="px-5 py-3 pt-5 flex flex-row justify-end">
-        <Button text @click="addToLoadList">ADD TO SELECTED DATA SOURCES</Button>
+        <Button text @click="addToLoadList"
+          >ADD TO SELECTED DATA SOURCES</Button
+        >
       </div>
       <div class="px-5 py-3 pt-5 flex flex-row justify-center">
         <Button text @click="() => fetchMultiple(loadList)"
@@ -168,7 +182,7 @@ import Dialog from "primevue/dialog";
 import { useStore } from "vuex";
 import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { DOMAIN_SUMMARY } from "@/shared/config/files";
+import { COHORT_INDEX, DOMAIN_SUMMARY } from "@/shared/config/files";
 import Button from "primevue/button";
 import { helpers } from "@/shared/lib/mixins";
 import InputText from "primevue/inputtext";
@@ -184,31 +198,36 @@ const first = ref(0);
 const search = ref(null);
 const step = ref(10);
 
+const selectedConfig = computed(() => {
+  return reportColumnNames[selectedReport.value];
+});
+
 const availableSources = store.getters.getSources;
 const dataSources = ref({});
-const getSourceData = (source, concept) => {
+const getSourceData = (source, rowName) => {
   return (
-    dataSources.value[source].find((item) => item.CONCEPT_NAME === concept) ||
-    {}
+    dataSources.value[source].find(
+      (item) => item[selectedConfig.value.rowHeader.value] === rowName
+    ) || {}
   );
 };
 const sources = computed(() => Object.keys(dataSources.value));
 
-const conceptNames = computed(() => [
+const rowNames = computed(() => [
   ...new Set(
     Object.values(dataSources.value)
       .flat()
-      .map((item) => item.CONCEPT_NAME)
+      .map((item) => item[selectedConfig.value.rowHeader.value])
   ),
 ]);
 
 const filteredResults = computed(() => {
   if (search.value && search.value.length) {
-    return conceptNames.value.filter((val) =>
+    return rowNames.value.filter((val) =>
       val.toLowerCase().includes(search.value.toLowerCase())
     );
   } else {
-    return conceptNames.value;
+    return rowNames.value;
   }
 });
 
@@ -230,7 +249,20 @@ const selectedSource = ref({ source: null, release: null });
 
 const selectedDomain = ref(null);
 
+const selectedReport = ref(null);
+
 const newSourceForm = ref(false);
+
+const reports = [
+  {
+    name: "Domain Table",
+    value: DOMAIN_SUMMARY,
+  },
+  {
+    name: "Cohort Table",
+    value: COHORT_INDEX,
+  },
+];
 
 const domains = [
   { name: "Condition Occurrence", value: "condition_occurrence" },
@@ -245,6 +277,42 @@ const domains = [
   { name: "Device Exposure", value: "device_exposure" },
 ];
 
+const reportColumnNames = {
+  [DOMAIN_SUMMARY]: {
+    rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
+    group: {
+      name: "Source",
+      value: "source",
+      children: [
+        {
+          name: "# Persons",
+          value: "NUM_PERSONS",
+          processingFunction: helpers.formatComma,
+        },
+        {
+          name: "% Persons",
+          value: "PERCENT_PERSONS",
+          processingFunction: helpers.formatPercent,
+        },
+      ],
+    },
+  },
+  [COHORT_INDEX]: {
+    rowHeader: { name: "Cohort Name", value: "cohort_name" },
+    group: {
+      name: "Source",
+      value: "source",
+      type: "group",
+      children: [
+        {
+          name: "# Persons",
+          value: "cohort_subjects",
+          processingFunction: helpers.formatComma,
+        },
+      ],
+    },
+  },
+};
 const availableReleases = computed(() => {
   const sourceReleases =
     availableSources.find(
@@ -267,12 +335,12 @@ const addToLoadList = function () {
 
 const loadData = async function (cdm, release, domain) {
   await store.dispatch(FETCH_FILES, {
-    files: [{ name: DOMAIN_SUMMARY }],
+    files: [{ name: selectedReport.value }],
     params: { cdm, release, domain },
   });
   dataSources.value = {
     ...dataSources.value,
-    [`${cdm}-${release}`]: [...store.getters.getData[DOMAIN_SUMMARY]],
+    [`${cdm}-${release}`]: [...store.getters.getData[selectedReport.value]],
   };
 };
 
@@ -284,7 +352,7 @@ const fetchMultiple = async function (sources) {
   );
 };
 
-watch(selectedDomain, () => {
+function reloadData() {
   const loadedSources = Object.keys(dataSources.value)
     .map((val) => {
       return val.split("-");
@@ -292,7 +360,7 @@ watch(selectedDomain, () => {
     .map((arr) => ({ source: arr[0], release: arr[1] }));
   dataSources.value = {};
   fetchMultiple(loadedSources);
-});
+}
 
 watch(
   () => selectedSource.value.source,
@@ -300,6 +368,13 @@ watch(
     selectedSource.value.release = availableReleases.value?.[0]?.release_id;
   }
 );
+
+watch(selectedDomain, () => {
+  reloadData();
+});
+watch(selectedReport, () => {
+  reloadData();
+});
 onMounted(() => {
   const source = route.params.cdm;
   const domain = route.params.domain;
@@ -307,9 +382,15 @@ onMounted(() => {
   if (source && domain && release) {
     loadList.value.push({ source, release, domain });
     selectedDomain.value = domain;
+    selectedReport.value = DOMAIN_SUMMARY;
+    fetchMultiple(loadList.value);
+  } else if (source && release) {
+    loadList.value.push({ source, release });
+    selectedReport.value = COHORT_INDEX;
     fetchMultiple(loadList.value);
   } else {
     selectedDomain.value = domains[0].value;
+    selectedReport.value = reports[0].value;
   }
 });
 
@@ -344,7 +425,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.conceptCol {
+.rowNameCol {
   text-align: left;
   position: sticky;
   left: 0;
@@ -367,7 +448,7 @@ tr {
   @apply border-b dark:border-surface-700 border-surface-200;
 }
 
-.conceptCol.scrolled {
+.rowNameCol.scrolled {
   @apply dark:bg-surface-700 bg-surface-100;
 }
 
