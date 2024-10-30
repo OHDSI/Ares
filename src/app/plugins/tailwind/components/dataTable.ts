@@ -375,7 +375,7 @@ export default {
         : "bg-surface-0 text-surface-600 dark:bg-surface-800",
       context.stripedRows
         ? context.index % 2 === 0
-          ? "bg-surface-50 text-surface-600 dark:bg-[rgb(45,45,45)]"
+          ? "bg-surface-50 text-surface-600 dark:bg-[rgb(44,44,44)]"
           : "bg-primary-100/50 text-surface-600 dark:bg-surface-800"
         : "",
       "transition duration-200",
