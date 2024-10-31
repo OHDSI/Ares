@@ -1,6 +1,7 @@
 <template>
   <Panel toggleable header="Data Source Feasibility Overview">
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       removable-sort
       size="small"
       sortField="estimation"

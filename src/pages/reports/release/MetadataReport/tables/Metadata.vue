@@ -2,6 +2,7 @@
   <Panel header="Metadata">
     <div class="p-5" v-if="store.getters.getData.metadataData" fluid>
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         :value="store.getters.getData.metadataData"
         paginator

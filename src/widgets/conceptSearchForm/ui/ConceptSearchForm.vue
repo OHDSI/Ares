@@ -41,6 +41,7 @@
           </div>
           <div>
             <DataTable
+              :striped-rows="store.getters.getSettings.strippedRows"
               scrollable
               scrollHeight="550px"
               :loading="store.getters.getApiData.loading"

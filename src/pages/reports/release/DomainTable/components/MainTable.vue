@@ -21,6 +21,7 @@
     </template>
     <div class="p-5">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         sortField="PERCENT_PERSONS"
         :sortOrder="-1"
         size="small"

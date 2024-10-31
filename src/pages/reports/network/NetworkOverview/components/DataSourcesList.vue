@@ -1,6 +1,7 @@
 <template>
   <Panel header="Data Sources">
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       size="small"
       :value="augmentedData"
       v-model:filters="newFilters"

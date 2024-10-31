@@ -1,6 +1,7 @@
 <template>
   <Panel header="Cohort Diagnostics Performance">
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       size="small"
       :globalFilterFields="['task', 'cohortIds', 'parent']"
       paginator

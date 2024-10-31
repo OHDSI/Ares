@@ -10,6 +10,7 @@
     <Chart :id="reportId" :data="data" :chartSpec="specDataQualityDelta" />
     <div v-if="showTable" class="p-4">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         :value="data"
         paginator

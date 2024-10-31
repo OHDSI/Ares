@@ -22,6 +22,7 @@
           <h3 class="text-left font-normal text-md">Appearance</h3>
           <ToggleDarkMode />
           <StickyNavBar />
+          <TableStrippedRowsToggle />
         </div>
         <Divider></Divider>
 
@@ -54,6 +55,7 @@ import ToggleMinMax from "./components/toggleMinMax";
 import Divider from "primevue/divider";
 import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode/ToggleDefaultAnnotatonsMode.vue";
 import StickyNavBar from "@/widgets/settings/ui/components/stickyNavBar";
+import TableStrippedRowsToggle from "@/widgets/settings/ui/components/strippedRows";
 
 import { computed } from "vue";
 import { useStore } from "vuex";

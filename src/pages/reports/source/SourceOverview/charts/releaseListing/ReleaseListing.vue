@@ -1,6 +1,7 @@
 <template>
   <Panel header="Release listing">
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       size="small"
       :value="getTable"
       paginator
