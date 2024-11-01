@@ -370,10 +370,13 @@ watch(
   }
 );
 
-watch(selectedDomain, () => {
+watch(selectedReport, () => {
+  if (selectedReport.value === DOMAIN_SUMMARY) {
+    selectedDomain.value = domains[0].value;
+  }
   reloadData();
 });
-watch(selectedReport, () => {
+watch(selectedDomain, () => {
   reloadData();
 });
 onMounted(() => {
