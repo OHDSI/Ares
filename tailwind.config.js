@@ -31,6 +31,7 @@ module.exports = {
         "surface-400": "rgb(var(--surface-400))",
         "surface-500": "rgb(var(--surface-500))",
         "surface-600": "rgb(var(--surface-600))",
+        "surface-650": "rgb(var(--surface-650))",
         "surface-700": "rgb(var(--surface-700))",
         "surface-800": "rgb(var(--surface-800))",
         "surface-900": "rgb(var(--surface-900))",
