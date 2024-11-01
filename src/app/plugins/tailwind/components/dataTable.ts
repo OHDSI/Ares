@@ -370,12 +370,12 @@ export default {
   },
   bodyrow: ({ context }) => ({
     class: [
-      context.selected
-        ? "bg-primary-50 text-primary-700 dark:bg-primary-300"
-        : "bg-surface-0 text-surface-600 dark:bg-surface-800",
+      // context.selected
+      //   ? "bg-primary-50 text-primary-700 dark:bg-primary-300"
+      //   : "bg-surface-0 text-surface-600 dark:bg-surface-800",
       context.stripedRows
         ? context.index % 2 === 0
-          ? "bg-surface-50 text-surface-600 dark:bg-[rgb(44,44,44)]"
+          ? "bg-surface-50 text-surface-600 dark:bg-surface-650"
           : "bg-primary-100/50 text-surface-600 dark:bg-surface-800"
         : "",
       "transition duration-200",
