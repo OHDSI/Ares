@@ -337,6 +337,7 @@ const loadData = async function (cdm, release, domain) {
   await store.dispatch(FETCH_FILES, {
     files: [{ name: selectedReport.value }],
     params: { cdm, release, domain },
+    duckdb_supported: selectedReport.value === COHORT_INDEX,
   });
   dataSources.value = {
     ...dataSources.value,
