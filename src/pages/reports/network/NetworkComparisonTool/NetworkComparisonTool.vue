@@ -13,6 +13,15 @@
             placeholder="Search in Table"
           />
         </InputGroup>
+        <TreeSelect
+          unstyled
+          style="max-width: 200px"
+          v-model="selectedFilterAttributes"
+          :options="getSourceOptions"
+          :meta-key-selection="false"
+          selectionMode="checkbox"
+          placeholder="Select Sources"
+        />
         <Dropdown
           option-label="name"
           option-value="value"
@@ -28,19 +37,6 @@
           v-model="selectedDomain"
           :options="domains"
         ></Dropdown>
-        <Button
-          :pt="{
-            root: 'dark:bg-primary-400 bg-primary-500 text-white rounded',
-            labelContainer:
-              'dark:bg-primary-400 bg-primary-500 text-white rounded',
-            trigger: [
-              'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-400 w-12',
-            ],
-          }"
-          class="px-2"
-          @click="newSourceForm = true"
-          >DATA SOURCES</Button
-        >
       </div>
       <div class="flex flex-col gap-5" v-if="Object.keys(dataSources).length">
         <div ref="tableContainer" class="overflow-x-scroll table-container">
@@ -55,16 +51,22 @@
                   {{ selectedConfig.rowHeader.name }}
                 </th>
                 <th
+                  class="sourceGroup"
                   v-for="source in sources"
                   :colspan="selectedConfig.group.children.length"
                   :key="source"
                 >
-                  {{ source }}
+                  <router-link
+                    class="text-blue-400 hover:underline"
+                    :to="getIndexTableRoute(source)"
+                    >{{ source }}
+                  </router-link>
                 </th>
               </tr>
               <tr>
                 <template v-for="source in sources" :key="source">
                   <th
+                    class="text-right sourceGroup"
                     v-for="child in selectedConfig.group.children"
                     :key="child.name"
                   >
@@ -74,24 +76,61 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="rowName in slicedArray" :key="rowName">
+              <tr
+                v-for="(rowName, index) in slicedArray"
+                :key="rowName"
+                :class="
+                  !(index % 2) && stripedRows
+                    ? 'dark:bg-surface-650 bg-surface-50'
+                    : ''
+                "
+              >
                 <td :class="{ scrolled: isScrolled }" class="rowNameCol">
                   {{ rowName }}
                 </td>
                 <template v-for="source in sources" :key="source">
                   <td
-                    v-for="child in selectedConfig.group.children"
+                    :class="`text-right ${
+                      index === 0
+                        ? 'border-l border-surface-100'
+                        : 'border-r border-surface-100'
+                    }`"
+                    v-for="(child, index) in selectedConfig.group.children"
                     :key="child.value"
                   >
-                    {{
-                      getSourceData(source, rowName)[child.value]
-                        ? child.processingFunction
-                          ? child.processingFunction(
-                              getSourceData(source, rowName)[child.value]
-                            )
-                          : getSourceData(source, rowName)[child.value]
-                        : "N/A"
-                    }}
+                    <router-link
+                      v-if="
+                        child.link &&
+                        getSourceData(source, rowName)[selectedConfig.rowId]
+                      "
+                      class="text-blue-400 hover:underline"
+                      :to="
+                        getDrilldownRoute(
+                          source,
+                          getSourceData(source, rowName)[selectedConfig.rowId]
+                        )
+                      "
+                      >{{
+                        getSourceData(source, rowName)[child.value]
+                          ? child.processingFunction
+                            ? child.processingFunction(
+                                getSourceData(source, rowName)[child.value]
+                              )
+                            : getSourceData(source, rowName)[child.value]
+                          : "N/A"
+                      }}
+                    </router-link>
+                    <span v-else>
+                      {{
+                        getSourceData(source, rowName)[child.value]
+                          ? child.processingFunction
+                            ? child.processingFunction(
+                                getSourceData(source, rowName)[child.value]
+                              )
+                            : getSourceData(source, rowName)[child.value]
+                          : "N/A"
+                      }}
+                    </span>
                   </td>
                 </template>
               </tr>
@@ -109,68 +148,6 @@
         Add at least one data source to display the results
       </div>
     </div>
-
-    <Dialog
-      style="width: 600px"
-      show-header
-      header="DATA SOURCES"
-      v-model:visible="newSourceForm"
-    >
-      <div class="px-5 py-3 flex flex-col gap-5">
-        <div class="flex flex-col gap-4">
-          SELECTED DATA SOURCES
-          <ul
-            class="flex flex-row gap-2 w-full rounded border-surface-700 border-solid flex-wrap"
-          >
-            <li
-              v-for="source in loadList"
-              :key="`${source.source}${source.release}`"
-            >
-              <Chip
-                @remove="
-                  () =>
-                    removeSource({
-                      source: source.source,
-                      release: source.release,
-                    })
-                "
-                removable
-                >{{ source.source }} {{ source.release }}</Chip
-              >
-            </li>
-          </ul>
-        </div>
-        <div class="flex flex-col gap-5">
-          ADD A DATA SOURCE
-          <Dropdown
-            option-value="cdm_source_key"
-            option-label="cdm_source_key"
-            placeholder="Select Data Source"
-            :options="availableSources"
-            v-model="selectedSource.source"
-            class="w-full"
-          ></Dropdown>
-          <Dropdown
-            option-label="release_name"
-            option-value="release_id"
-            placeholder="Select Release"
-            :options="availableReleases"
-            v-model="selectedSource.release"
-            class="w-full"
-          ></Dropdown>
-        </div>
-      </div>
-      <div class="px-5 py-3 pt-5 flex flex-row justify-end">
-        <Button text @click="addToLoadList"
-          >ADD TO SELECTED DATA SOURCES</Button
-        >
-      </div>
-      <div class="px-5 py-3 pt-5 flex flex-row justify-center">
-        <Button text @click="() => fetchMultiple(loadList)"
-          >LOAD SELECTED</Button
-        >
-      </div>
-    </Dialog>
   </Panel>
 </template>
 
@@ -178,25 +155,91 @@
 import Panel from "primevue/panel";
 import Paginator from "primevue/paginator";
 import Dropdown from "primevue/dropdown";
-import Dialog from "primevue/dialog";
 import { useStore } from "vuex";
 import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, Ref, ref, watch } from "vue";
 import { COHORT_INDEX, DOMAIN_SUMMARY } from "@/shared/config/files";
-import Button from "primevue/button";
 import { helpers } from "@/shared/lib/mixins";
 import InputText from "primevue/inputtext";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
-import Chip from "primevue/chip";
 import { useRoute } from "vue-router";
-
+import TreeSelect from "primevue/treeselect";
 const route = useRoute();
 const store = useStore();
 
 const first = ref(0);
 const search = ref(null);
 const step = ref(10);
+
+const selectedFilterAttributes = ref({});
+
+const getSourceOptions = computed(() => {
+  return availableSources.map((source, index) => {
+    return {
+      key: index,
+      label: source.cdm_source_key,
+      data: source.cdm_source_key,
+      children: source.releases.map((value, valIndex) => {
+        return {
+          key: `${index}-${valIndex}`,
+          label: value.release_name,
+          data: value.release_id,
+        };
+      }),
+    };
+  });
+});
+
+const getParsedSelectedSources = computed(() => {
+  const keys = Object.keys(selectedFilterAttributes.value);
+  return keys.reduce((acc, current) => {
+    if (current.includes("-")) {
+      const keyArray = current.split("-");
+      const attribute = keyArray[0];
+      const value = keyArray[1];
+      return {
+        ...acc,
+        [getSourceOptions.value[attribute].data]: [
+          ...(Array.isArray(acc[getSourceOptions.value[attribute].data])
+            ? acc[getSourceOptions.value[attribute].data]
+            : []),
+          getSourceOptions.value[attribute].children[value].data,
+        ],
+      };
+    } else {
+      return { ...acc };
+    }
+  }, {});
+});
+
+watch(getParsedSelectedSources, () => {
+  const currentSources = new Set(
+    Object.keys(getParsedSelectedSources.value).flatMap((source) =>
+      getParsedSelectedSources.value[source].map(
+        (release) => `${source}-${release}`
+      )
+    )
+  );
+
+  Object.keys(dataSources.value).forEach((key) => {
+    if (!currentSources.has(key)) {
+      delete dataSources.value[key];
+    }
+  });
+
+  Object.keys(getParsedSelectedSources.value).forEach((source) => {
+    getParsedSelectedSources.value[source].forEach((release) => {
+      if (!dataSources.value[`${source}-${release}`]) {
+        loadData(source, release, selectedDomain.value);
+      }
+    });
+  });
+});
+
+const stripedRows = computed(() => {
+  return store.getters.getSettings.strippedRows;
+});
 
 const selectedConfig = computed(() => {
   return reportColumnNames[selectedReport.value];
@@ -237,15 +280,32 @@ const slicedArray = computed(() => {
   return filteredResults.value.slice(start, end);
 });
 
-const loadList = ref([]);
+function getDrilldownRoute(cdmRelease: string, rowId: string | number) {
+  const [cdm, release] = cdmRelease.split("-");
+  const domain = selectedDomain.value;
+  let paramsObject;
 
-function removeSource(e) {
-  loadList.value = loadList.value.filter((val) => {
-    return val.source !== e.source || val.release !== e.release;
-  });
+  if (selectedReport.value === DOMAIN_SUMMARY) {
+    paramsObject = { cdm, release, concept: rowId, domain };
+  } else {
+    paramsObject = { cdm, release, cohort_id: rowId };
+  }
+  return {
+    name: selectedConfig.value.drillDownRouteName,
+    params: paramsObject,
+  };
 }
 
-const selectedSource = ref({ source: null, release: null });
+function getIndexTableRoute(cdmRelease: string) {
+  const domain = selectedDomain.value;
+
+  const [cdm, release] = cdmRelease.split("-");
+  const paramsObject = { cdm, release, domain };
+  return {
+    name: selectedConfig.value.indexTableName,
+    params: paramsObject,
+  };
+}
 
 const selectedDomain = ref(null);
 
@@ -280,6 +340,9 @@ const domains = [
 const reportColumnNames = {
   [DOMAIN_SUMMARY]: {
     rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
+    rowId: "CONCEPT_ID",
+    drillDownRouteName: "concept",
+    indexTableName: "domainTable",
     group: {
       name: "Source",
       value: "source",
@@ -287,6 +350,7 @@ const reportColumnNames = {
         {
           name: "# Persons",
           value: "NUM_PERSONS",
+          link: true,
           processingFunction: helpers.formatComma,
         },
         {
@@ -299,6 +363,9 @@ const reportColumnNames = {
   },
   [COHORT_INDEX]: {
     rowHeader: { name: "Cohort Name", value: "cohort_name" },
+    rowId: "cohort_id",
+    drillDownRouteName: "cohortReport",
+    indexTableName: "cohorts",
     group: {
       name: "Source",
       value: "source",
@@ -306,31 +373,13 @@ const reportColumnNames = {
       children: [
         {
           name: "# Persons",
+          link: true,
           value: "cohort_subjects",
           processingFunction: helpers.formatComma,
         },
       ],
     },
   },
-};
-const availableReleases = computed(() => {
-  const sourceReleases =
-    availableSources.find(
-      (val) => val.cdm_source_key === selectedSource.value.source
-    )?.releases || [];
-  return sourceReleases.filter((release) => {
-    return !loadList.value
-      .filter((s) => s.source === selectedSource.value.source)
-      .map((loadedRelease) => loadedRelease.release)
-      .includes(release.release_id);
-  });
-});
-
-const addToLoadList = function () {
-  if (selectedSource.value.source && selectedSource.value.release) {
-    loadList.value.push(selectedSource.value);
-    selectedSource.value = { source: null, release: null };
-  }
 };
 
 const loadData = async function (cdm, release, domain) {
@@ -363,13 +412,6 @@ function reloadData() {
   fetchMultiple(loadedSources);
 }
 
-watch(
-  () => selectedSource.value.source,
-  () => {
-    selectedSource.value.release = availableReleases.value?.[0]?.release_id;
-  }
-);
-
 watch(selectedReport, () => {
   if (selectedReport.value === DOMAIN_SUMMARY) {
     selectedDomain.value = domains[0].value;
@@ -379,26 +421,77 @@ watch(selectedReport, () => {
 watch(selectedDomain, () => {
   reloadData();
 });
+
+//Handle loading of the data if redirected
+
+function populateSelectedAttributesFromParams() {
+  const { cdm, release } = route.params;
+  const attributes = {};
+
+  if (cdm && release) {
+    availableSources.forEach((source, index) => {
+      if (source.cdm_source_key === cdm) {
+        source.releases.forEach((rel, relIndex) => {
+          if (rel.release_id === release) {
+            attributes[`${index}-${relIndex}`] = {
+              partialChecked: false,
+              checked: true,
+            };
+          }
+        });
+      }
+    });
+  }
+  selectedFilterAttributes.value = attributes;
+}
+
+function parseSourceToSelectedAttributes(parsedData) {
+  const attributes = {};
+
+  Object.keys(parsedData).forEach((sourceName) => {
+    const sourceIndex = availableSources.findIndex(
+      (source) => source.cdm_source_key === sourceName
+    );
+
+    // check if exists in available sources
+    if (sourceIndex !== -1) {
+      parsedData[sourceName].forEach((releaseName) => {
+        const releaseIndex = availableSources[sourceIndex].releases.findIndex(
+          (release) => release.release_id === releaseName
+        );
+        // check if exists in available source releases
+        if (releaseIndex !== -1) {
+          const key = `${sourceIndex}-${releaseIndex}`;
+          attributes[key] = { partialChecked: false, checked: true };
+        }
+      });
+    }
+  });
+  return attributes;
+}
+
 onMounted(() => {
   const source = route.params.cdm;
   const domain = route.params.domain;
   const release = route.params.release;
   if (source && domain && release) {
-    loadList.value.push({ source, release, domain });
     selectedDomain.value = domain;
     selectedReport.value = DOMAIN_SUMMARY;
-    fetchMultiple(loadList.value);
   } else if (source && release) {
-    loadList.value.push({ source, release });
     selectedReport.value = COHORT_INDEX;
-    fetchMultiple(loadList.value);
   } else {
     selectedDomain.value = domains[0].value;
     selectedReport.value = reports[0].value;
   }
+  populateSelectedAttributesFromParams();
+  // const defaultSource = store.getters.getSettings.defaultSources;
+  // selectedFilterAttributes.value = {
+  //   ...selectedFilterAttributes.value,
+  //   ...parseSourceToSelectedAttributes(defaultSource),
+  // };
 });
 
-//handling scroll
+//handling horizontal scroll
 
 const tableContainer = ref(null);
 const isScrolled = ref(false);
@@ -444,7 +537,7 @@ table {
 th,
 td {
   padding: 8px;
-  text-align: center;
+  @apply border dark:border-surface-700 border-surface-200;
 }
 
 th,
@@ -454,9 +547,5 @@ tr {
 
 .rowNameCol.scrolled {
   @apply dark:bg-surface-700 bg-surface-100;
-}
-
-td {
-  border: none;
 }
 </style>
