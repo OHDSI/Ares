@@ -50,7 +50,7 @@ export default {
       "transition duration-200",
 
       // Misc
-      "overflow-hidden whitespace-nowrap cursor-pointer overflow-ellipsis",
+      "overflow-hidden whitespace-nowrap cursor-pointer text-ellipsis",
     ],
   },
   trigger: {
@@ -100,7 +100,8 @@ export default {
     root: {
       class: [
         // Space
-        "p-5",
+        "p-2",
+        // "absolute",
       ],
     },
     wrapper: {
@@ -117,7 +118,7 @@ export default {
     },
     node: {
       class: [
-        "p-1",
+        // "p-1",
         "rounded-md",
         "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-inset focus:ring-primary-400/50 dark:focus:ring-primary-300/50",
       ],
@@ -131,7 +132,7 @@ export default {
         "rounded-md",
 
         // Spacing
-        "p-2",
+        // "p-2",
 
         // Colors
         "text-surface-600 dark:text-white/70",
@@ -167,7 +168,7 @@ export default {
         "border-0 rounded-full",
 
         // Size
-        "w-8 h-8",
+        "h-8",
 
         // Spacing
         "mr-2",
@@ -212,12 +213,11 @@ export default {
         "border-2",
 
         // Colors
-        "text-surface-600",
+        "text-surface-100",
         {
           "border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-900":
             !context.checked,
-          "border-primary-500 bg-primary-500 dark:border-primary-400 dark:bg-primary-400":
-            context.checked,
+          "border-primary-500 dark:border-primary-400": context.checked,
         },
 
         // States
@@ -231,8 +231,6 @@ export default {
         },
 
         // Transitions
-        "transition-colors",
-        "duration-200",
 
         // Misc
         "cursor-pointer",
