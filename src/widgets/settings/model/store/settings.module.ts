@@ -12,6 +12,7 @@ import {
   UPDATE_COLUMN_SELECTION,
   TOGGLE_STICKY_NAV_BAR,
   TOGGLE_STRIPPED_ROWS,
+  UPDATE_DEFAULT_SOURCES,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -30,6 +31,7 @@ const state = {
     columnSelection: {},
     stickyNavBar: true,
     strippedRows: false,
+    defaultSources: {},
   },
   visible: false,
 };
@@ -81,6 +83,9 @@ const actions = {
       data: { ...rootGetters.getSettings.columnSelection, ...payload },
       field: "columnSelection",
     });
+  },
+  [UPDATE_DEFAULT_SOURCES]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "defaultSources" });
   },
   [EDIT_USER]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "user" });

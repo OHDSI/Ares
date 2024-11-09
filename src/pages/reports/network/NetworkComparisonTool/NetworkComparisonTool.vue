@@ -455,16 +455,27 @@ function parseSourceToSelectedAttributes(parsedData) {
 
     // check if exists in available sources
     if (sourceIndex !== -1) {
-      parsedData[sourceName].forEach((releaseName) => {
-        const releaseIndex = availableSources[sourceIndex].releases.findIndex(
+      const parsedReleases = parsedData[sourceName];
+      const availableReleases = availableSources[sourceIndex].releases;
+
+      parsedReleases.forEach((releaseName) => {
+        const releaseIndex = availableReleases.findIndex(
           (release) => release.release_id === releaseName
         );
-        // check if exists in available source releases
         if (releaseIndex !== -1) {
           const key = `${sourceIndex}-${releaseIndex}`;
           attributes[key] = { partialChecked: false, checked: true };
         }
       });
+
+      const allReleasesChecked = availableReleases.every((release) =>
+        parsedReleases.includes(release.release_id)
+      );
+
+      attributes[sourceIndex] = {
+        partialChecked: !allReleasesChecked,
+        checked: allReleasesChecked,
+      };
     }
   });
   return attributes;
@@ -484,11 +495,11 @@ onMounted(() => {
     selectedReport.value = reports[0].value;
   }
   populateSelectedAttributesFromParams();
-  // const defaultSource = store.getters.getSettings.defaultSources;
-  // selectedFilterAttributes.value = {
-  //   ...selectedFilterAttributes.value,
-  //   ...parseSourceToSelectedAttributes(defaultSource),
-  // };
+  const defaultSource = store.getters.getSettings.defaultSources;
+  selectedFilterAttributes.value = {
+    ...selectedFilterAttributes.value,
+    ...parseSourceToSelectedAttributes(defaultSource),
+  };
 });
 
 //handling horizontal scroll
