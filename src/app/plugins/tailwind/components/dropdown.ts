@@ -60,6 +60,8 @@ export default {
       //Font
       "font-sans",
       "leading-none",
+      "flex",
+      "items-center",
 
       // Display
       "block",

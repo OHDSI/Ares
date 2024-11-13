@@ -10,3 +10,4 @@ export const EDIT_USER = "editUser";
 export const UPDATE_COLUMN_SELECTION = "updateColumnSelection";
 export const TOGGLE_STICKY_NAV_BAR = "toggleStickyNavBar";
 export const TOGGLE_STRIPPED_ROWS = "toggleStrippedRows";
+export const UPDATE_DEFAULT_SOURCES = "updateDefaultSources";
