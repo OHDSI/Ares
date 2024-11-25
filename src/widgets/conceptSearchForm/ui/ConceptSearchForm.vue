@@ -29,6 +29,13 @@
               placeholder="Vocabulary source"
             >
             </Dropdown>
+            <Dropdown
+              :loading="vocabNamesLoading"
+              v-model="selectedVocabs"
+              :options="availableVocabs"
+              placeholder="Vocabularies"
+            >
+            </Dropdown>
             <Button
               color="primary"
               style="width: 12rem"
@@ -41,6 +48,7 @@
           </div>
           <div>
             <DataTable
+              v-model:filters="newFilters"
               :striped-rows="store.getters.getSettings.strippedRows"
               scrollable
               scrollHeight="550px"
@@ -50,7 +58,7 @@
               paginator
               currentPageReportTemplate="{first} to {last} of {totalRecords}"
               paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-              :value="store.getters.getApiData.data"
+              :value="searchData"
               :rows="10"
               :rowsPerPageOptions="[5, 10, 20, 50]"
             >
@@ -62,8 +70,44 @@
               <Column sortable header="Concept ID" field="CONCEPT_ID"></Column>
               <Column
                 sortable
+                header="Vocabulary"
+                field="VOCABULARY_ID"
+              ></Column>
+              <Column
+                sortable
+                header="Standard Concept"
+                field="STANDARD_CONCEPT_CAPTION"
+              ></Column>
+              <Column sortable header="Has Records" field=""></Column>
+              <Column
+                sortable
+                header="Invalid Reason"
+                field="INVALID_REASON_CAPTION"
+              ></Column>
+              <Column
+                sortable
                 header="Concept Name"
                 field="CONCEPT_NAME"
+              ></Column>
+              <Column
+                sortable
+                header="Record count"
+                field="record_count"
+              ></Column>
+              <Column
+                sortable
+                header="Record count"
+                field="desc_record_count"
+              ></Column>
+              <Column
+                sortable
+                header="Person count"
+                field="person_count"
+              ></Column>
+              <Column
+                sortable
+                header="Descendant person count"
+                field="desc_person_count"
               ></Column>
               <Column sortable header="Domain" field="DOMAIN_ID"></Column>
               <Column
@@ -226,6 +270,12 @@ import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import { CONCEPT } from "@/shared/config/files";
 import { mdiAlertCircleOutline } from "@mdi/js";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
+import {
+  FETCH_CONCEPTS_RECORD_COUNT,
+  FETCH_VOCABULARIES,
+} from "@/shared/api/webAPI/data/store/actions.type";
+import { FilterMatchMode } from "primevue/api";
+import { helpers } from "@/shared/lib/mixins";
 
 interface Props {
   addedConcepts: object;
@@ -233,11 +283,16 @@ interface Props {
   multiSelection?: boolean;
 }
 
+const newFilters = computed(() => ({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+}));
+
 const tooltipValue =
   "<div><i class='pi pi-plus text-primary-500'></i> - <span>Add concept</span></div> " +
   "<div><i class='pi pi-spin pi-spinner'></i> - <span>Concept is loading</span></div> " +
   "<div><i class='pi pi-times text-red-500 '></i> - <span>Concept N/A</span></div> " +
   "<div><i class='pi pi-check  text-green-500'></i> - <span>Concept is loaded</span></div>";
+
 const displayForm = computed({
   get: function () {
     return props.show;
@@ -246,6 +301,7 @@ const displayForm = computed({
     emit("close", { loading: false });
   },
 });
+
 const domains: Ref<DataTableHeader[]> = ref([
   { title: "Condition occurrence", key: "Condition" },
   { title: "Drug Exposure", key: "Drug" },
@@ -254,6 +310,7 @@ const domains: Ref<DataTableHeader[]> = ref([
   { title: "Procedure Occurrence", key: "Procedure" },
   { title: "Observation", key: "Observation" },
 ]);
+
 const loadedConcepts = ref({});
 const form: Ref<HTMLFormElement> = ref(null);
 const props = defineProps<Props>();
@@ -280,6 +337,15 @@ const defaultItem = {
   DOMAIN_ID: "",
 };
 
+const searchData: Ref<any[]> = ref([]);
+// const searchData = computed(() => {
+//   return store.getters.getApiData.data;
+// });
+
+const selectedVocabs = ref([]);
+
+const availableVocabs = ref([]);
+
 const clearMessages = function () {
   errors.value = "";
   successMessage.value = [];
@@ -291,6 +357,7 @@ const authenticated = computed(() => {
 
 const webapiEnabled = environment.WEB_API_ENABLED;
 
+// Fetching data
 function fetchVocabularies() {
   store.dispatch(webApiActions.FETCH_WEBAPI_INFO).then(() => {
     const error = store.getters.getApiData?.error;
@@ -310,48 +377,21 @@ function fetchVocabularies() {
   });
 }
 
-onBeforeMount((): void => {
-  if (webapiEnabled && authenticated.value) {
-    fetchVocabularies();
+const vocabNamesLoading = ref(false);
+
+async function fetchVocabularyNames() {
+  vocabNamesLoading.value = true;
+  try {
+    availableVocabs.value = await store.dispatch(FETCH_VOCABULARIES, {
+      source: vocabularySource.value,
+    });
+  } catch (error) {
+    console.error("Failed to fetch vocabulary names:", error);
+  } finally {
+    vocabNamesLoading.value = false;
   }
-});
+}
 
-watch(authenticated, () => {
-  if (authenticated.value) {
-    fetchVocabularies();
-  }
-});
-
-watch(editedItem, (): void => {
-  emit("inputChanged", editedItem);
-});
-watch(loadedConcepts, (): void => {
-  emit("save", loadedConcepts.value);
-});
-
-watch(missingConcepts, (): void => {
-  emit("missingConceptsChanged", Object.keys(missingConcepts.value).length);
-});
-
-const rules = {
-  required: (value) => !!value || "Required field",
-  concept: (value) => {
-    const pattern = /^\d+$/;
-    return pattern.test(value) || "The field is digits only";
-  },
-};
-const apiSources = ref([]);
-
-const close = function (): void {
-  emit("close", { loading: false });
-  if (form.value) {
-    form.value.resetValidation();
-  }
-  nextTick(() => {
-    editedItem.value = Object.assign({}, defaultItem);
-  });
-  store.dispatch(webApiActions.RESET_API_STORAGE);
-};
 const searchApi = function () {
   if (!query.value.length) {
     return;
@@ -360,6 +400,7 @@ const searchApi = function () {
     .dispatch(webApiActions.FETCH_VOCABULARY_SEARCH_RESULTS, {
       search: query.value,
       source: vocabularySource.value,
+      vocab_id: selectedVocabs.value || [],
     })
     .then(() => {
       const error = store.getters.getApiData?.error;
@@ -368,6 +409,35 @@ const searchApi = function () {
           message: `WebAPI server replied with status code ${error.response.status}`,
           status: errorMessages.webApiErrors[error.response.status],
         });
+      } else {
+        const data = store.getters.getApiData.data;
+        const recordCount = await store.dispatch(FETCH_CONCEPTS_RECORD_COUNT, {
+          conceptsList: helpers.getValuesArray(data, "CONCEPT_ID", true),
+        });
+
+        const flattenedRecordCount = recordCount.reduce(
+          (acc, obj) => ({ ...acc, ...obj }),
+          {}
+        );
+        console.log("search results", data, recordCount);
+
+        searchData.value = data.map((val) => {
+          const concept = flattenedRecordCount[val.CONCEPT_ID];
+          const [
+            record_count,
+            desc_record_count,
+            person_count,
+            desc_person_count,
+          ] = concept;
+          return {
+            ...val,
+            record_count,
+            desc_record_count,
+            person_count,
+            desc_person_count,
+          };
+        });
+        console.log(searchData.value);
       }
     });
 };
@@ -417,6 +487,51 @@ const saveChanges = async (item) => {
       : { [conceptId]: "Loaded" };
     successMessage.value = ["Concept loaded"];
   }
+};
+
+onBeforeMount((): void => {
+  if (webapiEnabled && authenticated.value) {
+    fetchVocabularies();
+    fetchVocabularyNames();
+  }
+});
+
+watch(authenticated, () => {
+  if (authenticated.value) {
+    fetchVocabularies();
+    fetchVocabularyNames();
+  }
+});
+
+watch(editedItem, (): void => {
+  emit("inputChanged", editedItem);
+});
+watch(loadedConcepts, (): void => {
+  emit("save", loadedConcepts.value);
+});
+
+watch(missingConcepts, (): void => {
+  emit("missingConceptsChanged", Object.keys(missingConcepts.value).length);
+});
+
+const rules = {
+  required: (value) => !!value || "Required field",
+  concept: (value) => {
+    const pattern = /^\d+$/;
+    return pattern.test(value) || "The field is digits only";
+  },
+};
+const apiSources = ref([]);
+
+const close = function (): void {
+  emit("close", { loading: false });
+  if (form.value) {
+    form.value.resetValidation();
+  }
+  nextTick(() => {
+    editedItem.value = Object.assign({}, defaultItem);
+  });
+  store.dispatch(webApiActions.RESET_API_STORAGE);
 };
 </script>
 
