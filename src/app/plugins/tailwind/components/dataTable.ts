@@ -43,7 +43,7 @@ export default {
   thead: ({ context }) => ({
     class: [
       {
-        "bg-transparent top-0 z-[1]": context.scrollable,
+        "bg-surface-0 dark:bg-surface-700 top-0 z-[1]": context.scrollable,
       },
     ],
   }),
