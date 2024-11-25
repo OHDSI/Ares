@@ -1,4 +1,6 @@
 import {
+  FETCH_CONCEPTS_RECORD_COUNT,
+  FETCH_VOCABULARIES,
   FETCH_VOCABULARY_SEARCH_RESULTS,
   FETCH_WEBAPI_INFO,
   RESET_API_STORAGE,
@@ -43,6 +45,28 @@ const actions = {
       .catch((err) => commit(SET_WEBAPI, { loading: false, error: err.error }));
   },
 
+  async [FETCH_VOCABULARIES](
+    { commit, dispatch, rootState, rootGetters },
+    payload
+  ) {
+    const vocabularies = VocabularyService.vocabularies.get(
+      payload.source,
+      LocalStorageService.get("bearerToken")
+    );
+    return await vocabularies;
+  },
+
+  async [FETCH_CONCEPTS_RECORD_COUNT](
+    { commit, dispatch, rootState, rootGetters },
+    payload
+  ) {
+    const conceptsRecordCount = VocabularyService.conceptRecordCont.get(
+      payload.conceptsList,
+      LocalStorageService.get("bearerToken")
+    );
+
+    return await conceptsRecordCount;
+  },
   async [FETCH_VOCABULARY_SEARCH_RESULTS](
     { commit, dispatch, rootState, rootGetters },
     payload
@@ -52,7 +76,8 @@ const actions = {
       .get(
         payload.search,
         payload.source,
-        LocalStorageService.get("bearerToken")
+        LocalStorageService.get("bearerToken"),
+        payload.vocab_id
       )
       .then((data) => {
         commit(SET_WEBAPI, {
