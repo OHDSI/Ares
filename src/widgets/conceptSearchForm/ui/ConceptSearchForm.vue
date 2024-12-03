@@ -411,7 +411,7 @@ const searchApi = function () {
         });
       } else {
         const data = store.getters.getApiData.data;
-        const recordCount = await store.dispatch(FETCH_CONCEPTS_RECORD_COUNT, {
+        const recordCount = store.dispatch(FETCH_CONCEPTS_RECORD_COUNT, {
           conceptsList: helpers.getValuesArray(data, "CONCEPT_ID", true),
         });
 
