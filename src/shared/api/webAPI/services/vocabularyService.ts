@@ -19,7 +19,6 @@ export const VocabularyService = {
             Authorization: token ? `Bearer ${token}` : null,
           },
           data: {
-            STANDARD_CONCEPT: "S",
             QUERY: query,
             VOCABULARY_ID: vocab_id,
           },
