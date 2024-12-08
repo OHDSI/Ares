@@ -47,6 +47,8 @@ export default {
     class: [
       "leading-none",
       "block ",
+      "flex",
+      "items-center",
 
       // Spacing
       {
