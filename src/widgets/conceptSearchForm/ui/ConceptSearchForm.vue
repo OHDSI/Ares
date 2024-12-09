@@ -779,6 +779,12 @@ watch(authenticated, () => {
   }
 });
 
+watch(vocabularySource, () => {
+  if (vocabularySource.value) {
+    fetchVocabularyNames();
+  }
+});
+
 watch(editedItem, (): void => {
   emit("inputChanged", editedItem);
 });
