@@ -35,6 +35,7 @@ export default function networkConceptDashboard(data) {
   let concept: MultipleFilesRawInterface<ConceptType>[], conceptId: string;
   if (environment.DUCKDB_ENABLED) {
     concept = combineObjectsBySource(data);
+    if (!concept.length) return {};
     conceptId = concept[0].data[CONCEPT_METADATA]?.[0]?.CONCEPT_ID;
     if (!conceptId) {
       return {};
@@ -53,6 +54,7 @@ export default function networkConceptDashboard(data) {
     }
   } else {
     concept = data[CONCEPT];
+    if (!concept.length) return {};
     conceptId = concept[0]?.data.CONCEPT_ID[0];
     if (!conceptId) {
       return {};

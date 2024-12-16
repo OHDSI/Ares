@@ -56,6 +56,7 @@ export default function networkConcept(data) {
     conceptDomain;
   if (environment.DUCKDB_ENABLED) {
     concept = combineObjectsBySource(data);
+    if (!concept.length) return {};
     conceptName = concept[0].data[CONCEPT_METADATA]?.[0]?.CONCEPT_NAME;
     conceptDomain = concept[0].data[CONCEPT_METADATA]?.[0]?.DOMAIN;
     conceptId = concept[0].data[CONCEPT_METADATA]?.[0]?.CONCEPT_ID;
@@ -66,6 +67,7 @@ export default function networkConcept(data) {
     );
   } else {
     concept = data[CONCEPT];
+    if (!concept.length) return {};
     conceptName = concept[0]?.data.CONCEPT_NAME[0];
     conceptId = concept[0]?.data.CONCEPT_ID[0];
     numPersons = _.sumBy(concept[0], (r) =>
