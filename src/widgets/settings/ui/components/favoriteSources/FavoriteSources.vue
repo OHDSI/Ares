@@ -6,8 +6,12 @@
     :options="getSourceOptions"
     :meta-key-selection="false"
     selectionMode="checkbox"
+    @node-select="onNodeSelect"
     placeholder="Default sources"
   />
+  <p :class="countLeafSelections === 20 ? 'text-red-600' : ''">
+    Selected sources: {{ countLeafSelections }}/20
+  </p>
 </template>
 
 <script setup lang="ts">
@@ -15,8 +19,44 @@ import TreeSelect from "primevue/treeselect";
 import { useStore } from "vuex";
 import { computed, onBeforeMount, ref, watch } from "vue";
 import { UPDATE_DEFAULT_SOURCES } from "@/widgets/settings/model/store/actions.type";
+import { ADD_ALERT } from "@/widgets/snackbar/model/store/actions.type";
 
 const store = useStore();
+
+const countLeafSelections = computed(() => {
+  return Object.keys(selectedDefaultSources.value).filter(
+    (key) => key.split("-")[1]
+  ).length;
+});
+
+const onNodeSelect = (node) => {
+  if (node.children) {
+    const overLimit = -20 + countLeafSelections.value;
+    if (overLimit > 0) {
+      store.dispatch(ADD_ALERT, {
+        status: "",
+        message: "Reached default sources limit",
+      });
+      const extraElements = node.children.slice(-overLimit);
+      for (const extraElement in extraElements) {
+        delete selectedDefaultSources.value[extraElements[extraElement].key];
+      }
+      if (overLimit === node.children.length) {
+        delete selectedDefaultSources.value[node.key];
+      } else {
+        selectedDefaultSources.value[node.key].partialChecked = true;
+      }
+    }
+  } else {
+    if (countLeafSelections.value >= 21) {
+      store.dispatch(ADD_ALERT, {
+        status: "",
+        message: "Reached default sources limit",
+      });
+      delete selectedDefaultSources.value[node.key];
+    }
+  }
+};
 
 const selectedDefaultSources = ref({});
 
