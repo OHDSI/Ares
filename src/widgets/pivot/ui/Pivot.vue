@@ -141,18 +141,35 @@
             <Card>
               <template #content>
                 <div class="flex flex-col gap-5">
-                  <TreeSelect
-                    :pt="{
-                      label: { class: ['self-center pl-4 font-light'] },
-                    }"
-                    style="width: 100%; height: 50px"
-                    v-model="selectedFilterAttributes"
-                    :options="getFilters"
-                    :meta-key-selection="false"
-                    selectionMode="multiple"
-                    placeholder="Exclude values"
-                    class="md:w-20rem w-full"
-                  />
+                  <Accordion>
+                    <AccordionTab header="Exclude values">
+                      <div class="flex flex-col gap-2">
+                        <MultiSelect
+                          v-for="attr in getDisplayedAttributes"
+                          :placeholder="attr"
+                          :key="attr"
+                          v-model="selectedFilters[attr]"
+                          :options="getUniqueAttributeValues[attr]"
+                          :virtualScrollerOptions="{
+                            itemSize: 20,
+                            orientation: 'vertical',
+                          }"
+                        ></MultiSelect>
+                      </div>
+                    </AccordionTab>
+                  </Accordion>
+                  <!--                  <TreeSelect-->
+                  <!--                    :pt="{-->
+                  <!--                      label: { class: ['self-center pl-4 font-light'] },-->
+                  <!--                    }"-->
+                  <!--                    style="width: 100%; height: 50px"-->
+                  <!--                    v-model="selectedFilterAttributes"-->
+                  <!--                    :options="getFilters"-->
+                  <!--                    :meta-key-selection="false"-->
+                  <!--                    selectionMode="multiple"-->
+                  <!--                    placeholder="Exclude values"-->
+                  <!--                    class="md:w-20rem w-full"-->
+                  <!--                  />-->
                   <Dropdown
                     :pt="{
                       label: { class: ['self-center pl-4 font-light'] },
@@ -242,8 +259,13 @@ import {
 } from "vue-router";
 import TreeSelect from "primevue/treeselect";
 
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
+
 const router = useRouter();
 const route = useRoute();
+
+const selectedFilters = ref({});
 
 interface Props {
   data: object[];
@@ -296,35 +318,12 @@ const getFilters = computed(() => {
 });
 
 const getParsedFiltersForPivotTable = computed(() => {
-  const keys = Object.keys(selectedFilterAttributes.value);
-  return keys.reduce((acc, current) => {
-    if (current.includes("-")) {
-      const keyArray = current.split("-");
-      const attribute = keyArray[0];
-      const value = keyArray[1];
-      return {
-        ...acc,
-        [getFilters.value[attribute].data]: {
-          ...acc[getFilters.value[attribute].data],
-          [getFilters.value[attribute].children[value].data]: true,
-        },
-      };
-    } else {
-      const childrenObj = getFilters.value[current].children.reduce(
-        (obj, curr) => {
-          return { ...obj, [curr.data]: true };
-        },
-        {}
-      );
-      return {
-        ...acc,
-        [getFilters.value[current].data]: {
-          ...acc[getFilters.value[current].data],
-          ...childrenObj,
-        },
-      };
-    }
-  }, {});
+  return Object.fromEntries(
+    Object.entries(selectedFilters.value).map(([key, values]) => [
+      key,
+      Object.fromEntries(values.map((value) => [value, true])),
+    ])
+  );
 });
 
 const getAggregateValues = computed(function () {
