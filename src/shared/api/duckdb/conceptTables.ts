@@ -66,7 +66,17 @@ function getDuckDBTables(params = [{}]) {
       { name: files.RECORDS_PER_PERSON, instanceParams: [params] },
       { name: files.REFILLS_DISTRIBUTION, instanceParams: [params] },
     ],
-    drug_era: [],
+    drug_era: [
+      {
+        name: files.CONCEPT_METADATA,
+        required: true,
+        instanceParams: [params],
+      },
+      { name: files.AGE_AT_FIRST_EXPOSURE, instanceParams: [params] },
+      { name: files.LENGTH_OF_ERA, instanceParams: [params] },
+      { name: files.PREVALENCE_BY_MONTH, instanceParams: [params] },
+      { name: files.PREVALENCE_BY_GENDER_AGE_YEAR, instanceParams: [params] },
+    ],
     visit_occurrence: [
       {
         name: files.CONCEPT_METADATA,
