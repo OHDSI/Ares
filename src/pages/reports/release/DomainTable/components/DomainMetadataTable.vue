@@ -6,6 +6,7 @@
     class="ma-4"
   >
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       size="small"
       paginator
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
@@ -31,6 +32,7 @@ import { useRoute } from "vue-router";
 import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import { useStore } from "vuex";
 
 interface Props {
   data: [];
@@ -39,6 +41,8 @@ interface Props {
 const props = defineProps<Props>();
 
 const route = useRoute();
+
+const store = useStore();
 
 const items = computed(() => {
   if (props.data) {

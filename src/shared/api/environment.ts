@@ -5,6 +5,7 @@ class Environment {
   WEB_API_URL = null;
   WEB_API_ENABLED = null;
   DUCKDB_ENABLED = null;
+  CDM_NETWORK_NAME = null;
   load() {
     const promise: Promise<AxiosResponse> = axios.get(envUrl);
     return promise.then((res) => {

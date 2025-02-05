@@ -2,7 +2,9 @@
   <div class="flex flex-col gap-5">
     <Panel header="Unmapped Source Codes">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
+        filterDisplay="row"
         size="small"
         :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
         paginator
@@ -29,8 +31,60 @@
             </InputGroup>
           </div>
         </template>
-        <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
-        <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
+        <Column
+          :maxSelectedLabels="2"
+          :show-filter-menu="false"
+          :show-clear-button="false"
+          sortable
+          field="CDM_FIELD_NAME"
+          filter-field="CDM_FIELD_NAME"
+          header="CDM Field"
+        >
+          <template #body="{ data }">
+            {{ data.CDM_FIELD_NAME }}
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <MultiSelect
+              filter
+              v-model="filterModel.value"
+              @change="filterCallback()"
+              :options="cdmFieldOptions"
+              placeholder="Select CDM Field"
+              class="p-column-filter w-full"
+            >
+              <template #option="slotProps">
+                {{ slotProps.option }}
+              </template>
+            </MultiSelect>
+          </template>
+        </Column>
+        <Column
+          :maxSelectedLabels="2"
+          :show-filter-menu="false"
+          :show-clear-button="false"
+          sortable
+          field="CDM_TABLE_NAME"
+          filter-field="CDM_TABLE_NAME"
+          header="CDM Table"
+        >
+          <template #body="{ data }">
+            {{ data.CDM_TABLE_NAME }}
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <MultiSelect
+              filter
+              v-model="filterModel.value"
+              @change="filterCallback()"
+              :options="cdmTableOptions"
+              placeholder="Select CDM Table"
+              class="p-column-filter w-full"
+            >
+              <template #option="slotProps">
+                {{ slotProps.option }}
+              </template>
+            </MultiSelect>
+          </template>
+        </Column>
         <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
         <Column
           :pt="{ headerContent: 'justify-end' }"
@@ -105,12 +159,22 @@ import { mdiHelpCircle } from "@mdi/js";
 import { links } from "@/shared/config/links";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Pivot from "@/widgets/pivot/ui/Pivot.vue";
+import MultiSelect from "primevue/multiselect";
 
 const store = useStore();
 
 const filters = ref({});
 const newFilters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  CDM_TABLE_NAME: { value: null, matchMode: FilterMatchMode.IN },
+  CDM_FIELD_NAME: { value: null, matchMode: FilterMatchMode.IN },
+});
+
+const cdmTableOptions = computed(() => {
+  return helpers.getValuesArray(filteredRecords.value, "CDM_TABLE_NAME", true);
+});
+const cdmFieldOptions = computed(() => {
+  return helpers.getValuesArray(filteredRecords.value, "CDM_FIELD_NAME", true);
 });
 
 const filteredRecords = computed(function () {

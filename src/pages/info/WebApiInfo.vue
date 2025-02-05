@@ -23,6 +23,7 @@
 
     <Panel header="Sources" v-if="store.getters.getApiData.apiSources">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"

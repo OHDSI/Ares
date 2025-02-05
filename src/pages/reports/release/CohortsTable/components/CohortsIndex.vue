@@ -1,7 +1,17 @@
 <template>
   <Panel header="Cohorts Table">
+    <template #icons>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          :icon="mdiCompareHorizontal"
+          :tooltip="'Compare across the network'"
+          @iconClicked="compareToOtherSources"
+        />
+      </div>
+    </template>
     <div class="p-5">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
         :value="data"
@@ -85,6 +95,8 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 import { COHORT_INDEX } from "@/shared/config/files";
 import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
+import { mdiCompareHorizontal } from "@mdi/js";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 
 const store = useStore();
 const route = useRoute();
@@ -93,6 +105,20 @@ const router = useRouter();
 const newFilters = computed(() => ({
   global: { value: route.query.search, matchMode: FilterMatchMode.CONTAINS },
 }));
+
+const compareToOtherSources = function () {
+  const source = route.params.cdm;
+  const domain = route.params.domain;
+  const release = route.params.release;
+  router.push({
+    name: "networkComparisonTool",
+    params: {
+      cdm: source,
+      domain: domain,
+      release: release,
+    },
+  });
+};
 
 const debouncedSearch = debounce(function (data: string): void {
   router.push({

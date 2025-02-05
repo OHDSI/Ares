@@ -141,18 +141,23 @@
             <Card>
               <template #content>
                 <div class="flex flex-col gap-5">
-                  <TreeSelect
-                    :pt="{
-                      label: { class: ['self-center pl-4 font-light'] },
-                    }"
-                    style="width: 100%; height: 50px"
-                    v-model="selectedFilterAttributes"
-                    :options="getFilters"
-                    :meta-key-selection="false"
-                    selectionMode="multiple"
-                    placeholder="Exclude values"
-                    class="md:w-20rem w-full"
-                  />
+                  <Accordion class="overflow-y-auto max-h-[300px]">
+                    <AccordionTab header="Filters">
+                      <div class="flex flex-col gap-2">
+                        <MultiSelect
+                          v-for="attr in getDisplayedAttributes"
+                          :placeholder="attr"
+                          :key="attr"
+                          v-model="selectedFilters[attr]"
+                          :options="getUniqueAttributeValues[attr]"
+                          :virtualScrollerOptions="{
+                            itemSize: 20,
+                            orientation: 'vertical',
+                          }"
+                        ></MultiSelect>
+                      </div>
+                    </AccordionTab>
+                  </Accordion>
                   <Dropdown
                     :pt="{
                       label: { class: ['self-center pl-4 font-light'] },
@@ -240,10 +245,14 @@ import {
   Router,
   RouteLocationNormalizedLoaded,
 } from "vue-router";
-import TreeSelect from "primevue/treeselect";
+
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
 
 const router = useRouter();
 const route = useRoute();
+
+const selectedFilters = ref({});
 
 interface Props {
   data: object[];
@@ -278,53 +287,19 @@ const getDisplayedAttributes = computed(function () {
   return props.attributes;
 });
 
-const getFilters = computed(() => {
-  return getDisplayedAttributes.value.map((field, index) => {
-    return {
-      key: index,
-      label: field,
-      data: field,
-      children: getUniqueAttributeValues.value[field].map((value, valIndex) => {
-        return {
-          key: `${index}-${valIndex}`,
-          label: value,
-          data: value,
-        };
-      }),
-    };
-  });
-});
-
 const getParsedFiltersForPivotTable = computed(() => {
-  const keys = Object.keys(selectedFilterAttributes.value);
-  return keys.reduce((acc, current) => {
-    if (current.includes("-")) {
-      const keyArray = current.split("-");
-      const attribute = keyArray[0];
-      const value = keyArray[1];
-      return {
-        ...acc,
-        [getFilters.value[attribute].data]: {
-          ...acc[getFilters.value[attribute].data],
-          [getFilters.value[attribute].children[value].data]: true,
-        },
-      };
-    } else {
-      const childrenObj = getFilters.value[current].children.reduce(
-        (obj, curr) => {
-          return { ...obj, [curr.data]: true };
-        },
-        {}
-      );
-      return {
-        ...acc,
-        [getFilters.value[current].data]: {
-          ...acc[getFilters.value[current].data],
-          ...childrenObj,
-        },
-      };
-    }
-  }, {});
+  return Object.fromEntries(
+    Object.entries(selectedFilters.value)
+      .filter(([, values]) => values.length > 0)
+      .map(([key, values]) => [
+        key,
+        Object.fromEntries(
+          getUniqueAttributeValues.value[key]
+            .filter((value) => !values.includes(value))
+            .map((value) => [value, true])
+        ),
+      ])
+  );
 });
 
 const getAggregateValues = computed(function () {
@@ -358,10 +333,6 @@ const removeCols = function (item: string) {
     return val !== item;
   });
 };
-
-const selectedFilterAttributes: Ref<string[]> = ref([]);
-// const selectedFilterValues: Ref<{ [key: string]: { [key: string]: boolean } }> =
-//   ref({});
 
 const aggregateFunction: Ref<string> = ref("");
 const aggregateValue: Ref<string[]> = ref([""]);

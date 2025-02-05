@@ -1,6 +1,7 @@
 <template>
   <Panel header="Observation Periods per Person">
     <DataTable
+      :striped-rows="store.getters.getSettings.strippedRows"
       removable-sort
       size="small"
       :value="store.getters.getData.personPeriods"

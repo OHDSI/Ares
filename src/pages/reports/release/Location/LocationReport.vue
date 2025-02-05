@@ -2,6 +2,7 @@
   <div class="flex flex-col gap-10">
     <Panel header="Location Report">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
         paginator

@@ -63,6 +63,26 @@ async function fetchAxiosData(file, path) {
   }));
 }
 
+function compareDefaultAvailableSources(availableSources, defaultSources) {
+  return availableSources
+    .map((source) => {
+      const sourceKey = source.cdm_source_key;
+      if (defaultSources[sourceKey]) {
+        const filteredReleases = source.releases.filter((release) =>
+          defaultSources[sourceKey].includes(release.release_id)
+        );
+        if (filteredReleases.length > 0) {
+          return {
+            ...source,
+            releases: filteredReleases,
+          };
+        }
+      }
+      return null;
+    })
+    .filter(Boolean);
+}
+
 async function fetchDuckDBData(file, payload, path, filter) {
   const c = await db.connect();
   return c
@@ -258,34 +278,39 @@ const actions = {
       const isDuckDb = environment.DUCKDB_ENABLED && payload.duckdb_supported;
 
       const reportName = rootState.route.name;
+      const availableSources = rootGetters.getSources;
+      const defaultSources = rootGetters.getSettings.defaultSources;
+      const defaultSourcesToLoad = compareDefaultAvailableSources(
+        availableSources,
+        defaultSources
+      );
+      const toLoad = defaultSourcesToLoad.length
+        ? defaultSourcesToLoad
+        : availableSources;
       const promises = payload.files.reduce((obj, file) => {
-        obj[file.name] = rootGetters.getSources.reduce(
-          (filesArray, currentSource) => {
-            const loadedFiles = file.instanceParams.reduce(
-              (array, currentInstance) => {
-                const path = {
-                  cdm: currentSource,
-                  release: currentSource.releases[0].release_id,
-                  domain:
-                    currentInstance.domain || rootState.route.params.domain,
-                  concept:
-                    currentInstance.concept || rootState.route.params.concept,
-                };
-                const filter = `WHERE DOMAIN == '${path.domain}' AND CONCEPT_ID == ${path.concept}`;
+        obj[file.name] = toLoad.reduce((filesArray, currentSource) => {
+          const loadedFiles = file.instanceParams.reduce(
+            (array, currentInstance) => {
+              const path = {
+                cdm: currentSource,
+                release: currentSource.releases[0].release_id,
+                domain: currentInstance.domain || rootState.route.params.domain,
+                concept:
+                  currentInstance.concept || rootState.route.params.concept,
+              };
+              const filter = `WHERE DOMAIN == '${path.domain}' AND CONCEPT_ID == ${path.concept}`;
 
-                const fetchData =
-                  isDuckDb && file.source !== "axios"
-                    ? fetchDuckDBData(file, payload, path, filter)
-                    : fetchAxiosData(file, path);
-                return [...array, fetchData];
-              },
-              []
-            );
+              const fetchData =
+                isDuckDb && file.source !== "axios"
+                  ? fetchDuckDBData(file, payload, path, filter)
+                  : fetchAxiosData(file, path);
+              return [...array, fetchData];
+            },
+            []
+          );
 
-            return [...filesArray, ...loadedFiles];
-          },
-          []
-        );
+          return [...filesArray, ...loadedFiles];
+        }, []);
 
         return obj;
       }, {});

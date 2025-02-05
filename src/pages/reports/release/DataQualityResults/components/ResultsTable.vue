@@ -1,5 +1,6 @@
 <template>
   <DataTable
+    :striped-rows="store.getters.getSettings.strippedRows"
     unstyled
     removableSort
     v-model:expandedRows="expanded"
@@ -310,10 +311,10 @@
       :show-clear-button="false"
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
-      :hidden="!columnsToDisplay.includes('notesExist')"
+      :hidden="!columnsToDisplay.includes('notesValue')"
       sortable
-      filter-field="notesExist"
-      field="notesExist"
+      filter-field="notesValue"
+      field="notesValue"
       header="Notes"
     >
       <template #filter="{ filterModel, filterCallback }">
@@ -322,7 +323,7 @@
           filter
           v-model="filterModel.value"
           @change="filterCallback()"
-          :options="notesExistOptions"
+          :options="notesValueOptions"
           placeholder="Select One"
           class="p-column-filter w-full"
           style="min-width: 12rem"
@@ -470,7 +471,7 @@
           <tr>
             <td><h3 class="font-bold" cols="2">Notes</h3></td>
             <td>
-              <p>{{ slotProps.data.noteValue }}</p>
+              <p>{{ slotProps.data.notesValue }}</p>
             </td>
           </tr>
           <tr>
@@ -632,8 +633,8 @@ const contextsOptions = computed(() => {
 const checkLevelOptions = computed(() => {
   return helpers.getValuesArray(checks.value, "checkLevel", true);
 });
-const notesExistOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "notesExist", true);
+const notesValueOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "notesValue", true);
 });
 const deltaOptions = computed(() => {
   return helpers.getValuesArray(checks.value, "delta", true);
@@ -649,7 +650,7 @@ const filters = ref({
   subcategory: { value: null, matchMode: FilterMatchMode.IN },
   context: { value: null, matchMode: FilterMatchMode.IN },
   checkLevel: { value: null, matchMode: FilterMatchMode.IN },
-  notesExist: { value: null, matchMode: FilterMatchMode.IN },
+  notesValue: { value: null, matchMode: FilterMatchMode.IN },
   delta: { value: null, matchMode: FilterMatchMode.IN },
 });
 
@@ -719,10 +720,10 @@ const headers = ref({
     show: false,
     default: false,
   },
-  notesExist: {
+  notesValue: {
     title: "Notes",
     sortable: true,
-    key: "notesExist",
+    key: "notesValue",
     show: false,
     default: false,
   },

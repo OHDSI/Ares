@@ -68,6 +68,7 @@
         </div>
       </div>
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
         :value="getRangeData"
@@ -163,6 +164,7 @@ import InputText from "primevue/inputtext";
 import Slider from "primevue/slider";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import { useStore } from "vuex";
 
 interface Props {
   observationPeriod: MultipleFilesRawInterface<ObservationPeriodType>[];
@@ -170,6 +172,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const store = useStore();
 
 const rangeAge: Ref<number[]> = ref([]);
 const rangeYear: Ref<number[]> = ref([]);

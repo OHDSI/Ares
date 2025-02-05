@@ -2,14 +2,16 @@
   <div class="flex flex-col gap-5">
     <Panel header="Network Unmapped Source Codes">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
+        filterDisplay="row"
         :globalFilterFields="['CDM_TABLE_NAME', 'CDM_FIELD_NAME']"
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         v-model:filters="newFilters"
-        :value="store.getters.getData.domainTable"
+        :value="data"
         :rows="10"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
@@ -29,8 +31,60 @@
             </InputGroup>
           </div>
         </template>
-        <Column sortable header="CDM Table" field="CDM_TABLE_NAME"> </Column>
-        <Column sortable header="CDM Field" field="CDM_FIELD_NAME"> </Column>
+        <Column
+          :maxSelectedLabels="2"
+          :show-filter-menu="false"
+          :show-clear-button="false"
+          sortable
+          field="CDM_FIELD_NAME"
+          filter-field="CDM_FIELD_NAME"
+          header="CDM Field"
+        >
+          <template #body="{ data }">
+            {{ data.CDM_FIELD_NAME }}
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <MultiSelect
+              filter
+              v-model="filterModel.value"
+              @change="filterCallback()"
+              :options="cdmFieldOptions"
+              placeholder="Select CDM Field"
+              class="p-column-filter w-full"
+            >
+              <template #option="slotProps">
+                {{ slotProps.option }}
+              </template>
+            </MultiSelect>
+          </template>
+        </Column>
+        <Column
+          :maxSelectedLabels="2"
+          :show-filter-menu="false"
+          :show-clear-button="false"
+          sortable
+          field="CDM_TABLE_NAME"
+          filter-field="CDM_TABLE_NAME"
+          header="CDM Table"
+        >
+          <template #body="{ data }">
+            {{ data.CDM_TABLE_NAME }}
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <MultiSelect
+              filter
+              v-model="filterModel.value"
+              @change="filterCallback()"
+              :options="cdmTableOptions"
+              placeholder="Select CDM Table"
+              class="p-column-filter w-full"
+            >
+              <template #option="slotProps">
+                {{ slotProps.option }}
+              </template>
+            </MultiSelect>
+          </template>
+        </Column>
         <Column sortable header="Source Value" field="SOURCE_VALUE"> </Column>
 
         <Column sortable header="Data Sources" field="DATA_SOURCES"></Column>
@@ -86,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
@@ -97,11 +151,25 @@ import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
 import { helpers } from "@/shared/lib/mixins";
 import Pivot from "@/widgets/pivot/ui/Pivot.vue";
+import MultiSelect from "primevue/multiselect";
 
 const store = useStore();
 
+const data = computed(() => {
+  return store.getters.getData.domainTable;
+});
+
 const newFilters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  CDM_TABLE_NAME: { value: null, matchMode: FilterMatchMode.IN },
+  CDM_FIELD_NAME: { value: null, matchMode: FilterMatchMode.IN },
+});
+
+const cdmTableOptions = computed(() => {
+  return helpers.getValuesArray(data.value, "CDM_TABLE_NAME", true);
+});
+const cdmFieldOptions = computed(() => {
+  return helpers.getValuesArray(data.value, "CDM_FIELD_NAME", true);
 });
 </script>
 

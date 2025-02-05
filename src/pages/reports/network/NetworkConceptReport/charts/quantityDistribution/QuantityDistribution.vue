@@ -6,6 +6,7 @@
     <Chart id="viz-quantity" :chartSpec="specQuantity" :data="data" />
     <div v-if="showTable" class="p-4">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
         paginator

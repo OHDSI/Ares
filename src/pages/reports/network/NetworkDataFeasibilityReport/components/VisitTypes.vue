@@ -2,6 +2,7 @@
   <Panel toggleable header="Visit Type Requirements">
     <div class="flex flex-row gap-10">
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         class="flex-grow"
         v-model:selection="visitTypesSelected"
         removable-sort
@@ -25,6 +26,7 @@
         <Column sortable header="Concept Name" field="concept_name"> </Column>
       </DataTable>
       <DataTable
+        :striped-rows="store.getters.getSettings.strippedRows"
         class="flex-grow"
         removable-sort
         size="small"
@@ -70,6 +72,7 @@ import Column from "primevue/column";
 import Panel from "primevue/panel";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
+import { useStore } from "vuex";
 
 const visitTypesSelected = ref([]);
 
@@ -78,6 +81,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const store = useStore();
 
 const visitTypesFilter = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },

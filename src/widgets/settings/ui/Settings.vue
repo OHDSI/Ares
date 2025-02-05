@@ -12,6 +12,11 @@
       </div>
       <div class="flex flex-col">
         <div class="flex flex-col gap-5">
+          <h3 class="text-left font-normal text-md">Data settings</h3>
+          <FavoriteSources class="w-full" />
+        </div>
+        <Divider></Divider>
+        <div class="flex flex-col gap-5">
           <h3 class="text-left font-normal text-md">Charts</h3>
           <ToggleBaseLine />
           <ToggleMinMax />
@@ -22,6 +27,7 @@
           <h3 class="text-left font-normal text-md">Appearance</h3>
           <ToggleDarkMode />
           <StickyNavBar />
+          <TableStrippedRowsToggle />
         </div>
         <Divider></Divider>
 
@@ -30,6 +36,7 @@
           <ToggleDefaultAnnotatonsMode />
           <ToggleDefaultNotesMode />
         </div>
+        <Divider></Divider>
         <div class="relative bottom-0 mt-4">
           <ExportNotes></ExportNotes>
         </div>
@@ -54,6 +61,7 @@ import ToggleMinMax from "./components/toggleMinMax";
 import Divider from "primevue/divider";
 import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode/ToggleDefaultAnnotatonsMode.vue";
 import StickyNavBar from "@/widgets/settings/ui/components/stickyNavBar";
+import TableStrippedRowsToggle from "@/widgets/settings/ui/components/strippedRows";
 
 import { computed } from "vue";
 import { useStore } from "vuex";
@@ -62,6 +70,7 @@ import { TOGGLE_UI_VISIBILITY } from "@/widgets/settings/model/store/actions.typ
 import ToggleDefaultNotesMode from "@/widgets/settings/ui/components/toggleDefaultNotesMode/ToggleDefaultNotesMode.vue";
 import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccount.vue";
 import Sidebar from "primevue/sidebar";
+import FavoriteSources from "@/widgets/settings/ui/components/favoriteSources/FavoriteSources.vue";
 
 const store = useStore();
 
