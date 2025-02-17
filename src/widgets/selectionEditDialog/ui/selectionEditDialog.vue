@@ -153,7 +153,10 @@ const getSources = computed(() => {
 });
 
 const currentRelease = computed(() => {
-  return store.getters.getSelectedRelease;
+  return (
+    store.getters.getSelectedRelease ||
+    store.getters.getSelectedSource.releases[0]
+  );
 });
 
 const openedSelection = ref({
