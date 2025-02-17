@@ -58,14 +58,14 @@ const getters = {
     );
   },
   getReleases: function (state, getters): SourceRelease[] {
-    return getters.getSelectedSource.releases;
+    return getters.getSelectedSource?.releases;
   },
   getSelectedRelease: function (state, getters, rootState): SourceRelease {
-    return rootState.route.params.release
+    return getters.getReleases
       ? getters.getReleases.find(
           (release) => rootState.route.params.release === release.release_id
         )
-      : getters.getReleases[0];
+      : null;
   },
   getSelectedReport: function (state, getters, rootState) {
     const isDomain = rootState.route.params.domain;

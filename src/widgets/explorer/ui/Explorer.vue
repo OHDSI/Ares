@@ -163,29 +163,51 @@ function changeRelease(data: SourceRelease): void {
   });
 }
 function changeFolder(data): void {
+  const settings = store.getters.getSettings;
+  const sources = store.getters.getSources;
+  const selectedSource = store.getters.getSelectedSource;
+  const selectedRelease = store.getters.getSelectedRelease;
+  const defaultSources = Object.keys(settings.defaultSources);
+  const defaultSource = sources.find((source) =>
+    defaultSources.includes(source.cdm_source_key)
+  );
+  const fallbackSource = sources[0];
+
   let cdm, release;
+
   if (data.key === "datasource") {
-    cdm = store.getters.getSelectedSource
-      ? store.getters.getSelectedSource.cdm_source_key
-      : store.getters.getSources[0].cdm_source_key;
-  }
-  if (data.key === "cdm") {
-    cdm = store.getters.getSelectedSource
-      ? store.getters.getSelectedSource.cdm_source_key
-      : store.getters.getSources[0].cdm_source_key;
-    release = store.getters.getSelectedSource
-      ? store.getters.getSelectedRelease.release_id
-      : store.getters.getSources[0].releases[0].release_id;
+    cdm =
+      !selectedSource && defaultSource
+        ? defaultSource.cdm_source_key
+        : selectedSource
+        ? selectedSource.cdm_source_key
+        : fallbackSource.cdm_source_key;
+  } else if (data.key === "cdm") {
+    if (defaultSource && !selectedRelease) {
+      if (!selectedSource) {
+        cdm = defaultSource.cdm_source_key;
+      }
+      release = defaultSource.releases.find((r) =>
+        settings.defaultSources[defaultSource.cdm_source_key].includes(
+          r.release_id
+        )
+      )?.release_id;
+    } else {
+      cdm = selectedSource
+        ? selectedSource.cdm_source_key
+        : fallbackSource.cdm_source_key;
+      release = selectedSource
+        ? selectedSource.releases[0].release_id
+        : fallbackSource.releases[0].release_id;
+    }
   }
 
   router.push({
     name: data.key,
-    params: {
-      cdm,
-      release,
-    },
+    params: { cdm, release },
   });
 }
+
 function changeReport(data): void {
   router.push({
     name: data.routeName,

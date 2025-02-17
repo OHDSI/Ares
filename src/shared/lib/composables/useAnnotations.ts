@@ -19,7 +19,7 @@ export default function useAnnotations(reportId: string): AnnotationComposable {
           ? route.params.concept[0]
           : route.params.concept,
         source: store.getters.getSelectedSource.cdm_source_key,
-        release: store.getters.getSelectedRelease.release_id,
+        release: store.getters.getSelectedRelease?.release_id || null,
       };
     }
   );
