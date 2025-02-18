@@ -60,7 +60,7 @@ const path = computed(function () {
 });
 
 const webApiEnabled = environment.WEB_API_ENABLED;
-const loggedIn = store.getters.getWebAPIUser;
+const loggedIn = store.getters.getSettings.user;
 const useAnnotationsApi = environment.USE_ANNOTATIONS_API;
 
 const useAnnotationsBackend = webApiEnabled

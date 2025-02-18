@@ -167,7 +167,7 @@ const actions = {
     const chartName = params.reportName;
 
     const webApiEnabled = environment.WEB_API_ENABLED;
-    const loggedIn = rootGetters.getWebAPIUser;
+    const loggedIn = rootGetters.getSettings.user;
     const useAnnotationsApi = environment.USE_ANNOTATIONS_API;
 
     const useBackend = webApiEnabled
@@ -201,7 +201,7 @@ const actions = {
     params
   ) {
     const webApiEnabled = environment.WEB_API_ENABLED;
-    const loggedIn = rootGetters.getWebAPIUser;
+    const loggedIn = rootGetters.getSettings.user;
     const useAnnotationsApi = environment.USE_ANNOTATIONS_API;
 
     const useBackend = webApiEnabled
@@ -252,7 +252,7 @@ const actions = {
     const selectionId = getters.getSelectedRectangle.item.id;
 
     const webApiEnabled = environment.WEB_API_ENABLED;
-    const loggedIn = rootGetters.getWebAPIUser;
+    const loggedIn = rootGetters.getSettings.user;
     const useAnnotationsApi = environment.USE_ANNOTATIONS_API;
 
     const useBackend = webApiEnabled
