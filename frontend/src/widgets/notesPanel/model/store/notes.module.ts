@@ -27,6 +27,7 @@ import { NOTES } from "@/shared/config/files";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { AnnotationsService } from "@/shared/api/aresApi/services/annotationsService";
+import environment from "@/shared/api/environment";
 
 const state = {
   notes: {},
@@ -50,7 +51,6 @@ const actions = {
   async [LOAD_API_NOTES]({ commit, rootGetters }, payload) {
     if (!payload || !payload.length) return;
     const data = await AnnotationsService.search.get(payload);
-    console.log(data);
     // const sources = [...rootGetters.getSources, { cdm_source_key: undefined }];
     // await Promise.allSettled(
     //   sources.map((source) =>
@@ -160,33 +160,68 @@ const actions = {
       });
   },
 
-  async [CREATE_SELECTION]({ commit, getters, rootState }, params) {
+  async [CREATE_SELECTION](
+    { commit, getters, rootState, rootGetters },
+    params
+  ) {
     const chartName = params.reportName;
+
+    const webApiEnabled = environment.WEB_API_ENABLED;
+    const loggedIn = rootGetters.getWebAPIUser;
+    const useAnnotationsApi = environment.USE_ANNOTATIONS_API;
+
+    const useBackend = webApiEnabled
+      ? loggedIn && useAnnotationsApi
+      : useAnnotationsApi;
 
     let data = { ...getters.getNotes };
     const path = [chartName].filter(Boolean);
     data = createNestedProperty(data, path);
-    const annotation = await AnnotationsService.create.post(
-      "123",
-      chartName,
-      params.selection.coordinates,
-      params.selection.metadata,
-      params.selection.body
-    );
-    _.get(data, path.join(".")).push(annotation.data.annotation);
+    if (useBackend) {
+      const annotation = await AnnotationsService.create.post(
+        "123",
+        chartName,
+        params.selection.coordinates,
+        params.selection.metadata,
+        params.selection.body
+      );
+      _.get(data, path.join(".")).push(annotation.data.annotation);
+    } else {
+      _.get(data, path.join(".")).push(params.selection);
+    }
     commit(SET_NOTES, { data });
     commit(SET_SELECTED_RECTANGLE, null);
-    localStorageService.set("notes", getters.getNotes);
+    if (!useBackend) {
+      localStorageService.set("notes", getters.getNotes);
+    }
   },
 
-  async [EDIT_SELECTION]({ commit, state, getters, rootState }, params) {
+  async [EDIT_SELECTION](
+    { commit, state, getters, rootState, rootGetters },
+    params
+  ) {
+    const webApiEnabled = environment.WEB_API_ENABLED;
+    const loggedIn = rootGetters.getWebAPIUser;
+    const useAnnotationsApi = environment.USE_ANNOTATIONS_API;
+
+    const useBackend = webApiEnabled
+      ? loggedIn && useAnnotationsApi
+      : useAnnotationsApi;
+
     const chartName = getters.getSelectedRectangle?.report || params.report;
     const selectionId =
       getters.getSelectedRectangle?.item?.id || params.data.id;
 
     const { coordinates, metadata, body } = params.data;
 
-    await AnnotationsService.edit.put(selectionId, coordinates, metadata, body);
+    if (useBackend) {
+      await AnnotationsService.edit.put(
+        selectionId,
+        coordinates,
+        metadata,
+        body
+      );
+    }
 
     const data = _.cloneDeep(state.notes);
     const path = [chartName].filter(Boolean);
@@ -207,13 +242,26 @@ const actions = {
     _.set(data, path.join("."), newSelections);
     commit(SET_SELECTED_RECTANGLE, null);
     commit(SET_NOTES, { data });
-    localStorageService.set("notes", state.notes);
+    if (!useBackend) {
+      localStorageService.set("notes", state.notes);
+    }
   },
 
-  async [DELETE_SELECTION]({ commit, getters, rootState }) {
+  async [DELETE_SELECTION]({ commit, getters, rootState, rootGetters }) {
     const chartName = getters.getSelectedRectangle.report;
     const selectionId = getters.getSelectedRectangle.item.id;
-    const annotation = await AnnotationsService.delete.delete(selectionId);
+
+    const webApiEnabled = environment.WEB_API_ENABLED;
+    const loggedIn = rootGetters.getWebAPIUser;
+    const useAnnotationsApi = environment.USE_ANNOTATIONS_API;
+
+    const useBackend = webApiEnabled
+      ? loggedIn && useAnnotationsApi
+      : useAnnotationsApi;
+
+    if (useBackend) {
+      const annotation = await AnnotationsService.delete.delete(selectionId);
+    }
     const data = { ...getters.getNotes };
     const path = [chartName].filter(Boolean);
     const selections = _.get(data, path.join(".")).filter(
@@ -223,7 +271,9 @@ const actions = {
     _.set(data, path.join("."), selections);
     commit(SET_SELECTED_RECTANGLE, null);
     commit(SET_NOTES, { data });
-    localStorageService.set("notes", getters.getNotes);
+    if (!useBackend) {
+      localStorageService.set("notes", getters.getNotes);
+    }
   },
   [SHOW_DIALOG]({ commit }, params) {
     commit(SET_DIALOG, {

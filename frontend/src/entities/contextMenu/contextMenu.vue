@@ -11,10 +11,57 @@
       <li @click="clickAction(item)">{{ item.title }}</li>
     </ul>
   </div>
+
+  <ConfirmDialog :group="props.chartId">
+    <template #container="{ message, acceptCallback, rejectCallback }">
+      <div class="flex flex-col items-center p-5 bg-white rounded-lg">
+        <span class="font-bold text-2xl block mb-2 mt-4">{{
+          message.header
+        }}</span>
+        <p class="mb-0">{{ message.message }}</p>
+        <div class="flex items-center gap-2 mt-4">
+          <Button label="Yes" @click="acceptCallback" class="w-[8rem]"></Button>
+          <Button
+            label="Cancel"
+            outlined
+            @click="rejectCallback"
+            class="w-[8rem]"
+          ></Button>
+        </div>
+      </div>
+    </template>
+  </ConfirmDialog>
 </template>
 <script setup lang="ts">
 import { computed, watch, ref, Ref } from "vue";
 import { useStore } from "vuex";
+import Button from "primevue/button";
+
+import ConfirmDialog from "primevue/confirmdialog";
+
+import { useConfirm } from "primevue/useconfirm";
+
+const confirm = useConfirm();
+
+const showTemplate = (item) => {
+  confirm.require({
+    group: props.chartId,
+    header: "Confirmation",
+    message: item.message,
+    icon: "pi pi-exclamation-circle",
+    acceptIcon: "pi pi-check",
+    rejectIcon: "pi pi-times",
+    rejectClass: "p-button-sm",
+    acceptClass: "p-button-outlined p-button-sm",
+    accept: () => {
+      item.action();
+      return;
+    },
+    reject: () => {
+      return;
+    },
+  });
+};
 
 interface Item {
   title: string;
@@ -22,6 +69,7 @@ interface Item {
 }
 interface Props {
   items: Item[];
+  chartId: string;
 }
 
 const props = defineProps<Props>();
@@ -49,8 +97,13 @@ const coordinates = computed(() => {
 });
 
 function clickAction(item) {
-  item.action();
-  close();
+  if (item.useConfirm) {
+    showTemplate(item);
+    close();
+  } else {
+    item.action();
+    close();
+  }
 }
 
 function close() {
