@@ -17,7 +17,11 @@
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
         <Column sortable header="Source" field="SOURCE"> </Column>
-
+        <Column
+          sortable
+          header="Unit Concept ID"
+          field="UNIT_CONCEPT_ID"
+        ></Column>
         <Column sortable header="Unit Type" field="CONCEPT_NAME"> </Column>
         <Column
           :pt="{ headerContent: 'justify-end' }"

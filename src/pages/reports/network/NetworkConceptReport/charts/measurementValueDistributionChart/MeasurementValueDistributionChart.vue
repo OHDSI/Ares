@@ -42,6 +42,11 @@
       >
         <Column sortable header="Source" field="SOURCE"></Column>
         <Column sortable header="Unit" field="CATEGORY"></Column>
+        <Column
+          sortable
+          header="Unit Concept ID"
+          field="UNIT_CONCEPT_ID"
+        ></Column>
         <Column sortable header="Release" field="RELEASE"></Column>
         <Column
           :pt="{ headerContent: 'justify-end' }"
