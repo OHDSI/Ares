@@ -34,7 +34,12 @@
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
         <template #empty> No concepts found </template>
-        <Column sortable header="Unit ID" field="CATEGORY"></Column>
+        <Column sortable header="Unit Type" field="CATEGORY"></Column>
+        <Column
+          sortable
+          header="Unit Concept ID"
+          field="UNIT_CONCEPT_ID"
+        ></Column>
         <Column
           :pt="{ headerContent: 'justify-end' }"
           sortable
