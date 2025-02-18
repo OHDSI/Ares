@@ -29,8 +29,8 @@ const createAnnotation = async (connection, chartName, annotationData) => {
         const annotationId = uuidv4();
 
         await connection.run(
-            `INSERT INTO annotations (id, viz_id, created_by, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?)`,
+            `INSERT INTO annotations (id, viz_id, created_by, created_at, updated_at, deleted_at) 
+        VALUES (?, ?, ?, ?, ?, NULL)`,
             [
                 annotationId,
                 chart.id,
@@ -142,6 +142,7 @@ const getAnnotationsByVizName = async (connection, vizNames) => {
             LEFT JOIN annotations_body ab ON a.id = ab.annotation_id
             LEFT JOIN annotations_notes an ON a.id = an.annotation_id
             WHERE c.viz_name IN (${placeholders})
+              AND a.deleted_at IS NULL
         `;
 
         let rows = await connection.runAndReadAll(query, vizNames);
@@ -409,40 +410,68 @@ const deleteAnnotation = async (connection, annotationId) => {
             `SELECT * FROM annotations WHERE id = ?`,
             [annotationId]
         );
-
         annotation = annotation.getRowObjects()[0];
-        if(!annotation) {
-            logger.debug(`No annotation with id ${annotationId} found`);
-        }
-        await connection.run(
-            `DELETE FROM annotations_notes WHERE annotation_id = ?`,
-            [annotationId]
-        );
-        await connection.run(
-            `DELETE FROM annotations_body WHERE annotation_id = ?`,
-            [annotationId]
-        );
-        await connection.run(
-            `DELETE FROM annotations_metadata WHERE annotation_id = ?`,
-            [annotationId]
-        );
-        await connection.run(
-            `DELETE FROM annotations_coordinates WHERE annotation_id = ?`,
-            [annotationId]
-        );
-        await connection.run(
-            `DELETE FROM annotations WHERE id = ?`,
-            [annotationId]
-        );
-        logger.debug(`Annotation ${annotationId} successfully deleted`);
 
-    }
-    catch (error) {
+        if (!annotation) {
+            logger.debug(`No annotation with id ${annotationId} found`);
+            return;
+        }
+
+        const deletedAt = new Date().toISOString();
+        await connection.run(
+            `UPDATE annotations SET deleted_at = ? WHERE id = ?`,
+            [deletedAt, annotationId]
+        );
+        logger.debug(`Annotation ${annotationId} successfully marked as deleted at ${deletedAt}`);
+    } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
-        throw new Error('Error occurred while deleting annotation');
+        logger.error(message);
+        throw new Error('Error occurred while marking annotation as deleted');
     }
 };
+
+
+// const deleteAnnotation = async (connection, annotationId) => {
+//     logger.debug(`Deleting annotation ${annotationId}`);
+//     try {
+//         let annotation = await connection.runAndReadAll(
+//             `SELECT * FROM annotations WHERE id = ?`,
+//             [annotationId]
+//         );
+//
+//         annotation = annotation.getRowObjects()[0];
+//         if(!annotation) {
+//             logger.debug(`No annotation with id ${annotationId} found`);
+//         }
+//         await connection.run(
+//             `DELETE FROM annotations_notes WHERE annotation_id = ?`,
+//             [annotationId]
+//         );
+//         await connection.run(
+//             `DELETE FROM annotations_body WHERE annotation_id = ?`,
+//             [annotationId]
+//         );
+//         await connection.run(
+//             `DELETE FROM annotations_metadata WHERE annotation_id = ?`,
+//             [annotationId]
+//         );
+//         await connection.run(
+//             `DELETE FROM annotations_coordinates WHERE annotation_id = ?`,
+//             [annotationId]
+//         );
+//         await connection.run(
+//             `DELETE FROM annotations WHERE id = ?`,
+//             [annotationId]
+//         );
+//         logger.debug(`Annotation ${annotationId} successfully deleted`);
+//
+//     }
+//     catch (error) {
+//         const message = error instanceof Error ? error.message : String(error);
+//         logger.error(`${message}`);
+//         throw new Error('Error occurred while deleting annotation');
+//     }
+// };
 
 
 export {createAnnotation, updateAnnotation, getAnnotationsByVizName, deleteAnnotation}

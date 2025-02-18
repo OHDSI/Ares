@@ -2,7 +2,7 @@
   <div ref="containerRef" class="p-4">
     <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
     <div ref="chart" v-resize="load" :id="id"></div>
-    <ContextMenu v-if="annotationMode" :items="actions" />
+    <ContextMenu v-if="annotationMode" :items="actions" :chart-id="props.id" />
   </div>
 </template>
 
@@ -90,6 +90,8 @@ const actions = [
     action: () => {
       store.dispatch(DELETE_SELECTION);
     },
+    useConfirm: true,
+    message: "Are you sure you want to remove this selection?",
   },
 ];
 

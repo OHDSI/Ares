@@ -59,7 +59,13 @@ const path = computed(function () {
   return route.path;
 });
 
-const useNotesApi = environment.USE_ANNOTATIONS_API;
+const webApiEnabled = environment.WEB_API_ENABLED;
+const loggedIn = store.getters.getWebAPIUser;
+const useAnnotationsApi = environment.USE_ANNOTATIONS_API;
+
+const useAnnotationsBackend = webApiEnabled
+  ? loggedIn && useAnnotationsApi
+  : useAnnotationsApi;
 
 const loadViewData = function () {
   const view = getFilesByView({
@@ -72,7 +78,9 @@ const loadViewData = function () {
 
 watch(path, () => {
   store.dispatch(RESET_DATA_STORAGE);
-  if (useNotesApi) {
+  if (!useAnnotationsBackend) {
+    store.dispatch(LOAD_NOTES);
+  } else {
     store.dispatch(LOAD_API_NOTES, pageCharts[route.name]);
   }
   loadViewData();
@@ -86,10 +94,9 @@ onMounted(() => {
     .dispatch(explorerActions.FETCH_INDEX, { route: route.params })
     .then(() => {
       loadViewData();
-      if (!useNotesApi) {
+      if (!useAnnotationsBackend) {
         store.dispatch(LOAD_NOTES);
-      }
-      if (useNotesApi) {
+      } else {
         store.dispatch(LOAD_API_NOTES, pageCharts[route.name]);
       }
     });

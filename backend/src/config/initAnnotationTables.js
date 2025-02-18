@@ -31,7 +31,8 @@ const initAnnotationTables = async (instance) => {
                 viz_id TEXT REFERENCES charts(id),
                 created_by TEXT,
                 created_at TIMESTAMP,
-                updated_at TIMESTAMP
+                updated_at TIMESTAMP,
+                deleted_at TIMESTAMP
             );
         `);
 
