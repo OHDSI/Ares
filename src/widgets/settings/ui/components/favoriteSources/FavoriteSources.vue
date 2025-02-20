@@ -84,7 +84,7 @@ const getParsedSelectedSources = computed(() => {
 
 onBeforeMount(() => {
   selectedDefaultSources.value = parseSourceToSelectedAttributes(
-    store.getters.getSettings.defaultSources
+    store.getters.getSettings.defaultSources || {}
   );
 });
 

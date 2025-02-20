@@ -495,7 +495,7 @@ onMounted(() => {
     selectedReport.value = reports[0].value;
   }
   populateSelectedAttributesFromParams();
-  const defaultSource = store.getters.getSettings.defaultSources;
+  const defaultSource = store.getters.getSettings.defaultSources || {};
   selectedFilterAttributes.value = {
     ...selectedFilterAttributes.value,
     ...parseSourceToSelectedAttributes(defaultSource),
