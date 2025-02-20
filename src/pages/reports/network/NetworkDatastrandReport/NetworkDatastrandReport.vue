@@ -19,6 +19,7 @@
         :rows="5"
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
+        <Column field="cdm_source_abbreviation" header="Data Source"> </Column>
         <Column field="domain" header="Domain"> </Column>
         <Column
           :pt="{ headerContent: 'justify-end' }"
