@@ -38,6 +38,7 @@ export function specMeasurementValueDistribution(
         encoding: {
           tooltip: [
             { field: "CATEGORY", title: "CATEGORY" },
+            { field: "UNIT_CONCEPT_ID", title: "UNIT_CONCEPT_ID" },
             { field: "MIN_VALUE", title: "MIN_VALUE" },
             { field: "P10_VALUE", title: "P10_VALUE" },
             { field: "P25_VALUE", title: "P25_VALUE" },

@@ -28,6 +28,7 @@ export function specRecordsByUnit(zeroBaseline = false) {
     encoding: {
       tooltip: [
         { field: "CONCEPT_NAME", title: "Unit Type" },
+        { field: "UNIT_CONCEPT_ID", title: "Unit Concept ID" },
         { field: "COUNT_VALUE", title: "Number of Records", format: "," },
         { field: "PERCENT", title: "% of Records", format: "0.2%" },
       ],
