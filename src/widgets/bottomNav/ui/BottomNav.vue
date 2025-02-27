@@ -1,5 +1,15 @@
 <template>
   <Toolbar unstyled class="fixed bottom-0 left-0 right-0">
+    <template #start>
+      <Button
+        text
+        plain
+        @click="openNewTab(links.aresReleaseInfo(appVersion))"
+        class="font-light opacity-60"
+      >
+        {{ appVersion }}
+      </Button>
+    </template>
     <template #end>
       <div class="flex flex-row gap-14 mr-3">
         <Button
@@ -11,6 +21,7 @@
         >
           <svg-icon type="mdi" :path="mdiServer"></svg-icon>
         </Button>
+
         <Button
           severity="secondary"
           @click="openNewTab(links.getAresDocsLink())"
@@ -18,6 +29,14 @@
           text
         >
           <svg-icon type="mdi" :path="mdiHelpCircleOutline"></svg-icon>
+        </Button>
+        <Button
+          @click="openNewTab(links.aresGithubRepo())"
+          severity="secondary"
+          rounded
+          text
+        >
+          <svg-icon class="github-icon" type="mdi" :path="mdiGithub"></svg-icon>
         </Button>
         <Button
           severity="secondary"
@@ -63,10 +82,17 @@ import { useStore } from "vuex";
 import { computed } from "vue";
 import environment from "@/shared/api/environment";
 import SvgIcon from "@jamescoyle/vue-icon";
-import { mdiCog, mdiDatabase, mdiHelpCircleOutline, mdiServer } from "@mdi/js";
+import {
+  mdiCog,
+  mdiDatabase,
+  mdiGithub,
+  mdiHelpCircleOutline,
+  mdiServer,
+} from "@mdi/js";
 import { useRouter } from "vue-router";
 import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
 import { links } from "@/shared/config/links";
+const appVersion = "v" + __APP_VERSION__;
 
 const webApiEnabled = environment.WEB_API_ENABLED;
 

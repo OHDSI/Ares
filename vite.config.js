@@ -7,6 +7,9 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 
 export default defineConfig({
   base: "/ares/",
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  },
   plugins: [vue(), vueJsx({})],
   server: {
     port: 8080,
