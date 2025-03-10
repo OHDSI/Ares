@@ -3,7 +3,7 @@ import apiService from "@/shared/api/axios/apiService";
 
 export const AnnotationsService = {
   search: {
-    get(viz_names: string[]) {
+    get(chart_ids: string[]) {
       return apiService(
         {
           url: `${environment.ARES_API_URL}/api/v1/annotations/search`,
@@ -14,7 +14,28 @@ export const AnnotationsService = {
             // Authorization: token ? `Bearer ${token}` : null,
           },
           data: {
-            viz_names: viz_names,
+            chart_ids,
+          },
+        },
+        {}
+      );
+    },
+  },
+  fetchAll: {
+    get(first: number, step: number, filter: string) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/v1/annotations/`,
+          baseURL: "./",
+          method: "post",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: token ? `Bearer ${token}` : null,
+          },
+          data: {
+            first,
+            step,
+            filter,
           },
         },
         {}
@@ -24,14 +45,18 @@ export const AnnotationsService = {
   create: {
     post(
       id: string,
-      vizName: string,
+      chartId: string,
+      chartName: string,
+      reportName: string,
+      domainName: string,
+      conceptId: string,
       coordinates: any,
       metadata: any,
       body: any
     ) {
       return apiService(
         {
-          url: `${environment.ARES_API_URL}/api/v1/annotations`,
+          url: `${environment.ARES_API_URL}/api/v1/annotations/new`,
           baseURL: "./",
           method: "post",
           headers: {
@@ -40,7 +65,11 @@ export const AnnotationsService = {
           },
           data: {
             id,
-            vizName,
+            chartId,
+            chartName,
+            reportName,
+            domainName,
+            conceptId,
             coordinates,
             metadata,
             body,

@@ -24,6 +24,7 @@ import {
   mdiHeartFlash,
   mdiMapMarkerOutline,
   mdiCompareHorizontal,
+  mdiNoteTextOutline,
 } from "@mdi/js";
 
 export const reports = [
@@ -148,12 +149,18 @@ export const reports = [
     routeName: "location",
     reports: [],
   },
-    {
+  {
     folder: "Data Network",
     icon: mdiCompareHorizontal,
     name: "Network Comparison Tool",
     routeName: "networkComparisonTool",
-    },
+  },
+  {
+    folder: "Data Network",
+    icon: mdiNoteTextOutline,
+    name: "Network Annotations Report",
+    routeName: "networkAnnotationsReport",
+  },
   {
     folder: "Data Network",
     icon: mdiDatabaseSearch,

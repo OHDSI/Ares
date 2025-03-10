@@ -30,6 +30,7 @@ import NetworkDiversityReport from "@/pages/reports/network/NetworkDiversityRepo
 import CohortsTable from "@/pages/reports/release/CohortsTable/CohortsTable.vue";
 import CohortDrilldownReport from "@/pages/reports/release/CohortDrilldownReport/CohortDrilldownReport.vue";
 import LocationReport from "@/pages/reports/release/Location/LocationReport.vue";
+import NetworkAnnotationsReport from "@/pages/reports/network/networkAnnotationsReport/NetworkAnnotationsReport.vue";
 
 import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 
@@ -63,6 +64,11 @@ export const routes: RouteRecordRaw[] = [
         path: "network_data_quality",
         name: "networkDataQuality",
         components: { reportsView: NetworkDataQualitySummary },
+      },
+      {
+        path: "network_annotations_report",
+        name: "networkAnnotationsReport",
+        components: { reportsView: NetworkAnnotationsReport },
       },
 
       {

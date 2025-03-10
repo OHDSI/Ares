@@ -1,6 +1,7 @@
 export const SHOW_DIALOG = "showDialog";
 export const LOAD_NOTES = "loadNotes";
 export const LOAD_API_NOTES = "loadApiNotes";
+export const LOAD_ALL_NOTES = "loadAllNotes";
 
 export const SHOW_DATUM_NOTES = "showDatumNotes";
 

@@ -1,27 +1,27 @@
 import { v4 as uuidv4 } from 'uuid';
 import logger from "../utils/logger.js";
 
-const createAnnotation = async (connection, chartName, annotationData) => {
+const createAnnotation = async (connection, chart_id, chart_name, report_name, domain_name, concept_id, annotationData) => {
     logger.debug(`User ${annotationData.metadata.createdBy} submitted a new annotation`);
     try {
         let chart = await connection.runAndReadAll(
-            `SELECT * FROM charts WHERE viz_name = ?`,
-            [chartName]
+            `SELECT * FROM charts WHERE chart_id = ?`,
+            [chart_id]
         );
 
         chart = chart.getRowObjects()?.[0];
 
 
         if (!chart) {
-            logger.debug(`Chart ${chartName} not found. Creating new entry.`);
+            logger.debug(`Chart ${chart_id} not found. Creating new entry.`);
 
             const chartId = uuidv4();
 
             await connection.run(
-                `INSERT INTO charts (id, viz_name) VALUES (?, ?)`,
-                [chartId, chartName]
+                `INSERT INTO charts (id, chart_id, chart_name, report_name, domain_name, concept_id) VALUES (?, ?, ?, ?, ?, ?)`,
+                [chartId, chart_id, chart_name, report_name, domain_name || 'NULL', concept_id || 'NULL']
             );
-            chart = { id: chartId, viz_name: chartName };
+            chart = { id: chartId, chart_id, chart_name, report_name, domain_name };
 
             logger.debug(`Chart created: ${chartId}`);
         }
@@ -122,10 +122,10 @@ const createAnnotation = async (connection, chartName, annotationData) => {
     }
 };
 
-const getAnnotationsByVizName = async (connection, vizNames) => {
-    logger.debug(`Getting annotations by chart name: ${vizNames}`);
+const getAnnotationsByVizName = async (connection, chart_ids) => {
+    logger.debug(`Getting annotations by chart name: ${chart_ids}`);
     try {
-        const placeholders = vizNames.map(() => '?').join(',');
+        const placeholders = chart_ids.map(() => '?').join(',');
         const query = `
             SELECT 
                 a.id AS annotation_id, a.viz_id, a.created_by, a.created_at, a.updated_at,
@@ -134,18 +134,18 @@ const getAnnotationsByVizName = async (connection, vizNames) => {
                 ab.title AS bodyTitle, ab.description AS bodyDescription,
                 an.note_id AS noteId, an.title AS noteTitle, an.description AS noteDescription, 
                 an.created_at AS noteCreatedAt, an.updated_at AS noteUpdatedAt, an.created_by AS noteCreatedBy, an.last_updated AS noteLastUpdated,
-                c.viz_name
+                c.chart_id
             FROM charts c
             JOIN annotations a ON c.id = a.viz_id
             LEFT JOIN annotations_coordinates ac ON a.id = ac.annotation_id
             LEFT JOIN annotations_metadata am ON a.id = am.annotation_id
             LEFT JOIN annotations_body ab ON a.id = ab.annotation_id
             LEFT JOIN annotations_notes an ON a.id = an.annotation_id
-            WHERE c.viz_name IN (${placeholders})
+            WHERE c.chart_id IN (${placeholders})
               AND a.deleted_at IS NULL
         `;
 
-        let rows = await connection.runAndReadAll(query, vizNames);
+        let rows = await connection.runAndReadAll(query, chart_ids);
 
         rows = rows.getRowObjects()
 
@@ -154,10 +154,10 @@ const getAnnotationsByVizName = async (connection, vizNames) => {
         const result = {};
 
         rows.forEach(row => {
-            if (!result[row.viz_name]) result[row.viz_name] = {};
+            if (!result[row.chart_id]) result[row.chart_id] = {};
 
-            if (!result[row.viz_name][row.annotation_id]) {
-                result[row.viz_name][row.annotation_id] = {
+            if (!result[row.chart_id][row.annotation_id]) {
+                result[row.chart_id][row.annotation_id] = {
                     id: row.annotation_id,
                     coordinates: row.x1Axis !== null ? {
                         x1Axis: row.x1Axis, x2Axis: row.x2Axis,
@@ -182,7 +182,7 @@ const getAnnotationsByVizName = async (connection, vizNames) => {
             }
 
             if (row.noteId) {
-                result[row.viz_name][row.annotation_id].body.notes.push({
+                result[row.chart_id][row.annotation_id].body.notes.push({
                     id: row.noteId,
                     title: row.noteTitle,
                     description: row.noteDescription,
@@ -205,6 +205,138 @@ const getAnnotationsByVizName = async (connection, vizNames) => {
         throw new Error('Unable to fetch annotations');
     }
 };
+
+const getPaginatedAnnotations = async (connection, first, step, filter) => {
+    try {
+        let filterClause = '';
+        let filterParams = [];
+        if (filter && filter.trim() !== '') {
+            filterClause = ` AND (ab.title ILIKE ? OR ab.description ILIKE ? OR a.created_by ILIKE ?)`;
+            const filterTerm = `%${filter.trim()}%`;
+            filterParams = [filterTerm, filterTerm, filterTerm];
+        }
+
+        const countQuery = `
+      SELECT COUNT(DISTINCT a.id) AS count
+      FROM annotations a
+      LEFT JOIN annotations_body ab ON a.id = ab.annotation_id
+      WHERE a.deleted_at IS NULL
+      ${filterClause};
+    `;
+        const countResult = await connection.runAndReadAll(countQuery, filterParams);
+        const countRows = countResult.getRowObjects();
+        const totalCount = Number(countRows[0].count);
+        const totalPages = Math.ceil(totalCount / step);
+        const offset = first;
+
+        const dataQuery = `
+      SELECT 
+        a.id AS annotation_id,
+        a.viz_id,
+        a.created_by,
+        a.created_at,
+        a.updated_at,
+        ac.x1_axis AS x1Axis,
+        ac.x2_axis AS x2Axis,
+        ac.y1_axis AS y1Axis,
+        ac.y2_axis AS y2Axis,
+        ac.width,
+        ac.height,
+        am.scope_type AS scopeType,
+        am.scope_value AS scopeValue,
+        ab.title AS bodyTitle,
+        ab.description AS bodyDescription,
+        an.note_id AS noteId,
+        an.title AS noteTitle,
+        an.description AS noteDescription, 
+        an.created_at AS noteCreatedAt,
+        an.updated_at AS noteUpdatedAt,
+        an.created_by AS noteCreatedBy,
+        an.last_updated AS noteLastUpdated,
+        c.chart_id,
+        c.chart_name,
+        c.report_name,
+        c.domain_name,
+        c.concept_id
+      FROM charts c
+      JOIN annotations a ON c.id = a.viz_id
+      LEFT JOIN annotations_coordinates ac ON a.id = ac.annotation_id
+      LEFT JOIN annotations_metadata am ON a.id = am.annotation_id
+      LEFT JOIN annotations_body ab ON a.id = ab.annotation_id
+      LEFT JOIN annotations_notes an ON a.id = an.annotation_id
+      WHERE a.deleted_at IS NULL
+      ${filterClause}
+      LIMIT ? OFFSET ?;
+    `;
+        const dataParams = filterParams.concat([step, offset]);
+        const dataResult = await connection.runAndReadAll(dataQuery, dataParams);
+        const rows = dataResult.getRowObjects();
+
+        if (rows.length === 0) {
+            return { annotations: [], totalPages, currentPage: Math.floor(first / step) + 1, totalCount };
+        }
+
+        const annotationsMap = {};
+
+        rows.forEach(row => {
+            if (!annotationsMap[row.annotation_id]) {
+                annotationsMap[row.annotation_id] = {
+                    id: row.annotation_id,
+                    vizId: row.viz_id,
+                    viz_name: row.chart_name,
+                    viz_id: row.chart_id,
+                    report_name: row.report_name,
+                    domain_name: row.domain_name,
+                    concept_id: row.concept_id,
+                    createdBy: row.created_by,
+                    createdAt: Number(row.created_at.micros) / 1000,
+                    updatedAt: Number(row.updated_at.micros) / 1000,
+                    coordinates: row.x1Axis !== null ? {
+                        x1Axis: row.x1Axis,
+                        x2Axis: row.x2Axis,
+                        y1Axis: row.y1Axis,
+                        y2Axis: row.y2Axis,
+                        width: row.width,
+                        height: row.height
+                    } : null,
+                    metadata: row.scopeType ? {
+                        type: row.scopeType,
+                        value: row.scopeValue ? JSON.parse(row.scopeValue) : null
+                    } : null,
+                    body: {
+                        title: row.bodyTitle || '',
+                        description: row.bodyDescription || '',
+                        notes: []
+                    }
+                };
+            }
+            if (row.noteId) {
+                annotationsMap[row.annotation_id].body.notes.push({
+                    id: row.noteId,
+                    title: row.noteTitle,
+                    description: row.noteDescription,
+                    createdAt: Number(row.noteCreatedAt.micros) / 1000,
+                    updatedAt: Number(row.noteUpdatedAt.micros) / 1000,
+                    createdBy: row.noteCreatedBy,
+                    lastUpdated: Number(row.noteLastUpdated.micros) / 1000
+                });
+            }
+        });
+
+        const annotations = Object.values(annotationsMap);
+
+        return {
+            annotations,
+            totalPages,
+            currentPage: Math.floor(first / step) + 1,
+            totalCount
+        };
+    } catch (error) {
+        logger.error(error instanceof Error ? error.message : String(error));
+        throw new Error('Unable to fetch paginated annotations');
+    }
+};
+
 
 const getAnnotation = async (connection, annotationId) => {
     logger.debug(`Getting annotation ${annotationId}`)
@@ -474,4 +606,4 @@ const deleteAnnotation = async (connection, annotationId) => {
 // };
 
 
-export {createAnnotation, updateAnnotation, getAnnotationsByVizName, deleteAnnotation}
+export {createAnnotation, updateAnnotation, getAnnotationsByVizName, deleteAnnotation, getPaginatedAnnotations}

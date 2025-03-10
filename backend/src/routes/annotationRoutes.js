@@ -4,7 +4,7 @@ import dbInstance from "../config/dbConnection.js";
 import {
   createAnnotation,
   deleteAnnotation,
-  getAnnotationsByVizName,
+  getAnnotationsByVizName, getPaginatedAnnotations,
   updateAnnotation
 } from "../controllers/annotationsController.js";
 import logger from "../utils/logger.js";
@@ -13,10 +13,10 @@ const router = express.Router();
 
 router.post('/api/v1/annotations/search', async (req, res) => {
   const connection = await dbInstance.connect();
-  const { viz_names } = req.body;
+  const { chart_ids } = req.body;
 
   try {
-    const annotations = await getAnnotationsByVizName(connection, viz_names)
+    const annotations = await getAnnotationsByVizName(connection, chart_ids)
     res.json(annotations);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -29,18 +29,36 @@ router.post('/api/v1/annotations/search', async (req, res) => {
 
 });
 
-router.get('/api/v1/annotations/:id', async (req, res) => {
-  const { id } = req.params;
+// router.get('/api/v1/annotations/:id', async (req, res) => {
+//   const { id } = req.params;
+//   const connection = await dbInstance.connect();
+//
+//   const results = await connection.runAndReadAll('SELECT * FROM chart_data WHERE id = ?', [id]);
+//   const rows = results.getRowsJson();
+//
+//   connection.close();
+//   if (rows.length === 0) {
+//     return res.status(404).json({ error: 'Data not found' });
+//   }
+//   res.json(results[0]);
+// });
+
+router.post('/api/v1/annotations/', async (req, res) => {
   const connection = await dbInstance.connect();
+  const { first, step, filter } = req.body;
 
-  const results = await connection.runAndReadAll('SELECT * FROM chart_data WHERE id = ?', [id]);
-  const rows = results.getRowsJson();
-
-  connection.close();
-  if (rows.length === 0) {
-    return res.status(404).json({ error: 'Data not found' });
+  try {
+    const annotations = await getPaginatedAnnotations(connection, first, step, filter)
+    res.json(annotations);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`${message}`);
+    res.status(500).json({ error: message });
   }
-  res.json(results[0]);
+  finally {
+    connection.close()
+  }
+
 });
 
 router.get('/api/v1/charts/', async (req, res) => {
@@ -66,11 +84,11 @@ router.get('/api/v1/charts/', async (req, res) => {
   }
 });
 
-router.post('/api/v1/annotations/', async (req, res) => {
-  const { id, vizName, coordinates, metadata, body } = req.body;
+router.post('/api/v1/annotations/new', async (req, res) => {
+  const { id, chartId, chartName, reportName, domainName, conceptId, coordinates, metadata, body } = req.body;
   const connection = await dbInstance.connect();
   try {
-    const annotation = await createAnnotation(connection, vizName, {id, coordinates, metadata, body})
+    const annotation = await createAnnotation(connection, chartId, chartName, reportName, domainName, conceptId, {id, coordinates, metadata, body})
     res.status(201).json({ annotation });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

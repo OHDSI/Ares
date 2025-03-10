@@ -21,7 +21,11 @@ const initAnnotationTables = async (instance) => {
         await connection.run(`
             CREATE TABLE IF NOT EXISTS charts (
                 id TEXT PRIMARY KEY,
-                viz_name TEXT
+                chart_id TEXT, 
+                chart_name TEXT, 
+                report_name TEXT, 
+                domain_name TEXT,
+                concept_id TEXT
             );
         `);
 

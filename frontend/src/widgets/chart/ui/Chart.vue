@@ -397,7 +397,7 @@ function createAnnotation(xScale, yScale) {
     }
     const action = (event) => (selection) => {
       store.dispatch(CREATE_SELECTION, {
-        reportName: view.container().id,
+        chartId: view.container().id,
         event,
         selection,
       });
