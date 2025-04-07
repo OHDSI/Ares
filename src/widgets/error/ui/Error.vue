@@ -94,6 +94,8 @@ const errors = computed(() => {
   return store.getters.getErrors;
 });
 
+const appVersion = __APP_VERSION__;
+
 function getStackTraceWithoutURL(stack) {
   return stack
     .replace(/https?:\/\/[^/]+/g, "")
@@ -119,6 +121,7 @@ function redirectToGithub() {
     \n **To Reproduce**
     \n **Expected Behavior**
     \n **Screenshots**
+    \n **App version** ${appVersion}
     \n **Displayed error:** ${errorDetails.value.details}
     \n **Error details:**
     \n ${getStackTraceWithoutURL(errorDetails.value.stack)}

@@ -26,6 +26,14 @@ const getAresDocsLink = function (): string {
   return `https://ohdsi.github.io/Ares/`;
 };
 
+const aresGithubRepo = function (): string {
+  return `https://github.com/OHDSI/Ares`;
+};
+
+const aresReleaseInfo = function (versionTag): string {
+  return `https://github.com/OHDSI/Ares/releases/tag/${versionTag}`;
+};
+
 export const links = {
   getSqlQueryLink,
   getDocsLink,
@@ -35,4 +43,6 @@ export const links = {
   getDataQualityDashboardLink,
   getNewIssueLink,
   getAresDocsLink,
+  aresGithubRepo,
+  aresReleaseInfo,
 };
