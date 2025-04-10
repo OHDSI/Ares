@@ -5,7 +5,7 @@
         text
         plain
         @click="openNewTab(links.aresReleaseInfo(appVersion))"
-        class="font-light opacity-60"
+        class="font-light text-black dark:text-white opacity-60"
       >
         {{ appVersion }}
       </Button>
