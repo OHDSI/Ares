@@ -31,7 +31,8 @@ import CohortsTable from "@/pages/reports/release/CohortsTable/CohortsTable.vue"
 import CohortDrilldownReport from "@/pages/reports/release/CohortDrilldownReport/CohortDrilldownReport.vue";
 import LocationReport from "@/pages/reports/release/Location/LocationReport.vue";
 import NetworkAnnotationsReport from "@/pages/reports/network/networkAnnotationsReport/NetworkAnnotationsReport.vue";
-
+import CostDrilldownReport from "@/pages/reports/release/CostDrilldownReport/CostDrilldownReport.vue";
+import CostTable from "@/pages/reports/release/CostTable/CostTable.vue";
 import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 
 import { RouteRecordRaw } from "vue-router";
@@ -177,6 +178,16 @@ export const routes: RouteRecordRaw[] = [
         path: "location",
         name: "location",
         components: { reportsView: LocationReport },
+      },
+      {
+        path: "cost_table/:domain",
+        name: "costTable",
+        components: { reportsView: CostTable },
+      },
+      {
+        path: "cost_table/:domain/cost_drilldown/:concept",
+        name: "costDrilldown",
+        components: { reportsView: CostDrilldownReport },
       },
       {
         path: "temporal_characterization",

@@ -35,6 +35,8 @@ export const DRUGS_BY_TYPE = "DRUGS_BY_TYPE";
 export const DEVICES_BY_TYPE = "DEVICES_BY_TYPE";
 export const PROCEDURES_BY_TYPE = "PROCEDURES_BY_TYPE";
 export const OBSERVATIONS_BY_TYPE = "OBSERVATIONS_BY_TYPE";
+export const COST_CONCEPT_METADATA = "COST_CONCEPT_METADATA";
+export const TOTAL_CONCEPT_COST_PER_COST_ID = "TOTAL_CONCEPT_COST_PER_COST_ID";
 
 function getFilePath(params: { cdm: string; release: string }) {
   const getUrl = window.location;
@@ -74,6 +76,8 @@ function getFilePath(params: { cdm: string; release: string }) {
     [COHORT_CHARACTERIZATION]: `${baseUrl}/data/${params.cdm}/${params.release}/cohort_characterization.parquet`,
     [COHORT_INDEX_EVENT_BREAKDOWN]: `${baseUrl}/data/${params.cdm}/${params.release}/cohort_index_event_breakdown.parquet`,
     [COHORT_TEMPORAL_COVARIATE_DISTRIBUTION]: `${baseUrl}/data/${params.cdm}/${params.release}/cohort_temporal_covariate_distribution.parquet`,
+    [COST_CONCEPT_METADATA]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/cost_concept_metadata.parquet`,
+    [TOTAL_CONCEPT_COST_PER_COST_ID]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/total_concept_cost_per_cost_id.parquet`,
   };
 }
 

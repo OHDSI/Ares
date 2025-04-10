@@ -218,7 +218,15 @@ const actions = {
     }
     const promises = payload.files.map((file) => {
       if (isDuckDb && file.source !== "axios") {
-        const filterConcept = `WHERE DOMAIN == '${path.domain}' AND CONCEPT_ID == ${path.concept}`;
+        let filterConcept;
+        if (rootState.route.name === "costDrilldown") {
+          filterConcept = `WHERE CONCEPT_ID == ${path.concept}`;
+        } else {
+          filterConcept = `WHERE DOMAIN == '${path.domain.toLowerCase()}' AND CONCEPT_ID == ${
+            path.concept
+          }`;
+        }
+
         const filterCohort = `WHERE COHORT_ID == ${path.cohortId}`;
         return fetchDuckDBData(
           file,

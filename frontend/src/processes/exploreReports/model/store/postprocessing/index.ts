@@ -19,6 +19,8 @@ import networkDiversityReport from "@/processes/exploreReports/model/store/postp
 import cohortReport from "@/processes/exploreReports/model/store/postprocessing/cohortReport";
 import networkConceptDashboard from "@/processes/exploreReports/model/store/postprocessing/networkConceptDashboard";
 import dataSourceOverview from "@/processes/exploreReports/model/store/postprocessing/dataSourceOverview";
+import costTable from "@/processes/exploreReports/model/store/postprocessing/costTable";
+import costDrilldown from "@/processes/exploreReports/model/store/postprocessing/costDrilldown";
 
 export default {
   dataStrandReport,
@@ -42,4 +44,6 @@ export default {
   cohortReport,
   networkConceptDashboard,
   dataSourceOverview,
+  costTable,
+  costDrilldown,
 };

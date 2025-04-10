@@ -69,7 +69,7 @@ const useAnnotationsBackend = webApiEnabled
 
 const loadViewData = function () {
   const view = getFilesByView({
-    files: getDuckDBTables()[route.params.domain],
+    files: getDuckDBTables()[route.params.domain?.toLowerCase()],
   })[route.name];
   if (view) {
     store.dispatch(view.loadMethod, view.payload);

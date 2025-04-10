@@ -7,6 +7,11 @@ import {
   COHORT_INDEX_EVENT_BREAKDOWN,
   COHORT_TEMPORAL_COVARIATE_DISTRIBUTION,
   CONCEPT,
+  COST_CONCEPT,
+  COST_DOMAIN_SUMMARY,
+  COST_DRILLDOWN,
+  COST_INDEX,
+  COST_TIMESERIES,
   DEATH,
   DENSITY_DOMAIN_PERSON,
   DENSITY_RECORDS_PERSON,
@@ -72,6 +77,33 @@ export default function getFilesByView(params = null) {
     networkPerformance: {
       loadMethod: FETCH_FILES,
       payload: { files: [{ name: NETWORK_PERFORMANCE, required: true }] },
+    },
+    costTable: {
+      loadMethod: FETCH_FILES,
+      payload: {
+        files: [
+          { name: COST_DOMAIN_SUMMARY, required: true },
+          { name: COST_TIMESERIES, required: true },
+        ],
+      },
+    },
+    costDrilldown: {
+      loadMethod: FETCH_FILES,
+      // payload: {
+      //   files: [
+      //     { name: COST_CONCEPT, required: true },
+      //     { name: COST_DOMAIN_SUMMARY, required: true },
+      //   ],
+      // },
+      payload: {
+        files: environment.DUCKDB_ENABLED
+          ? params.files
+          : [
+              { name: COST_CONCEPT, required: true },
+              { name: COST_DOMAIN_SUMMARY, required: true },
+            ],
+        duckdb_supported: true,
+      },
     },
     networkDiversityReport: {
       loadMethod: FETCH_MULTIPLE_FILES_BY_SOURCE,

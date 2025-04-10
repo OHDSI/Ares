@@ -22,6 +22,10 @@ import {
   COHORT_TEMPORAL_COVARIATE_DISTRIBUTION,
   LOCATION,
   QUALITY_DELTA,
+  COST_INDEX,
+  COST_DRILLDOWN,
+  COST_TIMESERIES,
+  COST_DOMAIN_SUMMARY,
 } from "@/shared/config/files";
 import csvParse from "@/processes/exploreReports/model/store/preprocessing/csvParse";
 
@@ -49,4 +53,8 @@ export default {
   [COHORT_TEMPORAL_COVARIATE_DISTRIBUTION]: csvParse,
   [LOCATION]: csvParse,
   [QUALITY_DELTA]: csvParse,
+  [COST_INDEX]: csvParse,
+  [COST_DRILLDOWN]: csvParse,
+  [COST_TIMESERIES]: csvParse,
+  [COST_DOMAIN_SUMMARY]: csvParse,
 };

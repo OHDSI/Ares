@@ -31,6 +31,11 @@ export const EXPORT_QUERY_INDEX = "exportQueryIndex";
 export const TEMPORAL_CHARACTERIZATION = "temporalCharacterization";
 
 export const COHORT_INDEX = "cohortsIndex";
+export const COST_INDEX = "costIndex";
+export const COST_DRILLDOWN = "costDrilldown";
+export const COST_DOMAIN_SUMMARY = "costDomainSummary";
+export const COST_CONCEPT = "costConcept";
+export const COST_TIMESERIES = "costTimeseries";
 
 export const COHORT_CHARACTERIZATION = "cohortReport";
 

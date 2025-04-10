@@ -68,17 +68,20 @@ const getters = {
       : null;
   },
   getSelectedReport: function (state, getters, rootState) {
-    const isDomain = rootState.route.params.domain;
-    const isRelease = rootState.route.params.release;
-    const isCohort = rootState.route.params.cohort_id;
-    if (
-      isDomain &&
-      isRelease &&
-      rootState.route.name !== "networkComparisonTool"
-    ) {
+    const route = rootState.route;
+
+    const isDomain = route.params.domain;
+    const currentReport = route.name;
+    const isRelease = route.params.release;
+    const isCohort = route.params.cohort_id;
+    if (isDomain && isRelease && route.name !== "networkComparisonTool") {
       const domainTable = getters.getFilteredReports.find(
-        (report) => report.domain
+        (report) =>
+          report.domain &&
+          (report.childName === currentReport ||
+            report.routeName === currentReport)
       );
+
       return domainTable.reports.find((report) => {
         return isDomain === report.domain;
       });
@@ -89,9 +92,7 @@ const getters = {
       });
     } else {
       return getters.getFilteredReports.find((report) => {
-        return rootState.route.matched.some(
-          (route) => route.name === report.routeName
-        );
+        return route.matched.some((route) => route.name === report.routeName);
       });
     }
   },

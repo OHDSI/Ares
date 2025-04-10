@@ -29,6 +29,8 @@ export default {
     index: "Index file is missing. Please run AresIndexer then try again",
     location:
       "Location data is not available. Please run the latest version of achilles then try again",
+    costDrilldown: "Cost drilldown report files are not found",
+    costTable: "Cost table files are not found",
   },
   technicalError: {
     codeError:

@@ -1,5 +1,5 @@
 import * as files from "./files";
-import { DOMAIN_SUMMARY } from "@/shared/config/files";
+import { COST_DOMAIN_SUMMARY, DOMAIN_SUMMARY } from "@/shared/config/files";
 
 function getDuckDBTables(params = [{}]) {
   return {
@@ -128,6 +128,60 @@ function getDuckDBTables(params = [{}]) {
         instanceParams: [params],
       },
       { name: files.RECORDS_PER_PERSON, instanceParams: [params] },
+    ],
+    drug: [
+      {
+        name: files.COST_CONCEPT_METADATA,
+        required: true,
+        instanceParams: [params],
+      },
+      {
+        name: files.TOTAL_CONCEPT_COST_PER_COST_ID,
+        required: true,
+        instanceParams: [params],
+      },
+      {
+        name: COST_DOMAIN_SUMMARY,
+        required: true,
+        source: "axios",
+        instanceParams: [params],
+      },
+    ],
+    procedure: [
+      {
+        name: files.COST_CONCEPT_METADATA,
+        required: true,
+        instanceParams: [params],
+      },
+      {
+        name: files.TOTAL_CONCEPT_COST_PER_COST_ID,
+        required: true,
+        instanceParams: [params],
+      },
+      {
+        name: COST_DOMAIN_SUMMARY,
+        required: true,
+        source: "axios",
+        instanceParams: [params],
+      },
+    ],
+    visit: [
+      {
+        name: files.COST_CONCEPT_METADATA,
+        required: true,
+        instanceParams: [params],
+      },
+      {
+        name: files.TOTAL_CONCEPT_COST_PER_COST_ID,
+        required: true,
+        instanceParams: [params],
+      },
+      {
+        name: COST_DOMAIN_SUMMARY,
+        required: true,
+        source: "axios",
+        instanceParams: [params],
+      },
     ],
     device_exposure: [
       {
