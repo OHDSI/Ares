@@ -24,8 +24,8 @@ import {
   mdiHeartFlash,
   mdiMapMarkerOutline,
   mdiCompareHorizontal,
-    mdiNoteTextOutline,
-    mdiCurrencyUsd,
+  mdiNoteTextOutline,
+  mdiCurrencyUsd,
 } from "@mdi/js";
 
 export const reports = [
@@ -149,31 +149,6 @@ export const reports = [
     icon: mdiCurrencyUsd,
     name: "Cost Table",
     routeName: "costTable",
-    childName: "costDrilldown",
-    domain: true,
-    reports: [
-      {
-        folder: "Data Source Release",
-        icon: mdiPill,
-        name: "Drugs",
-        routeName: "costTable",
-        domain: "Drug",
-      },
-      {
-        folder: "Data Source Release",
-        icon: mdiHospitalBuilding,
-        name: "Visits",
-        routeName: "costTable",
-        domain: "Visit",
-      },
-      {
-        folder: "Data Source Release",
-        icon: mdiNeedle,
-        name: "Procedures",
-        routeName: "costTable",
-        domain: "Procedure",
-      },
-    ],
   },
   {
     folder: "Data Source Release",
@@ -205,12 +180,6 @@ export const reports = [
     icon: mdiCheckNetwork,
     name: "Network Concept Report",
     routeName: "networkConcept",
-  },
-  {
-    folder: "Data Network",
-    icon: mdiDatabaseSearch,
-    name: "Network Concept Dashboard",
-    routeName: "networkConceptDashboard",
   },
   {
     folder: "Data Network",

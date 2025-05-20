@@ -21,9 +21,10 @@ export const pageCharts = {
     "viz-recordproportionbyagesexyear",
     "viz-deathrecordproportionbymonth",
   ],
+  domainTable: ["viz-recordproportionbymonth"],
   dataDensity: ["viz-densityOverview", "viz-recordsperperson"],
   cohortReport: ["viz-beforeIndex", "viz-afterIndex", "viz-between"],
-  concept: ["viz-recordproportionbymonth"],
+  // concept: ["viz-recordproportionbymonth"],
   //Source
   dataQualityHistory: [
     "viz-dataqualityresults",

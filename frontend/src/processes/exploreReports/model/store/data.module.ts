@@ -18,6 +18,7 @@ import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
 import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
+import { COHORT_INDEX } from "@/shared/config/files";
 
 const state = {
   data: {},
@@ -222,12 +223,14 @@ const actions = {
         if (rootState.route.name === "costDrilldown") {
           filterConcept = `WHERE CONCEPT_ID == ${path.concept}`;
         } else {
-          filterConcept = `WHERE DOMAIN == '${path.domain.toLowerCase()}' AND CONCEPT_ID == ${
-            path.concept
-          }`;
+          const domain = path.domain?.toLowerCase();
+          filterConcept = `WHERE DOMAIN == '${domain}' AND CONCEPT_ID == ${path.concept}`;
         }
 
-        const filterCohort = `WHERE COHORT_ID == ${path.cohortId}`;
+        const filterCohort =
+          file.name === COHORT_INDEX
+            ? ""
+            : `WHERE COHORT_ID == ${path.cohortId}`;
         return fetchDuckDBData(
           file,
           payload,
@@ -287,7 +290,8 @@ const actions = {
 
       const reportName = rootState.route.name;
       const availableSources = rootGetters.getSources;
-      const defaultSources = rootGetters.getSettings.defaultSources;
+      const defaultSources =
+        payload.defaultSources || rootGetters.getSettings.defaultSources;
       const defaultSourcesToLoad = compareDefaultAvailableSources(
         availableSources,
         defaultSources

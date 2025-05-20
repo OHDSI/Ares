@@ -56,7 +56,15 @@ const route = useRoute();
 const store = useStore();
 
 const path = computed(function () {
-  return route.path;
+  return JSON.stringify({
+    name: route.name,
+    params: {
+      // concept: route.params.concept,
+      cdm: route.params.cdm,
+      release: route.params.release,
+      domain: route.params.domain,
+    },
+  });
 });
 
 const webApiEnabled = environment.WEB_API_ENABLED;

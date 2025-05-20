@@ -42,6 +42,7 @@ interface Props {
   title?: string;
   data: object[] | string[];
   id: string;
+  conceptId?: string;
   chartSpec: (a?: boolean, b?: boolean, c?: string) => any;
   annotationMode?: boolean;
   annotationsConfig?: {
@@ -171,7 +172,7 @@ const load = function (): void {
     renderer: "svg",
     container: `#${props.id}`,
     hover: true,
-  }).tooltip(new Handler().call);
+  }).tooltip(new Handler({ styleId: "vegaTooltip" }).call);
 
   if (props.signalListener && props.annotationMode) {
     props.signalListener(
@@ -400,6 +401,7 @@ function createAnnotation(xScale, yScale) {
         chartId: view.container().id,
         event,
         selection,
+        conceptId: props.conceptId,
       });
     };
     store.commit(SET_SELECTED_RECTANGLE, null);

@@ -5,90 +5,110 @@ export function specCostTimeseries(zeroBaseline = false) {
   return {
     $schema: VEGA_SCHEMA,
     width: "container",
-    height: 100,
+    height: 150,
     data: { name: "conceptData" },
-    mark: { type: "line", point: true },
     encoding: {
+      x: {
+        field: "MONTH_YEAR",
+        type: "temporal",
+        timeUnit: "yearmonth",
+        axis: {
+          title: "Date",
+        },
+        scale: {
+          type: "utc",
+        },
+      },
+      y: {
+        field: "TOTAL_COST",
+        type: "quantitative",
+        axis: {
+          title: "Total Cost",
+        },
+        scale: {
+          zero: zeroBaseline,
+        },
+      },
+      color: {
+        field: "DOMAIN_ID",
+        title: "Domain",
+      },
       tooltip: [
         {
           field: "MONTH_YEAR",
           title: "Date",
           type: "temporal",
-          timeUnit: "yearmonth",
+          format: "%Y-%m-%d",
+          scale: {
+            type: "utc",
+          },
         },
+        { field: "DOMAIN_ID", title: "Domain" },
         {
           field: "TOTAL_COST",
-          title: "Total Cost",
-          type: "nominal",
+          type: "quantitative",
+          title: "Cost",
           format: ",",
         },
       ],
-      x: {
-        field: "MONTH_YEAR",
-        type: "temporal",
-        title: "Date",
-      },
-      y: {
-        field: "TOTAL_COST",
-        title: "Cost",
-        type: "quantitative",
-        // scale: {
-        //   zero: zeroBaseline,
-        // },
-      },
-      // color: {
-      //   condition: {
-      //     param: "paintbrush",
-      //     type: "nominal",
-      //     legend: null,
-      //   },
-      //   value: "grey",
-      // },
     },
     layer: [
       {
-        mark: {
-          type: "line",
-          point: true,
-          strokeWidth: 1,
-        },
+        mark: { type: "line", interpolate: "linear", point: true },
+        params: [
+          {
+            name: "source",
+            select: { type: "point", fields: ["DOMAIN_ID"] },
+            bind: "legend",
+          },
+        ],
         encoding: {
-          y: { field: "TOTAL_COST", type: "quantitative" },
+          opacity: {
+            condition: { param: "source", value: 1 },
+            value: 0.2,
+          },
         },
       },
       {
-        mark: { type: "point" },
-        encoding: {
-          y: { field: "TOTAL_COST", type: "quantitative" },
-          opacity: { value: 0 },
+        selection: {
+          dataSource: {
+            type: "multi",
+            fields: ["DOMAIN_ID"],
+            bind: "legend",
+          },
+          x: {
+            type: "single",
+            on: "mousemove",
+            fields: ["MONTH_YEAR"],
+            nearest: true,
+          },
         },
-        params: [
+        transform: [
           {
-            name: "index",
-            select: {
-              type: "point",
-              fields: ["MONTH_YEAR"],
-              on: "mousemove",
-              nearest: true,
-            },
+            filter: { selection: "dataSource" },
           },
         ],
+        mark: { type: "point", tooltip: true },
       },
       {
         transform: [
           {
             filter: {
-              and: ["index.MONTH_YEAR", { param: "index" }],
+              and: ["x.MONTH_YEAR", { selection: "x" }],
+            },
+          },
+          { filter: { selection: "dataSource" } },
+        ],
+        layer: [
+          {
+            mark: "rule",
+            encoding: {
+              y: {
+                height: 1,
+              },
             },
           },
         ],
-        mark: "rule",
-        encoding: {
-          y: {
-            height: 1,
-            color: "black",
-          },
-        },
       },
     ],
   };

@@ -42,22 +42,16 @@
         </template>
         <Column field="cohort_id" header="Cohort ID">
           <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="getReportRoute(slotProps.data)"
-              :title="slotProps.data.cohort_id"
-              >{{ slotProps.data.cohort_id }}
-            </router-link>
+            <a class="cursor-pointer" @click="openDrilldown(slotProps.data)">{{
+              slotProps.data.cohort_id
+            }}</a>
           </template>
         </Column>
         <Column field="cohort_name" header="Cohort Name">
           <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="getReportRoute(slotProps.data)"
-              :title="slotProps.data.cohort_name"
-              >{{ slotProps.data.cohort_name }}
-            </router-link>
+            <a class="cursor-pointer" @click="openDrilldown(slotProps.data)">{{
+              slotProps.data.cohort_name
+            }}</a>
           </template>
         </Column>
         <Column
@@ -82,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { debounce } from "lodash";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
@@ -116,6 +110,7 @@ const compareToOtherSources = function () {
       cdm: source,
       domain: domain,
       release: release,
+      report: "cohort",
     },
   });
 };
@@ -128,16 +123,17 @@ const debouncedSearch = debounce(function (data: string): void {
   });
 }, 300);
 
-const getReportRoute = function (item) {
-  return {
-    name: "cohortReport",
-    params: { cohort_id: item.cohort_id },
-  };
-};
+const data = ref(null);
 
-const data = computed(() => {
-  return store.getters.getData[COHORT_INDEX];
+onMounted(() => {
+  data.value = store.getters.getData[COHORT_INDEX];
 });
+
+const emit = defineEmits(["openDrilldown"]);
+
+function openDrilldown(item) {
+  emit("openDrilldown", item);
+}
 </script>
 
 <style scoped>

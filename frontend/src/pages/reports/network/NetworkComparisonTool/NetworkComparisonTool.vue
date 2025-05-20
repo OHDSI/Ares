@@ -1,176 +1,246 @@
 <template>
-  <Panel header="Network Comparison Tool">
-    <div class="flex flex-col gap-5 py-4 px-4 min-h-[630px]">
-      <div class="flex flex-row gap-5">
-        <InputGroup class="flex-grow" unstyled>
-          <InputGroupAddon>
-            <i class="pi pi-search"></i>
-          </InputGroupAddon>
-          <InputText
-            class="rounded-r-lg"
+  <div class="flex flex-col gap-5">
+    <Panel header="Network Comparison Tool">
+      <div class="flex flex-col gap-5 py-4 px-4 min-h-[630px]">
+        <div class="flex flex-row gap-5">
+          <InputGroup class="flex-grow" unstyled>
+            <InputGroupAddon>
+              <i class="pi pi-search"></i>
+            </InputGroupAddon>
+            <InputText
+              class="rounded-r-lg"
+              unstyled
+              v-model="search"
+              placeholder="Search in Table"
+            />
+          </InputGroup>
+          <TreeSelect
             unstyled
-            v-model="search"
-            placeholder="Search in Table"
+            style="max-width: 200px"
+            v-model="selectedFilterAttributes"
+            :options="getSourceOptions"
+            :meta-key-selection="false"
+            selectionMode="checkbox"
+            placeholder="Select Sources"
           />
-        </InputGroup>
-        <TreeSelect
-          unstyled
-          style="max-width: 200px"
-          v-model="selectedFilterAttributes"
-          :options="getSourceOptions"
-          :meta-key-selection="false"
-          selectionMode="checkbox"
-          placeholder="Select Sources"
-        />
-        <Dropdown
-          option-label="name"
-          option-value="value"
-          v-model="selectedReport"
-          :options="reports"
-          placeholder="Select report"
-        ></Dropdown>
-        <Dropdown
-          v-if="selectedReport === DOMAIN_SUMMARY"
-          placeholder="Select domain"
-          option-label="name"
-          option-value="value"
-          v-model="selectedDomain"
-          :options="domains"
-        ></Dropdown>
-      </div>
-      <div class="flex flex-col gap-5" v-if="Object.keys(dataSources).length">
-        <div ref="tableContainer" class="overflow-x-scroll table-container">
-          <table>
-            <thead>
-              <tr>
-                <th
-                  class="rowNameCol"
-                  :class="{ scrolled: isScrolled }"
-                  rowspan="2"
-                >
-                  {{ selectedConfig.rowHeader.name }}
-                </th>
-                <th
-                  class="sourceGroup"
-                  v-for="source in sources"
-                  :colspan="selectedConfig.group.children.length"
-                  :key="source"
-                >
-                  <router-link
-                    class="text-blue-400 hover:underline"
-                    :to="getIndexTableRoute(source)"
-                    >{{ source }}
-                  </router-link>
-                </th>
-              </tr>
-              <tr>
-                <template v-for="source in sources" :key="source">
+          <Dropdown
+            option-label="name"
+            option-value="value"
+            @update:modelValue="changeSelectedReport"
+            :model-value="selectedReport"
+            :options="reports"
+            placeholder="Select report"
+          ></Dropdown>
+          <Dropdown
+            v-if="availableOptions"
+            placeholder="Select domain"
+            option-label="name"
+            option-value="value"
+            @update:modelValue="changeSelectedDomain"
+            :model-value="selectedDomain"
+            :options="availableOptions"
+          ></Dropdown>
+        </div>
+        <div class="flex flex-col gap-5" v-if="Object.keys(dataSources).length">
+          <div ref="tableContainer" class="overflow-x-scroll table-container">
+            <table>
+              <thead>
+                <tr>
                   <th
-                    class="text-right sourceGroup"
-                    v-for="child in selectedConfig.group.children"
-                    :key="child.name"
+                    class="rowNameCol"
+                    :class="{ scrolled: isScrolled }"
+                    rowspan="2"
                   >
-                    {{ child.name }}
+                    {{ selectedConfig.rowHeader.name }}
                   </th>
-                </template>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(rowName, index) in slicedArray"
-                :key="rowName"
-                :class="
-                  !(index % 2) && stripedRows
-                    ? 'dark:bg-surface-650 bg-surface-50'
-                    : ''
-                "
-              >
-                <td :class="{ scrolled: isScrolled }" class="rowNameCol">
-                  {{ rowName }}
-                </td>
-                <template v-for="source in sources" :key="source">
-                  <td
-                    :class="`text-right ${
-                      index === 0
-                        ? 'border-l border-surface-100'
-                        : 'border-r border-surface-100'
-                    }`"
-                    v-for="(child, index) in selectedConfig.group.children"
-                    :key="child.value"
+                  <th
+                    class="sourceGroup"
+                    v-for="source in sources"
+                    :colspan="selectedConfig.group.children.length"
+                    :key="source"
                   >
                     <router-link
-                      v-if="
-                        child.link &&
-                        getSourceData(source, rowName)[selectedConfig.rowId]
-                      "
                       class="text-blue-400 hover:underline"
-                      :to="
-                        getDrilldownRoute(
-                          source,
-                          getSourceData(source, rowName)[selectedConfig.rowId]
-                        )
-                      "
-                      >{{
-                        getSourceData(source, rowName)[child.value]
-                          ? child.processingFunction
-                            ? child.processingFunction(
-                                getSourceData(source, rowName)[child.value]
-                              )
-                            : getSourceData(source, rowName)[child.value]
-                          : "N/A"
-                      }}
+                      :to="getIndexTableRoute(source)"
+                      >{{ source }}
                     </router-link>
+                  </th>
+                </tr>
+                <tr>
+                  <template v-for="source in sources" :key="source">
+                    <th
+                      class="text-right sourceGroup"
+                      v-for="child in selectedConfig.group.children"
+                      :key="child.name"
+                    >
+                      {{ child.name }}
+                    </th>
+                  </template>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(rowName, index) in slicedArray"
+                  :key="rowName"
+                  :class="
+                    !(index % 2) && stripedRows
+                      ? 'dark:bg-surface-650 bg-surface-50'
+                      : ''
+                  "
+                >
+                  <td :class="{ scrolled: isScrolled }" class="rowNameCol">
+                    <a
+                      v-if="selectedConfig.showDrillDown"
+                      class="cursor-pointer"
+                      @click="loadDrilldown(rowName)"
+                    >
+                      {{ rowName[selectedConfig.rowHeader.value] }}
+                    </a>
                     <span v-else>
-                      {{
-                        getSourceData(source, rowName)[child.value]
-                          ? child.processingFunction
-                            ? child.processingFunction(
-                                getSourceData(source, rowName)[child.value]
-                              )
-                            : getSourceData(source, rowName)[child.value]
-                          : "N/A"
-                      }}
+                      {{ rowName[selectedConfig.rowHeader.value] }}
                     </span>
                   </td>
-                </template>
-              </tr>
-            </tbody>
-          </table>
+                  <template v-for="source in sources" :key="source">
+                    <td
+                      :class="`text-right ${
+                        index === 0
+                          ? 'border-l border-surface-100'
+                          : 'border-r border-surface-100'
+                      }`"
+                      v-for="(child, index) in selectedConfig.group.children"
+                      :key="child.value"
+                    >
+                      <router-link
+                        v-if="
+                          child.link &&
+                          getSourceData(source, rowName)[selectedConfig.rowId]
+                        "
+                        class="text-blue-400 hover:underline"
+                        :to="
+                          getDrilldownRoute(
+                            source,
+                            getSourceData(source, rowName)[selectedConfig.rowId]
+                          )
+                        "
+                        >{{
+                          getSourceData(source, rowName)[child.value]
+                            ? child.processingFunction
+                              ? child.processingFunction(
+                                  getSourceData(source, rowName)[child.value]
+                                )
+                              : getSourceData(source, rowName)[child.value]
+                            : "N/A"
+                        }}
+                      </router-link>
+                      <span v-else>
+                        {{
+                          getSourceData(source, rowName)[child.value]
+                            ? child.processingFunction
+                              ? child.processingFunction(
+                                  getSourceData(source, rowName)[child.value]
+                                )
+                              : getSourceData(source, rowName)[child.value]
+                            : "N/A"
+                        }}
+                      </span>
+                    </td>
+                  </template>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Paginator
+            v-model:first="first"
+            :rows="step"
+            :totalRecords="filteredResults.length"
+            template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          />
         </div>
-        <Paginator
-          v-model:first="first"
-          :rows="step"
-          :totalRecords="filteredResults.length"
-          template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        />
+        <div v-else class="flex justify-center h-[500px] items-center text-2xl">
+          Add at least one data source to display the results
+        </div>
       </div>
-      <div v-else class="flex justify-center h-[500px] items-center text-2xl">
-        Add at least one data source to display the results
-      </div>
+    </Panel>
+
+    <div class="card flex justify-content-center">
+      <Sidebar
+        header="Network Concept Report"
+        :pt="{
+          header: [
+            'flex',
+            'flex-row justify-between',
+            'px-14',
+            'md:px-20',
+            'lg:px-24',
+            'mx-6',
+            'my-5',
+          ],
+        }"
+        v-model:visible="visible"
+        :position="drillDownViewOption.position"
+        :class="drillDownViewOption.class"
+      >
+        <div class="px-14 md:px-20 lg:px-24 mx-1 h-[90%]">
+          <NetworkConceptReport v-if="conceptData" :data="conceptData" />
+          <div class="flex justify-center items-center h-full" v-else>
+            <AnimatedLogo />
+          </div>
+        </div>
+      </Sidebar>
     </div>
-  </Panel>
+  </div>
 </template>
 
 <script setup lang="ts">
 import Panel from "primevue/panel";
 import Paginator from "primevue/paginator";
 import Dropdown from "primevue/dropdown";
+import Sidebar from "primevue/sidebar";
+
 import { useStore } from "vuex";
-import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
-import { computed, onBeforeUnmount, onMounted, Ref, ref, watch } from "vue";
-import { COHORT_INDEX, DOMAIN_SUMMARY } from "@/shared/config/files";
+import {
+  FETCH_FILES,
+  FETCH_MULTIPLE_FILES_BY_SOURCE,
+} from "@/processes/exploreReports/model/store/actions.type";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import {
+  COHORT_INDEX,
+  CONCEPT,
+  COST_DOMAIN_SUMMARY,
+  DOMAIN_SUMMARY,
+} from "@/shared/config/files";
 import { helpers } from "@/shared/lib/mixins";
 import InputText from "primevue/inputtext";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import TreeSelect from "primevue/treeselect";
+import NetworkConceptReport from "./conceptDrilldown/NetworkConceptReport.vue";
+import environment from "@/shared/api/environment";
+import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
+import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
+import concept from "@/processes/exploreReports/model/store/postprocessing/conceptReport";
 const route = useRoute();
 const store = useStore();
+const router = useRouter();
 
 const first = ref(0);
 const search = ref(null);
 const step = ref(10);
+
+const conceptDrillDownSection = ref(null);
+const conceptData = ref(null);
+const visible = ref(false);
+
+const drillDownViewOption = computed(
+  () => store.getters.getSettings.drillDownViewOptions
+);
+
+const changeSelectedReport = function (val) {
+  router.replace({ name: route.name });
+
+  selectedReport.value = val;
+};
 
 const selectedFilterAttributes = ref({});
 
@@ -213,7 +283,7 @@ const getParsedSelectedSources = computed(() => {
   }, {});
 });
 
-watch(getParsedSelectedSources, () => {
+watch(getParsedSelectedSources, async () => {
   const currentSources = new Set(
     Object.keys(getParsedSelectedSources.value).flatMap((source) =>
       getParsedSelectedSources.value[source].map(
@@ -250,24 +320,33 @@ const dataSources = ref({});
 const getSourceData = (source, rowName) => {
   return (
     dataSources.value[source].find(
-      (item) => item[selectedConfig.value.rowHeader.value] === rowName
+      (item) =>
+        item[selectedConfig.value.rowHeader.value] ===
+        rowName[selectedConfig.value.rowHeader.value]
     ) || {}
   );
 };
 const sources = computed(() => Object.keys(dataSources.value));
 
-const rowNames = computed(() => [
-  ...new Set(
-    Object.values(dataSources.value)
-      .flat()
-      .map((item) => item[selectedConfig.value.rowHeader.value])
-  ),
-]);
+const rowNames = computed(() => {
+  const uniqueMap = new Map();
+  Object.values(dataSources.value)
+    .flat()
+    .forEach((item) => {
+      const key = item[selectedConfig.value.rowHeader.value];
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
+      }
+    });
+  return Array.from(uniqueMap.values());
+});
 
 const filteredResults = computed(() => {
   if (search.value && search.value.length) {
     return rowNames.value.filter((val) =>
-      val.toLowerCase().includes(search.value.toLowerCase())
+      val[selectedConfig.value.rowHeader.value]
+        .toLowerCase()
+        .includes(search.value.toLowerCase())
     );
   } else {
     return rowNames.value;
@@ -285,15 +364,53 @@ function getDrilldownRoute(cdmRelease: string, rowId: string | number) {
   const domain = selectedDomain.value;
   let paramsObject;
 
-  if (selectedReport.value === DOMAIN_SUMMARY) {
+  if (
+    selectedReport.value === DOMAIN_SUMMARY ||
+    selectedReport.value === COST_DOMAIN_SUMMARY
+  ) {
     paramsObject = { cdm, release, concept: rowId, domain };
   } else {
     paramsObject = { cdm, release, cohort_id: rowId };
   }
   return {
-    name: selectedConfig.value.drillDownRouteName,
+    name: selectedConfig.value.indexTableName,
     params: paramsObject,
   };
+}
+
+function scrollIntoView(
+  elementRef,
+  options = { behavior: "smooth", block: "start" }
+) {
+  const el = elementRef?.value?.$el ?? elementRef?.value;
+  if (el instanceof HTMLElement || el instanceof SVGElement) {
+    el.scrollIntoView(options);
+  }
+}
+
+async function loadDrilldown(concept) {
+  visible.value = true;
+  // scrollIntoView(conceptDrillDownSection);
+  conceptData.value = null;
+  const domain = selectedDomain.value;
+  const conceptId = concept.CONCEPT_ID;
+  const files = environment.DUCKDB_ENABLED
+    ? getDuckDBTables({
+        domain,
+        concept: conceptId,
+      })[domain]
+    : [
+        {
+          name: CONCEPT,
+          instanceParams: [{ domain, concept: conceptId }],
+        },
+      ];
+  await store.dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
+    files: files,
+    duckdb_supported: true,
+    defaultSources: getParsedSelectedSources.value,
+  });
+  conceptData.value = store.getters.getData;
 }
 
 function getIndexTableRoute(cdmRelease: string) {
@@ -309,6 +426,11 @@ function getIndexTableRoute(cdmRelease: string) {
 
 const selectedDomain = ref(null);
 
+const changeSelectedDomain = function (val) {
+  router.replace({ name: route.name });
+  selectedDomain.value = val;
+};
+
 const selectedReport = ref(null);
 
 const newSourceForm = ref(false);
@@ -322,9 +444,13 @@ const reports = [
     name: "Cohort Table",
     value: COHORT_INDEX,
   },
+  {
+    name: "Cost Table",
+    value: COST_DOMAIN_SUMMARY,
+  },
 ];
 
-const domains = [
+const domainSummary = [
   { name: "Condition Occurrence", value: "condition_occurrence" },
   { name: "Condition Era", value: "condition_era" },
   { name: "Drug Exposure", value: "drug_exposure" },
@@ -337,12 +463,28 @@ const domains = [
   { name: "Device Exposure", value: "device_exposure" },
 ];
 
+const costDomainSummary = [
+  { name: "Drug", value: "drug" },
+  { name: "Visits", value: "visit" },
+  { name: "Procedures", value: "procedure" },
+];
+
+const availableOptions = computed(() => {
+  const currentReport = selectedReport.value;
+  const reportDomainLists = {
+    [DOMAIN_SUMMARY]: domainSummary,
+    [COST_DOMAIN_SUMMARY]: costDomainSummary,
+  };
+  return reportDomainLists[currentReport];
+});
+
 const reportColumnNames = {
   [DOMAIN_SUMMARY]: {
     rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
     rowId: "CONCEPT_ID",
-    drillDownRouteName: "concept",
+    drillDownRouteName: "domainTable",
     indexTableName: "domainTable",
+    showDrillDown: true,
     group: {
       name: "Source",
       value: "source",
@@ -364,7 +506,7 @@ const reportColumnNames = {
   [COHORT_INDEX]: {
     rowHeader: { name: "Cohort Name", value: "cohort_name" },
     rowId: "cohort_id",
-    drillDownRouteName: "cohortReport",
+    showDrillDown: false,
     indexTableName: "cohorts",
     group: {
       name: "Source",
@@ -375,6 +517,25 @@ const reportColumnNames = {
           name: "# Persons",
           link: true,
           value: "cohort_subjects",
+          processingFunction: helpers.formatComma,
+        },
+      ],
+    },
+  },
+  [COST_DOMAIN_SUMMARY]: {
+    rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
+    rowId: "CONCEPT_ID",
+    showDrillDown: false,
+    indexTableName: "costTable",
+    group: {
+      name: "Source",
+      value: "source",
+      type: "group",
+      children: [
+        {
+          name: "Total Cost",
+          link: true,
+          value: "TOTAL_COST",
           processingFunction: helpers.formatComma,
         },
       ],
@@ -413,13 +574,23 @@ function reloadData() {
 }
 
 watch(selectedReport, () => {
-  if (selectedReport.value === DOMAIN_SUMMARY) {
-    selectedDomain.value = domains[0].value;
+  const { cdm, release, domain, report } = route.params;
+  if (cdm || release || domain || report) {
+    return;
+  } else {
+    if (selectedReport.value === DOMAIN_SUMMARY) {
+      selectedDomain.value = domainSummary[0].value;
+    }
+    if (selectedReport.value === COST_DOMAIN_SUMMARY) {
+      selectedDomain.value = costDomainSummary[0].value;
+    }
+    conceptData.value = null;
+    reloadData();
   }
-  reloadData();
 });
 watch(selectedDomain, () => {
   reloadData();
+  conceptData.value = null;
 });
 
 //Handle loading of the data if redirected
@@ -482,16 +653,20 @@ function parseSourceToSelectedAttributes(parsedData) {
 }
 
 onMounted(() => {
+  const report = route.params.report;
   const source = route.params.cdm;
   const domain = route.params.domain;
   const release = route.params.release;
-  if (source && domain && release) {
+  if (report === "domain") {
     selectedDomain.value = domain;
     selectedReport.value = DOMAIN_SUMMARY;
-  } else if (source && release) {
+  } else if (report === "cohort") {
     selectedReport.value = COHORT_INDEX;
+  } else if (report === "cost") {
+    selectedReport.value = COST_DOMAIN_SUMMARY;
   } else {
-    selectedDomain.value = domains[0].value;
+    selectedDomain.value = domainSummary[0].value;
+
     selectedReport.value = reports[0].value;
   }
   populateSelectedAttributesFromParams();
@@ -514,6 +689,10 @@ const handleScroll = () => {
 };
 
 onMounted(() => {
+  if (route.params.concept && route.params.domain) {
+    selectedDomain.value = route.params.domain;
+    loadDrilldown({ CONCEPT_ID: route.params.concept });
+  }
   if (tableContainer.value) {
     tableContainer.value.addEventListener("scroll", handleScroll);
   }
@@ -523,6 +702,13 @@ watch(tableContainer, () => {
   if (tableContainer.value) {
     tableContainer.value.addEventListener("scroll", handleScroll);
   }
+});
+
+watch(visible, () => {
+  if (visible.value === false)
+    if (route.params.domain || route.params.concept || route.params.report) {
+      router.replace({ name: route.name });
+    }
 });
 
 onBeforeUnmount(() => {

@@ -1,11 +1,21 @@
 <template>
   <Panel header="Cost Table">
+    <template #icons>
+      <div class="flex flex-row gap-2">
+        <ChartActionIcon
+          :icon="mdiCompareHorizontal"
+          :tooltip="'Compare across the network'"
+          @iconClicked="compareToOtherSources"
+        />
+      </div>
+    </template>
     <div class="p-5">
       <DataTable
+        v-if="data"
         :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
-        :value="table"
+        :value="displayedData"
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
@@ -15,7 +25,7 @@
         :rowsPerPageOptions="[5, 10, 20, 50]"
       >
         <template #header>
-          <div class="flex flex-row gap-10">
+          <div class="flex flex-row gap-5">
             <InputGroup unstyled>
               <InputGroupAddon>
                 <i class="pi pi-search"></i>
@@ -29,28 +39,11 @@
                 placeholder="Search in Table"
               />
             </InputGroup>
+            <Dropdown :options="domains" v-model="selectedDomain" />
           </div>
         </template>
-        <Column field="CONCEPT_ID" header="Concept ID">
-          <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="getReportRoute(slotProps.data)"
-              :title="slotProps.data.CONCEPT_ID"
-              >{{ slotProps.data.CONCEPT_ID }}
-            </router-link>
-          </template>
-        </Column>
-        <Column field="CONCEPT_NAME" header="Concept Name">
-          <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="getReportRoute(slotProps.data)"
-              :title="slotProps.data.CONCEPT_NAME"
-              >{{ slotProps.data.CONCEPT_NAME }}
-            </router-link>
-          </template>
-        </Column>
+        <Column field="CONCEPT_ID" header="Concept ID"> </Column>
+        <Column field="CONCEPT_NAME" header="Concept Name"> </Column>
         <Column
           sortable
           style="text-align: end"
@@ -73,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { debounce } from "lodash";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
@@ -85,6 +78,10 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
+import Dropdown from "primevue/dropdown";
+import { helpers } from "@/shared/lib/mixins";
+import { mdiCompareHorizontal } from "@mdi/js";
+import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 
 const store = useStore();
 const route = useRoute();
@@ -102,21 +99,38 @@ const debouncedSearch = debounce(function (data: string): void {
   });
 }, 300);
 
-const getReportRoute = function (item) {
-  return {
-    name: "costDrilldown",
-    params: { concept: item.CONCEPT_ID },
-  };
-};
+const data = ref(null);
 
-const data = computed(() => {
-  return store.getters.getData;
+const displayedData = computed(() => {
+  return data.value.costTable.filter(
+    (val) => val.DOMAIN_ID === selectedDomain.value
+  );
 });
 
-const table = computed(() => {
-  return data.value.costTable.filter(
-    (item) => item.DOMAIN_ID === route.params.domain
-  );
+const selectedDomain = ref(null);
+
+const domains = computed(() => {
+  return helpers.getValuesArray(data.value.costTable, "DOMAIN_ID", true);
+});
+
+const compareToOtherSources = function () {
+  const source = route.params.cdm;
+  // const domain = route.params.domain;
+  const release = route.params.release;
+  router.push({
+    name: "networkComparisonTool",
+    params: {
+      cdm: source,
+      // domain: domain,
+      release: release,
+      report: "cost",
+    },
+  });
+};
+
+onMounted(() => {
+  data.value = store.getters.getData;
+  selectedDomain.value = domains.value[0];
 });
 </script>
 

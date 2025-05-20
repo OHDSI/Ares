@@ -1,8 +1,6 @@
 <template>
   <div class="flex flex-col gap-10">
-    <PageHeader
-      :title="store.getters.getData.conceptName || 'Report name unknown'"
-    >
+    <PageHeader :title="title">
       <template #action>
         <div class="flex flex-row gap-2">
           <Button
@@ -15,9 +13,8 @@
               type="mdi"
               :path="mdiCheckNetwork"
             ></svg-icon>
-            <span class="text-white uppercase text-base"> Network Report </span>
+            <span class="text-white uppercase text-base">Network Report</span>
           </Button>
-          <ReturnButton />
         </div>
       </template>
     </PageHeader>
@@ -50,7 +47,7 @@
     <RecordsByUnit />
     <MeasurementsByType />
     <AgeAtFirstOccurrence />
-    <RecordCountProportionByMonth />
+    <RecordCountProportionByMonth :conceptId="conceptId" />
     <DaysSupply />
     <QuantityDistribution />
     <VisitDurationByType />
@@ -59,24 +56,23 @@
 </template>
 
 <script setup lang="ts">
-import ReturnButton from "@/features/returnToPreviousPage";
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
 import { useStore } from "vuex";
-import MeasurementValueDistribution from "@/pages/reports/release/ConceptReport/charts/MeasurementValueDistribution/MeasurementValueDistribution.vue";
-import AgeAtFirstDiagnosis from "@/pages/reports/release/ConceptReport/charts/AgeAtFirstDiagnosis/AgeAtFirstDiagnosis.vue";
-import AgeAtFirstExposure from "@/pages/reports/release/ConceptReport/charts/AgeAtFirstExposure/AgeAtFirstExposure.vue";
-import LengthOfEra from "@/pages/reports/release/ConceptReport/charts/LengthOfEra/LengthOfEra.vue";
-import ConditionsByType from "@/pages/reports/release/ConceptReport/charts/ConditionsByType/ConditionsByType.vue";
-import DrugsByType from "@/pages/reports/release/ConceptReport/charts/DrugsByType/DrugsByType.vue";
-import RecordsByUnit from "@/pages/reports/release/ConceptReport/charts/RecordsByUnit/RecordsByUnit.vue";
-import MeasurementsByType from "@/pages/reports/release/ConceptReport/charts/MeasurementsByType/MeasurementsByType.vue";
-import AgeAtFirstOccurrence from "@/pages/reports/release/ConceptReport/charts/AgeAtFirstOccurrence/AgeAtFirstOccurrence.vue";
-import RecordCountProportionByMonth from "@/pages/reports/release/ConceptReport/charts/RecordsCountProportionByMonth/RecordCountProportionByMonth.vue";
-import DaysSupply from "@/pages/reports/release/ConceptReport/charts/DaysSupply/DaysSupply.vue";
-import QuantityDistribution from "@/pages/reports/release/ConceptReport/charts/QuantityDistribution/QuantityDistribution.vue";
-import VisitDurationByType from "@/pages/reports/release/ConceptReport/charts/VisitDurationByType/VisitDurationByType.vue";
-import RecordCountProportionByAgeSexYear from "@/pages/reports/release/ConceptReport/charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
+import MeasurementValueDistribution from "./charts/MeasurementValueDistribution/MeasurementValueDistribution.vue";
+import AgeAtFirstDiagnosis from "./charts/AgeAtFirstDiagnosis/AgeAtFirstDiagnosis.vue";
+import AgeAtFirstExposure from "./charts/AgeAtFirstExposure/AgeAtFirstExposure.vue";
+import LengthOfEra from "./charts/LengthOfEra/LengthOfEra.vue";
+import ConditionsByType from "./charts/ConditionsByType/ConditionsByType.vue";
+import DrugsByType from "./charts/DrugsByType/DrugsByType.vue";
+import RecordsByUnit from "./charts/RecordsByUnit/RecordsByUnit.vue";
+import MeasurementsByType from "./charts/MeasurementsByType/MeasurementsByType.vue";
+import AgeAtFirstOccurrence from "./charts/AgeAtFirstOccurrence/AgeAtFirstOccurrence.vue";
+import RecordCountProportionByMonth from "./charts/RecordsCountProportionByMonth/RecordCountProportionByMonth.vue";
+import DaysSupply from "./charts/DaysSupply/DaysSupply.vue";
+import QuantityDistribution from "./charts/QuantityDistribution/QuantityDistribution.vue";
+import VisitDurationByType from "./charts/VisitDurationByType/VisitDurationByType.vue";
+import RecordCountProportionByAgeSexYear from "./charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
 import InfoPanel from "@/widgets/infoPanel";
 import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 import { mdiCheckNetwork } from "@mdi/js";
@@ -86,6 +82,9 @@ import Button from "primevue/button";
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
+
+const title = store.getters.getData.conceptName || "Report name unknown";
+const conceptId = store.getters.getData.conceptId;
 
 const getPercentWithValues = computed((): string => {
   const missingData = store.getters.getData.domainSummary.filter(
@@ -100,12 +99,14 @@ const navigateToDataQuality = function () {
     query: { tab: "results", search: route.params.concept },
   };
 };
+
 const navigateToNetworkConcept = function () {
   router.push({
-    name: "networkConcept",
+    name: "networkComparisonTool",
     params: {
       domain: route.params.domain,
-      concept: route.params.concept,
+      concept: conceptId,
+      report: "domain",
     },
   });
 };

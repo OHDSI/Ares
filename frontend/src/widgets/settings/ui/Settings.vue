@@ -28,6 +28,7 @@
           <ToggleDarkMode />
           <StickyNavBar />
           <TableStrippedRowsToggle />
+          <DrillDownViewOptions />
         </div>
         <Divider></Divider>
 
@@ -40,9 +41,6 @@
         <div class="relative bottom-0 mt-4">
           <ExportNotes></ExportNotes>
         </div>
-        <!--        <div class="relative bottom-0 mt-4">-->
-        <!--          <cookie-test />-->
-        <!--        </div>-->
       </div>
     </div>
   </Sidebar>
@@ -71,6 +69,7 @@ import ToggleDefaultNotesMode from "@/widgets/settings/ui/components/toggleDefau
 import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccount.vue";
 import Sidebar from "primevue/sidebar";
 import FavoriteSources from "@/widgets/settings/ui/components/favoriteSources/FavoriteSources.vue";
+import DrillDownViewOptions from "@/widgets/settings/ui/components/DrillDownViewOptions";
 
 const store = useStore();
 

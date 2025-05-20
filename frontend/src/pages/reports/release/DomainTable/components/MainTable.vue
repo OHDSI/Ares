@@ -21,11 +21,12 @@
     </template>
     <div class="p-5">
       <DataTable
+        v-if="domainTableData?.domainTable"
         :striped-rows="store.getters.getSettings.strippedRows"
         sortField="PERCENT_PERSONS"
         :sortOrder="-1"
         size="small"
-        :value="store.getters.getData.domainTable"
+        :value="domainTableData.domainTable"
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
@@ -45,8 +46,8 @@
                 class="rounded-r-lg"
                 style="width: 45rem"
                 unstyled
-                :value="route.query.search"
                 @update:modelValue="debouncedSearch"
+                :model-value="search"
                 placeholder="Search in Table"
               />
             </InputGroup>
@@ -86,12 +87,16 @@
           sortable
         >
           <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="getReportRoute(slotProps.data)"
-              :title="slotProps.data.CONCEPT_ID"
-              >{{ slotProps.data.CONCEPT_ID }}
-            </router-link>
+            <!--            <router-link-->
+            <!--              class="text-blue-400 hover:underline"-->
+            <!--              :to="getReportRoute(slotProps.data)"-->
+            <!--              @click="openDrilldown(slotProps.data)"-->
+            <!--              :title="slotProps.data.CONCEPT_ID"-->
+            <!--              >{{ slotProps.data.CONCEPT_ID }}-->
+            <!--            </router-link>-->
+            <a class="cursor-pointer" @click="openDrilldown(slotProps.data)">{{
+              slotProps.data.CONCEPT_ID
+            }}</a>
           </template>
         </Column>
         <Column
@@ -101,12 +106,16 @@
           sortable
         >
           <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="getReportRoute(slotProps.data)"
-              :title="slotProps.data.CONCEPT_NAME"
-              >{{ slotProps.data.CONCEPT_NAME }}
-            </router-link>
+            <!--            <router-link-->
+            <!--              class="text-blue-400 hover:underline"-->
+            <!--              :to="getReportRoute(slotProps.data)"-->
+            <!--              @click="openDrilldown(slotProps.data)"-->
+            <!--              :title="slotProps.data.CONCEPT_NAME"-->
+            <!--              >{{ slotProps.data.CONCEPT_NAME }}-->
+            <!--            </router-link>-->
+            <a class="cursor-pointer" @click="openDrilldown(slotProps.data)">{{
+              slotProps.data.CONCEPT_NAME
+            }}</a>
           </template>
         </Column>
         <Column
@@ -339,6 +348,7 @@ const route = useRoute();
 const router = useRouter();
 
 const openedDomain = computed(() => route.params.domain?.toUpperCase());
+const search = ref("");
 
 const compareToOtherSources = function () {
   const source = route.params.cdm;
@@ -350,12 +360,13 @@ const compareToOtherSources = function () {
       cdm: source,
       domain: domain,
       release: release,
+      report: "domain",
     },
   });
 };
 
 const newFilters = computed(() => ({
-  global: { value: route.query.search, matchMode: FilterMatchMode.CONTAINS },
+  global: { value: search.value, matchMode: FilterMatchMode.CONTAINS },
 }));
 
 const headers = ref({
@@ -467,6 +478,8 @@ const headers = ref({
 
 const selectedHeaders = ref([]);
 
+const domainTableData = ref(null);
+
 const getHeaders = computed(() => {
   return Object.values(headers.value).filter(
     (value) =>
@@ -475,16 +488,12 @@ const getHeaders = computed(() => {
 });
 
 const debouncedSearch = debounce(function (data: string): void {
-  router.push({
-    query: {
-      search: data,
-    },
-  });
+  search.value = data;
 }, 300);
 
 const domainIssue = computed(function (): DomainIssues | [] {
-  if (store.getters.getData) {
-    return store.getters.getData.domainIssues.find(
+  if (domainTableData.value) {
+    return domainTableData.value.domainIssues.find(
       (di) => di.cdm_table_name === route.params.domain
     );
   } else {
@@ -495,13 +504,18 @@ const domainIssue = computed(function (): DomainIssues | [] {
 const issueCount = computed(function (): number {
   return domainIssue.value?.count_failed || 0;
 });
+const emit = defineEmits(["openDrilldown"]);
 
-const getReportRoute = function (item) {
-  return {
-    name: "concept",
-    params: { concept: item.CONCEPT_ID },
-  };
-};
+// const getReportRoute = function (item) {
+//   return {
+//     // name: "domainTable",
+//     params: { concept: item.CONCEPT_ID },
+//   };
+// };
+
+function openDrilldown(item) {
+  emit("openDrilldown", item);
+}
 
 const setDefaultSelectedHeaders = () => {
   const settings =
@@ -520,9 +534,23 @@ const setDefaultSelectedHeaders = () => {
 };
 
 onMounted(() => {
+  domainTableData.value = store.getters.getData;
   setDefaultSelectedHeaders();
 });
-watch(route, () => {
+
+const path = computed(function () {
+  return JSON.stringify({
+    name: route.name,
+    params: {
+      cdm: route.params.cdm,
+      release: route.params.release,
+      domain: route.params.domain,
+    },
+  });
+});
+
+watch(path, () => {
+  domainTableData.value = store.getters.getData;
   setDefaultSelectedHeaders();
 });
 

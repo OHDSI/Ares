@@ -1,6 +1,5 @@
 import dataStrandReport from "@/processes/exploreReports/model/store/postprocessing/networkDataStrandReport";
 import population from "@/processes/exploreReports/model/store/postprocessing/networkPopulationReport";
-import networkConcept from "@/processes/exploreReports/model/store/postprocessing/networkConceptReport";
 import death from "@/processes/exploreReports/model/store/postprocessing/deathReport";
 import person from "@/processes/exploreReports/model/store/postprocessing/personReport";
 import sourceConceptOverlay from "@/processes/exploreReports/model/store/postprocessing/sourceConceptReport";
@@ -16,16 +15,17 @@ import domainTable from "@/processes/exploreReports/model/store/postprocessing/d
 import feasibility from "@/processes/exploreReports/model/store/postprocessing/feasibility";
 import networkUnmappedSourceCodes from "@/processes/exploreReports/model/store/postprocessing/networkUnmappedSourceCodes";
 import networkDiversityReport from "@/processes/exploreReports/model/store/postprocessing/networkDiversityReport";
-import cohortReport from "@/processes/exploreReports/model/store/postprocessing/cohortReport";
+import cohorts from "@/processes/exploreReports/model/store/postprocessing/cohorts";
 import networkConceptDashboard from "@/processes/exploreReports/model/store/postprocessing/networkConceptDashboard";
 import dataSourceOverview from "@/processes/exploreReports/model/store/postprocessing/dataSourceOverview";
 import costTable from "@/processes/exploreReports/model/store/postprocessing/costTable";
 import costDrilldown from "@/processes/exploreReports/model/store/postprocessing/costDrilldown";
+import networkComparisonTool from "@/processes/exploreReports/model/store/postprocessing/networkComparisonTool";
 
 export default {
   dataStrandReport,
   population,
-  networkConcept,
+  networkComparisonTool,
   death,
   person,
   sourceConceptOverlay,
@@ -41,7 +41,7 @@ export default {
   domainTable,
   feasibility,
   networkUnmappedSourceCodes,
-  cohortReport,
+  cohorts,
   networkConceptDashboard,
   dataSourceOverview,
   costTable,

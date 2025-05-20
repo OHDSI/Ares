@@ -13,6 +13,7 @@ import {
   TOGGLE_STICKY_NAV_BAR,
   TOGGLE_STRIPPED_ROWS,
   UPDATE_DEFAULT_SOURCES,
+  CHANGE_DRILLDOWN_VIEW_OPTIONS,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -32,6 +33,10 @@ const state = {
     stickyNavBar: true,
     strippedRows: false,
     defaultSources: {},
+    drillDownViewOptions: {
+      class: "h-5/6",
+      position: "bottom",
+    },
   },
   visible: false,
 };
@@ -74,6 +79,9 @@ const actions = {
   },
   [TOGGLE_STICKY_NAV_BAR]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "stickyNavBar" });
+  },
+  [CHANGE_DRILLDOWN_VIEW_OPTIONS]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "drillDownViewOptions" });
   },
   [TOGGLE_STRIPPED_ROWS]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "strippedRows" });

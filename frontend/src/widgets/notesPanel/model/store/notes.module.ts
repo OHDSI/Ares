@@ -205,7 +205,7 @@ const actions = {
     const chartName = chartNameIDMap[chartId];
     const reportName = rootState.route.name;
     const domainName = rootState.route.params.domain;
-    const conceptId = rootState.route.params.concept;
+    const conceptId = params.conceptId || rootState.route.params.concept;
 
     const webApiEnabled = environment.WEB_API_ENABLED;
     const loggedIn = rootGetters.getSettings.user;

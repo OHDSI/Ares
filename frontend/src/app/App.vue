@@ -83,6 +83,9 @@ LocalStorageService.watch("bearerToken", (newToken) => {
 </script>
 
 <style lang="scss">
+.vg-tooltip {
+  z-index: 999999 !important;
+}
 html {
   font-size: 14px;
 }

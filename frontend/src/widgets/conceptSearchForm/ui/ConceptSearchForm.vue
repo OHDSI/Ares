@@ -647,7 +647,6 @@ async function fetchVocabularies() {
         b.daimons.find((d) => d.daimonType === "Vocabulary")?.priority ?? -1;
       return bPriority - aPriority;
     });
-    console.log(apiSources.value);
     vocabularySource.value = apiSources.value[0].sourceKey;
   });
 }

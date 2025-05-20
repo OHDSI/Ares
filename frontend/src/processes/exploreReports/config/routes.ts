@@ -9,7 +9,6 @@ import NetworkDataFeasibilityReport from "@/pages/reports/network/NetworkDataFea
 import NetworkDatastrandReport from "@/pages/reports/network/NetworkDatastrandReport/NetworkDatastrandReport.vue";
 import NetworkPopulationReport from "@/pages/reports/network/NetworkPopulationReport/NetworkPopulationReport.vue";
 import NetworkOverview from "@/pages/reports/network/NetworkOverview/NetworkOverview.vue";
-import NetworkConceptReport from "@/pages/reports/network/NetworkConceptReport/NetworkConceptReport.vue";
 import ObservationPeriodReport from "@/pages/reports/release/ObservationPeriodReport/ObservationPeriodReport.vue";
 import TemporalCharacterization from "@/pages/reports/release/TemporalCharacterizationReport/TemporalCharacterization.vue";
 import MetadataReport from "@/pages/reports/release/MetadataReport/MetadataReport.vue";
@@ -20,18 +19,14 @@ import UnmappedSourceCodes from "@/pages/reports/release/UnmappedSourceCodesRepo
 import PerformanceReport from "@/pages/reports/release/PerformanceReport/PerformanceTable.vue";
 import PersonReport from "@/pages/reports/release/PersonReport/PersonReport.vue";
 import DomainTable from "@/pages/reports/release/DomainTable/DomainTable.vue";
-import ConceptReport from "@/pages/reports/release/ConceptReport/ConceptReport.vue";
 import DataQualityHistory from "@/pages/reports/source/DataQualityHistory/DataQualityHistory.vue";
 import SourceOverview from "@/pages/reports/source/SourceOverview/SourceOverview.vue";
 import DomainContinuity from "@/pages/reports/source/DomainContinuity/DomainContinuity.vue";
 import SourceConceptReport from "@/pages/reports/source/SourceConceptReport/SourceConceptReport.vue";
-import NetworkConceptDashboard from "@/pages/reports/network/NetworkConceptDashboard/NetworkConceptDashboard.vue";
 import NetworkDiversityReport from "@/pages/reports/network/NetworkDiversityReport/NetworkDiversityReport.vue";
 import CohortsTable from "@/pages/reports/release/CohortsTable/CohortsTable.vue";
-import CohortDrilldownReport from "@/pages/reports/release/CohortDrilldownReport/CohortDrilldownReport.vue";
 import LocationReport from "@/pages/reports/release/Location/LocationReport.vue";
 import NetworkAnnotationsReport from "@/pages/reports/network/networkAnnotationsReport/NetworkAnnotationsReport.vue";
-import CostDrilldownReport from "@/pages/reports/release/CostDrilldownReport/CostDrilldownReport.vue";
 import CostTable from "@/pages/reports/release/CostTable/CostTable.vue";
 import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 
@@ -71,17 +66,6 @@ export const routes: RouteRecordRaw[] = [
         name: "networkAnnotationsReport",
         components: { reportsView: NetworkAnnotationsReport },
       },
-
-      {
-        path: "network_concept/:domain?/:concept?",
-        name: "networkConcept",
-        components: { reportsView: NetworkConceptReport },
-      },
-      {
-        path: "network_concept_dashboard",
-        name: "networkConceptDashboard",
-        components: { reportsView: NetworkConceptDashboard },
-      },
       {
         path: "web_api",
         name: "webApi",
@@ -93,7 +77,7 @@ export const routes: RouteRecordRaw[] = [
         components: { reportsView: NetworkPerformance },
       },
       {
-        path: "network_comparison_tool/:cdm?/:release?/:domain?",
+        path: "network_comparison_tool/:report?/:cdm?/:release?/:domain?/:concept?",
         name: "networkComparisonTool",
         components: { reportsView: NetworkComparisonTool },
       },
@@ -127,11 +111,6 @@ export const routes: RouteRecordRaw[] = [
         name: "overview",
         components: { reportsView: NetworkOverview },
       },
-      /*{
-        path: "concept/:domain/:concept/summary",
-        name: "networkConcept",
-        components: { reportsView: networkConceptReport },
-      },*/
     ],
   },
   {
@@ -180,14 +159,9 @@ export const routes: RouteRecordRaw[] = [
         components: { reportsView: LocationReport },
       },
       {
-        path: "cost_table/:domain",
+        path: "cost_table",
         name: "costTable",
         components: { reportsView: CostTable },
-      },
-      {
-        path: "cost_table/:domain/cost_drilldown/:concept",
-        name: "costDrilldown",
-        components: { reportsView: CostDrilldownReport },
       },
       {
         path: "temporal_characterization",
@@ -230,24 +204,14 @@ export const routes: RouteRecordRaw[] = [
         components: { reportsView: PersonReport },
       },
       {
-        path: "cohorts",
+        path: "cohorts/:cohort_id?/",
         name: "cohorts",
         components: { reportsView: CohortsTable },
       },
       {
-        path: "cohorts/:cohort_id/",
-        name: "cohortReport",
-        components: { reportsView: CohortDrilldownReport },
-      },
-      {
-        path: ":domain",
+        path: ":domain/:concept?/",
         components: { reportsView: DomainTable },
         name: "domainTable",
-      },
-      {
-        path: ":domain/:concept/",
-        components: { reportsView: ConceptReport },
-        name: "concept",
       },
     ],
   },

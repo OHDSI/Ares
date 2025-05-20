@@ -8,16 +8,17 @@ interface AnnotationComposable {
   notes: ComputedRef<Note[]>;
 }
 
-export default function useAnnotations(reportId: string): AnnotationComposable {
+export default function useAnnotations(
+  reportId: string,
+  conceptId: string = null
+): AnnotationComposable {
   const store: Store<never> = useStore();
   const route: RouteLocation = useRoute();
 
   const currentScope = computed(
     (): { concept: string; source: string; release: string } => {
       return {
-        concept: Array.isArray(route.params.concept)
-          ? route.params.concept[0]
-          : route.params.concept,
+        concept: route.params.concept,
         source: store.getters.getSelectedSource.cdm_source_key,
         release: store.getters.getSelectedRelease?.release_id || null,
       };
@@ -28,16 +29,22 @@ export default function useAnnotations(reportId: string): AnnotationComposable {
     const selections = store.getters.getNotes[reportId] || [];
 
     return selections.filter((val) => {
-      const scope = val.metadata.scope.value;
+      const annotationScope = val.metadata.scope.value;
+      const currentScopeConcept = currentScope.value.concept;
+
       let showSelection = true;
-      if (scope.concept) {
-        showSelection = scope.concept.includes(currentScope.value.concept);
+      if (annotationScope.concept) {
+        showSelection = annotationScope.concept.includes(currentScopeConcept);
       }
-      if (scope.source && showSelection) {
-        showSelection = scope.source.includes(currentScope.value.source);
+      if (annotationScope.source && showSelection) {
+        showSelection = annotationScope.source.includes(
+          currentScope.value.source
+        );
       }
-      if (scope.release && showSelection) {
-        showSelection = scope.release.includes(currentScope.value.release);
+      if (annotationScope.release && showSelection) {
+        showSelection = annotationScope.release.includes(
+          currentScope.value.release
+        );
       }
       return showSelection;
     });

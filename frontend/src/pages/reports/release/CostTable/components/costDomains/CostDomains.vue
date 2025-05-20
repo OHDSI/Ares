@@ -1,22 +1,9 @@
 <template>
-  <Panel header="Cost Time series" :loading="!store.getters.getData">
+  <Panel header="Cost Domains" :loading="!store.getters.getData">
     <template #icons>
-      <ChartHeader
-        title="Population by Year of Birth"
-        :notes-count="notes.length"
-        :annotations-count="annotations.length"
-        @annotations-mode-toggled="toggleAnnotationsMode"
-        @notes-mode-toggled="toggleNotesMode"
-        table-toggle
-        @table-toggled="toggleTable"
-      />
+      <ChartHeader title="Population by Year of Birth" />
     </template>
-    <Chart
-      v-if="data"
-      :id="reportId"
-      :chartSpec="specCostTimeseries"
-      :data="data"
-    >
+    <Chart v-if="data" :id="reportId" :chartSpec="specCostDomains" :data="data">
     </Chart>
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -50,7 +37,6 @@
         </Column>
       </DataTable>
     </div>
-    <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -72,12 +58,11 @@
 
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
-import { specCostTimeseries } from "./specCostTimeseries";
-import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
+import { specCostDomains } from "./specCostDomains";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { ref } from "vue";
 import { helpers } from "@/shared/lib/mixins";
@@ -85,30 +70,14 @@ import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import useAnnotations from "@/shared/lib/composables/useAnnotations";
-import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
-import { useRoute } from "vue-router";
 
 const store = useStore();
-const route = useRoute();
 
-const reportId = "viz-costtime";
+const reportId = "viz-costdomains";
 
-const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
-  useAnnotationControls();
-
-const { annotations, notes } = useAnnotations(reportId);
 const showTable = ref(false);
 
-function toggleTable(mode) {
-  showTable.value = mode;
-}
-
-const data = ref(null);
-
-onMounted(() => {
-  data.value = store.getters.getData.timeSeries;
-});
+const data = computed(() => store.getters.getData.costTable);
 </script>
 
 <style scoped></style>

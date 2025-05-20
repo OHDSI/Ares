@@ -47,9 +47,7 @@ export default function getFilePath(params: Params) {
     [files.COST_INDEX]: `data/${params.cdm}/${params.release}/cost-index.csv`,
     [files.COST_TIMESERIES]: `data/${params.cdm}/${params.release}/cost-timeseries.csv`,
     [files.COST_DRILLDOWN]: `data/${params.cdm}/${params.release}/cost-drilldown.csv`,
-    [files.COST_DOMAIN_SUMMARY]: `data/${params.cdm}/${
-      params.release
-    }/cost-domain-summary-${params.domain?.toLowerCase()}.csv`,
+    [files.COST_DOMAIN_SUMMARY]: `data/${params.cdm}/${params.release}/cost-domain-summary.csv`,
     [files.COST_CONCEPT]: `data/${params.cdm}/${params.release}/concepts/cost/concept_${params.concept}.json`,
   };
 }
