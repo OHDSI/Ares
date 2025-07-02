@@ -3,10 +3,10 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       :id="reportId"
-      :chartSpec="specRecordProportionByMonth"
       :data="data"
+      :chart-spec="getEChartsOptionRecordProportionByMonthNetwork"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -78,9 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
@@ -91,6 +89,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionRecordProportionByMonthNetwork from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/RecordCountProportionByMonth/recordProportionByMonth";
 
 interface Props {
   data: [];

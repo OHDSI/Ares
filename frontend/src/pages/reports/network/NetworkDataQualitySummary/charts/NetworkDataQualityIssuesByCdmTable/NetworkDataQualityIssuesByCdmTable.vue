@@ -1,22 +1,25 @@
 <template>
   <Panel header="Network Data Quality Issues by CDM Table">
-    <Chart
+    <Echarts
       id="viz-table"
-      :data="store.getters.getData[NETWORK_QUALITY_SUMMARY]"
-      :chartSpec="specIssueStratificationByTable"
+      :data="data"
+      :chart-spec="getEChartsIssueStratificationByTable"
+      height="650px"
     />
   </Panel>
 </template>
 
 <script setup lang="ts">
 import { NETWORK_QUALITY_SUMMARY } from "@/shared/config/files";
-import { Chart } from "@/widgets/chart";
-import { specIssueStratificationByTable } from "./specIssueStratificationByTable";
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { specIssueStratificationByCategory } from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCategory/specIssueStratificationByCategory";
 import Panel from "primevue/panel";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsIssueStratificationByTable from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCdmTable/issuesStratificationByTable";
+import { computed } from "vue";
+
 const store = useStore();
+
+const data = computed(() => store.getters.getData[NETWORK_QUALITY_SUMMARY]);
 </script>
 
 <style scoped></style>

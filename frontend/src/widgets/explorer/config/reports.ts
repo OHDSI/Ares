@@ -177,12 +177,6 @@ export const reports = [
   },
   {
     folder: "Data Network",
-    icon: mdiCheckNetwork,
-    name: "Network Concept Report",
-    routeName: "networkConcept",
-  },
-  {
-    folder: "Data Network",
     icon: mdiDatabaseSearch,
     name: "Web API",
     routeName: "webApi",

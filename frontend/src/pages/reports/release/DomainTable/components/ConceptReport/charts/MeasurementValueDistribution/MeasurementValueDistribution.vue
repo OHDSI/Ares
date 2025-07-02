@@ -15,11 +15,10 @@
       display="chip"
     ></MultiSelect>
 
-    <Chart
-      id="viz-measurementvaluedistribution"
-      ref="measurementvalue"
-      :chartSpec="specMeasurementValueDistribution"
+    <Echarts
+      id="viz-measurementvaluedistributionq"
       :data="getSelectedMeasurementUnits"
+      :chart-spec="getEChartsOptionMeasurementDistribution"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -203,10 +202,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-
 import { links } from "@/shared/config/links";
-import { specMeasurementValueDistribution } from "./specMeasurementValueDistribution";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ref, Ref } from "vue";
@@ -219,6 +215,8 @@ import DataTable from "primevue/datatable";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import MultiSelect from "primevue/multiselect";
 import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionMeasurementDistribution from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/MeasurementValueDistribution/measurementValueDistribution";
 
 const selectedMeasurementUnits: Ref<string[]> = ref([]);
 

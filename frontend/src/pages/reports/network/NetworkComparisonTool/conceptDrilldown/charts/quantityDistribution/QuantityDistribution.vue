@@ -3,7 +3,12 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart id="viz-quantity" :chartSpec="specQuantity" :data="data" />
+    <Echarts
+      id="viz-quantity"
+      :data="data"
+      :chart-spec="getEChartsOptionQuantityDistributionFaceted"
+      :height="totalHeight"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -161,11 +166,9 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
-import { specQuantity } from "./specQuantity";
+import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -176,10 +179,11 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
 import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionQuantityDistributionFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/quantityDistribution/quantityDistribution";
 
 const store = useStore();
 const route = useRoute();
-const router = useRouter();
 
 interface Props {
   data: DistributionType[];
@@ -196,6 +200,13 @@ function toggleTable(mode) {
 const data = computed(() => {
   return props.data;
 });
+
+const sources = helpers.getValuesArray(data.value, "SOURCE", true);
+
+const facetCount = sources.length;
+const perFacetHeight = 130;
+
+const totalHeight = `${facetCount * perFacetHeight}px`;
 </script>
 
 <style scoped></style>

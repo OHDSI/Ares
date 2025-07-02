@@ -3,10 +3,10 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-ageatfirstexposure"
-      :chartSpec="specAgeAtFirstExposure"
       :data="data"
+      :chart-spec="getEChartsOptionAgeAtFirstExposure"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -106,12 +106,9 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-
-import { specAgeAtFirstExposure } from "./specAgeAtFirstExposure";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -121,10 +118,11 @@ import { computed, ref } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionAgeAtFirstExposure from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/AgeAtFirstExposure/ageAtFirstExposure";
 
 const store = useStore();
 const route = useRoute();
-const router = useRouter();
 
 const showTable = ref(false);
 

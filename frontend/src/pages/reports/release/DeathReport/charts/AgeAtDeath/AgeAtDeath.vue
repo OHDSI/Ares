@@ -3,10 +3,10 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-ageatdeath"
-      :chartSpec="specAgeAtDeath"
       :data="store.getters.getData.AGE_AT_DEATH"
+      :chart-spec="getEChartsOptionAgeAtDeath"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -100,8 +100,6 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specAgeAtDeath } from "./specAgeAtDeath";
 import { links } from "@/shared/config/links";
 
 import { useStore } from "vuex";
@@ -114,6 +112,8 @@ import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionAgeAtDeath from "@/pages/reports/release/DeathReport/charts/AgeAtDeath/ageAtDeath";
 
 const store = useStore();
 const route = useRoute();

@@ -11,19 +11,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-
-    <Chart
-      id="viz-observationbymonth"
-      :annotations-config="{
-        chartSpec: specObservationByMonthAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
+    <Echarts
+      :id="reportId"
       :annotations="annotations"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :annotation-mode="annotationsMode"
-      :chartSpec="specObservationByMonth"
       :data="data"
+      :annotation-mode="annotationsMode"
+      :chart-spec="getEChartsOptionObservationByMonth"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -106,11 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-
 import { links } from "@/shared/config/links";
-import { specObservationByMonth } from "./specObservationByMonth";
-import { specObservationByMonthAnnotation } from "./specObservationByMonthAnnotation";
 import { useStore } from "vuex";
 import * as listeners from "@/pages/model/lib/listeners";
 import { computed, ref } from "vue";
@@ -124,6 +113,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionObservationByMonth from "@/pages/reports/release/ObservationPeriodReport/charts/ObservationOverTime/observationByMonth";
 
 const store = useStore();
 

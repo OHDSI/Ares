@@ -16,13 +16,13 @@
         multiple
       ></MultiSelect>
     </div>
-    <Chart
+    <Echarts
       id="viz-networkmeasurementvaluedistribution"
-      ref="measurementvalue"
-      :chartSpec="specMeasurementValueDistribution"
       :data="
         getSelectedMeasurementUnitsChart ? getSelectedMeasurementUnitsChart : []
       "
+      :chart-spec="getEChartsOptionMeasurementDistributionFaceted"
+      :height="totalHeight"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -205,14 +205,11 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specMeasurementValueDistribution } from "./specMeasurementValueDistribution";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref, Ref } from "vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
-import { useRouter } from "vue-router";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import Panel from "primevue/panel";
 import MultiSelect from "primevue/multiselect";
@@ -221,9 +218,10 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionMeasurementDistributionFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/measurementValueDistributionChart/measurementValueDistribution";
 
 const store = useStore();
-const router = useRouter();
 
 interface Props {
   data: { chart: DistributionType[]; table: DistributionType[] };
@@ -258,6 +256,13 @@ const showTable = ref(false);
 function toggleTable(mode) {
   showTable.value = mode;
 }
+
+const sources = helpers.getValuesArray(props.data.chart, "SOURCE", true);
+
+const facetCount = sources.length;
+const perFacetHeight = 130;
+
+const totalHeight = `${facetCount * perFacetHeight}px`;
 </script>
 
 <style scoped></style>

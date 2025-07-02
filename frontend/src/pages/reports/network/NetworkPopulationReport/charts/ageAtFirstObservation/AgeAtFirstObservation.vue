@@ -3,10 +3,10 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-networkageatfirstobservation"
-      :chartSpec="specAgeAtFirstObservation"
       :data="data"
+      :chart-spec="getEChartsNetworkAgeAtFirstObservation"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -62,11 +62,8 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-
-import { specAgeAtFirstObservation } from "./specAgeAtFirstObservation";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -75,6 +72,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { computed, ref } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsNetworkAgeAtFirstObservation from "@/pages/reports/network/NetworkPopulationReport/charts/ageAtFirstObservation/networkAgeFirstObservation";
 
 const store = useStore();
 

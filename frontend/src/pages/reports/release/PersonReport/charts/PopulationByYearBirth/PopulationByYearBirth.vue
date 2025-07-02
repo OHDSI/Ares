@@ -11,19 +11,13 @@
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
+    <Echarts
       :id="reportId"
-      :chartSpec="specBirthYear"
-      :annotations-config="{
-        chartSpec: specBirthYearAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
       :data="data"
+      :chart-spec="getEChartsOptionYearOfBirth"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
-    >
-    </Chart>
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -76,9 +70,6 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specBirthYear } from "./specBirthYear";
-import { specBirthYearAnnotation } from "./specBirthYearAnnotation";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
@@ -93,6 +84,8 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionYearOfBirth from "@/pages/reports/release/PersonReport/charts/PopulationByYearBirth/populationByYearOfBirth";
 
 const store = useStore();
 

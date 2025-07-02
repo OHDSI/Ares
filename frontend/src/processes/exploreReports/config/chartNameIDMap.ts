@@ -10,6 +10,7 @@ export const chartNameIDMap = {
   "viz-observationbymonth": "Observation over Time",
   "viz-observationbyage": "Years of Observation by Age",
   "viz-observationbysex": "Years of Observation By Sex",
+  "viz-populationAgeSexPerson": "Population By Age and Sex",
   "viz-ageatdeath": "Age at Death",
   "viz-deathbytype": "Death by Type",
   "viz-recordproportionbyagesexyear":

@@ -3,7 +3,7 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart id="viz-race" :chartSpec="specRace" :data="data" />
+    <Echarts id="viz-race" :data="data" :chart-spec="specRaceECharts" />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -56,9 +56,6 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specRace } from "./specRace";
-
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -69,6 +66,8 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import specRaceECharts from "@/pages/reports/release/PersonReport/charts/PopulationByRace/populationByRace";
 
 const store = useStore();
 

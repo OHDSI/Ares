@@ -7,7 +7,11 @@
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart :id="reportId" :data="data" :chartSpec="specDataQualityDelta" />
+    <Echarts
+      :id="reportId"
+      :data="data"
+      :chart-spec="getEChartsDataQualityDelta"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -32,8 +36,6 @@
 
 <script setup lang="ts">
 import { QUALITY_DELTA } from "@/shared/config/files";
-import { Chart } from "@/widgets/chart";
-import { specDataQualityDelta } from "./specDataQualityDelta";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
@@ -43,6 +45,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsDataQualityDelta from "@/pages/reports/source/DataQualityHistory/charts/DataQualityDelta/dataQualityDelta";
 
 const store = useStore();
 

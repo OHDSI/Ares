@@ -3,10 +3,10 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-conditionsbytype"
-      :chartSpec="specConditionsByType"
       :data="data"
+      :chart-spec="getEChartsConditionsByType"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -68,10 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-
-import { specConditionsByType } from "./specConditionsByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
@@ -82,6 +79,8 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsConditionsByType from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/ConditionsByType/conditionsByType";
 
 const store = useStore();
 const route = useRoute();

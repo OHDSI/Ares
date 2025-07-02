@@ -1,16 +1,13 @@
 <template>
-  <Panel
-    header="Domain Data Stratification By Visit"
-    v-if="route.params.domain.toUpperCase() === 'VISIT_OCCURRENCE'"
-  >
+  <Panel header="Domain Data Stratification By Visit" v-if="showChart">
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       v-if="data"
       id="viz-stratificationbyvisit"
-      :chartSpec="specVisitStratification"
       :data="data"
+      :chart-spec="getEChartsOptionSpecVisitStratification"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -42,8 +39,6 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specVisitStratification } from "./specVisitStratification";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -53,11 +48,15 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionSpecVisitStratification from "@/pages/reports/release/DomainTable/components/DataStratificationByVisit/visitStratification";
 
 const store = useStore();
 const route = useRoute();
 
 const showTable = ref(false);
+
+const showChart = route.params.domain === "visit_occurrence";
 
 function toggleTable(mode) {
   showTable.value = mode;

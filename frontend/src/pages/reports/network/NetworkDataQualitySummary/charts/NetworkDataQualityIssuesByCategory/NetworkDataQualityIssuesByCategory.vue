@@ -1,23 +1,24 @@
 <template>
   <Panel header="Network Data Quality Issues By Category">
-    <Chart
+    <Echarts
       id="viz-category"
-      :data="store.getters.getData[NETWORK_QUALITY_SUMMARY]"
-      :chartSpec="specIssueStratificationByCategory"
+      :data="data"
+      :chart-spec="getEChartsIssueStratificationByCategory"
     />
   </Panel>
 </template>
 
 <script setup lang="ts">
 import { NETWORK_QUALITY_SUMMARY } from "@/shared/config/files";
-import { Chart } from "@/widgets/chart";
-import { specIssueStratificationByCategory } from "./specIssueStratificationByCategory";
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { specCumulativeObservation } from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation/specCumulativeObservation";
 import Panel from "primevue/panel";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsIssueStratificationByCategory from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCategory/issuesStratification";
+import { computed } from "vue";
 
 const store = useStore();
+
+const data = computed(() => store.getters.getData[NETWORK_QUALITY_SUMMARY]);
 </script>
 
 <style scoped></style>

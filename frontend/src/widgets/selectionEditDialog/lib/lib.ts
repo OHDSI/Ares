@@ -2,14 +2,7 @@ import { v4 as uuid } from "uuid";
 
 export function createSelection(coordinates, params) {
   return {
-    coordinates: {
-      x1Axis: coordinates?.x1Axis,
-      x2Axis: coordinates?.x2Axis,
-      y1Axis: coordinates?.y1Axis,
-      y2Axis: coordinates?.y2Axis,
-      width: coordinates?.width,
-      height: coordinates?.height,
-    },
+    coordinates,
     metadata: {
       createdBy: params.metadata.createdBy,
       createdAt: params.metadata.createdAt || Date.now(),

@@ -1,28 +1,19 @@
 <template>
   <Panel header="Ethnicity">
-    <MultiSelect
-      style="width: 100%"
-      :options="filterOptions"
-      v-model="selectedFilters"
-      placeholder="Select filters"
-      display="chip"
-    />
-    <Chart
+    <Echarts
       id="viz-network-ethnicity"
-      :chartSpec="specEthnicity"
       :data="filteredData"
+      :chart-spec="getEChartsEthnicity"
     />
   </Panel>
 </template>
 
 <script setup lang="ts">
 import Panel from "primevue/panel";
-import { specEthnicity } from "@/pages/reports/network/NetworkDiversityReport/charts/ethnicityChart/specEthnicity";
-import { Chart } from "@/widgets/chart";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
-import { getValuesArray } from "@/shared/lib/mixins/methods/getValuesArray";
-import MultiSelect from "primevue/multiselect";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsEthnicity from "@/pages/reports/network/NetworkDiversityReport/charts/ethnicityChart/ethnicity";
 
 const store = useStore();
 const selectedFilters = ref([]);
@@ -39,10 +30,6 @@ const filteredData = computed(() => {
   } else {
     return data.value;
   }
-});
-
-const filterOptions = computed(() => {
-  return getValuesArray(data.value, "CONCEPT_NAME", true);
 });
 </script>
 

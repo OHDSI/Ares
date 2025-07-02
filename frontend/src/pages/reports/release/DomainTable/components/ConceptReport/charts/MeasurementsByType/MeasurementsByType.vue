@@ -3,10 +3,10 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-measurementsbytype"
-      :chartSpec="specMeasurementsByType"
       :data="data"
+      :chart-spec="getEChartsMeasurementsByType"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -65,9 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specMeasurementsByType } from "./specMeasurementsByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
@@ -78,6 +76,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsMeasurementsByType from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/MeasurementsByType/measurementsByType";
 
 const store = useStore();
 const route = useRoute();

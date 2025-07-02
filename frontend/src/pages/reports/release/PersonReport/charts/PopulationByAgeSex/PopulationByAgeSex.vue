@@ -6,39 +6,19 @@
   >
     <template #icons>
       <ChartHeader
-        :notes-count="allNotes.length"
-        :annotations-count="allAnnotations.length"
+        :notes-count="notes.length"
+        :annotations-count="annotations.length"
         @annotations-mode-toggled="toggleAnnotationsMode"
         @notes-mode-toggled="toggleNotesMode"
         table-toggle
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
-      :id="maleReportId"
-      title="Male"
-      :annotations-config="{
-        chartSpec: specAgeSex,
-
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-      :data="store.getters.getData.maleAgeSex"
-      :chartSpec="specAgeSex"
-      :annotations="notesMale.annotations.value"
-      :annotation-mode="annotationsMode"
-    />
-    <Chart
-      :id="femaleReportId"
-      title="Female"
-      :annotations-config="{
-        chartSpec: specAgeSex,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-      :data="store.getters.getData.femaleAgeSex"
-      :chartSpec="specAgeSex"
-      :annotations="notesFemale.annotations.value"
+    <Echarts
+      id="viz-populationAgeSexPerson"
+      :data="store.getters.getData.genSexData"
+      :chart-spec="getEChartsOptionAgeSex"
+      :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
     <div v-if="showTable" class="p-4">
@@ -102,8 +82,6 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specAgeSex } from "./specAgeSex";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
@@ -116,8 +94,12 @@ import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 
+//todo: fix issues with annotations not being saved
+
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionAgeSex from "@/pages/reports/release/PersonReport/charts/PopulationByAgeSex/personAgeSex";
 
 const showTable = ref(false);
 
@@ -127,22 +109,12 @@ function toggleTable(mode) {
 
 const store = useStore();
 
-const femaleReportId = "viz-populationbyageandsexFemale";
-const maleReportId = "viz-populationbyageandsexMale";
+const reportId = "viz-populationAgeSexPerson";
 
 const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
   useAnnotationControls();
 
-const notesMale = useAnnotations(maleReportId);
-
-const notesFemale = useAnnotations(femaleReportId);
-
-const allNotes = computed(() => {
-  return [...notesMale.notes.value, ...notesFemale.notes.value];
-});
-const allAnnotations = computed(() => {
-  return [...notesFemale.annotations.value, ...notesMale.annotations.value];
-});
+const { annotations, notes } = useAnnotations(reportId);
 </script>
 
 <style scoped></style>

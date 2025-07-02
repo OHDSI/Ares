@@ -3,7 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart id="viz-quantity" :chartSpec="specQuantity" :data="data" />
+    <Echarts
+      id="viz-quantity"
+      :data="data"
+      :chart-spec="getEChartsOptionQuantityDistribution"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -102,11 +106,9 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
-import { specQuantity } from "./specQuantity";
+import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -116,10 +118,11 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionQuantityDistribution from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/QuantityDistribution/quantityDistribution";
 
 const store = useStore();
 const route = useRoute();
-const router = useRouter();
 
 const showTable = ref(false);
 

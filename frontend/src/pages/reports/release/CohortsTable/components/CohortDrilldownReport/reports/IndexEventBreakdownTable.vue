@@ -203,7 +203,7 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 import { useRoute } from "vue-router";
-import { formatComma } from "../../../../../shared/lib/mixins/methods/formatComma";
+import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
 import { debounce } from "lodash";
 
 const filters = ref({

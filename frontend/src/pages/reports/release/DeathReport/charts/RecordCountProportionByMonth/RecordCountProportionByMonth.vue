@@ -11,19 +11,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-
-    <Chart
+    <Echarts
       id="viz-deathrecordproportionbymonth"
-      :annotations="annotations"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :annotation-mode="annotationsMode"
-      :annotations-config="{
-        chartSpec: specRecordProportionByMonthAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-      :chartSpec="specRecordProportionByMonth"
       :data="data"
+      :chart-spec="getEChartsOptionProportionByMonth"
+      :annotation-mode="annotationsMode"
+      :annotations="annotations"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -75,13 +68,10 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import * as listeners from "@/pages/model/lib/listeners";
-import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import _ from "lodash";
@@ -94,6 +84,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionProportionByMonth from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByMonth/recordCountProportionByMonth";
 
 const store = useStore();
 const route = useRoute();

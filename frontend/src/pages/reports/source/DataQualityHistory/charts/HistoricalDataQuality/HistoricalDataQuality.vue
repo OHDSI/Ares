@@ -15,17 +15,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
+    <Echarts
       :id="reportId"
+      :data="data"
+      :chart-spec="getEChartsDataQualityResults"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
-      :data="data"
-      :chartSpec="specDataQualityResults"
-      :annotations-config="{
-        chartSpec: specDataQualityResultsAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -111,9 +106,6 @@
 
 <script setup lang="ts">
 import { QUALITY_INDEX } from "@/shared/config/files";
-import { Chart } from "@/widgets/chart";
-import { specDataQualityResults } from "./specDataQualityResults";
-import { specDataQualityResultsAnnotation } from "./specDataQualityResultsAnnotation";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
@@ -125,6 +117,8 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsDataQualityResults from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQuality/historicalDataQuality";
 
 const store = useStore();
 const route = useRoute();

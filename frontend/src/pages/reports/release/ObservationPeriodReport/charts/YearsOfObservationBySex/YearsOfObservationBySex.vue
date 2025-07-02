@@ -3,10 +3,10 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-observationbysex"
-      :chartSpec="specObservationBySex"
       :data="data"
+      :chart-spec="getEChartsOptionYearsObservationBySex"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -100,10 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-
 import { links } from "@/shared/config/links";
-import { specObservationBySex } from "./specObservationBySex";
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -113,6 +110,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { computed, ref } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionYearsObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationBySex/yearsObservationBySex";
 
 const store = useStore();
 

@@ -9,6 +9,12 @@
       :chartSpec="specRecordProportionByAgeSexYear"
       :data="data"
     />
+    <Echarts
+      id="viz-quantity"
+      :data="data"
+      height="900px"
+      :chart-spec="getEChartsOptionRecordProportionByAgeSexYear"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -74,6 +80,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionRecordProportionByAgeSexYear from "./recordCountProportionByAgeSexYear";
 
 const store = useStore();
 const route = useRoute();

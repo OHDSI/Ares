@@ -3,10 +3,10 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-networkcumulativeobservation"
-      :chartSpec="specCumulativeObservation"
       :data="data"
+      :chart-spec="getEChartsNetworkCumulative"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -62,9 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specCumulativeObservation } from "./specCumulativeObservation";
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -74,6 +72,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsNetworkCumulative from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation/networkCumulative";
 
 const store = useStore();
 

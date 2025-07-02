@@ -1,20 +1,27 @@
 <template>
   <div
     v-if="show"
-    class="context-menu bg-white dark:bg-surface-700"
+    class="context-menu fixed z-[99999] text-[#1a1a1a] dark:text-[#e0e0e0] bg-[#ffffff] dark:bg-[#1a1a1a] rounded-lg shadow-lg py-2 min-w-[160px] max-w-[240px] select-none font-sans text-sm"
     :style="style"
     ref="context"
     tabindex="1"
     v-click-outside="onClickOutside"
   >
     <ul v-for="item in props.items" :key="item.title">
-      <li @click="clickAction(item)">{{ item.title }}</li>
+      <li
+        class="mx-2 px-2 text-base rounded py-2 whitespace-nowrap hover:bg-[#e6f0ff] dark:hover:bg-[#2a3d55] active:bg-[#d2e6ff] dark:active:bg-[#345678] cursor-default"
+        @click="clickAction(item)"
+      >
+        {{ item.title }}
+      </li>
     </ul>
   </div>
 
   <ConfirmDialog :group="props.chartId">
     <template #container="{ message, acceptCallback, rejectCallback }">
-      <div class="flex flex-col items-center p-5 bg-white rounded-lg">
+      <div
+        class="flex flex-col items-center p-5 bg-white dark:bg-surface-700 rounded-lg"
+      >
         <span class="font-bold text-2xl block mb-2 mt-4">{{
           message.header
         }}</span>
@@ -122,24 +129,4 @@ watch(coordinates, () => {
   open();
 });
 </script>
-<style lang="scss" scoped>
-.context-menu {
-  position: fixed;
-  z-index: 999;
-  outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  cursor: pointer;
-}
-ul {
-  list-style: none;
-  width: 10vw;
-}
-li {
-  padding: 10px;
-  display: block;
-}
-
-li:hover {
-  background: rgba(77, 144, 254, 0.1);
-}
-</style>
+<style lang="scss" scoped></style>

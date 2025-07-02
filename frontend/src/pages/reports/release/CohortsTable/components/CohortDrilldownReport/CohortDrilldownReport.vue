@@ -8,11 +8,11 @@
 </template>
 
 <script setup lang="ts">
-import CohortCharacterizationReport from "@/pages/reports/release/CohortDrilldownReport/reports/CohortCharacterizationTable.vue";
+import CohortCharacterizationReport from "./reports/CohortCharacterizationTable.vue";
 import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 import { computed } from "vue";
-import IndexEventBreakdownTable from "@/pages/reports/release/CohortDrilldownReport/reports/IndexEventBreakdownTable.vue";
-import TimeDistributionChart from "@/pages/reports/release/CohortDrilldownReport/reports/timeDistribution/TimeDistributionChart.vue";
+import IndexEventBreakdownTable from "./reports/IndexEventBreakdownTable.vue";
+import TimeDistributionChart from "./reports/timeDistribution/TimeDistributionChart.vue";
 import { useRoute } from "vue-router";
 
 interface Props {

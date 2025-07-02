@@ -15,17 +15,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
+    <Echarts
       :id="reportId"
       :data="data"
-      :chartSpec="specDataQualityResultsByCategory"
+      :chart-spec="getEChartsDataQualityResultsByCategory"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
-      :annotations-config="{
-        chartSpec: specDataQualityResultsByCategoryAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -82,12 +77,9 @@
 
 <script setup lang="ts">
 import { QUALITY_INDEX } from "@/shared/config/files";
-import { Chart } from "@/widgets/chart";
-import { specDataQualityResultsByCategory } from "./specDataQualityResultsByCategory";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import { specDataQualityResultsByCategoryAnnotation } from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByCategory/specDataQualityResultsByCategoryAnnotation";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
@@ -96,8 +88,12 @@ import { helpers } from "@/shared/lib/mixins";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import { useRoute } from "vue-router";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsDataQualityResultsByCategory from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByCategory/dataQualityCategory";
 
 const store = useStore();
+
+//todo: x axis label not fully visible
 
 const route = useRoute();
 

@@ -3,11 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-continuity"
-      :chartSpec="specOverview"
       :data="data"
-      :listener="eventListener"
+      :chart-spec="getEChartsOverview"
+      height="950px"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -79,9 +79,14 @@ import { computed, ref } from "vue";
 import { QUALITY_INDEX } from "@/shared/config/files";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import getEChartsDataQualityDelta from "@/pages/reports/source/DataQualityHistory/charts/DataQualityDelta/dataQualityDelta";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import { getEChartsOverview } from "@/pages/reports/source/DomainContinuity/charts/domainRecords/domainContinuity";
 
 const store = useStore();
 const router = useRouter();
+
+//todo: listener
 
 const navigate = function (route) {
   router.push(route);

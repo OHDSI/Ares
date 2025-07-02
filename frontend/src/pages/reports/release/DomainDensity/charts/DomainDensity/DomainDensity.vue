@@ -12,19 +12,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-
-    <Chart
+    <Echarts
       :id="reportId"
-      :chartSpec="defOverview"
-      :annotations-config="{
-        chartSpec: defOverviewAnnotation,
-        annotationsParentElement: 'g g',
-        brushParentElement: 'g g g',
-      }"
       :data="data"
-      :signal-listener="listeners.setSelectionAreaSignal"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
+      :chart-spec="getEChartsOptionDomainOverview"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -80,12 +73,9 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { defOverview } from "./defOverview";
-import { defOverviewAnnotation } from "./defOverviewAnnotation";
+
 import * as listeners from "@/pages/model/lib/listeners";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
@@ -98,6 +88,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionDomainOverview from "@/pages/reports/release/DomainDensity/charts/DomainDensity/domainDensity";
 
 const store = useStore();
 

@@ -11,16 +11,10 @@
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
+    <Echarts
       :id="reportId"
-      :chartSpec="defRecordsPerPerson"
-      :annotations-config="{
-        chartSpec: defRecordsPerPersonAnnotation,
-        annotationsParentElement: 'g g',
-        brushParentElement: 'g g g',
-      }"
-      :signal-listener="listeners.setSelectionAreaSignal"
       :data="data"
+      :chart-spec="getEChartsOptionDomainRecordsPerPerson"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
@@ -77,15 +71,11 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { defRecordsPerPerson } from "./defRecordsPerPerson";
-import { defRecordsPerPersonAnnotation } from "./defRecordsPerPersonAnnotation";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import * as listeners from "@/pages/model/lib/listeners";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -94,6 +84,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionDomainRecordsPerPerson from "@/pages/reports/release/DomainDensity/charts/DomainRecordsPerPerson/domainRecordsPerPerson";
 
 const store = useStore();
 

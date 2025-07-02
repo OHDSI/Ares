@@ -3,7 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart id="viz-deathbytype" :chartSpec="specDeathByType" :data="data" />
+    <Echarts
+      id="viz-deathbytype"
+      :data="data"
+      :chart-spec="getEChartsDeathByType"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -57,9 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specDeathByType } from "./specDeathByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
@@ -70,6 +72,9 @@ import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import getEChartsOptionObservationByAgeSex from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservationBySex/observationByAgeSex";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsDeathByType from "@/pages/reports/release/DeathReport/charts/DeathByType/deathByType";
 
 const store = useStore();
 const route = useRoute();

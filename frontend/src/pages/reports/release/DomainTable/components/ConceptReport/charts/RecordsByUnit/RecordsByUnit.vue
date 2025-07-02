@@ -3,7 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart id="viz-recordsbyunit" :chartSpec="specRecordsByUnit" :data="data" />
+    <Echarts
+      id="viz-recordsbyunit"
+      :data="data"
+      :chart-spec="getEChartsRecordsByUnit"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -60,9 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specRecordsByUnit } from "./specRecordsByUnit";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
@@ -73,6 +75,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsRecordsByUnit from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/RecordsByUnit/recordsByUnit";
 
 const store = useStore();
 const route = useRoute();

@@ -3,11 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <div
-      v-if="store.getters.getData"
+    <Echarts
       id="viz-sourcedatastrand"
-      class="viz-container"
-    ></div>
+      :data="store.getters.getData.dataStrandReport"
+      :chart-spec="getEChartsDatastrand"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -87,6 +87,8 @@ const router = useRouter();
 import { specDatastrand } from "./specDatastrand";
 import { links } from "@/shared/config/links";
 import { useRoute, useRouter } from "vue-router";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsDatastrand from "@/pages/reports/source/SourceOverview/charts/sourceDataStrand/dataStrand";
 
 const specs = ref(specDatastrand);
 

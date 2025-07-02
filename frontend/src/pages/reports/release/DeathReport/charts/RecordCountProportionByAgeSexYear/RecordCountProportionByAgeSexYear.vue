@@ -8,6 +8,13 @@
       :chartSpec="specRecordProportionByAgeSexYear"
       :data="data"
     />
+    <Echarts
+      id="viz-recordproportionbyagesexyear"
+      :data="data"
+      height="650px"
+      :chart-spec="getEChartsOptionRecordProportionByAgeSexYear"
+    />
+
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -67,6 +74,11 @@ import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import getEChartsDeathByType from "@/pages/reports/release/DeathReport/charts/DeathByType/deathByType";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionRecordProportionByAgeSexYear from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByAgeSexYear/recordCountProportionByAgeSexYear";
+
+//todo: fix this chart
 
 const store = useStore();
 const route = useRoute();

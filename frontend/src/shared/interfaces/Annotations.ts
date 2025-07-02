@@ -5,12 +5,10 @@ export interface Annotation {
     notes: Note[];
   };
   coordinates: {
-    height: number;
-    width: number;
-    x1Axis: number;
-    x2Axis: number;
-    y1Axis: number;
-    y2Axis: number;
+    xMin: number;
+    xMax: number;
+    yMin: number;
+    yMax: number;
   };
   id: string;
   metadata: {

@@ -1,16 +1,13 @@
 <template>
-  <Panel
-    header="Drug Domain Stratification by Drug Type"
-    v-if="route.params.domain.toUpperCase() === 'DRUG_EXPOSURE' && data"
-  >
+  <Panel header="Drug Domain Stratification by Drug Type" v-if="showChart">
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       v-if="data"
       id="viz-stratificationbydrugtype"
-      :chartSpec="specDrugTypeStratification"
       :data="data"
+      :chart-spec="getEChartsOptionSpecDrugTypeStratification"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -57,11 +54,9 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { specDrugTypeStratification } from "./specDrugTypeStratification";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -70,19 +65,22 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionSpecDrugTypeStratification from "@/pages/reports/release/DomainTable/components/DataStratificationByDrug/dataStratificationByDrug";
 
 const store = useStore();
 const route = useRoute();
 
+const data = computed(() => {
+  return store.getters.getData.drugStratification;
+});
+
 const showTable = ref(false);
+const showChart = route.params.domain === "drug_exposure" && data.value;
 
 function toggleTable(mode) {
   showTable.value = mode;
 }
-
-const data = computed(() => {
-  return store.getters.getData.drugStratification;
-});
 </script>
 
 <style scoped></style>

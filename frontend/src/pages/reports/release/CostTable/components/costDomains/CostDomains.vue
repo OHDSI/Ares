@@ -3,8 +3,12 @@
     <template #icons>
       <ChartHeader title="Population by Year of Birth" />
     </template>
-    <Chart v-if="data" :id="reportId" :chartSpec="specCostDomains" :data="data">
-    </Chart>
+    <Echarts
+      v-if="data"
+      :id="reportId"
+      :data="data"
+      :chart-spec="getEChartsOptionCostDomains"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -57,8 +61,6 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specCostDomains } from "./specCostDomains";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
@@ -70,6 +72,8 @@ import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionCostDomains from "@/pages/reports/release/CostTable/components/costDomains/costDomains";
 
 const store = useStore();
 

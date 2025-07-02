@@ -3,7 +3,12 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart id="viz-lengthofera" :chartSpec="specLengthOfEra" :data="data" />
+    <Echarts
+      id="viz-lengthofera"
+      :data="data"
+      :chart-spec="getEChartsOptionLengthOfEraFaceted"
+      :height="totalHeight"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -155,9 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specLengthOfEra } from "./specLengthOfEra";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
@@ -169,6 +172,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionLengthOfEraFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/lengthOfEra/lengthOfEra";
 
 interface Props {
   data: DistributionType[];
@@ -187,6 +192,13 @@ function toggleTable(mode) {
 const data = computed(() => {
   return props.data;
 });
+
+const sources = helpers.getValuesArray(data.value, "SOURCE", true);
+
+const facetCount = sources.length;
+const perFacetHeight = 130;
+
+const totalHeight = `${facetCount * perFacetHeight}px`;
 </script>
 
 <style scoped></style>

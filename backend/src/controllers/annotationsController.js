@@ -44,16 +44,14 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
         if (annotationData.coordinates) {
             logger.debug(`Inserting coordinates for annotation: ${annotationId}`);
             await connection.run(
-                `INSERT INTO annotations_coordinates (annotation_id, x1_axis, x2_axis, y1_axis, y2_axis, width, height) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO annotations_coordinates (annotation_id, xMin, xMax, yMin, yMax) 
+            VALUES (?, ?, ?, ?, ?)`,
                 [
                     annotationId,
-                    annotationData.coordinates.x1Axis,
-                    annotationData.coordinates.x2Axis,
-                    annotationData.coordinates.y1Axis,
-                    annotationData.coordinates.y2Axis,
-                    annotationData.coordinates.width,
-                    annotationData.coordinates.height,
+                    annotationData.coordinates.xMin,
+                    annotationData.coordinates.xMax,
+                    annotationData.coordinates.yMin,
+                    annotationData.coordinates.yMax,
                 ]
             );
         }
@@ -129,7 +127,7 @@ const getAnnotationsByVizName = async (connection, chart_ids) => {
         const query = `
             SELECT 
                 a.id AS annotation_id, a.viz_id, a.created_by, a.created_at, a.updated_at,
-                ac.x1_axis AS x1Axis, ac.x2_axis AS x2Axis, ac.y1_axis AS y1Axis, ac.y2_axis AS y2Axis, ac.width, ac.height,
+                ac.xMin AS xMin, ac.xMax AS xMax, ac.yMin AS yMin, ac.yMax AS yMax,
                 am.scope_type AS scopeType, am.scope_value AS scopeValue,
                 ab.title AS bodyTitle, ab.description AS bodyDescription,
                 an.note_id AS noteId, an.title AS noteTitle, an.description AS noteDescription, 
@@ -159,10 +157,9 @@ const getAnnotationsByVizName = async (connection, chart_ids) => {
             if (!result[row.chart_id][row.annotation_id]) {
                 result[row.chart_id][row.annotation_id] = {
                     id: row.annotation_id,
-                    coordinates: row.x1Axis !== null ? {
-                        x1Axis: row.x1Axis, x2Axis: row.x2Axis,
-                        y1Axis: row.y1Axis, y2Axis: row.y2Axis,
-                        width: row.width, height: row.height
+                    coordinates: row.xMin !== null ? {
+                        xMin: row.xMin, xMax: row.xMax,
+                        yMin: row.yMin, yMax: row.yMax,
                     } : null,
                     metadata: {
                         createdBy: row.created_by,
@@ -236,12 +233,10 @@ const getPaginatedAnnotations = async (connection, first, step, filter) => {
         a.created_by,
         a.created_at,
         a.updated_at,
-        ac.x1_axis AS x1Axis,
-        ac.x2_axis AS x2Axis,
-        ac.y1_axis AS y1Axis,
-        ac.y2_axis AS y2Axis,
-        ac.width,
-        ac.height,
+        ac.xMin,
+        ac.xMax
+        ac.yMin,
+        ac.yMax,
         am.scope_type AS scopeType,
         am.scope_value AS scopeValue,
         ab.title AS bodyTitle,
@@ -291,13 +286,11 @@ const getPaginatedAnnotations = async (connection, first, step, filter) => {
                     createdBy: row.created_by,
                     createdAt: Number(row.created_at.micros) / 1000,
                     updatedAt: Number(row.updated_at.micros) / 1000,
-                    coordinates: row.x1Axis !== null ? {
-                        x1Axis: row.x1Axis,
-                        x2Axis: row.x2Axis,
-                        y1Axis: row.y1Axis,
-                        y2Axis: row.y2Axis,
-                        width: row.width,
-                        height: row.height
+                    coordinates: row.xMin !== null ? {
+                        xMin: row.xMin,
+                        xMax: row.xMax,
+                        yMin: row.yMin,
+                        yMax: row.yMax,
                     } : null,
                     metadata: row.scopeType ? {
                         type: row.scopeType,
@@ -353,7 +346,7 @@ const getAnnotation = async (connection, annotationId) => {
         }
 
         let coordinates = await connection.runAndReadAll(
-            `SELECT x1_axis AS x1Axis, x2_axis AS x2Axis, y1_axis AS y1Axis, y2_axis AS y2Axis, width, height
+            `SELECT xMin, xMax, yMin, yMax
          FROM annotations_coordinates WHERE annotation_id = ?`,
             [annotationId]
         );
@@ -442,12 +435,12 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
 
         if (coordinates) {
             logger.debug(`Updating coordinates for annotation ${annotationId}`)
-            const { x1Axis, x2Axis, y1Axis, y2Axis, width, height } = coordinates;
+            const { xMin, xMax, yMin, yMax} = coordinates;
             await connection.run(
                 `UPDATE annotations_coordinates
-             SET x1_axis = ?, x2_axis = ?, y1_axis = ?, y2_axis = ?, width = ?, height = ?
+             SET xMin = ?, xMax = ?, yMin = ?, yMax = ?
              WHERE annotation_id = ?`,
-                [x1Axis, x2Axis, y1Axis, y2Axis, width, height, annotationId]
+                [xMin, xMax, yMin, yMax, annotationId]
             );
         }
 

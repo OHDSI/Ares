@@ -3,10 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-conditionsbytype"
-      :chartSpec="specConditionsByType"
       :data="data"
+      :height="totalHeight"
+      :chart-spec="getEChartsConditionsByTypeFacet"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -70,9 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specConditionsByType } from "./specConditionsByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
@@ -84,6 +83,21 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import { getEChartsConditionsByTypeFacet } from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/conditionsByType/conditionsBytype";
+
+const props = defineProps<Props>();
+
+const data = computed(() => {
+  return props.data;
+});
+
+const sources = helpers.getValuesArray(data.value, "SOURCE", true);
+
+const facetCount = sources.length;
+const perFacetHeight = 130;
+
+const totalHeight = `${facetCount * perFacetHeight}px`;
 
 const store = useStore();
 const route = useRoute();
@@ -91,17 +105,11 @@ interface Props {
   data: RecordsCountType[];
 }
 
-const props = defineProps<Props>();
-
 const showTable = ref(false);
 
 function toggleTable(mode) {
   showTable.value = mode;
 }
-
-const data = computed(() => {
-  return props.data;
-});
 </script>
 
 <style scoped></style>

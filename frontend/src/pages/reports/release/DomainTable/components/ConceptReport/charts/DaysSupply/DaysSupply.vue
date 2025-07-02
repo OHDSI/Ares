@@ -3,7 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart id="viz-dayssupply" :chartSpec="specDaysSupply" :data="data" />
+    <Echarts
+      id="viz-dayssupply"
+      :data="data"
+      :chart-spec="getEChartsOptionDaysSupply"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -102,12 +106,10 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 
-import { specDaysSupply } from "./specDaysSupply";
 import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -117,10 +119,11 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionDaysSupply from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/DaysSupply/daysSupply";
 
 const store = useStore();
 const route = useRoute();
-const router = useRouter();
 
 const showTable = ref(false);
 

@@ -11,18 +11,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-
-    <Chart
+    <Echarts
       :id="reportId"
-      :chartSpec="specAgeAtFirstObservation"
-      :annotations-config="{
-        chartSpec: specAgeAtFirstObservationAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
+      :data="data"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
-      :data="data"
+      :chart-spec="getEChartsOptionAgeAtFirstObservation"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -93,10 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specAgeAtFirstObservation } from "./specAgeAtFirstObservation";
-import { specAgeAtFirstObservationAnnotation } from "./specAgeAtFirstObservationAnnotation";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
@@ -109,6 +100,8 @@ import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionAgeAtFirstObservation from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservation/ageAtFirstObservation";
 
 const store = useStore();
 

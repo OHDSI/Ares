@@ -3,11 +3,12 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       id="viz-visitdurationbytype"
-      :chartSpec="specVisitDurationByType"
       :data="data"
+      :chart-spec="getEChartsOptionVisitDurationByType"
     />
+
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -101,9 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specVisitDurationByType } from "./specVisitDurationByType";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { helpers } from "@/shared/lib/mixins";
@@ -114,6 +113,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { computed, ref } from "vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsOptionVisitDurationByType from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/VisitDurationByType/visitDurationByType";
 
 const store = useStore();
 const route = useRoute();

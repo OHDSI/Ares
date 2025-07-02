@@ -11,17 +11,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
+    <Echarts
       :id="reportId"
+      :data="data"
+      :chart-spec="getEChartsIssuesHistory"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
-      :chartSpec="specIssuesByRelease"
-      :annotations-config="{
-        chartSpec: specIssuesByReleaseAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-      :data="data"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -75,11 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { specIssuesByRelease } from "./specIssuesByRelease";
-import { specIssuesByReleaseAnnotation } from "./specIssuesByReleaseAnnotation";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
@@ -91,6 +83,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsIssuesHistory from "@/pages/reports/source/SourceOverview/charts/dataQualityIssuesHistory/dataQualityIssuesHistory";
 
 const store = useStore();
 

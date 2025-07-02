@@ -11,17 +11,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
+    <Echarts
       :id="reportId"
-      :chartSpec="specDataQualityResultsByDomain"
-      :data="store.getters.getData[QUALITY_INDEX].dataQualityRecordsStratified"
+      :data="data"
+      :chart-spec="getEChartsDataQualityResultsByDomain"
       :annotation-mode="annotationsMode"
       :annotations="annotations"
-      :annotations-config="{
-        chartSpec: specDataQualityResultsByDomainAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -78,11 +73,8 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specDataQualityResultsByDomain } from "./specDataQualityResultsByDomain";
 import { QUALITY_INDEX } from "@/shared/config/files";
 import { useStore } from "vuex";
-import { specDataQualityResultsByDomainAnnotation } from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByDomain/specDataQualityResultsByDomainAnnotation";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
@@ -93,6 +85,8 @@ import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import { useRoute } from "vue-router";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsDataQualityResultsByDomain from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByDomain/dataQualityByDomain";
 
 const store = useStore();
 const route = useRoute();

@@ -1,24 +1,15 @@
 <template>
   <Panel header="Race">
-    <MultiSelect
-      style="width: 100%"
-      :options="filterOptions"
-      v-model="selectedFilters"
-      placeholder="Select filters"
-      display="chip"
-    />
-    <Chart id="viz-race" :chartSpec="specRace" :data="filteredData" />
+    <Echarts id="viz-race" :data="filteredData" :chart-spec="getEChartsRace" />
   </Panel>
 </template>
 
 <script setup lang="ts">
 import Panel from "primevue/panel";
 import { useStore } from "vuex";
-import { specRace } from "@/pages/reports/network/NetworkDiversityReport/charts/raceChart/specRace";
-import { Chart } from "@/widgets/chart";
-import MultiSelect from "primevue/multiselect";
 import { computed, ref } from "vue";
-import { getValuesArray } from "@/shared/lib/mixins/methods/getValuesArray";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsRace from "@/pages/reports/network/NetworkDiversityReport/charts/raceChart/race";
 
 const store = useStore();
 
@@ -36,10 +27,6 @@ const filteredData = computed(() => {
   } else {
     return data.value;
   }
-});
-
-const filterOptions = computed(() => {
-  return getValuesArray(data.value, "CONCEPT_NAME", true);
 });
 </script>
 

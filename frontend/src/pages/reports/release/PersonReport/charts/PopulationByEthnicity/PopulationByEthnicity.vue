@@ -8,7 +8,13 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart id="viz-ethnicity" :chartSpec="specEthnicity" :data="data" />
+
+    <Echarts
+      id="viz-ethnicity"
+      :data="data"
+      :chart-spec="specEthnicityECharts"
+    />
+
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -61,8 +67,6 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specEthnicity } from "./specEthnicity";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
@@ -73,6 +77,8 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { computed, ref } from "vue";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import specEthnicityECharts from "@/pages/reports/release/PersonReport/charts/PopulationByEthnicity/populationByEthnicity";
 
 const store = useStore();
 

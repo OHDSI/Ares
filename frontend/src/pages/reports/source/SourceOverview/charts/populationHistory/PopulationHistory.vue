@@ -11,17 +11,12 @@
         @table-toggled="toggleTable"
       />
     </template>
-    <Chart
+    <Echarts
       :id="reportId"
+      :data="releases"
+      :chart-spec="getEChartsPopulationByRelease"
       :annotations="annotations"
       :annotation-mode="annotationsMode"
-      :chartSpec="specPopulationByRelease"
-      :annotations-config="{
-        chartSpec: specPopulationByReleaseAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-      :data="releases"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -73,11 +68,8 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { specPopulationByRelease } from "./specPopulationByRelease";
-import { specPopulationByReleaseAnnotation } from "./specPopulationByReleaseAnnotation";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import Panel from "primevue/panel";
@@ -89,6 +81,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsPopulationByRelease from "@/pages/reports/source/SourceOverview/charts/populationHistory/populationHistory";
 
 const store = useStore();
 

@@ -3,24 +3,30 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
-      id="viz-beforeIndex"
-      :chartSpec="specCohortTimeDistribution"
-      :data="priorToIndex"
-      title="observation time (days) prior to index"
-    />
-    <Chart
-      id="viz-afterIndex"
-      :chartSpec="specCohortTimeDistribution"
-      :data="afterIndex"
-      title="observation time (days) after index"
-    />
-    <Chart
-      id="viz-between"
-      :chartSpec="specCohortTimeDistribution"
-      :data="betweenStartEnd"
-      title="time (days) between cohort start and end"
-    />
+    <div>
+      <h3 class="font-light">{{ priorToIndex[0]?.covariate_name }}</h3>
+      <Echarts
+        id="viz-beforeIndex"
+        height="150px"
+        :data="priorToIndex"
+        :chart-spec="getEChartsCohortTimeDistribution"
+      />
+      <h3 class="font-light">{{ afterIndex[0]?.covariate_name }}</h3>
+      <Echarts
+        id="viz-afterIndex"
+        height="150px"
+        :data="afterIndex"
+        :chart-spec="getEChartsCohortTimeDistribution"
+      />
+      <h3 class="font-light">{{ betweenStartEnd[0]?.covariate_name }}</h3>
+      <Echarts
+        id="viz-between"
+        height="150px"
+        :data="betweenStartEnd"
+        :chart-spec="getEChartsCohortTimeDistribution"
+      />
+    </div>
+
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -128,13 +134,14 @@
 <script setup lang="ts">
 import { Chart } from "@/widgets/chart";
 
-import { specCohortTimeDistribution } from "./specCohortTimeDistribution";
 import { useStore } from "vuex";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
+import getEChartsCohortTimeDistribution from "@/pages/reports/release/CohortsTable/components/CohortDrilldownReport/reports/timeDistribution/timeDistribution";
+import Echarts from "@/widgets/echarts/Echarts.vue";
 
 interface Props {
   data: [];

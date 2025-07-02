@@ -3,11 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <div
-      v-if="store.getters.getData"
+    <Echarts
       id="viz-datastrand"
-      class="viz-container"
-    ></div>
+      :data="data.dataStrandReport"
+      :chart-spec="getEChartsNetworkDatastrand"
+    />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -68,24 +68,8 @@
 </template>
 
 <script setup lang="ts">
-import embed from "vega-embed";
-import { watch, computed, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
-const store = useStore();
-
-import { specDatastrand } from "./specDatastrand";
+import { computed, ref } from "vue";
 import { links } from "@/shared/config/links";
-
-const darkMode = computed(() => {
-  return store.getters.getSettings.darkMode;
-});
-
-const config = computed(() => {
-  return specDatastrand(darkMode.value ? "white" : "black");
-});
-
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -94,41 +78,12 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { darkTheme } from "@/widgets/chart/model/themes";
+import Echarts from "@/widgets/echarts/Echarts.vue";
+import getEChartsNetworkDatastrand from "@/pages/reports/network/NetworkDatastrandReport/networkDataStrand";
 
-const renderChart = function () {
-  embed("#viz-datastrand", config.value, {
-    theme: store.getters.getSettings.darkMode ? darkTheme : "",
-    actions: false,
-  }).then((result) => {
-    result.view.addSignalListener("selectDomain", (name, value) => {
-      const domainKey = value.domain.toLowerCase().replace(" ", "_");
-      router.push({
-        name: "domainTable",
-        params: {
-          cdm: value.cdm_source_key,
-          release: value.cdm_release_key,
-          domain: domainKey,
-        },
-      });
-      document.getElementById("vg-tooltip-element").style.display = "none";
-    });
-  });
-};
+const store = useStore();
 
 const data = computed(() => store.getters.getData);
-
-onMounted(() => {
-  if (data.value) {
-    config.value.data[0].values = data.value.dataStrandReport;
-    renderChart();
-  }
-});
-
-watch(darkMode, () => {
-  config.value.data[0].values = data.value.dataStrandReport;
-  renderChart();
-});
 
 const showTable = ref(false);
 

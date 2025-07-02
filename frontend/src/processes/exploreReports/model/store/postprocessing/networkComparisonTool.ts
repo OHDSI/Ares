@@ -101,6 +101,7 @@ export default function networkComparisonTool(data) {
                       (value) => ({
                         ...value,
                         SOURCE_UNIT_KEY: `${current.source.cdm_source_key} - ${value.CATEGORY}`,
+                        SOURCE: current.source.cdm_source_key,
                       })
                     ),
                   ],

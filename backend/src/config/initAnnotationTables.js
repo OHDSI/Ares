@@ -43,12 +43,10 @@ const initAnnotationTables = async (instance) => {
         await connection.run(`
             CREATE TABLE IF NOT EXISTS annotations_coordinates (
                 annotation_id TEXT REFERENCES annotations(id),
-                x1_axis DOUBLE PRECISION,
-                x2_axis DOUBLE PRECISION,
-                y1_axis DOUBLE PRECISION,
-                y2_axis DOUBLE PRECISION,
-                width DOUBLE PRECISION,
-                height DOUBLE PRECISION
+                xMin DOUBLE PRECISION,
+                xMax DOUBLE PRECISION,
+                yMin DOUBLE PRECISION,
+                yMax DOUBLE PRECISION
             );
         `);
 
