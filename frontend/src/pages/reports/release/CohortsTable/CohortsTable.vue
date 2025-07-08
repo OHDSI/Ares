@@ -4,7 +4,7 @@
     <div class="card flex justify-content-center">
       <Sidebar
         @hide="closeDrillDown"
-        header="Concept Report"
+        header="Cohort Report"
         :pt="{
           header: [
             'flex',
