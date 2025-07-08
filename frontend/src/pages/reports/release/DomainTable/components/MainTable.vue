@@ -351,15 +351,13 @@ const openedDomain = computed(() => route.params.domain?.toUpperCase());
 const search = ref("");
 
 const compareToOtherSources = function () {
-  const source = route.params.cdm;
-  const domain = route.params.domain;
-  const release = route.params.release;
+  const { cdm, domain, release } = route.params;
   router.push({
     name: "networkComparisonTool",
-    params: {
-      cdm: source,
-      domain: domain,
-      release: release,
+    query: {
+      cdm,
+      domain,
+      release,
       report: "domain",
     },
   });
@@ -578,11 +576,12 @@ const updateSettings = () => {
 };
 
 const navigateToDataQuality = function () {
+  const { cdm, release } = route.params;
   router.push({
     name: "dataQuality",
     params: {
-      cdm: route.params.cdm,
-      release: route.params.release,
+      cdm,
+      release,
     },
     query: {
       tab: 2,

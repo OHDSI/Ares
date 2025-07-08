@@ -228,7 +228,6 @@ const first = ref(0);
 const search = ref(null);
 const step = ref(10);
 
-const conceptDrillDownSection = ref(null);
 const conceptData = ref(null);
 const visible = ref(false);
 
@@ -378,19 +377,8 @@ function getDrilldownRoute(cdmRelease: string, rowId: string | number) {
   };
 }
 
-function scrollIntoView(
-  elementRef,
-  options = { behavior: "smooth", block: "start" }
-) {
-  const el = elementRef?.value?.$el ?? elementRef?.value;
-  if (el instanceof HTMLElement || el instanceof SVGElement) {
-    el.scrollIntoView(options);
-  }
-}
-
 async function loadDrilldown(concept) {
   visible.value = true;
-  // scrollIntoView(conceptDrillDownSection);
   conceptData.value = null;
   const domain = selectedDomain.value;
   const conceptId = concept.CONCEPT_ID;
@@ -574,7 +562,7 @@ function reloadData() {
 }
 
 watch(selectedReport, () => {
-  const { cdm, release, domain, report } = route.params;
+  const { cdm, release, domain, report } = route.query;
   if (cdm || release || domain || report) {
     return;
   } else {
@@ -596,7 +584,7 @@ watch(selectedDomain, () => {
 //Handle loading of the data if redirected
 
 function populateSelectedAttributesFromParams() {
-  const { cdm, release } = route.params;
+  const { cdm, release } = route.query;
   const attributes = {};
 
   if (cdm && release) {
@@ -653,10 +641,7 @@ function parseSourceToSelectedAttributes(parsedData) {
 }
 
 onMounted(() => {
-  const report = route.params.report;
-  const source = route.params.cdm;
-  const domain = route.params.domain;
-  const release = route.params.release;
+  const { report, domain } = route.query;
   if (report === "domain") {
     selectedDomain.value = domain;
     selectedReport.value = DOMAIN_SUMMARY;
@@ -689,9 +674,10 @@ const handleScroll = () => {
 };
 
 onMounted(() => {
-  if (route.params.concept && route.params.domain) {
-    selectedDomain.value = route.params.domain;
-    loadDrilldown({ CONCEPT_ID: route.params.concept });
+  const { concept, domain } = route.query;
+  if (concept && domain) {
+    selectedDomain.value = domain;
+    loadDrilldown({ CONCEPT_ID: concept });
   }
   if (tableContainer.value) {
     tableContainer.value.addEventListener("scroll", handleScroll);
@@ -705,8 +691,9 @@ watch(tableContainer, () => {
 });
 
 watch(visible, () => {
+  const { domain, concept, report } = route.query;
   if (visible.value === false)
-    if (route.params.domain || route.params.concept || route.params.report) {
+    if (domain || concept || report) {
       router.replace({ name: route.name });
     }
 });

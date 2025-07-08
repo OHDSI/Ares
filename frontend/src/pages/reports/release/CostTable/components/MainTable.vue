@@ -114,15 +114,12 @@ const domains = computed(() => {
 });
 
 const compareToOtherSources = function () {
-  const source = route.params.cdm;
-  // const domain = route.params.domain;
-  const release = route.params.release;
+  const { cdm, release } = route.params;
   router.push({
     name: "networkComparisonTool",
-    params: {
-      cdm: source,
-      // domain: domain,
-      release: release,
+    query: {
+      cdm,
+      release,
       report: "cost",
     },
   });

@@ -101,10 +101,11 @@ const navigateToDataQuality = function () {
 };
 
 const navigateToNetworkConcept = function () {
+  const { domain } = route.params;
   router.push({
     name: "networkComparisonTool",
-    params: {
-      domain: route.params.domain,
+    query: {
+      domain,
       concept: conceptId,
       report: "domain",
     },
