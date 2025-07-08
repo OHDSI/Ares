@@ -47,7 +47,7 @@ import { mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionSpecVisitStratification from "@/pages/reports/release/DomainTable/components/DataStratificationByVisit/visitStratification";
 
@@ -62,8 +62,10 @@ function toggleTable(mode) {
   showTable.value = mode;
 }
 
-const data = computed(() => {
-  return store.getters.getData.domainStratification;
+const data = ref(null);
+
+onMounted(() => {
+  data.value = store.getters.getData.domainStratification;
 });
 </script>
 

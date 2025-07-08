@@ -4,7 +4,6 @@
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
     <Echarts
-      v-if="data"
       id="viz-stratificationbydrugtype"
       :data="data"
       :chart-spec="getEChartsOptionSpecDrugTypeStratification"
@@ -64,19 +63,23 @@ import { mdiCodeBraces } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionSpecDrugTypeStratification from "@/pages/reports/release/DomainTable/components/DataStratificationByDrug/dataStratificationByDrug";
 
 const store = useStore();
 const route = useRoute();
 
-const data = computed(() => {
-  return store.getters.getData.drugStratification;
+const data = ref(null);
+
+onMounted(() => {
+  data.value = store.getters.getData.drugStratification;
 });
 
 const showTable = ref(false);
-const showChart = route.params.domain === "drug_exposure" && data.value;
+const showChart = computed(
+  () => route.params.domain === "drug_exposure" && data.value
+);
 
 function toggleTable(mode) {
   showTable.value = mode;
