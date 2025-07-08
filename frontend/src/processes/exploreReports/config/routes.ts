@@ -1,7 +1,5 @@
 import ReportsView from "@/processes/exploreReports/ui/ReportsView.vue";
 import Home from "@/pages/info/Home.vue";
-import Help from "@/pages/info/Help.vue";
-import Article from "@/pages/info/Article.vue";
 import NetworkDataQualitySummary from "@/pages/reports/network/NetworkDataQualitySummary/NetworkDataQualitySummary.vue";
 import NetworkPerformance from "@/pages/reports/network/NetworkPerformance/NetworkPerformance.vue";
 import NetworkUnmappedSourceCodes from "@/pages/reports/network/NetworkUnmappedSourceCodes/NetworkUnmappedSourceCodes.vue";
@@ -41,12 +39,6 @@ export const routes: RouteRecordRaw[] = [
     meta: { showModules: true },
     children: [
       { path: "/home", name: "home", components: { reportsView: Home } },
-      { path: "/help", name: "help", components: { reportsView: Help } },
-      {
-        path: "/publication/article",
-        name: "article",
-        components: { reportsView: Article },
-      },
     ],
   },
 
