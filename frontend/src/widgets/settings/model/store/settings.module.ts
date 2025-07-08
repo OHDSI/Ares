@@ -51,9 +51,11 @@ const getters = {
 };
 
 const actions = {
-  [LOAD_SETTINGS_FROM_STORAGE]({ commit }) {
-    if (localStorageService.get("settings")) {
-      commit(SET_SETTINGS, { data: localStorageService.get("settings") });
+  [LOAD_SETTINGS_FROM_STORAGE]({ commit, state }) {
+    const savedSettings = localStorageService.get("settings");
+    if (savedSettings && typeof savedSettings === "object") {
+      const mergedSettings = { ...state.settings, ...savedSettings };
+      commit(SET_SETTINGS, { data: mergedSettings });
     }
   },
   [TOGGLE_BASELINE_SETTING]({ commit }, payload) {

@@ -17,8 +17,8 @@
           ],
         }"
         v-model:visible="visible"
-        :position="drillDownViewOption.position"
-        :class="drillDownViewOption.class"
+        :position="drillDownViewOption?.position"
+        :class="drillDownViewOption?.class"
       >
         <div class="px-14 md:px-20 lg:px-24 mx-1 h-[90%]">
           <CohortDrilldownReport v-if="conceptData" :data="conceptData" />
