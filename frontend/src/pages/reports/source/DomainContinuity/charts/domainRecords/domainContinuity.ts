@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export function getEChartsOverview({ zeroBaseline = false, data = [] }) {
   const domains = [...new Set(data.map((d) => d.domain))];
   const series = [];
@@ -54,8 +56,9 @@ export function getEChartsOverview({ zeroBaseline = false, data = [] }) {
     yAxes.push({
       type: "value",
       gridIndex: i,
-      // axisLabel: { color: axisLabelColor, fontSize: 10 },
-      // axisLine: { lineStyle: { color: axisLabelColor } },
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
       axisTick: { show: true },
       splitLine: { show: true },
       scale: !zeroBaseline,

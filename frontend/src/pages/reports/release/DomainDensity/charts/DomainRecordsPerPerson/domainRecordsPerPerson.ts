@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionDomainRecordsPerPerson({
   zeroBaseline = false,
   data = [],
@@ -17,7 +19,7 @@ export default function getEChartsOptionDomainRecordsPerPerson({
       {
         top: "10%",
         height: "60%",
-        left: "2%",
+        left: "3%",
         right: "2%",
         bottom: "10%",
       },
@@ -38,6 +40,9 @@ export default function getEChartsOptionDomainRecordsPerPerson({
       nameLocation: "middle",
       nameGap: 30,
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     dataZoom: [
       {

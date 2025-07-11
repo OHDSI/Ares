@@ -9,20 +9,20 @@
       />
     </template>
 
-    <Chart
-      v-if="store.getters.getData"
-      :id="reportId"
-      :chartSpec="specRecordProportionByMonth"
-      :data="store.getters.getData.conceptData"
-      :annotations-config="{
-        chartSpec: specRecordProportionByMonthAnnotation,
-        annotationsParentElement: 'g',
-        brushParentElement: 'g g',
-      }"
-      :signal-listener="listeners.setSelectionAreaSignal"
-      :annotations="annotations"
-      :annotation-mode="annotationsMode"
-    />
+    <!--    <Chart-->
+    <!--      v-if="store.getters.getData"-->
+    <!--      :id="reportId"-->
+    <!--      :chartSpec="specRecordProportionByMonth"-->
+    <!--      :data="store.getters.getData.conceptData"-->
+    <!--      :annotations-config="{-->
+    <!--        chartSpec: specRecordProportionByMonthAnnotation,-->
+    <!--        annotationsParentElement: 'g',-->
+    <!--        brushParentElement: 'g g',-->
+    <!--      }"-->
+    <!--      :signal-listener="listeners.setSelectionAreaSignal"-->
+    <!--      :annotations="annotations"-->
+    <!--      :annotation-mode="annotationsMode"-->
+    <!--    />-->
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -51,7 +51,6 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
-import * as listeners from "@/pages/model/lib/listeners";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import { helpers } from "@/shared/lib/mixins";

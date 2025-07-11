@@ -7,7 +7,7 @@
       id="viz-continuity"
       :data="data"
       :chart-spec="getEChartsOverview"
-      height="950px"
+      :height="totalHeight"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -121,6 +121,13 @@ function toggleTable(mode) {
 const data = computed(() => {
   return store.getters.getData.domainRecords;
 });
+
+const domains = helpers.getValuesArray(data.value, "domain", true);
+
+const facetCount = domains.length;
+const perFacetHeight = 105;
+
+const totalHeight = `${facetCount * perFacetHeight}px`;
 </script>
 
 <style scoped></style>

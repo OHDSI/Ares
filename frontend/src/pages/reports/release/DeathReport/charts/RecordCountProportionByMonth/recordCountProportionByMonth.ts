@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionRecordProportionByMonth({
   zeroBaseline = false,
   data = [],
@@ -44,6 +46,9 @@ export default function getEChartsOptionRecordProportionByMonth({
         fontSize: 14,
       },
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     series: [
       {

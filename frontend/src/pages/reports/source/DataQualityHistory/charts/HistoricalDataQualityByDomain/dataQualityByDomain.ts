@@ -43,6 +43,7 @@ export default function getEChartsDataQualityResultsByDomain({
       data: domains,
       orient: "horizontal",
       selectedMode: "multiple",
+      type: "scroll",
     },
     grid: {
       left: "2%",

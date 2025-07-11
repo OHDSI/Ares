@@ -95,7 +95,7 @@ const data = computed(() => {
 const sources = helpers.getValuesArray(data.value, "SOURCE", true);
 
 const facetCount = sources.length;
-const perFacetHeight = 130;
+const perFacetHeight = 120;
 
 const totalHeight = `${facetCount * perFacetHeight}px`;
 

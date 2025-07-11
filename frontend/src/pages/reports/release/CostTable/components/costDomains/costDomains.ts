@@ -29,6 +29,7 @@ export default function getEChartsOptionCostDomains({ data = [] }) {
       title: {
         text: "Domain",
       },
+      type: "scroll",
     },
     grid: {
       left: "2%",

@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionAgeSex({
   zeroBaseline = false,
   data = [],
@@ -82,11 +84,14 @@ export default function getEChartsOptionAgeSex({
       name: "Number of People",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 30,
+      nameGap: 40,
       nameTextStyle: {
         fontSize: 14,
       },
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     series: [
       {

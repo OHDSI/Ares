@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionRecordProportionByAgeSexYear({
   zeroBaseline = false,
   data = [],
@@ -12,7 +14,7 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
   trellises.forEach((trellis, i) => {
     const filtered = data.filter((d) => d.TRELLIS_NAME === trellis);
     const sexGroups = [...new Set(filtered.map((d) => d.SERIES_NAME))];
-    const gridTop = 20 + i * 80;
+    const gridTop = 20 + i * 100;
 
     trellisToIndex[trellis] = i;
 
@@ -36,7 +38,7 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
       gridIndex: i,
       boundaryGap: false,
       axisLabel: {
-        show: i === trellises.length - 1,
+        show: true,
       },
       axisTick: {
         show: false,
@@ -54,6 +56,9 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
       splitLine: { show: true },
       scale: !zeroBaseline,
       min: zeroBaseline ? 0 : undefined,
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     });
 
     sexGroups.forEach((sex) => {
@@ -101,6 +106,7 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
     },
     legend: {
       orient: "horizontal",
+      type: "scroll",
     },
     grid: grids,
     xAxis: xAxes,

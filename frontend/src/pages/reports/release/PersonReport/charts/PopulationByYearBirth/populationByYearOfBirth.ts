@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionYearOfBirth({
   zeroBaseline = false,
   data = [],
@@ -53,11 +55,14 @@ export default function getEChartsOptionYearOfBirth({
       name: "# of People",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 30,
+      nameGap: 40,
       nameTextStyle: {
         fontSize: 14,
       },
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     series: [
       {

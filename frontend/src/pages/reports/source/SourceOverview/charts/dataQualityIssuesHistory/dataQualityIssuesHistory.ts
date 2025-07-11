@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsIssuesHistory({
   zeroBaseline = false,
   data = [],
@@ -51,13 +53,16 @@ export default function getEChartsIssuesHistory({
     },
     yAxis: {
       type: "value",
-      name: "Issues",
+      name: "# Issues",
       nameLocation: "middle",
       nameRotate: 90,
       nameGap: 40,
       splitLine: { show: true },
       axisTick: { show: true },
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     grid: {
       left: "4%",

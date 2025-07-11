@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionDomainOverview({
   zeroBaseline = false,
   data = [],
@@ -12,6 +14,7 @@ export default function getEChartsOptionDomainOverview({
     legend: {
       type: "scroll",
       top: 0,
+      type: "scroll",
     },
     grid: [
       {
@@ -38,6 +41,9 @@ export default function getEChartsOptionDomainOverview({
       nameLocation: "middle",
       nameGap: 30,
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     dataZoom: [
       {

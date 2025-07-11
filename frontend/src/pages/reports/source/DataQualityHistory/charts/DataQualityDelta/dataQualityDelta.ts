@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsDataQualityDelta({
   zeroBaseline = false,
   data = [],
@@ -24,6 +26,7 @@ export default function getEChartsDataQualityDelta({
       data: variables,
       orient: "horizontal",
       selectedMode: "multiple",
+      type: "scroll",
     },
     grid: {
       left: "2%",
@@ -50,6 +53,9 @@ export default function getEChartsDataQualityDelta({
       splitLine: { show: true },
       axisTick: { show: true },
       ...(zeroBaseline ? { min: 0 } : {}),
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     series,
   };

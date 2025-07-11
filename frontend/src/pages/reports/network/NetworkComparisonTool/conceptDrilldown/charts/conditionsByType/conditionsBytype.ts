@@ -46,7 +46,7 @@ export function getEChartsConditionsByTypeFacet({ data = [] }) {
     });
 
     grids.push({
-      top: 30 + idx * 110,
+      top: 20 + idx * 110,
       height: 100,
       left: "1%",
       right: "2%",
@@ -85,6 +85,7 @@ export function getEChartsConditionsByTypeFacet({ data = [] }) {
     legend: {
       orient: "horizontal",
       top: 0,
+      type: "scroll",
     },
     grid: grids,
     xAxis: xAxes,

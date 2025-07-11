@@ -50,6 +50,7 @@ export default function getEChartsEthnicity({
       title: {
         text: "Ethnicity",
       },
+      type: "scroll",
     },
     grid: {
       left: "2%",

@@ -47,6 +47,7 @@ export default function getEChartsRace({ zeroBaseline = false, data = [] }) {
       title: {
         text: "Race",
       },
+      type: "scroll",
     },
     grid: {
       left: "2%",

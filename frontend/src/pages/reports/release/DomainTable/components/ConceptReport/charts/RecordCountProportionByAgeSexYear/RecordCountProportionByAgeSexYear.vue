@@ -3,16 +3,11 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
+    <Echarts
       v-if="store.getters.getData"
       id="viz-recordproportionbyagesexyear"
-      :chartSpec="specRecordProportionByAgeSexYear"
       :data="data"
-    />
-    <Echarts
-      id="viz-quantity"
-      :data="data"
-      height="900px"
+      :height="totalHeight"
       :chart-spec="getEChartsOptionRecordProportionByAgeSexYear"
     />
     <div v-if="showTable" class="p-4">
@@ -66,12 +61,10 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 
-import { specRecordProportionByAgeSexYear } from "./specRecordProportionByAgeSexYear";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
@@ -95,6 +88,13 @@ function toggleTable(mode) {
 const data = computed(() => {
   return store.getters.getData.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR;
 });
+
+const trellis = helpers.getValuesArray(data.value, "TRELLIS_NAME", true);
+
+const facetCount = trellis.length;
+const perFacetHeight = 102;
+
+const totalHeight = `${facetCount * perFacetHeight}px`;
 </script>
 
 <style scoped></style>

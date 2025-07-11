@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionRecordProportionByMonthNetwork({
   zeroBaseline = false,
   data = [],
@@ -20,6 +22,7 @@ export default function getEChartsOptionRecordProportionByMonthNetwork({
     legend: {
       top: 10,
       data: sources,
+      type: "scroll",
     },
     tooltip: {
       trigger: "axis",
@@ -56,6 +59,9 @@ export default function getEChartsOptionRecordProportionByMonthNetwork({
         fontSize: 14,
       },
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     series: sources.map((source) => ({
       name: source,

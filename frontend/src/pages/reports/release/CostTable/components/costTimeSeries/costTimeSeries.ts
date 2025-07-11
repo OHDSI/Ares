@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionCostTimeseries({
   zeroBaseline = false,
   data = [],
@@ -29,7 +31,7 @@ export default function getEChartsOptionCostTimeseries({
     grid: {
       top: "10%",
       bottom: "10%",
-      left: "5%",
+      left: "3%",
       right: "2%",
     },
     dataset: {
@@ -56,6 +58,9 @@ export default function getEChartsOptionCostTimeseries({
     yAxis: {
       type: "value",
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     series: domainIds.map((domainId) => ({
       name: domainId,

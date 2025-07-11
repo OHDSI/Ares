@@ -30,6 +30,7 @@ export default function specEthnicityECharts({ data = [] }) {
       top: 0,
       left: "center",
       data: processed.map((d) => d.CONCEPT_NAME),
+      type: "scroll",
     },
     xAxis: {
       type: "value",

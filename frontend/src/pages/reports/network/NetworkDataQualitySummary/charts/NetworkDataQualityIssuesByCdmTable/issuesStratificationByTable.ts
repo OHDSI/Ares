@@ -50,6 +50,7 @@ export default function getEChartsIssueStratificationByTable({
     legend: {
       orient: "horizontal",
       top: 0,
+      type: "scroll",
     },
     grid: {
       left: "2%",

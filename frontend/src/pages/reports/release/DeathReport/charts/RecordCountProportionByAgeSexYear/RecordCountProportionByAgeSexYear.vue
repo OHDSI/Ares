@@ -3,18 +3,12 @@
     <template #icons>
       <ChartHeader table-toggle @table-toggled="toggleTable" />
     </template>
-    <Chart
-      id="viz-recordproportionbyagesexyear"
-      :chartSpec="specRecordProportionByAgeSexYear"
-      :data="data"
-    />
     <Echarts
       id="viz-recordproportionbyagesexyear"
       :data="data"
-      height="650px"
+      :height="totalHeight"
       :chart-spec="getEChartsOptionRecordProportionByAgeSexYear"
     />
-
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -61,9 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
 import { links } from "@/shared/config/links";
-import { specRecordProportionByAgeSexYear } from "./specRecordProportionByAgeSexYear";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
@@ -74,7 +66,6 @@ import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
-import getEChartsDeathByType from "@/pages/reports/release/DeathReport/charts/DeathByType/deathByType";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionRecordProportionByAgeSexYear from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByAgeSexYear/recordCountProportionByAgeSexYear";
 
@@ -92,6 +83,13 @@ function toggleTable(mode) {
 const data = computed(() => {
   return store.getters.getData.PREVALENCE_BY_GENDER_AGE_YEAR;
 });
+
+const trellis = helpers.getValuesArray(data.value, "TRELLIS_NAME", true);
+
+const facetCount = trellis.length;
+const perFacetHeight = 102;
+
+const totalHeight = `${facetCount * perFacetHeight}px`;
 </script>
 
 <style scoped></style>

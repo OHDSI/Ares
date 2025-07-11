@@ -79,6 +79,7 @@ export default function getEChartsNetworkDatastrand({ data = [] }) {
       data: domains,
       orient: "horizontal",
       selectedMode: "multiple",
+      type: "scroll",
     },
     grid: {
       left: "1%",

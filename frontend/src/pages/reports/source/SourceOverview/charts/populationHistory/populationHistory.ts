@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsPopulationByRelease({
   zeroBaseline = false,
   data = [],
@@ -52,13 +54,16 @@ export default function getEChartsPopulationByRelease({
     },
     yAxis: {
       type: "value",
-      name: "People",
+      name: "# People",
       nameLocation: "middle",
       nameRotate: 90,
       nameGap: 40,
       splitLine: { show: true },
       axisTick: { show: true },
       min: zeroBaseline ? 0 : "dataMin",
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     },
     grid: {
       left: "4%",

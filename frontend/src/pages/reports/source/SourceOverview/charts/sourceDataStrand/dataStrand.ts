@@ -83,6 +83,7 @@ export default function getEChartsDatastrand({
       orient: "horizontal",
       selectedMode: "multiple",
       top: 0,
+      type: "scroll",
     },
     grid: {
       left: "2%",

@@ -1,3 +1,5 @@
+import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+
 export default function getEChartsOptionRecordProportionByAgeSexYear({
   zeroBaseline = false,
   data = [],
@@ -54,6 +56,9 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
       splitLine: { show: true },
       scale: !zeroBaseline,
       min: zeroBaseline ? 0 : undefined,
+      axisLabel: {
+        formatter: (v) => kmbFormatter(v),
+      },
     });
 
     sexGroups.forEach((sex) => {
@@ -101,6 +106,7 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
     },
     legend: {
       orient: "horizontal",
+      type: "scroll",
     },
     grid: grids,
     xAxis: xAxes,

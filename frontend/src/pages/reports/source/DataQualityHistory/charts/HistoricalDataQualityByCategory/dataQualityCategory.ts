@@ -50,6 +50,7 @@ export default function getEChartsDataQualityResultsByCategory({
       data: categories,
       orient: "horizontal",
       selectedMode: "multiple",
+      type: "scroll",
     },
     grid: {
       left: "2%",
