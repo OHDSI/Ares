@@ -57,7 +57,7 @@ export default function getEChartsPopulationByRelease({
       name: "# People",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 40,
+      nameGap: 50,
       splitLine: { show: true },
       axisTick: { show: true },
       min: zeroBaseline ? 0 : "dataMin",

@@ -14,7 +14,7 @@ export default function getEChartsOptionYearOfBirth({
       data: ["Male", "Female"],
     },
     grid: {
-      left: "3%",
+      left: "4%",
       right: "3%",
       bottom: "10%",
       top: "2%",
@@ -55,7 +55,7 @@ export default function getEChartsOptionYearOfBirth({
       name: "# of People",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 40,
+      nameGap: 50,
       nameTextStyle: {
         fontSize: 14,
       },

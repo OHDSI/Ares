@@ -84,7 +84,7 @@ export default function getEChartsOptionAgeSex({
       name: "Number of People",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 40,
+      nameGap: 50,
       nameTextStyle: {
         fontSize: 14,
       },
