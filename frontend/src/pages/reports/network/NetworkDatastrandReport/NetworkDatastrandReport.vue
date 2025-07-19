@@ -5,14 +5,15 @@
     </template>
     <Echarts
       id="viz-datastrand"
-      :data="data.dataStrandReport"
+      :data="data"
       :chart-spec="getEChartsNetworkDatastrand"
+      :height="totalHeight"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
-        :value="data.dataStrandReport"
+        :value="data"
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
@@ -83,13 +84,21 @@ import getEChartsNetworkDatastrand from "@/pages/reports/network/NetworkDatastra
 
 const store = useStore();
 
-const data = computed(() => store.getters.getData);
+const data = computed(() => store.getters.getData.dataStrandReport);
 
 const showTable = ref(false);
 
 function toggleTable(mode) {
   showTable.value = mode;
 }
+
+const trellis = helpers.getValuesArray(data.value, "cdm_release_key", true);
+
+const facetCount = trellis.length;
+const perFacetHeight = 50;
+const minHeight = 200;
+
+const totalHeight = `${Math.max(facetCount * perFacetHeight, minHeight)}px`;
 </script>
 
 <style scoped>

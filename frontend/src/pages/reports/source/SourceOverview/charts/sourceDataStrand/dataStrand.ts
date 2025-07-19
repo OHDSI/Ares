@@ -1,7 +1,4 @@
-export default function getEChartsDatastrand({
-  zeroBaseline = false,
-  data = [],
-}) {
+export default function getEChartsDatastrand({ data = [] }) {
   const allowed = [
     "condition occurrence",
     "drug exposure",
@@ -88,7 +85,7 @@ export default function getEChartsDatastrand({
     grid: {
       left: "2%",
       right: "2%",
-      bottom: "10%",
+      bottom: "5%",
       top: "10%",
       containLabel: true,
     },
@@ -98,7 +95,8 @@ export default function getEChartsDatastrand({
       axisLabel: {
         formatter: (v) => `${(v * 100).toFixed(0)}%`,
       },
-      ...(zeroBaseline ? { min: 0 } : {}),
+      min: 0,
+      max: 1,
       splitLine: { show: false },
     },
     yAxis: {

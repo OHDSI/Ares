@@ -95,6 +95,8 @@ export default function getEChartsNetworkDatastrand({ data = [] }) {
         formatter: (v) => `${(v * 100).toFixed(0)}%`,
       },
       splitLine: { show: false },
+      min: 0,
+      max: 1,
     },
     yAxis: {
       type: "category",

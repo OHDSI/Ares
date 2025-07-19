@@ -5,14 +5,15 @@
     </template>
     <Echarts
       id="viz-sourcedatastrand"
-      :data="store.getters.getData.dataStrandReport"
+      :data="data"
       :chart-spec="getEChartsDatastrand"
+      :height="totalHeight"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
-        :value="data.dataStrandReport"
+        :value="data"
         paginator
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
@@ -67,8 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, ref, onMounted } from "vue";
-import * as vega from "vega";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
@@ -77,73 +77,28 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import { Handler } from "vega-tooltip";
-import { darkTheme, lightTheme } from "@/widgets/chart/model/themes";
 
 const store = useStore();
-const route = useRoute();
-const router = useRouter();
 
-import { specDatastrand } from "./specDatastrand";
 import { links } from "@/shared/config/links";
-import { useRoute, useRouter } from "vue-router";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsDatastrand from "@/pages/reports/source/SourceOverview/charts/sourceDataStrand/dataStrand";
 
-const specs = ref(specDatastrand);
-
-const parsedConfig = computed(() => {
-  return {
-    ...specs.value,
-    config: store.getters.getSettings.darkMode ? darkTheme : lightTheme,
-  };
-});
-
-const renderChart = function () {
-  const view = new vega.View(vega.parse(parsedConfig.value, {}), {
-    renderer: "svg",
-    container: `#viz-sourcedatastrand`,
-    hover: true,
-  }).tooltip(new Handler().call);
-  view.runAsync().then(() => {
-    view.addSignalListener("selectDomain", (name, value) => {
-      const domainKey = value.domain.toLowerCase().replace(" ", "_");
-      router.push({
-        name: "domainTable",
-        params: {
-          cdm: route.params.cdm_source_key,
-          release: value.cdm_release_key.split("-").join(""),
-          domain: domainKey,
-        },
-      });
-      document.getElementById("vg-tooltip-element").style.display = "none";
-    });
-  });
-};
-
-const data = computed(() => store.getters.getData);
-
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-
-onMounted(() => {
-  if (data.value) {
-    const spec = specDatastrand;
-    spec.data[0].values = data.value.dataStrandReport;
-    specs.value = spec;
-
-    renderChart();
-  }
-});
-
-watch(darkMode, () => {
-  renderChart();
-});
+const data = computed(() => store.getters.getData.dataStrandReport);
 
 const showTable = ref(false);
 
 function toggleTable(mode) {
   showTable.value = mode;
 }
+
+const trellis = helpers.getValuesArray(data.value, "cdm_release_key", true);
+
+const facetCount = trellis.length;
+const perFacetHeight = 50;
+const minHeight = 200;
+
+const totalHeight = `${Math.max(facetCount * perFacetHeight, minHeight)}px`;
 </script>
 
 <style scoped>
