@@ -4,13 +4,13 @@ export default function getEChartsIssueStratificationByCategory({
 }) {
   const totalPerCategory = {};
   data.forEach((d) => {
-    const category = d.CATEGORY;
+    const category = d.category;
     totalPerCategory[category] = (totalPerCategory[category] || 0) + 1;
   });
 
   const grouped = {};
   data.forEach((d) => {
-    const cat = d.CATEGORY;
+    const cat = d.category;
     const src = d.CDM_SOURCE_ABBREVIATION;
     if (!grouped[cat]) grouped[cat] = {};
     grouped[cat][src] = (grouped[cat][src] || 0) + 1;
@@ -31,7 +31,7 @@ export default function getEChartsIssueStratificationByCategory({
       const total = totalPerCategory[cat] || 1;
       return {
         value: count,
-        CATEGORY: cat,
+        category: cat,
         CDM_SOURCE_ABBREVIATION: src,
         CHECK_COUNT: count,
         PERCENT: count / total,
@@ -43,7 +43,7 @@ export default function getEChartsIssueStratificationByCategory({
     tooltip: {
       trigger: "item",
       formatter: ({ seriesName, data }) =>
-        `Category: ${data.CATEGORY}<br/>Source: ${seriesName}<br/>` +
+        `Category: ${data.category}<br/>Source: ${seriesName}<br/>` +
         `Number of Issues: ${data.CHECK_COUNT}<br/>` +
         `Percent: ${(data.PERCENT * 100).toFixed(2)}%`,
     },
