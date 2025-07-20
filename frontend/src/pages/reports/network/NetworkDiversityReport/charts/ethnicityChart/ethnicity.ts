@@ -55,8 +55,8 @@ export default function getEChartsEthnicity({
     grid: {
       left: "2%",
       right: "2%",
-      bottom: "10%",
-      top: "10%",
+      bottom: 25,
+      top: 25,
       containLabel: true,
     },
     xAxis: {
