@@ -1,5 +1,5 @@
 <template>
-  <div ref="containerRef" class="p-4">
+  <div ref="containerRef" class="p-2">
     <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
     <div
       ref="chartContainer"
