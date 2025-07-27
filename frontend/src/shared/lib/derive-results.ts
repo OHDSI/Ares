@@ -9,7 +9,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   const VerificationPlausibilityFail = data.filter(
     (c) =>
-      c.failed == 1 &&
+      (c.failed == 1 || c.isError == 1) &&
       c.context == "Verification" &&
       c.category == "Plausibility"
   ).length;
@@ -36,7 +36,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   const VerificationConformanceFail = data.filter(
     (c) =>
-      c.failed == 1 &&
+      (c.failed == 1 || c.isError == 1) &&
       c.context == "Verification" &&
       c.category == "Conformance"
   ).length;
@@ -63,7 +63,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   const VerificationCompletenessFail = data.filter(
     (c) =>
-      c.failed == 1 &&
+      (c.failed == 1 || c.isError == 1) &&
       c.context == "Verification" &&
       c.category == "Completeness"
   ).length;
@@ -87,7 +87,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   ).length;
 
   const VerificationFail = data.filter(
-    (c) => c.failed == 1 && c.context == "Verification"
+    (c) => (c.failed == 1 || c.isError == 1) && c.context == "Verification"
   ).length;
 
   const VerificationTotal = data.filter(
@@ -109,7 +109,9 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   const ValidationPlausibilityFail = data.filter(
     (c) =>
-      c.failed == 1 && c.context == "Validation" && c.category == "Plausibility"
+      (c.failed == 1 || c.isError == 1) &&
+      c.context == "Validation" &&
+      c.category == "Plausibility"
   ).length;
 
   const ValidationPlausibilityTotal = data.filter(
@@ -134,7 +136,9 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   const ValidationConformanceFail = data.filter(
     (c) =>
-      c.failed == 1 && c.context == "Validation" && c.category == "Conformance"
+      (c.failed == 1 || c.isError == 1) &&
+      c.context == "Validation" &&
+      c.category == "Conformance"
   ).length;
 
   const ValidationConformanceTotal = data.filter(
@@ -159,7 +163,9 @@ export default function deriveResults(data /*: CheckResults[]*/) {
 
   const ValidationCompletenessFail = data.filter(
     (c) =>
-      c.failed == 1 && c.context == "Validation" && c.category == "Completeness"
+      (c.failed == 1 || c.isError == 1) &&
+      c.context == "Validation" &&
+      c.category == "Completeness"
   ).length;
 
   const ValidationCompletenessTotal = data.filter(
@@ -180,7 +186,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   ).length;
 
   const ValidationFail = data.filter(
-    (c) => c.failed == 1 && c.context == "Validation"
+    (c) => (c.failed == 1 || c.isError == 1) && c.context == "Validation"
   ).length;
 
   const ValidationTotal = data.filter((c) => c.context == "Validation").length;
@@ -197,7 +203,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   ).length;
 
   const PlausibilityFail = data.filter(
-    (c) => c.failed == 1 && c.category == "Plausibility"
+    (c) => (c.failed == 1 || c.isError == 1) && c.category == "Plausibility"
   ).length;
 
   const PlausibilityTotal = data.filter(
@@ -216,7 +222,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   ).length;
 
   const ConformanceFail = data.filter(
-    (c) => c.failed == 1 && c.category == "Conformance"
+    (c) => (c.failed == 1 || c.isError == 1) && c.category == "Conformance"
   ).length;
 
   const ConformanceTotal = data.filter(
@@ -235,7 +241,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   ).length;
 
   const CompletenessFail = data.filter(
-    (c) => c.failed == 1 && c.category == "Completeness"
+    (c) => (c.failed == 1 || c.isError == 1) && c.category == "Completeness"
   ).length;
 
   const CompletenessTotal = data.filter(
@@ -255,7 +261,7 @@ export default function deriveResults(data /*: CheckResults[]*/) {
   const AllIsError = data.filter((c) => c.isError == 1).length;
   const AllNotApplicable = data.filter((c) => c.notApplicable == 1).length;
 
-  const AllFail = data.filter((c) => c.failed == 1).length;
+  const AllFail = data.filter((c) => c.failed == 1 || c.isError == 1).length;
 
   const AllTotal = data.length;
 
