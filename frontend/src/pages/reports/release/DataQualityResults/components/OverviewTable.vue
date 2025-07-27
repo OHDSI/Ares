@@ -260,19 +260,18 @@
           <span class="font-bold">{{ data.Total.Total.Fail }}</span> failed
           checks are SQL errors
         </p>
+        <p class="font-light">
+          Corrected pass percentage for NA and Errors:
+          <span class="font-bold"
+            >{{ data.correctedPassPercent.toFixed(1) }}%</span
+          >
+          (<span class="font-bold"
+            >{{ data.Total.Total.Pass - data.AllNotApplicable }}/{{
+              data.Total.Total.Total - data.AllNotApplicable - data.AllIsError
+            }}</span
+          >)
+        </p>
       </div>
-
-      <p class="font-light">
-        Corrected pass percentage for NA and Errors:
-        <span class="font-bold"
-          >{{ data.correctedPassPercent.toFixed(1) }}%</span
-        >
-        (<span class="font-bold"
-          >{{ data.Total.Total.Pass - data.AllNotApplicable }}/{{
-            data.Total.Total.Total - data.AllNotApplicable - data.AllIsError
-          }}</span
-        >)
-      </p>
     </Message>
     <!--    <v-toolbar density="compact" class="mt-6">-->
     <!--      <ChartActionIcon-->
