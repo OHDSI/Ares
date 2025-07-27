@@ -335,6 +335,63 @@
       </template>
     </Column>
     <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!columnsToDisplay.includes('isError')"
+      sortable
+      filter-field="isError"
+      field="isError"
+      header="Error"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          :maxSelectedLabels="2"
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="isErrorOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+    <Column
+      :show-filter-menu="false"
+      :show-clear-button="false"
+      style="text-align: end; min-width: 12rem"
+      :pt="{ headerContent: 'justify-end' }"
+      :hidden="!columnsToDisplay.includes('notApplicable')"
+      sortable
+      filter-field="notApplicable"
+      field="notApplicable"
+      header="Not Applicable"
+    >
+      <template #filter="{ filterModel, filterCallback }">
+        <MultiSelect
+          :maxSelectedLabels="2"
+          filter
+          v-model="filterModel.value"
+          @change="filterCallback()"
+          :options="notApplicableOptions"
+          placeholder="Select One"
+          class="p-column-filter w-full"
+          style="min-width: 12rem"
+        >
+          <template #option="slotProps">
+            {{ slotProps.option }}
+          </template>
+        </MultiSelect>
+      </template>
+    </Column>
+
+    <Column
       style="text-align: end; min-width: 12rem"
       :pt="{ headerContent: 'justify-end' }"
       :hidden="!columnsToDisplay.includes('checkDescription')"
@@ -638,6 +695,14 @@ const checkLevelOptions = computed(() => {
 const notesValueOptions = computed(() => {
   return helpers.getValuesArray(checks.value, "notesValue", true);
 });
+const isErrorOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "isError", true);
+});
+
+const notApplicableOptions = computed(() => {
+  return helpers.getValuesArray(checks.value, "notApplicable", true);
+});
+
 const deltaOptions = computed(() => {
   return helpers.getValuesArray(checks.value, "delta", true);
 });
@@ -647,6 +712,8 @@ const filters = ref({
   failed: { value: null, matchMode: FilterMatchMode.IN },
   cdmTableName: { value: null, matchMode: FilterMatchMode.IN },
   cdmFieldName: { value: null, matchMode: FilterMatchMode.IN },
+  notApplicable: { value: null, matchMode: FilterMatchMode.IN },
+  isError: { value: null, matchMode: FilterMatchMode.IN },
   checkName: { value: null, matchMode: FilterMatchMode.IN },
   category: { value: null, matchMode: FilterMatchMode.IN },
   subcategory: { value: null, matchMode: FilterMatchMode.IN },
@@ -679,6 +746,20 @@ const headers = ref({
     key: "cdmTableName",
     show: true,
     default: true,
+  },
+  isError: {
+    title: "Error",
+    sortable: true,
+    key: "isError",
+    show: false,
+    default: false,
+  },
+  notApplicable: {
+    title: "Not Applicable",
+    sortable: true,
+    key: "notApplicable",
+    show: false,
+    default: false,
   },
   cdmFieldName: {
     title: "Field",
