@@ -61,7 +61,7 @@ export default function getEChartsOptionDaysSupplyFaceted({
       name: "Days Supply",
       nameLocation: "middle",
       nameGap: 30,
-      interval: 1,
+      interval: 2,
       min: zeroBaseline ? 0 : "dataMin",
       splitLine: { show: true },
     },

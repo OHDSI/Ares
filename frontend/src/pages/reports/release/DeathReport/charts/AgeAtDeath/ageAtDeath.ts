@@ -40,8 +40,8 @@ export default function getEChartsOptionAgeAtDeath({
       },
     },
     grid: {
-      left: "2%",
-      right: "2%",
+      left: 5,
+      right: 10,
       bottom: "10%",
       top: "2%",
       containLabel: true,

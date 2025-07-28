@@ -24,9 +24,9 @@ export default function getEChartsOptionRecordProportionByMonth({
       },
     },
     grid: {
-      left: 60,
-      right: 30,
-      top: 40,
+      left: 65,
+      right: 15,
+      top: 10,
       bottom: 50,
     },
     xAxis: {
@@ -38,7 +38,7 @@ export default function getEChartsOptionRecordProportionByMonth({
       type: "value",
       name: "Record Proportion per 1000",
       nameLocation: "middle",
-      nameGap: 30,
+      nameGap: 50,
       nameTextStyle: {
         fontSize: 14,
       },

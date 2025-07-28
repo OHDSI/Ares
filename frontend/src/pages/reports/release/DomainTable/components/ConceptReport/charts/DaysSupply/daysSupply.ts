@@ -35,7 +35,7 @@ export default function getEChartsOptionDaysSupply({
         ].join("<br/>"),
     },
     grid: {
-      left: "2%",
+      left: 15,
       right: "2%",
       bottom: "10%",
       top: "2%",
@@ -46,7 +46,7 @@ export default function getEChartsOptionDaysSupply({
       name: "Days Supply",
       nameLocation: "middle",
       nameGap: 30,
-      interval: 5,
+      interval: 2,
       nameTextStyle: { fontSize: 14 },
       min: zeroBaseline ? 0 : "dataMin",
       splitLine: { show: true },

@@ -8,8 +8,8 @@ export default function getEChartsOptionAgeAtFirstObservation({
       axisPointer: { type: "cross" },
     },
     grid: {
-      left: "3%",
-      right: "4%",
+      left: 20,
+      right: 20,
       bottom: "10%",
       top: "2%",
       containLabel: true,

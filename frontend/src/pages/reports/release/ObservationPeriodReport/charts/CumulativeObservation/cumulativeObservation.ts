@@ -8,8 +8,8 @@ export default function getEChartsOptionCumulativeObservation({
       axisPointer: { type: "cross" },
     },
     grid: {
-      left: "2%",
-      right: "2%",
+      left: 20,
+      right: 20,
       bottom: "10%",
       top: "2%",
       containLabel: true,

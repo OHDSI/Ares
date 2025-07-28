@@ -24,11 +24,10 @@ export default function getEChartsOptionObservationByMonth({
         ].join("<br/>");
       },
     },
-    grid: { left: "4%", right: "4%", top: "2%", bottom: "15%" },
+    grid: { left: 55, right: 15, top: "2%", bottom: "15%" },
     xAxis: {
       type: "time",
       splitLine: { show: true },
-      name: "Date",
       splitNumber: 20,
       axisLabel: {
         formatter: (v) => new Date(v).toISOString().slice(0, 7),

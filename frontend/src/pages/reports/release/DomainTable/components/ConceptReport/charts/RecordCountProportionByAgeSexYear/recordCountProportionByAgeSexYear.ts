@@ -21,8 +21,8 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
     grids.push({
       top: `${gridTop}px`,
       height: 60,
-      left: 60,
-      right: 20,
+      left: 35,
+      right: 35,
       bottom: i === trellises.length - 1 ? 40 : 0,
     });
 

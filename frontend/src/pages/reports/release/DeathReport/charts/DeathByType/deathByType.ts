@@ -34,8 +34,8 @@ export default function getEChartsDeathByType({ data = [] }) {
       type: "scroll",
     },
     grid: {
-      left: "2%",
-      right: "2%",
+      left: 5,
+      right: 15,
       top: "10%",
       bottom: "10%",
       containLabel: true,

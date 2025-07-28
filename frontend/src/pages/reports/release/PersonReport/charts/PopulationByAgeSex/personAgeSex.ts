@@ -14,8 +14,8 @@ export default function getEChartsOptionAgeSex({
       data: ["Male", "Female"],
     },
     grid: {
-      left: "3%",
-      right: "3%",
+      left: 50,
+      right: 20,
       bottom: "10%",
       top: "10%",
       containLabel: true,

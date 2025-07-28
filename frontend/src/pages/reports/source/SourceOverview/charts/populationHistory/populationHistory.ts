@@ -13,16 +13,6 @@ export default function getEChartsPopulationByRelease({
       trigger: "axis",
       axisPointer: {
         type: "cross",
-        label: {
-          show: true,
-          formatter: (params) => {
-            const date = new Date(params.value);
-            const yyyy = date.getUTCFullYear();
-            const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
-            const dd = String(date.getUTCDate()).padStart(2, "0");
-            return `${yyyy}-${mm}-${dd}`;
-          },
-        },
       },
       formatter: (params) => {
         const item = params[0];
@@ -48,7 +38,6 @@ export default function getEChartsPopulationByRelease({
           return `${yyyy}-${mm}-${dd}`;
         },
       },
-
       splitLine: { show: true },
       axisTick: { show: true },
     },
@@ -66,7 +55,7 @@ export default function getEChartsPopulationByRelease({
       },
     },
     grid: {
-      left: "4%",
+      left: 35,
       right: "1%",
       bottom: "7%",
       top: "5%",

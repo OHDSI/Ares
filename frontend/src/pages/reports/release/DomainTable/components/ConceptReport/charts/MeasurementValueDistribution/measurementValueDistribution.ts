@@ -49,6 +49,7 @@ export default function getEChartsOptionMeasurementDistribution({
       type: "value",
       min: zeroBaseline ? 0 : "dataMin",
       splitLine: { show: true },
+      interval: 2,
     },
     yAxis: {
       type: "category",

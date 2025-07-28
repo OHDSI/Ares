@@ -35,7 +35,7 @@ export default function getEChartsOptionQuantityDistribution({
         ].join("<br/>"),
     },
     grid: {
-      left: "2%",
+      left: 15,
       right: "2%",
       bottom: "10%",
       top: "2%",

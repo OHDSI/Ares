@@ -19,7 +19,7 @@ export default function getEChartsOptionDomainRecordsPerPerson({
       {
         top: "10%",
         height: "60%",
-        left: "3%",
+        left: 45,
         right: "2%",
         bottom: "10%",
       },

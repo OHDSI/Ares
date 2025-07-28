@@ -34,8 +34,8 @@ export default function getEChartsConditionsByType({ data = [] }) {
       type: "scroll",
     },
     grid: {
-      left: "2%",
-      right: "2%",
+      left: 15,
+      right: 15,
       bottom: "10%",
       top: "10%",
       containLabel: true,

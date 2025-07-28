@@ -34,7 +34,7 @@ export default function getEChartsMeasurementsByType({ data = [] }) {
       type: "scroll",
     },
     grid: {
-      left: "2%",
+      left: 15,
       right: "2%",
       bottom: "10%",
       top: "10%",

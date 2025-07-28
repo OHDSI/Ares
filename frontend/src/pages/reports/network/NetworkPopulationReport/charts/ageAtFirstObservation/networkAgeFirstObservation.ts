@@ -39,14 +39,14 @@ export default function getEChartsNetworkAgeAtFirstObservation({
       },
     },
     legend: {
-      top: "5%",
+      top: 0,
       type: "scroll",
     },
     grid: {
-      left: "2%",
+      left: 35,
       right: "2%",
-      bottom: "15%",
-      top: "15%",
+      bottom: "10%",
+      top: "10%",
       containLabel: true,
     },
     xAxis: {
@@ -59,7 +59,7 @@ export default function getEChartsNetworkAgeAtFirstObservation({
       type: "value",
       name: "% of Population",
       nameLocation: "middle",
-      nameGap: 40,
+      nameGap: 50,
       axisLabel: {
         formatter: (v) => `${(v * 100).toFixed(0)}%`,
       },

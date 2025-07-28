@@ -15,13 +15,6 @@ export default function getEChartsIssuesHistory({
         type: "cross",
         label: {
           show: true,
-          formatter: (params) => {
-            const date = new Date(params.value);
-            const yyyy = date.getUTCFullYear();
-            const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
-            const dd = String(date.getUTCDate()).padStart(2, "0");
-            return `${yyyy}-${mm}-${dd}`;
-          },
         },
       },
       formatter: (params) => {
@@ -56,7 +49,7 @@ export default function getEChartsIssuesHistory({
       name: "# Issues",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 40,
+      nameGap: 50,
       splitLine: { show: true },
       axisTick: { show: true },
       min: zeroBaseline ? 0 : "dataMin",
@@ -65,7 +58,7 @@ export default function getEChartsIssuesHistory({
       },
     },
     grid: {
-      left: "4%",
+      left: 35,
       right: "1%",
       bottom: "7%",
       top: "5%",

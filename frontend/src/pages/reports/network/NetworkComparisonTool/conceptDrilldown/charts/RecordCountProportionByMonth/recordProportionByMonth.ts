@@ -20,7 +20,7 @@ export default function getEChartsOptionRecordProportionByMonthNetwork({
 
   return {
     legend: {
-      top: 10,
+      top: 0,
       data: sources,
       type: "scroll",
     },
@@ -40,9 +40,9 @@ export default function getEChartsOptionRecordProportionByMonthNetwork({
       },
     },
     grid: {
-      left: 60,
-      right: 30,
-      top: 60,
+      left: 65,
+      right: 15,
+      top: 30,
       bottom: 80,
     },
     xAxis: {
@@ -54,7 +54,7 @@ export default function getEChartsOptionRecordProportionByMonthNetwork({
       type: "value",
       name: "Record Proportion per 1000",
       nameLocation: "middle",
-      nameGap: 35,
+      nameGap: 50,
       nameTextStyle: {
         fontSize: 14,
       },

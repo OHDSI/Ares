@@ -31,8 +31,8 @@ export default function getEChartsOptionCostTimeseries({
     grid: {
       top: "10%",
       bottom: "10%",
-      left: "3%",
-      right: "2%",
+      left: 50,
+      right: 15,
     },
     dataset: {
       source: data.map((d) => ({

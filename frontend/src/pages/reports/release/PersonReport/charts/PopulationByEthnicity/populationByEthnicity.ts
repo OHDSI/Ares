@@ -19,8 +19,8 @@ export default function specEthnicityECharts({ data = [] }) {
 
   return {
     grid: {
-      left: "2%",
-      right: "2%",
+      left: 15,
+      right: 20,
       top: "10%",
       bottom: "10%",
       containLabel: true,

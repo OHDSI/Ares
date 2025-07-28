@@ -40,8 +40,8 @@ export default function getEChartsOptionObservationByAge({
       },
     },
     grid: {
-      left: "2%",
-      right: "2%",
+      left: 15,
+      right: 15,
       bottom: "10%",
       top: "2%",
       containLabel: true,
