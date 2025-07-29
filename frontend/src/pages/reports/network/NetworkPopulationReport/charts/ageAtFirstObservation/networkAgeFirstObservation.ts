@@ -25,6 +25,17 @@ export default function getEChartsNetworkAgeAtFirstObservation({
   return {
     tooltip: {
       trigger: "axis",
+      axisPointer: {
+        type: "cross",
+        label: {
+          formatter: (params) => {
+            if (params.axisDimension === "y") {
+              return `${(params.value * 100).toFixed(0)}%`;
+            }
+            return `${params.value}`;
+          },
+        },
+      },
       formatter: (params) => {
         const age = params[0].value[0];
         return (

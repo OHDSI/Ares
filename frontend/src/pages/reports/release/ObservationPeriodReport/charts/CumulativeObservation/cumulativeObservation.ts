@@ -5,7 +5,21 @@ export default function getEChartsOptionCumulativeObservation({
   return {
     tooltip: {
       trigger: "axis",
-      axisPointer: { type: "cross" },
+      axisPointer: {
+        type: "cross",
+        label: {
+          formatter: (params) => {
+            if (params.axisDimension === "y") {
+              return `${(params.value * 100).toFixed(0)}%`;
+            }
+            return `${params.value}`;
+          },
+        },
+      },
+      formatter: (params) => {
+        const value = params[0]?.data?.PERCENT_PEOPLE;
+        return value != null ? `${(value * 100).toFixed(0)}%` : "N/A";
+      },
     },
     grid: {
       left: 20,

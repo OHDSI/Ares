@@ -13,7 +13,17 @@ export default function getEChartsOptionObservationByMonth({
   return {
     tooltip: {
       trigger: "axis",
-      axisPointer: { type: "cross" },
+      axisPointer: {
+        type: "cross",
+        label: {
+          formatter: (params) => {
+            if (params.axisDimension === "y") {
+              return `${(params.value * 100).toFixed(0)}%`;
+            }
+            return new Date(params.value).toISOString().slice(0, 7);
+          },
+        },
+      },
       formatter: (pts) => {
         const p = pts.find((p) => p.seriesName === "% of People") || pts[0];
         const d = parsed[p.dataIndex];
