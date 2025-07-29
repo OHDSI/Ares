@@ -29,4 +29,5 @@ export const chartNameIDMap = {
   issues_releases: "Data Quality Issues History",
   population_releases: "Population History",
   "viz-sourcerecordproportionbymonth": "Record Proportion by Month",
+  "viz-costtime": "Cost Time Series",
 };

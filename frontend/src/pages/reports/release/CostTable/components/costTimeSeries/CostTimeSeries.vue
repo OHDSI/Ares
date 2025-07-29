@@ -16,6 +16,8 @@
       :id="reportId"
       :data="data"
       :chart-spec="getEChartsOptionCostTimeSeries"
+      :annotation-mode="annotationsMode"
+      :annotations="annotations"
     />
     <div v-if="showTable" class="p-4">
       <DataTable
@@ -91,7 +93,7 @@ const store = useStore();
 
 const reportId = "viz-costtime";
 
-const { notesMode, toggleNotesMode, toggleAnnotationsMode } =
+const { notesMode, annotationsMode, toggleNotesMode, toggleAnnotationsMode } =
   useAnnotationControls();
 
 const { annotations, notes } = useAnnotations(reportId);

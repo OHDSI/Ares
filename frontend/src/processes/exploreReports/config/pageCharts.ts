@@ -1,8 +1,7 @@
 export const pageCharts = {
   //release
   person: [
-    "viz-populationbyageandsexMale",
-    "viz-populationbyageandsexFemale",
+    "viz-populationAgeSexPerson",
     "viz-race",
     "viz-birthyearnote",
     "viz-ethnicity",
@@ -33,4 +32,5 @@ export const pageCharts = {
   ],
   dataSourceOverview: ["issues_releases", "population_releases"],
   sourceConceptOverlay: ["viz-sourcerecordproportionbymonth"],
+  costTable: ["viz-costtime"],
 };
