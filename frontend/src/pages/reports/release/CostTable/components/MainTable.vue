@@ -60,6 +60,38 @@
             }}
           </template>
         </Column>
+        <Column
+          sortable
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="TOTAL_PAID"
+          header="Total Paid"
+        >
+          <template #body="slotProps">
+            {{
+              parseFloat(slotProps.data.TOTAL_PAID) &&
+              !isNaN(parseFloat(slotProps.data.TOTAL_PAID))
+                ? `$ ${formatComma(slotProps.data.TOTAL_PAID)}`
+                : "No data"
+            }}
+          </template>
+        </Column>
+        <Column
+          sortable
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="TOTAL_CHARGE"
+          header="Total Charge"
+        >
+          <template #body="slotProps">
+            {{
+              parseFloat(slotProps.data.TOTAL_CHARGE) &&
+              !isNaN(parseFloat(slotProps.data.TOTAL_CHARGE))
+                ? `$ ${formatComma(slotProps.data.TOTAL_CHARGE)}`
+                : "No data"
+            }}
+          </template>
+        </Column>
       </DataTable>
     </div>
   </Panel>

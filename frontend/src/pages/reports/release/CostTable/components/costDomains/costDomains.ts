@@ -1,7 +1,7 @@
 export default function getEChartsOptionCostDomains({ data = [] }) {
   const domainCosts = data.reduce((acc, d) => {
     const domain = d.DOMAIN_ID;
-    const cost = +d.TOTAL_COST;
+    const cost = +d.showedData;
     acc[domain] = (acc[domain] || 0) + cost;
     return acc;
   }, {});
@@ -12,7 +12,7 @@ export default function getEChartsOptionCostDomains({ data = [] }) {
     type: "bar",
     stack: "total",
     label: { show: false },
-    data: [{ value: cost / totalCost, DOMAIN_ID: domain, TOTAL_COST: cost }],
+    data: [{ value: cost / totalCost, DOMAIN_ID: domain, showedData: cost }],
   }));
 
   return {
@@ -21,7 +21,7 @@ export default function getEChartsOptionCostDomains({ data = [] }) {
       formatter: ({ seriesName, data }) =>
         `Domain: ${seriesName}<br/>Percent: ${(data.value * 100).toFixed(
           2
-        )}%<br/>Cost: ${data.TOTAL_COST.toLocaleString()}`,
+        )}%<br/>Cost: ${data.showedData.toLocaleString()}`,
     },
     legend: {
       orient: "horizontal",

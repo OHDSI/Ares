@@ -38,7 +38,7 @@ export default function getEChartsOptionCostTimeseries({
       source: data.map((d) => ({
         ...d,
         MONTH_YEAR: new Date(d.MONTH_YEAR),
-        TOTAL_COST: +d.TOTAL_COST,
+        showedData: +d.showedData,
       })),
     },
     xAxis: {
@@ -69,7 +69,7 @@ export default function getEChartsOptionCostTimeseries({
       symbolSize: 6,
       data: data
         .filter((d) => d.DOMAIN_ID === domainId)
-        .map((d) => [new Date(d.MONTH_YEAR), +d.TOTAL_COST]),
+        .map((d) => [new Date(d.MONTH_YEAR), +d.showedData]),
     })),
   };
 }

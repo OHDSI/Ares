@@ -566,9 +566,11 @@ watch(annotationsMode, () => {
   }
 });
 
+const data = computed(() => props.data);
+
 const initChart = function () {
   initialOption.value = props.chartSpec({
-    data: props.data,
+    data: data.value,
     minMax: minMax.value,
     zeroBaseline: zeroBaseline.value,
   });
@@ -625,6 +627,16 @@ const disposeChart = function () {
     tooltipElement.remove();
   }
 };
+
+watch(data, () => {
+  if (data.value && data.value.length) {
+    disposeChart();
+    initChart();
+    if (annotationsMode.value) {
+      updateChart();
+    }
+  }
+});
 
 onMounted(() => {
   echarts.registerTheme("dark", darkTheme);
