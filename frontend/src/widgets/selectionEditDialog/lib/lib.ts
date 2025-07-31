@@ -17,6 +17,6 @@ export function createSelection(coordinates, params) {
       description: params.body.description,
       notes: params.body.notes,
     },
-    id: params.id || undefined,
+    id: params.id || uuid(),
   };
 }
