@@ -1,5 +1,5 @@
 import { QUALITY_RESULTS } from "@/shared/config/files";
-import deriveResults from "@/shared/lib/derive-results";
+import deriveResults from "./derive-results";
 import {
   CheckResults,
   QualityResultsType,

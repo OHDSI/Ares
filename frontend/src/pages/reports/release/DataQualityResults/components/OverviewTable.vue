@@ -248,7 +248,7 @@
         </tr>
       </tbody>
     </table>
-    <Message :closable="false" severity="info">
+    <Message v-if="data.version === 2" :closable="false" severity="info">
       <div class="flex flex-col gap-1">
         <p class="font-light">
           <span class="font-bold">{{ data.AllNotApplicable }}</span> out of
