@@ -10,7 +10,8 @@
     "./docs"
   ],
   "scripts": {
-    "serve": "concurrently \"npm run serve --workspace=frontend\" \"npm run start --workspace=backend\""
+    "serve": "concurrently \"npm run serve --workspace=frontend\" \"npm run start --workspace=backend\"",
+    "build": "npm run build -w frontend"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
