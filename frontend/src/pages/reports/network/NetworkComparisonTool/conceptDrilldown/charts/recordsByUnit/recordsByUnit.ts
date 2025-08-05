@@ -61,7 +61,6 @@ export default function getEChartsRecordsByUnitFaceted({ data = [] }) {
       type: "scroll",
       orient: "horizontal",
       top: "2%",
-      type: "scroll",
     },
     grid: {
       left: "2%",

@@ -14,7 +14,6 @@ export default function getEChartsOptionDomainOverview({
     legend: {
       type: "scroll",
       top: 0,
-      type: "scroll",
     },
     grid: [
       {
