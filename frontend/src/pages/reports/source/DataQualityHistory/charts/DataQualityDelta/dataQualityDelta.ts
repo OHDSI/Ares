@@ -29,7 +29,7 @@ export default function getEChartsDataQualityDelta({
       type: "scroll",
     },
     grid: {
-      left: 35,
+      left: 40,
       right: 20,
       bottom: "7%",
       top: "10%",
@@ -49,7 +49,7 @@ export default function getEChartsDataQualityDelta({
       name: "Count",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 60,
+      nameGap: 55,
       splitLine: { show: true },
       axisTick: { show: true },
       ...(zeroBaseline ? { min: 0 } : {}),

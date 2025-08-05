@@ -84,8 +84,8 @@ export default function getEChartsNetworkDatastrand({ data = [] }) {
     grid: {
       left: "1%",
       right: "1%",
-      bottom: "5%",
-      top: "10%",
+      bottom: 15,
+      top: 30,
       containLabel: true,
     },
     xAxis: {

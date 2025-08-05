@@ -53,7 +53,7 @@ export default function getEChartsDataQualityResultsByCategory({
       type: "scroll",
     },
     grid: {
-      left: 40,
+      left: 45,
       right: 20,
       bottom: "10%",
       top: "10%",
@@ -81,7 +81,7 @@ export default function getEChartsDataQualityResultsByCategory({
       name: "Checks Failed",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 50,
+      nameGap: 45,
       splitLine: { show: true },
       axisTick: { show: true },
       ...(zeroBaseline ? { min: 0 } : {}),

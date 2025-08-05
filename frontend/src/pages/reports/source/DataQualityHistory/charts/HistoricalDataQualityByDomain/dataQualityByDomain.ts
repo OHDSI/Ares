@@ -46,7 +46,7 @@ export default function getEChartsDataQualityResultsByDomain({
       type: "scroll",
     },
     grid: {
-      left: 40,
+      left: 45,
       right: 20,
       bottom: "7%",
       top: "20%",
@@ -74,7 +74,7 @@ export default function getEChartsDataQualityResultsByDomain({
       name: "Checks Failed",
       nameLocation: "middle",
       nameRotate: 90,
-      nameGap: 50,
+      nameGap: 45,
       splitLine: { show: true },
       axisTick: { show: true },
       ...(zeroBaseline ? { min: 0 } : {}),

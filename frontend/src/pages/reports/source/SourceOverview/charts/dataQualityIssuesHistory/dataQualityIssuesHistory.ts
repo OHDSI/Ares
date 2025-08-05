@@ -58,7 +58,7 @@ export default function getEChartsIssuesHistory({
       },
     },
     grid: {
-      left: 35,
+      left: 40,
       right: "1%",
       bottom: "7%",
       top: "5%",

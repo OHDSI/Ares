@@ -22,7 +22,7 @@ export default function getEChartsOptionAgeAtFirstObservation({
       },
     },
     grid: {
-      left: 20,
+      left: 25,
       right: 20,
       bottom: "10%",
       top: "2%",
