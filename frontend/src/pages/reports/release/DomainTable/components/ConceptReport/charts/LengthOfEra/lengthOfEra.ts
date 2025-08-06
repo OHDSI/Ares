@@ -5,13 +5,13 @@ export default function getEChartsOptionLengthOfEra({
 }) {
   const d = {
     ...data[0],
-    MIN_VALUE: +data[0].MIN_VALUE,
-    P10_VALUE: +data[0].P10_VALUE,
-    P25_VALUE: +data[0].P25_VALUE,
-    MEDIAN_VALUE: +data[0].MEDIAN_VALUE,
-    P75_VALUE: +data[0].P75_VALUE,
-    P90_VALUE: +data[0].P90_VALUE,
-    MAX_VALUE: +data[0].MAX_VALUE,
+    MIN_VALUE: +data[0]?.MIN_VALUE,
+    P10_VALUE: +data[0]?.P10_VALUE,
+    P25_VALUE: +data[0]?.P25_VALUE,
+    MEDIAN_VALUE: +data[0]?.MEDIAN_VALUE,
+    P75_VALUE: +data[0]?.P75_VALUE,
+    P90_VALUE: +data[0]?.P90_VALUE,
+    MAX_VALUE: +data[0]?.MAX_VALUE,
   };
 
   const boxData = [

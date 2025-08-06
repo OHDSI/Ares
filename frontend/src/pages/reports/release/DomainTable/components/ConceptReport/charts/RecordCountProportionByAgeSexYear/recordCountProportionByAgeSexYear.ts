@@ -4,7 +4,7 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
   zeroBaseline = false,
   data = [],
 }) {
-  const trellises = [...new Set(data.map((d) => d.TRELLIS_NAME))];
+  const trellises = [...new Set(data.map((d) => d?.TRELLIS_NAME))];
   const series = [];
   const grids = [];
   const xAxes = [];
@@ -12,8 +12,8 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
   const trellisToIndex = {};
 
   trellises.forEach((trellis, i) => {
-    const filtered = data.filter((d) => d.TRELLIS_NAME === trellis);
-    const sexGroups = [...new Set(filtered.map((d) => d.SERIES_NAME))];
+    const filtered = data.filter((d) => d?.TRELLIS_NAME === trellis);
+    const sexGroups = [...new Set(filtered.map((d) => d?.SERIES_NAME))];
     const gridTop = 20 + i * 100;
 
     trellisToIndex[trellis] = i;

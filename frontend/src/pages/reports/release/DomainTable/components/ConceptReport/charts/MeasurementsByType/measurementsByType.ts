@@ -1,7 +1,7 @@
 export default function getEChartsMeasurementsByType({ data = [] }) {
   const domainCosts = data.reduce((acc, d) => {
-    const CONCEPT_NAME = d.CONCEPT_NAME;
-    const cost = +d.COUNT_VALUE;
+    const CONCEPT_NAME = d?.CONCEPT_NAME;
+    const cost = +d?.COUNT_VALUE;
     acc[CONCEPT_NAME] = (acc[CONCEPT_NAME] || 0) + cost;
     return acc;
   }, {});

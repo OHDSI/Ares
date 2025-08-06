@@ -5,13 +5,13 @@ export default function getEChartsOptionAgeAtFirstOccurrence({
   const minMax = false;
   const source = data.map((d) => ({
     ...d,
-    MIN_VALUE: +d.MIN_VALUE,
-    P10_VALUE: +d.P10_VALUE,
-    P25_VALUE: +d.P25_VALUE,
-    MEDIAN_VALUE: +d.MEDIAN_VALUE,
-    P75_VALUE: +d.P75_VALUE,
-    P90_VALUE: +d.P90_VALUE,
-    MAX_VALUE: +d.MAX_VALUE,
+    MIN_VALUE: +d?.MIN_VALUE,
+    P10_VALUE: +d?.P10_VALUE,
+    P25_VALUE: +d?.P25_VALUE,
+    MEDIAN_VALUE: +d?.MEDIAN_VALUE,
+    P75_VALUE: +d?.P75_VALUE,
+    P90_VALUE: +d?.P90_VALUE,
+    MAX_VALUE: +d?.MAX_VALUE,
   }));
 
   const sorted = [...source].sort((a, b) => a.categoryOrder - b.categoryOrder);
