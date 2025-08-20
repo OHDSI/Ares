@@ -54,7 +54,7 @@ const actions = {
         if (!token) throw new Error("Token not found");
         commit(SAVE_TOKEN, token);
       }
-      dispatch(GET_USER);
+      return dispatch(GET_USER);
     } catch (error) {
       dispatch(ADD_ALERT, {
         message: "Could not authenticate",
@@ -62,7 +62,7 @@ const actions = {
       });
     }
   },
-  async [GET_USER]({ commit, dispatch, rootGetters }) {
+  async [GET_USER]({ state, commit, dispatch, rootGetters }) {
     if (!environment.WEB_API_ENABLED) return;
     const isExpired = checkExpiryDate(LocalStorageService.get(tokenKey));
 
@@ -91,6 +91,9 @@ const actions = {
         clearInterval(checkAuthStatus);
       }
     }, 1000);
+    if (state.user) {
+      return user;
+    }
   },
   async [LOG_OUT]({ commit, dispatch, rootGetters }, payload) {
     dispatch(EDIT_USER, null);

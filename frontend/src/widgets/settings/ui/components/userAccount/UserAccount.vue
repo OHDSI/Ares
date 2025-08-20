@@ -7,7 +7,7 @@
       </Button>
     </InputGroupAddon>
   </InputGroup>
-  <div v-if="!user && !webApiDisabled">
+  <div v-if="!user && !webApiDisabled && !loading">
     <Button
       @click="logIn"
       style="width: 100%; height: 30px"
@@ -34,6 +34,13 @@
       >Log out</Button
     >
   </div>
+  <div class="flex flex-row justify-center items-center gap-2" v-if="loading">
+    <div
+      class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+      role="status"
+    ></div>
+    <span>Loading...</span>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +60,6 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import environment from "@/shared/api/environment";
 import {
   WEB_API_LOG_IN,
-  GET_USER,
   LOG_OUT,
 } from "@/shared/api/webAPI/authentication/model/store/actions.type";
 
@@ -61,8 +67,18 @@ const webApiDisabled = !environment.WEB_API_ENABLED;
 
 const store = useStore();
 
-const logIn = function () {
-  store.dispatch(WEB_API_LOG_IN);
+const loggedIn = ref(null);
+const loading = ref(false);
+
+const logIn = async function () {
+  loading.value = true;
+  try {
+    loggedIn.value = await store.dispatch(WEB_API_LOG_IN);
+  } catch (error) {
+    console.error("Login failed:", error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const logout = function () {
