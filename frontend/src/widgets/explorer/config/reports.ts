@@ -256,6 +256,12 @@ export const reports = [
   },
   {
     folder: "Data Network",
+    icon: mdiCurrencyUsd,
+    name: "Network Cost Report",
+    routeName: "networkCostReport",
+  },
+  {
+    folder: "Data Network",
     icon: mdiChartLine,
     name: "Population Overview",
     routeName: "population",

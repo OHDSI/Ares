@@ -26,6 +26,7 @@ import {
   COST_DRILLDOWN,
   COST_TIMESERIES,
   COST_DOMAIN_SUMMARY,
+  NETWORK_COST_INDEX,
 } from "@/shared/config/files";
 import csvParse from "@/processes/exploreReports/model/store/preprocessing/csvParse";
 
@@ -57,4 +58,5 @@ export default {
   [COST_DRILLDOWN]: csvParse,
   [COST_TIMESERIES]: csvParse,
   [COST_DOMAIN_SUMMARY]: csvParse,
+  [NETWORK_COST_INDEX]: csvParse,
 };

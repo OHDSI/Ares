@@ -6,6 +6,8 @@ export default {
     networkPerformance:
       "Network performance file is not found. Please make sure it exists within the data directory then try again",
     networkDiversityReport: "Requested files not found",
+    networkCostReport:
+      "Network Cost Index is not available. Please run AresIndexer and try again",
     networkUnmappedSourceCodes: "Requested files not found",
     networkConcept: "Requested files not found",
     networkDataQuality: "Requested files not found",
