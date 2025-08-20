@@ -1,11 +1,14 @@
 <template>
-  <div ref="containerRef" class="p-2">
+  <div v-if="data.length" ref="containerRef" class="p-2">
     <h3 class="mx-10" v-if="props.title">{{ props.title }}</h3>
     <div
       ref="chartContainer"
       :style="`width: 100%; height: ${props.height || '300px'}`"
     ></div>
     <ContextMenu v-if="annotationMode" :items="actions" :chart-id="props.id" />
+  </div>
+  <div class="flex justify-center align-center p-10" v-else>
+    <p class="text-lg">No Data Available</p>
   </div>
 </template>
 
@@ -163,7 +166,7 @@ const getGridDataBounds = () => {
 };
 
 const updateChart = () => {
-  if (!annotationsMode.value) return;
+  if (!annotationsMode.value || !data.value.length) return;
   const graphicElements = [];
 
   props.annotations.forEach((annotation) => {
@@ -566,9 +569,10 @@ watch(annotationsMode, () => {
   }
 });
 
-const data = computed(() => props.data);
+const data = computed(() => props.data || []);
 
 const initChart = function () {
+  if (!data.value.length) return;
   initialOption.value = props.chartSpec({
     data: data.value,
     minMax: minMax.value,
