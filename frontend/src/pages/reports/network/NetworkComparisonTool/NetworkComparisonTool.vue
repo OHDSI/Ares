@@ -56,10 +56,11 @@
                       {{ selectedConfig.rowHeader.name }}
                       <span
                         v-if="sortConfig.field === 'rowHeader'"
-                        class="sort-indicator"
+                        class="sort-indicator active"
                       >
                         {{ sortConfig.direction === "asc" ? "▲" : "▼" }}
                       </span>
+                      <span v-else class="sort-indicator inactive">⇅</span>
                     </div>
                   </th>
                   <th
@@ -94,9 +95,15 @@
                             sortConfig.field === child.value &&
                             sortConfig.source === source
                           "
-                          class="sort-indicator"
+                          class="sort-indicator active"
                         >
                           {{ sortConfig.direction === "asc" ? "▲" : "▼" }}
+                        </span>
+                        <span
+                          v-else-if="child.sortable"
+                          class="sort-indicator inactive"
+                        >
+                          ⇅
                         </span>
                       </div>
                     </th>
@@ -828,12 +835,23 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .sort-indicator {
-  font-size: 0.75rem;
-  opacity: 0.7;
+  font-size: 1rem;
   transition: opacity 0.2s;
 }
 
-th.cursor-pointer:hover .sort-indicator {
+.sort-indicator.inactive {
+  opacity: 0.5;
+}
+
+.sort-indicator.active {
+  opacity: 0.8;
+}
+
+th.cursor-pointer:hover .sort-indicator.inactive {
+  opacity: 0.9;
+}
+
+th.cursor-pointer:hover .sort-indicator.active {
   opacity: 1;
 }
 
@@ -844,6 +862,15 @@ th.cursor-pointer:hover {
 .dark th.cursor-pointer:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
+
+th {
+  white-space: nowrap;
+}
+
+th > div {
+  white-space: nowrap;
+}
+
 .rowNameCol {
   text-align: left;
   position: sticky;
