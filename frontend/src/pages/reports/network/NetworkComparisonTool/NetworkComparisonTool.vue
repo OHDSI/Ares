@@ -449,6 +449,7 @@ const domainSummary = [
   { name: "Observations", value: "observation" },
   { name: "Procedure Occurrence", value: "procedure_occurrence" },
   { name: "Device Exposure", value: "device_exposure" },
+  { name: "Death", value: "death" },
 ];
 
 const costDomainSummary = [

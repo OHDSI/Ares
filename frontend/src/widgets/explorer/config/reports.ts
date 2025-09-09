@@ -102,6 +102,13 @@ export const reports = [
       },
       {
         folder: "Data Source Release",
+        icon: mdiHeartOffOutline,
+        name: "Death",
+        routeName: "domainTable",
+        domain: "death",
+      },
+      {
+        folder: "Data Source Release",
         icon: mdiEyeCircleOutline,
         name: "Observations",
         routeName: "domainTable",

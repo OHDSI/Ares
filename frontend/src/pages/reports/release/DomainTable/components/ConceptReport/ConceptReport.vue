@@ -41,6 +41,8 @@
     <MeasurementValueDistribution />
     <AgeAtFirstDiagnosis />
     <AgeAtFirstExposure />
+    <AgeAtDeath />
+    <DeathByType />
     <LengthOfEra />
     <ConditionsByType />
     <DrugsByType />
@@ -78,6 +80,8 @@ import PageHeader from "@/entities/pageHeader/PageHeader.vue";
 import { mdiCheckNetwork } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 import Button from "primevue/button";
+import AgeAtDeath from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/ageAtDeath/AgeAtDeath.vue";
+import DeathByType from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/deathByType/DeathByType.vue";
 
 const route = useRoute();
 const router = useRouter();

@@ -12,6 +12,8 @@
         v-if="ageAtFirstOccurrence.length"
         :data="ageAtFirstOccurrence"
       />
+      <AgeAtDeath v-if="ageAtDeath.length" :data="ageAtDeath" />
+      <DeathByType v-if="deathByType.length" :data="deathByType" />
       <RecordCountProportionByMonth
         v-if="recordCountProportionByMonth.length"
         :data="recordCountProportionByMonth"
@@ -81,6 +83,8 @@ import InfoPanel from "@/widgets/infoPanel";
 import { mdiCheckNetwork } from "@mdi/js";
 import Button from "primevue/button";
 import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import AgeAtDeath from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/ageAtDeath/AgeAtDeath.vue";
+import DeathByType from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/deathByType/DeathByType.vue";
 
 const store = useStore();
 
@@ -137,6 +141,12 @@ const lengthOfEra = computed(() => {
 });
 const ageAtFirstOccurrence = computed(() => {
   return data.value?.chart?.ageAtFirstOccurrence || [];
+});
+const ageAtDeath = computed(() => {
+  return data.value?.chart?.ageAtDeath || [];
+});
+const deathByType = computed(() => {
+  return data.value?.chart?.deathByType || [];
 });
 </script>
 

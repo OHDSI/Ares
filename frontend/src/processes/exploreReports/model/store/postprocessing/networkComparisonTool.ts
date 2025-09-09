@@ -123,6 +123,8 @@ export default function networkComparisonTool(data) {
               concept,
               "AGE_AT_FIRST_DIAGNOSIS"
             ),
+            ageAtDeath: augmentReport(concept, "AGE_AT_DEATH"),
+            deathByType: augmentReport(concept, "DEATH_BY_TYPE"),
             conditionsByType: augmentReport(concept, "CONDITIONS_BY_TYPE"),
             recordsByUnit: augmentReport(concept, "RECORDS_BY_UNIT"),
             measurementsByType: augmentReport(concept, "MEASUREMENTS_BY_TYPE"),
