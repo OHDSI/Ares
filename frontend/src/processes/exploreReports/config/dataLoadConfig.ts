@@ -22,6 +22,7 @@ import {
   DOMAIN_VISIT_STRATIFICATION,
   LOCATION,
   METADATA,
+  NETWORK_COST_INDEX,
   NETWORK_PERFORMANCE,
   NETWORK_QUALITY_SUMMARY,
   NETWORK_UNMAPPED_SOURCE_CODES,
@@ -77,6 +78,10 @@ export default function getFilesByView(params = null) {
     networkPerformance: {
       loadMethod: FETCH_FILES,
       payload: { files: [{ name: NETWORK_PERFORMANCE, required: true }] },
+    },
+    networkCostReport: {
+      loadMethod: FETCH_FILES,
+      payload: { files: [{ name: NETWORK_COST_INDEX, required: true }] },
     },
     costTable: {
       loadMethod: FETCH_FILES,

@@ -45,3 +45,4 @@ export const COHORT_TEMPORAL_COVARIATE_DISTRIBUTION =
   "cohortTemporalCovariateDistribution";
 
 export const LOCATION = "location";
+export const NETWORK_COST_INDEX = "networkCostIndex";

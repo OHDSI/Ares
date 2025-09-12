@@ -30,6 +30,7 @@ import WebApiInfo from "@/pages/info/WebApiInfo.vue";
 
 import { RouteRecordRaw } from "vue-router";
 import NetworkComparisonTool from "@/pages/reports/network/NetworkComparisonTool/NetworkComparisonTool.vue";
+import NetworkCostReport from "@/pages/reports/network/networkCostReport/NetworkCostReport.vue";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -52,6 +53,11 @@ export const routes: RouteRecordRaw[] = [
         path: "network_data_quality",
         name: "networkDataQuality",
         components: { reportsView: NetworkDataQualitySummary },
+      },
+      {
+        path: "network_cost_report",
+        name: "networkCostReport",
+        components: { reportsView: NetworkCostReport },
       },
       {
         path: "network_annotations_report",
