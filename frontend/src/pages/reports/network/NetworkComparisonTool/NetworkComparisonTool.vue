@@ -47,11 +47,21 @@
               <thead>
                 <tr>
                   <th
-                    class="rowNameCol"
+                    class="rowNameCol cursor-pointer"
                     :class="{ scrolled: isScrolled }"
                     rowspan="2"
+                    @click="handleSort('rowHeader')"
                   >
-                    {{ selectedConfig.rowHeader.name }}
+                    <div class="flex items-center gap-2">
+                      {{ selectedConfig.rowHeader.name }}
+                      <span
+                        v-if="sortConfig.field === 'rowHeader'"
+                        class="sort-indicator active"
+                      >
+                        {{ sortConfig.direction === "asc" ? "▲" : "▼" }}
+                      </span>
+                      <span v-else class="sort-indicator inactive">⇅</span>
+                    </div>
                   </th>
                   <th
                     class="sourceGroup"
@@ -70,10 +80,32 @@
                   <template v-for="source in sources" :key="source">
                     <th
                       class="text-right sourceGroup"
+                      :class="{ 'cursor-pointer': child.sortable }"
                       v-for="child in selectedConfig.group.children"
                       :key="child.name"
+                      @click="
+                        child.sortable ? handleSort(child.value, source) : null
+                      "
                     >
-                      {{ child.name }}
+                      <div class="flex items-center justify-end gap-2">
+                        {{ child.name }}
+                        <span
+                          v-if="
+                            child.sortable &&
+                            sortConfig.field === child.value &&
+                            sortConfig.source === source
+                          "
+                          class="sort-indicator active"
+                        >
+                          {{ sortConfig.direction === "asc" ? "▲" : "▼" }}
+                        </span>
+                        <span
+                          v-else-if="child.sortable"
+                          class="sort-indicator inactive"
+                        >
+                          ⇅
+                        </span>
+                      </div>
                     </th>
                   </template>
                 </tr>
@@ -152,7 +184,7 @@
           <Paginator
             v-model:first="first"
             :rows="step"
-            :totalRecords="filteredResults.length"
+            :totalRecords="sortedAndFilteredResults.length"
             template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
           />
         </div>
@@ -220,6 +252,7 @@ import environment from "@/shared/api/environment";
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
 import concept from "@/processes/exploreReports/model/store/postprocessing/conceptReport";
+
 const route = useRoute();
 const store = useStore();
 const router = useRouter();
@@ -231,13 +264,19 @@ const step = ref(10);
 const conceptData = ref(null);
 const visible = ref(false);
 
+const sortConfig = ref({
+  field: null,
+  direction: "asc",
+  source: null,
+});
+
 const drillDownViewOption = computed(
   () => store.getters.getSettings.drillDownViewOptions
 );
 
 const changeSelectedReport = function (val) {
   router.replace({ name: route.name });
-
+  sortConfig.value = { field: null, direction: "asc", source: null };
   selectedReport.value = val;
 };
 
@@ -352,10 +391,94 @@ const filteredResults = computed(() => {
   }
 });
 
+const handleSort = (field: string, source: string | null = null) => {
+  first.value = 0;
+
+  if (field === "rowHeader") {
+    if (
+      sortConfig.value.field === "rowHeader" &&
+      sortConfig.value.source === null
+    ) {
+      if (sortConfig.value.direction === "asc") {
+        sortConfig.value.direction = "desc";
+      } else if (sortConfig.value.direction === "desc") {
+        sortConfig.value = { field: null, direction: "asc", source: null };
+      }
+    } else {
+      sortConfig.value = { field: "rowHeader", direction: "asc", source: null };
+    }
+  } else {
+    if (
+      sortConfig.value.field === field &&
+      sortConfig.value.source === source
+    ) {
+      if (sortConfig.value.direction === "asc") {
+        sortConfig.value.direction = "desc";
+      } else if (sortConfig.value.direction === "desc") {
+        sortConfig.value = { field: null, direction: "asc", source: null };
+      }
+    } else {
+      sortConfig.value = { field, direction: "asc", source };
+    }
+  }
+};
+
+const sortedAndFilteredResults = computed(() => {
+  const results = [...filteredResults.value];
+
+  if (sortConfig.value.field) {
+    results.sort((a, b) => {
+      let aValue, bValue;
+
+      if (sortConfig.value.field === "rowHeader") {
+        aValue = a[selectedConfig.value.rowHeader.value];
+        bValue = b[selectedConfig.value.rowHeader.value];
+      } else if (sortConfig.value.source) {
+        const aData = getSourceData(sortConfig.value.source, a);
+        const bData = getSourceData(sortConfig.value.source, b);
+        aValue = aData[sortConfig.value.field];
+        bValue = bData[sortConfig.value.field];
+      }
+
+      const aIsEmpty =
+        aValue === null ||
+        aValue === undefined ||
+        aValue === "N/A" ||
+        aValue === "";
+      const bIsEmpty =
+        bValue === null ||
+        bValue === undefined ||
+        bValue === "N/A" ||
+        bValue === "";
+
+      if (aIsEmpty && bIsEmpty) return 0;
+      if (aIsEmpty) return 1;
+      if (bIsEmpty) return -1;
+
+      const aNum = Number(aValue);
+      const bNum = Number(bValue);
+
+      let comparison = 0;
+
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        comparison = aNum - bNum;
+      } else if (typeof aValue === "string" && typeof bValue === "string") {
+        comparison = aValue.localeCompare(bValue);
+      } else {
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+
+      return sortConfig.value.direction === "asc" ? comparison : -comparison;
+    });
+  }
+
+  return results;
+});
+
 const slicedArray = computed(() => {
   const start = first.value;
   const end = start + step.value;
-  return filteredResults.value.slice(start, end);
+  return sortedAndFilteredResults.value.slice(start, end);
 });
 
 function getDrilldownRoute(cdmRelease: string, rowId: string | number) {
@@ -416,6 +539,7 @@ const selectedDomain = ref(null);
 
 const changeSelectedDomain = function (val) {
   router.replace({ name: route.name });
+  sortConfig.value = { field: null, direction: "asc", source: null };
   selectedDomain.value = val;
 };
 
@@ -481,11 +605,13 @@ const reportColumnNames = {
           name: "# Persons",
           value: "NUM_PERSONS",
           link: true,
+          sortable: true,
           processingFunction: helpers.formatComma,
         },
         {
           name: "% Persons",
           value: "PERCENT_PERSONS",
+          sortable: true,
           processingFunction: helpers.formatPercent,
         },
       ],
@@ -505,6 +631,7 @@ const reportColumnNames = {
           name: "# Persons",
           link: true,
           value: "cohort_subjects",
+          sortable: true,
           processingFunction: helpers.formatComma,
         },
       ],
@@ -524,6 +651,7 @@ const reportColumnNames = {
           name: "Total Cost",
           link: true,
           value: "TOTAL_COST",
+          sortable: true,
           processingFunction: helpers.formatComma,
         },
       ],
@@ -706,6 +834,43 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.sort-indicator {
+  font-size: 1rem;
+  transition: opacity 0.2s;
+}
+
+.sort-indicator.inactive {
+  opacity: 0.5;
+}
+
+.sort-indicator.active {
+  opacity: 0.8;
+}
+
+th.cursor-pointer:hover .sort-indicator.inactive {
+  opacity: 0.9;
+}
+
+th.cursor-pointer:hover .sort-indicator.active {
+  opacity: 1;
+}
+
+th.cursor-pointer:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark th.cursor-pointer:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+th {
+  white-space: nowrap;
+}
+
+th > div {
+  white-space: nowrap;
+}
+
 .rowNameCol {
   text-align: left;
   position: sticky;
