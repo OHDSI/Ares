@@ -234,7 +234,7 @@ const getPaginatedAnnotations = async (connection, first, step, filter) => {
         a.created_at,
         a.updated_at,
         ac.xMin,
-        ac.xMax
+        ac.xMax,
         ac.yMin,
         ac.yMax,
         am.scope_type AS scopeType,
@@ -329,86 +329,6 @@ const getPaginatedAnnotations = async (connection, first, step, filter) => {
         throw new Error('Unable to fetch paginated annotations');
     }
 };
-
-
-const getAnnotation = async (connection, annotationId) => {
-    logger.debug(`Getting annotation ${annotationId}`)
-    try {
-        let annotation = await connection.runAndReadAll(
-            `SELECT * FROM annotations WHERE id = ?`,
-            [annotationId]
-        );
-        annotation = annotation.getRowObjects()?.[0];
-
-
-        if (!annotation) {
-            logger.error(`Annotation with id ${annotationId} not found`);
-        }
-
-        let coordinates = await connection.runAndReadAll(
-            `SELECT xMin, xMax, yMin, yMax
-         FROM annotations_coordinates WHERE annotation_id = ?`,
-            [annotationId]
-        );
-
-        coordinates = coordinates.getRowObjects()?.[0];
-
-
-        let metadata = await connection.runAndReadAll(
-            `SELECT scope_type AS type, scope_value AS value
-         FROM annotations_metadata WHERE annotation_id = ?`,
-            [annotationId]
-        );
-
-        metadata = metadata.getRowObjects()?.[0];
-
-
-        let body = await connection.runAndReadAll(
-            `SELECT title, description
-         FROM annotations_body WHERE annotation_id = ?`,
-            [annotationId]
-        );
-
-        body = body.getRowObjects()?.[0];
-
-
-        let notes = await connection.runAndReadAll(
-            `SELECT note_id AS id, title, description, created_at AS createdAt, updated_at AS updatedAt,
-                created_by AS createdBy, last_updated AS lastUpdated
-         FROM annotations_notes WHERE annotation_id = ?`,
-            [annotationId]
-        );
-
-        notes = notes.getRowObjects();
-
-        notes = notes.map(note => ({...note, lastUpdated: Number(note.lastUpdated.micros) /1000, updatedAt: Number(note.updatedAt.micros) /1000,  createdAt: Number(note.createdAt.micros) / 1000}));
-
-        return {
-            id: annotation.id,
-            coordinates,
-            metadata: {
-                createdBy: annotation.created_by,
-                createdAt: Number(annotation.created_at.micros) / 1000,
-                updatedAt: Number(annotation.updated_at.micros) / 1000,
-                scope: {
-                    type: metadata.type,
-                    value: JSON.parse(metadata.value),
-                },
-            },
-            body: {
-                title: body.title,
-                description: body.description,
-                notes,
-            },
-        }
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
-        throw new Error('Unable to fetch annotations');
-
-    }
-};
-
 
 const updateAnnotation = async (connection, annotationId, updatedAnnotation) => {
     logger.debug(`Updating annotation ${annotationId}`)
@@ -554,49 +474,6 @@ const deleteAnnotation = async (connection, annotationId) => {
         throw new Error('Error occurred while marking annotation as deleted');
     }
 };
-
-
-// const deleteAnnotation = async (connection, annotationId) => {
-//     logger.debug(`Deleting annotation ${annotationId}`);
-//     try {
-//         let annotation = await connection.runAndReadAll(
-//             `SELECT * FROM annotations WHERE id = ?`,
-//             [annotationId]
-//         );
-//
-//         annotation = annotation.getRowObjects()[0];
-//         if(!annotation) {
-//             logger.debug(`No annotation with id ${annotationId} found`);
-//         }
-//         await connection.run(
-//             `DELETE FROM annotations_notes WHERE annotation_id = ?`,
-//             [annotationId]
-//         );
-//         await connection.run(
-//             `DELETE FROM annotations_body WHERE annotation_id = ?`,
-//             [annotationId]
-//         );
-//         await connection.run(
-//             `DELETE FROM annotations_metadata WHERE annotation_id = ?`,
-//             [annotationId]
-//         );
-//         await connection.run(
-//             `DELETE FROM annotations_coordinates WHERE annotation_id = ?`,
-//             [annotationId]
-//         );
-//         await connection.run(
-//             `DELETE FROM annotations WHERE id = ?`,
-//             [annotationId]
-//         );
-//         logger.debug(`Annotation ${annotationId} successfully deleted`);
-//
-//     }
-//     catch (error) {
-//         const message = error instanceof Error ? error.message : String(error);
-//         logger.error(`${message}`);
-//         throw new Error('Error occurred while deleting annotation');
-//     }
-// };
 
 
 export {createAnnotation, updateAnnotation, getAnnotationsByVizName, deleteAnnotation, getPaginatedAnnotations}

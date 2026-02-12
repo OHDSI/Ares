@@ -582,6 +582,7 @@ const initChart = function () {
   tooltipElement.style.pointerEvents = "none";
   tooltipElement.style.transition = "opacity 0.15s ease";
   tooltipElement.style.opacity = 0;
+  tooltipElement.style.zIndex = 9999;
 
   tooltipElement.style.background = darkMode.value
     ? "rgba(33, 33, 33, 0.9)"
