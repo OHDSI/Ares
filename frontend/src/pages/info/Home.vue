@@ -10,6 +10,14 @@
       source data characterization and quality assessment ensuring that results
       are presented with proper context.
     </p>
+    <Button link @click="redirectToStrategus">
+      <svg-icon
+        class="text-primary-500"
+        type="mdi"
+        :path="mdiDatabase"
+      ></svg-icon>
+      <span class="text-primary-500 uppercase">Strategus</span>
+    </Button>
     <Button link @click="redirectToHome">
       <svg-icon
         class="text-primary-500"
@@ -40,6 +48,10 @@ const iconClass = computed((): string => {
 
 function redirectToHome() {
   router.push("/network/overview");
+}
+
+function redirectToStrategus() {
+  router.push("/strategus");
 }
 </script>
 

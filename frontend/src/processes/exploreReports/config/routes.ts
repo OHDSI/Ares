@@ -27,6 +27,7 @@ import LocationReport from "@/pages/reports/release/Location/LocationReport.vue"
 import NetworkAnnotationsReport from "@/pages/reports/network/networkAnnotationsReport/NetworkAnnotationsReport.vue";
 import CostTable from "@/pages/reports/release/CostTable/CostTable.vue";
 import WebApiInfo from "@/pages/info/WebApiInfo.vue";
+import Strategus from "@/pages/strategus/index.vue";
 
 import { RouteRecordRaw } from "vue-router";
 import NetworkComparisonTool from "@/pages/reports/network/NetworkComparisonTool/NetworkComparisonTool.vue";
@@ -40,6 +41,21 @@ export const routes: RouteRecordRaw[] = [
     meta: { showModules: true },
     children: [
       { path: "/home", name: "home", components: { reportsView: Home } },
+    ],
+  },
+
+  {
+    path: "/strategus",
+    components: { main: ReportsView },
+    redirect: { name: "strategus" },
+    meta: { showModules: true },
+    children: [
+      {
+        path: "strategus",
+        name: "strategus",
+        components: { reportsView: Strategus },
+      },
+      // { path: "/home", name: "home", components: { reportsView: Home } },
     ],
   },
 

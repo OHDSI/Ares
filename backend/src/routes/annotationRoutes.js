@@ -1,6 +1,6 @@
 import express from "express";
 
-import dbInstance from "../config/dbConnection.js";
+import dbInstance from "../config/duckdbConnection.js";
 import {
   createAnnotation,
   deleteAnnotation,
@@ -10,6 +10,7 @@ import {
 import logger from "../utils/logger.js";
 
 const router = express.Router();
+
 
 router.post('/api/v1/annotations/search', async (req, res) => {
   const connection = await dbInstance.connect();
@@ -28,20 +29,6 @@ router.post('/api/v1/annotations/search', async (req, res) => {
   }
 
 });
-
-// router.get('/api/v1/annotations/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const connection = await dbInstance.connect();
-//
-//   const results = await connection.runAndReadAll('SELECT * FROM chart_data WHERE id = ?', [id]);
-//   const rows = results.getRowsJson();
-//
-//   connection.close();
-//   if (rows.length === 0) {
-//     return res.status(404).json({ error: 'Data not found' });
-//   }
-//   res.json(results[0]);
-// });
 
 router.post('/api/v1/annotations/', async (req, res) => {
   const connection = await dbInstance.connect();

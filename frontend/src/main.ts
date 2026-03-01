@@ -25,16 +25,16 @@ sync(store, router);
 environment.load().then(() => {
   store.dispatch(settingsActions.LOAD_SETTINGS_FROM_STORAGE).then(() => {
     const app = createApp(App);
-    app.config.errorHandler = (err) => {
-      // Handle the error globally
-      store.dispatch(errorActions.NEW_ERROR, {
-        userMessage: errorMessages.technicalError.codeError,
-        name: err.name,
-        details: err.message,
-        stack: err.stack,
-        type: "unexpected",
-      });
-    };
+    // app.config.errorHandler = (err) => {
+    //   // Handle the error globally
+    //   store.dispatch(errorActions.NEW_ERROR, {
+    //     userMessage: errorMessages.technicalError.codeError,
+    //     name: err.name,
+    //     details: err.message,
+    //     stack: err.stack,
+    //     type: "unexpected",
+    //   });
+    // };
     app
       .directive("click-outside", clickOutside)
       .directive("resize", resize)
