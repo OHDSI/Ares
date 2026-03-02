@@ -62,13 +62,6 @@
               class="result-table"
               :exportFilename="'database_comparison_binary'"
           >
-            <Column field="covariateName" header="Covariate" sortable :showFilterMenu="false">
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="Search..." size="small" />
-              </template>
-            </Column>
-            <Column field="covariateId" header="ID" sortable />
-
             <!-- Dynamic columns per database -->
             <ColumnGroup type="header">
               <Row>
@@ -155,13 +148,6 @@
               class="result-table"
               :exportFilename="'database_comparison_continuous'"
           >
-            <Column field="covariateName" header="Covariate" sortable :showFilterMenu="false">
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText v-model="filterModel.value" @input="filterCallback()" placeholder="Search..." size="small" />
-              </template>
-            </Column>
-            <Column field="covariateId" header="ID" sortable />
-
             <ColumnGroup type="header">
               <Row>
                 <Column header="Covariate" :rowspan="2" />
