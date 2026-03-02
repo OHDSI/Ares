@@ -18,7 +18,7 @@
         <Column
           sortable
           header="Full DB Name"
-          field="databaseFullName"
+          field="cdmSourceName"
           :showFilterMenu="false"
         >
           <template #filter="{ filterModel, filterCallback }">
@@ -143,7 +143,7 @@ const data = ref([]);
 const loading = ref(false);
 
 const filters = ref({
-  databaseFullName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  cdmSourceName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   cdmSourceAbbreviation: { value: null, matchMode: FilterMatchMode.CONTAINS },
   cdmHolder: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });

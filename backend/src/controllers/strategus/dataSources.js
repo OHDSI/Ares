@@ -14,8 +14,7 @@ export async function getDatasources({
     const sql = `
     SELECT
       database_id,
-      database_full_name,
-      database_name,
+      cdm_source_name,
       cdm_source_abbreviation,
       cdm_holder,
       source_description,
@@ -28,7 +27,7 @@ export async function getDatasources({
       vocabulary_version,
       max_obs_period_end_date
     FROM ${schema}.${databaseTable}
-    ORDER BY database_name
+    ORDER BY cdm_source_abbreviation
   `;
 
     return queryDb(sql);
