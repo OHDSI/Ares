@@ -87,7 +87,7 @@ export async function getCharacterizationCohortBinary({
     }
 
     const colRef = counts.map((r, i) => ({ ...r, id: i + 1 }));
-    if (colRef.length === 0) return null;
+    if (colRef.length === 0) return { covariates: [], covRef: [] };
 
     const params = { minThreshold };
 
@@ -211,7 +211,7 @@ export async function getCharacterizationCohortContinuous({
     }
 
     const colRef = counts.map((r, i) => ({ ...r, id: i + 1, minCount: r.n * minThreshold }));
-    if (colRef.length === 0) return null;
+    if (colRef.length === 0) return { covariates: [], covRef: [] };
 
     const params = {};
 

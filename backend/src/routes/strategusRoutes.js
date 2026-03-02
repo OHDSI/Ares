@@ -171,7 +171,7 @@ router.get('/api/characterization/cohort-unique-people', async (req, res) => {
     try {
         const sql = `
             SELECT cc.database_id, cc.cohort_id, cc.cohort_entries, cc.cohort_subjects
-            FROM app.cg_cohort_count cc
+            FROM ${schemaName}.cg_cohort_count cc
             WHERE cc.cohort_id = ${parseInt(cohortId, 10)}
         `;
         const rows = await queryDb(sql);
