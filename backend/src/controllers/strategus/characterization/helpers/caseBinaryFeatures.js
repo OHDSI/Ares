@@ -38,7 +38,7 @@ export async function getCaseBinaryFeatures({
                                                 targetIds = null,
                                                 outcomeIds = null,
                                                 databaseIds = null,
-                                                analysisIds = [3],
+                                                analysisIds = null,
                                                 riskWindowStart = null,
                                                 riskWindowEnd = null,
                                                 startAnchor = null,
@@ -136,7 +136,7 @@ export async function getCaseTargetBinaryFeatures({
                                                       targetIds = null,
                                                       outcomeIds = null,
                                                       databaseIds = null,
-                                                      analysisIds = [3],
+                                                      analysisIds = null,
                                                   }) {
     const params = {};
 

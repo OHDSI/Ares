@@ -241,7 +241,7 @@ export async function getBinaryRiskFactors({
                                                targetId,
                                                outcomeId,
                                                databaseId = null,
-                                               analysisIds = [3],
+                                               analysisIds = null,
                                                riskWindowStart = null,
                                                riskWindowEnd = null,
                                                startAnchor = null,
