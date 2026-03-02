@@ -14,7 +14,7 @@
       />
     </Button>
 
-    <div class="flex flex-row gap-5 items-end">
+    <div v-if="hasExplorerData" class="flex flex-row gap-5 items-end">
       <FloatLabel>
         <Dropdown
           inputId="folder"
@@ -137,23 +137,33 @@ const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
-const isDarkMode = computed(() => store.getters.getSettings.darkMode);
-const isSticky = computed(() => store.getters.getSettings.stickyNavBar);
+const isDarkMode = computed(() => store.getters.getSettings?.darkMode ?? false);
+const isSticky = computed(
+  () => store.getters.getSettings?.stickyNavBar ?? false
+);
+
+const hasExplorerData = computed(() => {
+  return !!store.getters.getSelectedFolder;
+});
 
 const conceptParam = computed(() => route.params.concept || null);
 const cohortParam = computed(() => route.params.cohort_id || null);
 
 const showSourceSelector = computed(() => {
-  const key = store.getters.getSelectedFolder.key;
-  return key === "datasource" || key === "cdm";
+  const folder = store.getters.getSelectedFolder;
+  if (!folder) return false;
+  return folder.key === "datasource" || folder.key === "cdm";
 });
 
 const showReleaseSelector = computed(() => {
-  return store.getters.getSelectedFolder.key === "cdm";
+  const folder = store.getters.getSelectedFolder;
+  if (!folder) return false;
+  return folder.key === "cdm";
 });
 
 function changeSource(source: Source): void {
   const folder = store.getters.getSelectedFolder;
+  if (!folder) return;
   const release = folder.key === "cdm" ? source.releases[0].release_id : null;
   router.push({
     params: { ...route.params, cdm: source.cdm_source_key, release },
@@ -167,12 +177,14 @@ function changeRelease(release: SourceRelease): void {
 function changeFolder(folder: FolderOption): void {
   const settings = store.getters.getSettings;
   const sources = store.getters.getSources;
+  if (!settings || !sources?.length) return;
+
   const selectedSource: Source | null = store.getters.getSelectedSource;
   const selectedRelease: SourceRelease | null =
     store.getters.getSelectedRelease;
 
-  const defaultSourceKey = Object.keys(settings.defaultSources).find((key) =>
-    sources.some((s: Source) => s.cdm_source_key === key)
+  const defaultSourceKey = Object.keys(settings.defaultSources ?? {}).find(
+    (key) => sources.some((s: Source) => s.cdm_source_key === key)
   );
   const defaultSource: Source | undefined = sources.find(
     (s: Source) => s.cdm_source_key === defaultSourceKey
@@ -208,6 +220,7 @@ function changeFolder(folder: FolderOption): void {
 }
 
 function changeReport(report: ReportOption): void {
+  if (!report) return;
   router.push({
     name: report.routeName,
     params: { ...route.params, domain: report.domain, concept: "" },

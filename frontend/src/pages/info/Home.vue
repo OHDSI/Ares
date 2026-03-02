@@ -10,22 +10,25 @@
       source data characterization and quality assessment ensuring that results
       are presented with proper context.
     </p>
-    <Button link @click="redirectToStrategus">
-      <svg-icon
-        class="text-primary-500"
-        type="mdi"
-        :path="mdiDatabase"
-      ></svg-icon>
-      <span class="text-primary-500 uppercase">Strategus</span>
-    </Button>
-    <Button link @click="redirectToHome">
-      <svg-icon
-        class="text-primary-500"
-        type="mdi"
-        :path="mdiDatabase"
-      ></svg-icon>
-      <span class="text-primary-500 uppercase">Explore Data Sources</span>
-    </Button>
+    <div class="flex flex-row gap-10">
+      <Button link @click="redirectToHome">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiDatabase"
+        ></svg-icon>
+        <!--      Maybe renaming is in order? Explore data sources feels strange when compared to "strategus"-->
+        <span class="text-primary-500 uppercase">Explore Data Sources</span>
+      </Button>
+      <Button link @click="redirectToStrategus">
+        <svg-icon
+          class="text-primary-500"
+          type="mdi"
+          :path="mdiDatabase"
+        ></svg-icon>
+        <span class="text-primary-500 uppercase">Strategus</span>
+      </Button>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
