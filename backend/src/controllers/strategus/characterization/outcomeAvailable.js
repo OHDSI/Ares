@@ -49,10 +49,10 @@ export async function getOutcomeDataAvailability({
       ) AS has_risk_factor_data,
  
       EXISTS (
-        SELECT 1 FROM ${schema}.${cTablePrefix}cohort_counts cc
-        WHERE cc.target_cohort_id = @targetId
-          AND cc.outcome_cohort_id = o.outcome_id
-          AND cc.cohort_type IN ('CasesBefore', 'CasesBetween', 'CasesAfter')
+        SELECT 1 FROM ${schema}.${cTablePrefix}cohort_details cd
+        WHERE cd.target_cohort_id = @targetId
+          AND cd.outcome_cohort_id = o.outcome_id
+          AND cd.cohort_type IN ('CasesBefore', 'CasesBetween', 'CasesAfter')
       ) AS has_case_series_data,
  
       EXISTS (
