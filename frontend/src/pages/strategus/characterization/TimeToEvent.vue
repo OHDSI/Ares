@@ -18,7 +18,7 @@
         :rows="10"
         filterDisplay="row"
         v-model:filters="outcomeFilters"
-        stripedRows
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         class="selector-table"
       >
@@ -62,6 +62,7 @@
         />
       </DataTable>
       <Button
+        :disabled="generateDisabled"
         label="Generate"
         :loading="loading"
         @click="generate"
@@ -287,6 +288,9 @@ import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import Message from "primevue/message";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const props = defineProps({
   targetRow: {
@@ -306,6 +310,7 @@ const plotDatabases = ref([]);
 const plotTimeScales = ref([]);
 const plotOutcomeTypes = ref([]);
 const plotTargetOutcomeTypes = ref([]);
+const lastGeneratedConfig = ref(null);
 
 const chartEl = ref(null);
 let chartInstance = null;
@@ -408,6 +413,9 @@ async function generate() {
     showResults.value = true;
     await nextTick();
     renderChart();
+    lastGeneratedConfig.value = {
+      outcome: selectedOutcome.value.cohortId,
+    };
   } finally {
     loading.value = false;
   }
@@ -542,6 +550,12 @@ async function renderChart() {
   const ro = new ResizeObserver(() => chartInstance?.resize());
   ro.observe(chartEl.value);
 }
+
+const generateDisabled = computed(() => {
+  if (!selectedOutcome.value) return true;
+  if (!lastGeneratedConfig.value) return false;
+  return selectedOutcome.value.cohortId === lastGeneratedConfig.value.outcome;
+});
 </script>
 
 <style scoped>

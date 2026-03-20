@@ -70,10 +70,12 @@ const getters = {
   getSelectedReport: function (state, getters, rootState) {
     const route = rootState.route;
 
-    const isDomain = route.params.domain;
+    const isDomain =
+      route.params.domain === "undefined" ? undefined : route.params.domain;
     const currentReport = route.name;
     const isRelease = route.params.release;
     const isCohort = route.params.cohort_id;
+
     if (isDomain && isRelease && route.name !== "networkComparisonTool") {
       const domainTable = getters.getFilteredReports.find(
         (report) =>
@@ -86,6 +88,7 @@ const getters = {
         return isDomain === report.domain;
       });
     }
+
     if (isCohort) {
       return getters.getFilteredReports.find((report) => {
         return report.routeName === "cohorts";

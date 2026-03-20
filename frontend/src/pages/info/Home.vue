@@ -20,13 +20,13 @@
         <!--      Maybe renaming is in order? Explore data sources feels strange when compared to "strategus"-->
         <span class="text-primary-500 uppercase">Explore Data Sources</span>
       </Button>
-      <Button link @click="redirectToStrategus">
+      <Button v-if="characterizationEnabled" link @click="redirectToStrategus">
         <svg-icon
           class="text-primary-500"
           type="mdi"
           :path="mdiDatabase"
         ></svg-icon>
-        <span class="text-primary-500 uppercase">Strategus</span>
+        <span class="text-primary-500 uppercase">Explore Characterization</span>
       </Button>
     </div>
   </div>
@@ -35,6 +35,7 @@
 import { useStore } from "vuex";
 import { computed } from "vue";
 import logo from "@/shared/assets/icon.png";
+import environment from "@/shared/api/environment";
 
 import Button from "primevue/button";
 import { useRouter } from "vue-router";
@@ -48,6 +49,8 @@ const router = useRouter();
 const iconClass = computed((): string => {
   return store.getters.getSettings.darkMode ? "" : "inverted";
 });
+
+const characterizationEnabled = environment.CHARACTERIZATION;
 
 function redirectToHome() {
   router.push("/network/overview");

@@ -20,7 +20,7 @@
         :rows="10"
         filterDisplay="row"
         v-model:filters="comparatorFilters"
-        stripedRows
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         class="comparator-table"
       >
@@ -77,7 +77,12 @@
           />
         </div>
         <div class="generate-btn">
-          <Button label="Generate" :loading="loading" @click="generate" />
+          <Button
+            :disabled="generateDisabled"
+            label="Generate"
+            :loading="loading"
+            @click="generate"
+          />
         </div>
       </div>
     </Panel>
@@ -350,6 +355,9 @@ import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import Message from "primevue/message";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const props = defineProps({
   targetRow: {
@@ -362,6 +370,8 @@ const props = defineProps({
 
 const loading = ref(false);
 const showResults = ref(false);
+
+const lastGeneratedConfig = ref(null);
 
 const selectedComparator = ref(null);
 const selectedDatabase = ref(null);
@@ -517,6 +527,10 @@ async function generate() {
 
     await nextTick();
     renderScatterPlot();
+    lastGeneratedConfig.value = {
+      database: selectedDatabaseName.value,
+      comparator: comparatorName.value,
+    };
   } finally {
     loading.value = false;
   }
@@ -632,6 +646,17 @@ async function renderScatterPlot() {
   const ro = new ResizeObserver(() => chartInstance?.resize());
   ro.observe(scatterEl.value);
 }
+
+const generateDisabled = computed(() => {
+  if (!selectedComparator.value) return true;
+  if (!selectedDatabaseName.value) return true;
+
+  if (!lastGeneratedConfig.value) return false;
+  return (
+    comparatorName.value === lastGeneratedConfig.value.comparator &&
+    selectedDatabaseName.value === lastGeneratedConfig.value.database
+  );
+});
 </script>
 
 <style scoped>

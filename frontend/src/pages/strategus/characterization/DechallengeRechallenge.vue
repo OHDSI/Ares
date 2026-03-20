@@ -19,7 +19,7 @@
         :rows="10"
         filterDisplay="row"
         v-model:filters="outcomeFilters"
-        stripedRows
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         class="selector-table"
       >
@@ -64,6 +64,7 @@
       </DataTable>
 
       <Button
+        :disabled="generateDisabled"
         label="Generate"
         :loading="loading"
         @click="generate"
@@ -107,7 +108,7 @@
         v-model:filters="tableFilters"
         sortMode="multiple"
         removableSort
-        stripedRows
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         class="result-table"
       >
@@ -282,7 +283,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, onMounted } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import * as echarts from "echarts";
 
 import Panel from "primevue/panel";
@@ -295,6 +296,9 @@ import Dialog from "primevue/dialog";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const props = defineProps({
   targetRow: {
@@ -311,6 +315,7 @@ const selectedOutcome = ref(null);
 const tableData = ref([]);
 const targetWarning = ref(false);
 const outcomeWarning = ref(false);
+const lastGeneratedConfig = ref(null);
 
 const failsDialogVisible = ref(false);
 const failPlotData = ref(null);
@@ -406,6 +411,9 @@ async function generate() {
     targetWarning.value = targetUnique.isUnique;
     outcomeWarning.value = outcomeUnique.isUnique;
     showResults.value = true;
+    lastGeneratedConfig.value = {
+      outcome: outcomeId,
+    };
   } finally {
     loading.value = false;
   }
@@ -566,6 +574,12 @@ function renderFailsChart(data) {
   const ro = new ResizeObserver(() => failsChart?.resize());
   ro.observe(failsChartEl.value);
 }
+
+const generateDisabled = computed(() => {
+  if (!selectedOutcome.value) return true;
+  if (!lastGeneratedConfig.value) return false;
+  return selectedOutcome.value.cohortId === lastGeneratedConfig.value.outcome;
+});
 </script>
 
 <style scoped>

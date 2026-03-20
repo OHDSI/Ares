@@ -29,6 +29,26 @@
               size="small"
             />
           </template>
+          <template #body="{ data }">
+            <span>{{ data.cdmSourceName }}</span>
+            <i
+              v-if="data.sourceDescription"
+              v-tooltip.top="{
+                value: data.sourceDescription,
+                pt: {
+                  root: 'absolute',
+                  arrow: {
+                    style: {
+                      borderRightColor: 'var(--primary-color)',
+                    },
+                  },
+                  text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-light p-2 break-words text-wrap max-w-[20ch]',
+                },
+              }"
+              class="pi pi-info-circle"
+              style="margin-left: 0.5rem; color: #6b7280; cursor: help"
+            />
+          </template>
         </Column>
         <Column
           sortable
@@ -60,7 +80,7 @@
             />
           </template>
         </Column>
-        <Column header="DB Description" field="sourceDescription" />
+        <!--        <Column header="DB Description" field="sourceDescription" />-->
         <Column
           header="DB Description Link"
           field="sourceDocumentationReference"
@@ -129,6 +149,7 @@
 </template>
 
 <script setup lang="ts">
+import Tooltip from "primevue/tooltip";
 import { ref, onMounted } from "vue";
 import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
@@ -137,6 +158,7 @@ import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { useStore } from "vuex";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import Button from "primevue/button";
 
 const store = useStore();
 const data = ref([]);

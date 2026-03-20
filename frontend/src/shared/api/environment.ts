@@ -8,6 +8,7 @@ class Environment {
   CDM_NETWORK_NAME = null;
   ARES_API_URL = null;
   USE_ANNOTATIONS_API: null;
+  CHARACTERIZATION: null;
   load() {
     const promise: Promise<AxiosResponse> = axios.get(envUrl);
     return promise.then((res) => {

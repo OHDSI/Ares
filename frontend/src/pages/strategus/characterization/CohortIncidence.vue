@@ -11,7 +11,7 @@
         :rows="10"
         filterDisplay="row"
         v-model:filters="outcomeFilters"
-        stripedRows
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         class="selector-table"
       >
@@ -54,6 +54,7 @@
         />
       </DataTable>
       <Button
+        :disabled="generateDisabled"
         label="Generate"
         :loading="loading"
         @click="generate"
@@ -61,8 +62,8 @@
       />
     </Panel>
 
-    <Panel header="Results">
-      <TabView v-if="showResults" class="mt-3">
+    <Panel header="Results" class="mt-3">
+      <TabView v-if="showResults">
         <TabPanel header="Incidence Rate Table">
           <div class="table-filters">
             <div>
@@ -111,7 +112,7 @@
             v-model:filters="tableFilters"
             sortMode="multiple"
             removableSort
-            stripedRows
+            :striped-rows="store.getters.getSettings.strippedRows"
             size="small"
             class="result-table mt-3"
           >
@@ -289,6 +290,9 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const props = defineProps({
   targetRow: {
@@ -317,6 +321,8 @@ const plotSexStratify = ref(false);
 const plotFixedY = ref(true);
 const plotEl = ref(null);
 let chartInstance = null;
+
+const lastGeneratedConfig = ref(null);
 
 const outcomeFilters = ref({
   parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -387,6 +393,10 @@ async function generate() {
     tableRows.value = [];
     showResults.value = true;
     applyTableFilter();
+
+    lastGeneratedConfig.value = {
+      selectedOutcomes: selectedOutcomes.value,
+    };
   } finally {
     loading.value = false;
   }
@@ -576,6 +586,15 @@ async function renderPlot() {
   const ro = new ResizeObserver(() => chartInstance?.resize());
   ro.observe(plotEl.value);
 }
+
+const generateDisabled = computed(() => {
+  if (!selectedOutcomes.value.length) return true;
+  if (!lastGeneratedConfig.value) return false;
+
+  return selectedOutcomes.value.every((id) =>
+    lastGeneratedConfig.value.selectedOutcomes.includes(id)
+  );
+});
 </script>
 
 <style scoped>

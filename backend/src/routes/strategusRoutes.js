@@ -35,6 +35,7 @@ import {getTimeToEvent} from "../controllers/strategus/characterization/timeToEv
 import {getBinaryCaseSeries, getContinuousCaseSeries} from '../controllers/strategus/characterization/caseSeries.js';
 import {getIncidenceRates} from "../controllers/strategus/characterization/incidence.js";
 import {getDatasources} from "../controllers/strategus/dataSources.js";
+import {getOutcomeDataAvailability} from "../controllers/strategus/characterization/outcomeAvailable.js";
 
 const schemaName = process.env.STRATEGUS_SCHEMA || 'app'
 
@@ -380,6 +381,27 @@ router.get('/api/datasources', async (req, res) => {
         res.status(500).json({error: message});
     }
 });
+
+router.get('/api/characterization/outcome-data-availability', async (req, res) => {
+    const { targetId, outcomeIds } = req.query;
+    if (!targetId || !outcomeIds) {
+        return res.status(400).json({ error: 'targetId and outcomeIds are required' });
+    }
+
+    try {
+        const rows = await getOutcomeDataAvailability({
+            schema: schemaName,
+            targetId: parseInt(targetId, 10),
+            outcomeIds: outcomeIds.split(',').map(Number),
+        });
+        res.json(rows);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error(`${message}`);
+        res.status(500).json({ error: message });
+    }
+});
+
 
 //todo: maybe separate different modules into their own routers but will do for now
 

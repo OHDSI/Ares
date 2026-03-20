@@ -10,7 +10,7 @@
         :rows="10"
         filterDisplay="row"
         v-model:filters="targetFilters"
-        stripedRows
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         class="target-table"
         :loading="loadingTargets"
@@ -193,6 +193,9 @@ import CohortIncidence from "@/pages/strategus/characterization/CohortIncidence.
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import Message from "primevue/message";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const ANALYSIS_DEFS = [
   {
@@ -278,10 +281,26 @@ const unavailableNames = computed(() => {
   return ANALYSIS_DEFS.filter((a) => t[a.key] !== 1).map((a) => a.label);
 });
 
+const ANALYSIS_AVAIL_KEY = {
+  dechalRechal: "hasDechalData",
+  riskFactors: "hasRiskFactorData",
+  caseSeries: "hasCaseSeriesData",
+  timeToEvent: "hasTimeToEventData",
+  cohortIncidence: "hasIncidenceData",
+};
+
 function buildExtraProps(analysis) {
   const extra = {};
   if (analysis.needsOutcome) {
-    extra.outcomeTable = outcomeTable.value;
+    const availKey = ANALYSIS_AVAIL_KEY[analysis.key];
+    if (availKey) {
+      // filter outcomes that have data
+      extra.outcomeTable = outcomeTable.value.filter(
+        (o) => o[availKey] !== false
+      );
+    } else {
+      extra.outcomeTable = outcomeTable.value;
+    }
   }
   if (analysis.needsTargetTable) {
     extra.targetTable = targetTable.value;
@@ -305,7 +324,42 @@ async function fetchOutcomeTable(targetId) {
     const res = await StrategusService.characterization.getOutcomeTable(
       targetId
     );
-    outcomeTable.value = res.data;
+
+    //    outcomeTable.value = res.data;
+
+    const outcomes = res.data ?? [];
+
+    if (outcomes.length) {
+      try {
+        const outcomeIds = outcomes.map((o) => o.cohortId);
+        const availRes =
+          await StrategusService.characterization.getOutcomeDataAvailability(
+            targetId,
+            outcomeIds
+          );
+        const availMap = new Map(
+          (availRes.data ?? []).map((r) => [r.outcomeId, r])
+        );
+
+        for (const o of outcomes) {
+          const avail = availMap.get(o.cohortId);
+          if (avail) {
+            o.hasDechalData = avail.hasDechalData;
+            o.hasRiskFactorData = avail.hasRiskFactorData;
+            o.hasCaseSeriesData = avail.hasCaseSeriesData;
+            o.hasTimeToEventData = avail.hasTimeToEventData;
+            o.hasIncidenceData = avail.hasIncidenceData;
+          }
+        }
+      } catch (e) {
+        console.warn(
+          "Failed to fetch outcome data availability, proceeding without filtering:",
+          e
+        );
+      }
+    }
+
+    outcomeTable.value = outcomes;
   } finally {
     loadingOutcomes.value = false;
   }

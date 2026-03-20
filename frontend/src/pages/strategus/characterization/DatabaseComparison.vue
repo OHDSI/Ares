@@ -27,7 +27,7 @@
           <Slider v-model="minThreshold" :min="minCharVal" :max="1" :step="0.01" class="w-full" />
         </div>
       </div>
-      <Button label="Generate" :loading="loading" @click="generate" class="mt-3" />
+      <Button label="Generate" :disabled="generateDisabled" :loading="loading" @click="generate" class="mt-3" />
     </Panel>
 
     <Panel v-if="showResults" header="Selected" toggleable class="selected-panel mt-3">
@@ -43,6 +43,7 @@
 
         <!-- Binary Table -->
         <TabPanel header="Binary Table">
+<!--          thinkg of better styling-->
           <p class="help-text" v-if="covRef.length">
             This analysis shows the fraction of patients in the target cohort
             (restricted to first index date and requiring {{ covRef[0]?.minPriorObservation }} days
@@ -57,7 +58,7 @@
               v-model:filters="binaryFilters"
               sortMode="multiple"
               removableSort
-              stripedRows
+              :striped-rows="store.getters.getSettings.strippedRows"
               size="small"
               class="result-table"
               :exportFilename="'database_comparison_binary'"
@@ -143,7 +144,7 @@
               v-model:filters="continuousFilters"
               sortMode="multiple"
               removableSort
-              stripedRows
+              :striped-rows="store.getters.getSettings.strippedRows"
               size="small"
               class="result-table"
               :exportFilename="'database_comparison_continuous'"
@@ -216,7 +217,7 @@
 
       </TabView>
       <p v-else-if="(!selectedDatabases.length || !showResults) && !loading" class="empty-hint">
-        Select databases, then click Generate to view comparison results.
+        Select at least 2 databases, then click Generate to view comparison results.
       </p>
     </Panel>
 
@@ -224,7 +225,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import {computed, nextTick, ref, watch} from 'vue'
 import * as echarts from 'echarts'
 
 import Panel from 'primevue/panel'
@@ -238,12 +239,14 @@ import MultiSelect from 'primevue/multiselect'
 import Dropdown from 'primevue/dropdown'
 import Slider from 'primevue/slider'
 import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import { FilterMatchMode } from 'primevue/api'
-import { onMounted } from 'vue'
+import {FilterMatchMode} from 'primevue/api'
 import Message from "primevue/message";
 
-import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import {StrategusService} from "@/shared/api/aresApi/services/strategusService";
+import {useStore} from "vuex";
+
+const store = useStore();
+
 
 const props = defineProps({
   targetRow: {
@@ -373,6 +376,11 @@ async function generate() {
 
     showResults.value = true
     plotData.value = null
+
+    lastGeneratedConfig.value = {
+      databases: [...selectedDatabases.value],
+      threshold: minThreshold.value,
+    }
   } finally {
     loading.value = false
   }
@@ -488,6 +496,17 @@ async function generatePlot() {
   const ro = new ResizeObserver(() => chartInstance?.resize())
   ro.observe(scatterEl.value)
 }
+
+const lastGeneratedConfig = ref(null)
+
+
+const generateDisabled = computed(() => {
+  if (selectedDatabases.value.length < 2) return true
+  if (!lastGeneratedConfig.value) return false
+  return minThreshold.value === lastGeneratedConfig.value.threshold &&
+      selectedDatabases.value.length === lastGeneratedConfig.value.databases.length &&
+      selectedDatabases.value.every((id) => lastGeneratedConfig.value.databases.includes(id))
+})
 </script>
 
 <style scoped>

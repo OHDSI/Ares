@@ -18,7 +18,7 @@
         :rows="10"
         filterDisplay="row"
         v-model:filters="outcomeFilters"
-        stripedRows
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         class="selector-table"
       >
@@ -94,6 +94,7 @@
       </div>
 
       <Button
+        :disabled="generateDisabled"
         label="Generate"
         :loading="loading"
         @click="generate"
@@ -377,6 +378,9 @@ import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import Message from "primevue/message";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const props = defineProps({
   targetRow: {
@@ -389,6 +393,7 @@ const props = defineProps({
 
 const loading = ref(false);
 const showResults = ref(false);
+const lastGeneratedConfig = ref(null);
 
 const selectedOutcome = ref(null);
 const selectedDatabase = ref(null);
@@ -608,10 +613,33 @@ async function generate() {
     binaryAbsSmdMin.value = 0;
     continuousAbsSmdMin.value = 0;
     showResults.value = true;
+    lastGeneratedConfig.value = {
+      selectedDatabaseName: selectedDatabaseName.value,
+      selectedOutcome: selectedOutcome?.value?.cohortId,
+      selectedTar: selectedTar.value,
+      selectedWashout: selectedWashout.value,
+    };
   } finally {
     loading.value = false;
   }
 }
+
+const generateDisabled = computed(() => {
+  if (!selectedTar.value) return true;
+  if (!selectedDatabaseName.value) return true;
+  if (!selectedOutcome.value) return true;
+  if (!selectedWashout.value) return true;
+
+  if (!lastGeneratedConfig.value) return false;
+  return (
+    selectedDatabaseName.value ===
+      lastGeneratedConfig.value.selectedDatabaseName &&
+    selectedOutcome.value.cohortId ===
+      lastGeneratedConfig.value.selectedOutcome &&
+    selectedTar.value === lastGeneratedConfig.value.selectedTar &&
+    selectedWashout.value === lastGeneratedConfig.value.selectedWashout
+  );
+});
 </script>
 
 <style scoped>

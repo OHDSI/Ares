@@ -21,7 +21,7 @@
         :rows="10"
         filterDisplay="row"
         v-model:filters="outcomeFilters"
-        stripedRows
+        :striped-rows="store.getters.getSettings.strippedRows"
         size="small"
         class="selector-table"
       >
@@ -96,6 +96,7 @@
       </div>
 
       <Button
+        :disabled="generateDisabled"
         label="Generate"
         :loading="loading"
         @click="generate"
@@ -132,7 +133,7 @@
             v-model:filters="binaryTableFilters"
             sortMode="multiple"
             removableSort
-            stripedRows
+            :striped-rows="store.getters.getSettings.strippedRows"
             size="small"
             class="result-table"
           >
@@ -351,6 +352,9 @@ import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import Message from "primevue/message";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const props = defineProps({
   targetRow: {
@@ -368,6 +372,8 @@ const selectedOutcome = ref(null);
 const selectedDatabase = ref(null);
 const selectedTar = ref(null);
 const selectedWashout = ref(null);
+
+const lastGeneratedConfig = ref(null);
 
 const binaryRows = ref([]);
 const continuousRows = ref([]);
@@ -625,10 +631,34 @@ async function generate() {
     } days observation prior to target index and who had the outcome recorded during the time-at-risk period.`;
 
     showResults.value = true;
+
+    lastGeneratedConfig.value = {
+      selectedDatabaseName: selectedDatabaseName.value,
+      selectedOutcome: selectedOutcome?.value?.cohortId,
+      selectedTar: selectedTar.value,
+      selectedWashout: selectedWashout.value,
+    };
   } finally {
     loading.value = false;
   }
 }
+
+const generateDisabled = computed(() => {
+  if (!selectedTar.value) return true;
+  if (!selectedDatabaseName.value) return true;
+  if (!selectedOutcome.value) return true;
+  if (!selectedWashout.value) return true;
+
+  if (!lastGeneratedConfig.value) return false;
+  return (
+    selectedDatabaseName.value ===
+      lastGeneratedConfig.value.selectedDatabaseName &&
+    selectedOutcome.value.cohortId ===
+      lastGeneratedConfig.value.selectedOutcome &&
+    selectedTar.value === lastGeneratedConfig.value.selectedTar &&
+    selectedWashout.value === lastGeneratedConfig.value.selectedWashout
+  );
+});
 </script>
 
 <style scoped>

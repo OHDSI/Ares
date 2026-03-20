@@ -335,6 +335,11 @@ export async function getOutcomeTable({
         OUTCOME_ANALYSIS_COLUMNS.some((col) => r[col] !== 0)
     );
 
+    cohortCounts = cohortCounts.filter((r) =>
+        OUTCOME_ANALYSIS_COLUMNS.some((col) => r[col] !== 0)
+    );
+
+
     cohortCounts.sort((a, b) =>
         String(a.parentName ?? '').localeCompare(String(b.parentName ?? ''))
         || String(a.cohortName ?? '').localeCompare(String(b.cohortName ?? ''))

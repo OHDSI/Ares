@@ -293,6 +293,21 @@ export const StrategusService = {
         {}
       );
     },
+    getOutcomeDataAvailability(targetId: number, outcomeIds: number[]) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/characterization/outcome-data-availability`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: {
+            targetId,
+            outcomeIds: outcomeIds.join(","),
+          },
+        },
+        {}
+      );
+    },
   },
   dataSources: {
     getDataSources() {
