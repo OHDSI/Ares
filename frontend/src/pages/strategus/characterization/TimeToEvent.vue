@@ -1,285 +1,222 @@
 <template>
   <div class="time-to-event">
-    <Message :closable="false" severity="info">
-      <p>
-        View the timing of all outcomes relative to the target index date and
-        whether the outcome was the first or subsequent.
-      </p>
-    </Message>
+    <div class="section">
+      <label class="field-label">Outcome</label>
+      <OutcomeSelector v-model="selectedOutcome" :options="outcomeOptions" />
 
-    <Panel header="Options" toggleable class="options-panel">
-      <label class="field-label">Select Outcome</label>
-      <DataTable
-        :value="outcomeOptions"
-        v-model:selection="selectedOutcome"
-        selectionMode="single"
-        dataKey="cohortId"
-        :paginator="outcomeOptions.length > 10"
-        :rows="10"
-        filterDisplay="row"
-        v-model:filters="outcomeFilters"
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        class="selector-table"
-      >
-        <Column selectionMode="single" headerStyle="width: 3rem" />
+      <Button :disabled="generateDisabled" label="Generate" @click="generate" />
+    </div>
 
-        <Column
-          field="parentName"
-          header="Outcome"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortName"
-          header="Subset"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortId"
-          header="Cohort ID"
-          sortable
-          style="width: 100px"
-        />
-      </DataTable>
-      <Button
-        :disabled="generateDisabled"
-        label="Generate"
-        :loading="loading"
-        @click="generate"
-        class="mt-3"
-      />
-    </Panel>
+    <ContextBar v-if="showResults" :items="[targetName, outcomeName]" />
 
-    <Panel v-if="showResults" header="Selected" toggleable class="mt-3">
-      <div class="selected-summary">
-        <span><strong>Target:</strong> {{ targetName }}</span>
-        <span><strong>Outcome:</strong> {{ outcomeName }}</span>
-      </div>
-    </Panel>
-    <Panel class="mt-3" header="Results">
-      <TabView v-if="showResults" class="mt-3">
-        <TabPanel header="Time-to-event Plots">
-          <div class="plot-filters">
-            <div>
-              <label class="field-label">Databases</label>
-              <MultiSelect
-                v-model="plotDatabases"
-                :options="uniqueDatabases"
-                placeholder="All databases"
-                filter
-                display="chip"
-                class="w-full"
-              />
+    <div v-if="showResults" class="section results-body">
+      <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
+
+      <Transition name="tab-fade" mode="out-in"
+        ><div :key="activeResultTab">
+          <div v-if="activeResultTab === 0">
+            <div class="plot-filters">
+              <div>
+                <label class="field-label">Databases</label>
+                <MultiSelect
+                  v-model="plotDatabases"
+                  :options="uniqueDatabases"
+                  placeholder="All databases"
+                  filter
+                  display="chip"
+                  class="w-full"
+                />
+              </div>
+              <div>
+                <label class="field-label">Timespan</label>
+                <MultiSelect
+                  v-model="plotTimeScales"
+                  :options="uniqueTimeScales"
+                  placeholder="All"
+                  class="w-full"
+                />
+              </div>
+              <div>
+                <label class="field-label">Outcome type</label>
+                <MultiSelect
+                  v-model="plotOutcomeTypes"
+                  :options="uniqueOutcomeTypes"
+                  placeholder="All"
+                  class="w-full"
+                />
+              </div>
+              <div>
+                <label class="field-label">Timing</label>
+                <MultiSelect
+                  v-model="plotTargetOutcomeTypes"
+                  :options="uniqueTargetOutcomeTypes"
+                  placeholder="All"
+                  class="w-full"
+                />
+              </div>
             </div>
-            <div>
-              <label class="field-label">Timespan</label>
-              <MultiSelect
-                v-model="plotTimeScales"
-                :options="uniqueTimeScales"
-                placeholder="All"
-                class="w-full"
-              />
-            </div>
-            <div>
-              <label class="field-label">Outcome occurrence type</label>
-              <MultiSelect
-                v-model="plotOutcomeTypes"
-                :options="uniqueOutcomeTypes"
-                placeholder="All"
-                class="w-full"
-              />
-            </div>
-            <div>
-              <label class="field-label">Timing of outcome</label>
-              <MultiSelect
-                v-model="plotTargetOutcomeTypes"
-                :options="uniqueTargetOutcomeTypes"
-                placeholder="All"
-                class="w-full"
-              />
-            </div>
+            <div ref="chartEl" class="tte-chart"></div>
           </div>
-          <div ref="chartEl" class="tte-chart mt-3"></div>
-        </TabPanel>
 
-        <TabPanel header="Time-to-event Table">
-          <DataTable
-            :value="allData"
-            :paginator="true"
-            :rows="25"
-            :rowsPerPageOptions="[10, 25, 50, 100]"
-            filterDisplay="row"
-            v-model:filters="tableFilters"
-            sortMode="multiple"
-            removableSort
-            stripedRows
-            size="small"
-            class="result-table"
-          >
-            <Column
-              field="databaseName"
-              header="Database"
-              sortable
-              :showFilterMenu="false"
+          <div v-else-if="activeResultTab === 1">
+            <DataTable
+              :value="allData"
+              :paginator="true"
+              :rows="25"
+              :rowsPerPageOptions="[10, 25, 50, 100]"
+              filterDisplay="row"
+              v-model:filters="tableFilters"
+              sortMode="multiple"
+              removableSort
+              :striped-rows="store.getters.getSettings.strippedRows"
+              size="small"
+              class="result-table"
             >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column
-              field="targetName"
-              header="Target Name"
-              sortable
-              style="min-width: 200px"
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column
-              field="outcomeName"
-              header="Outcome Name"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column
-              field="outcomeType"
-              header="Outcome Type"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column
-              field="targetOutcomeType"
-              header="Target-Outcome Type"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column
-              field="timeToEvent"
-              header="Time (days) To Event"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Filter..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column
-              field="numEvents"
-              header="# of Events"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #body="{ data }">{{
-                formatCensored(data.numEvents)
-              }}</template>
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Filter..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column
-              field="timeScale"
-              header="Time Scale"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-          </DataTable>
-        </TabPanel>
-      </TabView>
-      <p
-        v-else-if="(!selectedOutcome || !showResults) && !loading"
-        class="empty-hint"
-      >
-        Select an outcome, then click Generate to view risk factor results.
-      </p>
-    </Panel>
+              <Column
+                field="databaseName"
+                header="Database"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="targetName"
+                header="Target"
+                sortable
+                style="min-width: 200px"
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="outcomeName"
+                header="Outcome"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="outcomeType"
+                header="Outcome Type"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="targetOutcomeType"
+                header="Timing"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="timeToEvent"
+                header="Days"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="numEvents"
+                header="# Events"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #body="{ data }">{{
+                  formatCensored(data.numEvents)
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="timeScale"
+                header="Scale"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+            </DataTable>
+          </div></div
+      ></Transition>
+    </div>
+
+    <div v-else-if="!loading" class="section empty-state">
+      Select an outcome, then click Generate.
+    </div>
+
+    <ResultsLoader :loader-state="loaderState" />
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from "vue";
 import * as echarts from "echarts";
 
-import Panel from "primevue/panel";
-import TabView from "primevue/tabview";
-import TabPanel from "primevue/tabpanel";
+import ResultsLoader from "./shared/ResultsLoader.vue";
+import ViewToggle from "./shared/ViewToggle.vue";
+import OutcomeSelector from "./shared/OutcomeSelector.vue";
+import ContextBar from "./shared/ContextBar.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import MultiSelect from "primevue/multiselect";
@@ -287,24 +224,29 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
-import Message from "primevue/message";
 import { useStore } from "vuex";
 
 const store = useStore();
 
 const props = defineProps({
-  targetRow: {
-    type: Object,
-  },
-  outcomeTable: {
-    type: Array,
-  },
+  targetRow: { type: Object },
+  outcomeTable: { type: Array },
+  initialUrlState: { type: Object, default: null },
 });
+
+const emit = defineEmits(["state-change"]);
 
 const loading = ref(false);
 const showResults = ref(false);
+const loaderState = ref("idle");
 const selectedOutcome = ref(null);
 const allData = ref([]);
+
+const activeResultTab = ref(0);
+const resultTabs = [
+  { key: "plots", label: "Plots" },
+  { key: "table", label: "Table" },
+];
 
 const plotDatabases = ref([]);
 const plotTimeScales = ref([]);
@@ -315,10 +257,6 @@ const lastGeneratedConfig = ref(null);
 const chartEl = ref(null);
 let chartInstance = null;
 
-const outcomeFilters = ref({
-  parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  cohortName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 const tableFilters = ref({
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   targetName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -377,7 +315,12 @@ watch(
   }
 );
 
-//todo: replace with shared
+watch(activeResultTab, async () => {
+  if (activeResultTab.value === 0 && showResults.value) {
+    await renderChart();
+  }
+});
+
 function formatCensored(val) {
   if (val == null) return "";
   return val < 0 ? `< ${Math.abs(val)}` : val;
@@ -397,7 +340,10 @@ async function generate() {
     return;
   }
 
+  showResults.value = false;
   loading.value = true;
+  loaderState.value = "loading";
+  const loadStart = Date.now();
   try {
     const data = await fetchTimeToEventData(
       props.targetRow.cohortId,
@@ -410,17 +356,24 @@ async function generate() {
     plotOutcomeTypes.value = [...uniqueOutcomeTypes.value];
     plotTargetOutcomeTypes.value = [...uniqueTargetOutcomeTypes.value];
 
+    if (Date.now() - loadStart >= 600) {
+      loaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    loaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
     showResults.value = true;
     await nextTick();
     renderChart();
-    lastGeneratedConfig.value = {
-      outcome: selectedOutcome.value.cohortId,
-    };
+    lastGeneratedConfig.value = { outcome: selectedOutcome.value.cohortId };
+    emit("state-change", { outcomeId: selectedOutcome.value.cohortId });
+  } catch {
+    loaderState.value = "error";
   } finally {
     loading.value = false;
   }
 }
-//todo: replace with shared component
+
 async function renderChart() {
   await nextTick();
   if (!chartEl.value) return;
@@ -454,12 +407,11 @@ async function renderChart() {
     "#bab0ac",
   ];
 
-  const grids = [];
-  const xAxes = [];
-  const yAxes = [];
-  const seriesList = [];
-  const titles = [];
-
+  const grids = [],
+    xAxes = [],
+    yAxes = [],
+    seriesList = [],
+    titles = [];
   const cols = Math.min(facetKeys.length, 3);
   const rowCount = Math.ceil(facetKeys.length / cols);
   const cellW = 100 / cols;
@@ -470,15 +422,12 @@ async function renderChart() {
     const col = fi % cols;
     const row = Math.floor(fi / cols);
 
-    const barWidth = 15;
-
     grids.push({
       left: `${col * cellW + 6}%`,
       top: `${row * cellH + 8}%`,
       width: `${cellW - 10}%`,
       height: `${cellH - 16}%`,
     });
-
     xAxes.push({
       gridIndex: fi,
       type: "value",
@@ -493,7 +442,6 @@ async function renderChart() {
       nameLocation: "center",
       nameGap: 35,
     });
-
     titles.push({
       text: `${dbName} — ${ts}`,
       left: `${col * cellW + cellW / 2 + 1}%`,
@@ -505,20 +453,18 @@ async function renderChart() {
     const facetData = data.filter(
       (r) => r.timeScale === ts && r.databaseName === dbName
     );
-
     for (let gi = 0; gi < fillGroups.length; gi++) {
       const fg = fillGroups[gi];
       const points = facetData
         .filter((r) => `${r.outcomeType}-${r.targetOutcomeType}` === fg)
         .map((r) => [r.timeToEvent, r.numEvents]);
-
       seriesList.push({
         name: fg,
         type: "bar",
         xAxisIndex: fi,
         yAxisIndex: fi,
         stack: `stack-${fi}`,
-        barWidth,
+        barWidth: 15,
         data: points,
         itemStyle: { color: colors[gi % colors.length] },
       });
@@ -556,60 +502,44 @@ const generateDisabled = computed(() => {
   if (!lastGeneratedConfig.value) return false;
   return selectedOutcome.value.cohortId === lastGeneratedConfig.value.outcome;
 });
+
+onMounted(async () => {
+  const url = props.initialUrlState;
+  if (url?.outcomeId && outcomeOptions.value.length) {
+    const match = outcomeOptions.value.find(
+      (o) => o.cohortId === url.outcomeId
+    );
+    if (match) selectedOutcome.value = match;
+  }
+  await nextTick();
+  if (selectedOutcome.value) await generate();
+});
 </script>
 
 <style scoped>
+@import "./shared/styles.css";
+
 .time-to-event {
-  padding: 1rem;
-}
-.help-text {
-  color: var(--text-color-secondary, #6b7280);
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
-}
-.field-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.375rem;
-  font-size: 0.875rem;
-}
-.options-panel {
-  margin-top: 0.75rem;
-}
-.selector-table {
-  margin-bottom: 1rem;
-  font-size: 0.8125rem;
-}
-.selected-summary {
   display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  font-size: 0.875rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
-.result-table {
-  font-size: 0.8125rem;
-}
+
 .plot-filters {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
   align-items: start;
+  margin-bottom: 0.75rem;
 }
+
 .plot-filters > div {
-  min-width: 180px;
+  min-width: 160px;
   flex: 1;
 }
+
 .tte-chart {
   width: 100%;
   min-height: 400px;
-}
-.w-full {
-  width: 100%;
-}
-
-.empty-hint {
-  text-align: center;
-  color: #999;
-  padding: 2rem 0;
 }
 </style>

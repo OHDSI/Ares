@@ -215,7 +215,8 @@
         <div class="px-14 md:px-20 lg:px-24 mx-1 h-[90%]">
           <NetworkConceptReport v-if="conceptData" :data="conceptData" />
           <div class="flex justify-center items-center h-full" v-else>
-            <AnimatedLogo />
+            <!--            <AnimatedLogo />-->
+            <BlackHoleLoading size="lg" :state="drilldownLoaderState" />
           </div>
         </div>
       </Sidebar>
@@ -252,7 +253,7 @@ import environment from "@/shared/api/environment";
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
 import concept from "@/processes/exploreReports/model/store/postprocessing/conceptReport";
-
+import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
 const route = useRoute();
 const store = useStore();
 const router = useRouter();
@@ -263,6 +264,7 @@ const step = ref(10);
 
 const conceptData = ref(null);
 const visible = ref(false);
+const drilldownLoaderState = ref("idle");
 
 const sortConfig = ref({
   field: null,
@@ -503,6 +505,8 @@ function getDrilldownRoute(cdmRelease: string, rowId: string | number) {
 async function loadDrilldown(concept) {
   visible.value = true;
   conceptData.value = null;
+  drilldownLoaderState.value = "loading";
+  const loadStart = Date.now();
   const domain = selectedDomain.value;
   const conceptId = concept.CONCEPT_ID;
   const files = environment.DUCKDB_ENABLED
@@ -516,12 +520,22 @@ async function loadDrilldown(concept) {
           instanceParams: [{ domain, concept: conceptId }],
         },
       ];
-  await store.dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
-    files: files,
-    duckdb_supported: true,
-    defaultSources: getParsedSelectedSources.value,
-  });
-  conceptData.value = store.getters.getData;
+  try {
+    await store.dispatch(FETCH_MULTIPLE_FILES_BY_SOURCE, {
+      files: files,
+      duckdb_supported: true,
+      defaultSources: getParsedSelectedSources.value,
+    });
+    if (Date.now() - loadStart >= 600) {
+      drilldownLoaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    drilldownLoaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
+    conceptData.value = store.getters.getData;
+  } catch {
+    drilldownLoaderState.value = "error";
+  }
 }
 
 function getIndexTableRoute(cdmRelease: string) {

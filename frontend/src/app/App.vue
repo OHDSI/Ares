@@ -49,7 +49,7 @@ const showExplorer = computed(function () {
     path.value.includes("network") ||
     path.value.includes("cdm") ||
     path.value.includes("datasource") ||
-    path.value.includes("strategus")
+    path.value.includes("characterization")
   );
 });
 

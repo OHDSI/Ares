@@ -29,7 +29,8 @@
           <div class="px-14 md:px-20 lg:px-24 mx-1 h-[90%]">
             <ConceptReport v-if="conceptData" :data="conceptData" />
             <div class="flex justify-center items-center h-full" v-else>
-              <AnimatedLogo />
+              <!--              <AnimatedLogo />-->
+              <BlackHoleLoading size="lg" :state="drilldownLoaderState" />
             </div>
           </div>
         </Sidebar>
@@ -55,6 +56,7 @@ import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
+import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
 
 const store = useStore();
 const route = useRoute();
@@ -67,6 +69,7 @@ const defaultSources = computed(() => {
 const openedDomain = computed(() => route.params.domain);
 
 const conceptData = ref(null);
+const drilldownLoaderState = ref("idle");
 
 const drillDownViewOption = computed(
   () => store.getters.getSettings.drillDownViewOptions
@@ -75,6 +78,9 @@ const drillDownViewOption = computed(
 async function loadDrilldown(concept) {
   const conceptId = concept.CONCEPT_ID;
   visible.value = true;
+  conceptData.value = null;
+  drilldownLoaderState.value = "loading";
+  const loadStart = Date.now();
   router.replace({ name: "domainTable", params: { concept: conceptId } });
   const domain = openedDomain.value;
   const duckdbTables = getDuckDBTables({
@@ -89,16 +95,26 @@ async function loadDrilldown(concept) {
   ];
 
   const files = environment.DUCKDB_ENABLED ? duckdbTables : jsonConcepts;
-  await store.dispatch(FETCH_FILES, {
-    files: files,
-    duckdb_supported: true,
-    params: {
-      domain,
-      concept: conceptId,
-    },
-    defaultSources: defaultSources.value,
-  });
-  conceptData.value = store.getters.getData;
+  try {
+    await store.dispatch(FETCH_FILES, {
+      files: files,
+      duckdb_supported: true,
+      params: {
+        domain,
+        concept: conceptId,
+      },
+      defaultSources: defaultSources.value,
+    });
+    if (Date.now() - loadStart >= 600) {
+      drilldownLoaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    drilldownLoaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
+    conceptData.value = store.getters.getData;
+  } catch {
+    drilldownLoaderState.value = "error";
+  }
 }
 
 const closeDrillDown = function () {

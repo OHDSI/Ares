@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
+import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
 </script>
 
 <template>
@@ -8,7 +9,8 @@ import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
   <!--    role="status"-->
   <!--  ></div>-->
   <!--  <h3 class="text-lg dark:text-white">Loading...</h3>-->
-  <AnimatedLogo />
+  <!--  <AnimatedLogo />-->
+  <BlackHoleLoading text="Loading..." size="lg" />
 </template>
 
 <style scoped></style>

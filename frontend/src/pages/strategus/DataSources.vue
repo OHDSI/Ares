@@ -1,6 +1,9 @@
 <template>
-  <Panel header="Data Sources">
-    <div class="p-4">
+  <div class="datasources">
+    <div class="section-header">
+      <h3>Data Sources</h3>
+    </div>
+    <div class="section">
       <DataTable
         :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
@@ -9,7 +12,7 @@
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         :value="data"
-        :rows="5"
+        :rows="10"
         :rowsPerPageOptions="[5, 10, 20, 50]"
         :loading="loading"
         filterDisplay="row"
@@ -39,14 +42,14 @@
                   root: 'absolute',
                   arrow: {
                     style: {
-                      borderRightColor: 'var(--primary-color)',
+                      borderTopColor: 'var(--surface-800)',
                     },
                   },
                   text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-light p-2 break-words text-wrap max-w-[20ch]',
                 },
               }"
               class="pi pi-info-circle"
-              style="margin-left: 0.5rem; color: #6b7280; cursor: help"
+              style="margin-left: 0.5rem; color: #94a3b8; cursor: help"
             />
           </template>
         </Column>
@@ -80,11 +83,7 @@
             />
           </template>
         </Column>
-        <!--        <Column header="DB Description" field="sourceDescription" />-->
-        <Column
-          header="DB Description Link"
-          field="sourceDocumentationReference"
-        >
+        <Column header="Docs" field="sourceDocumentationReference">
           <template #body="{ data }">
             <a
               v-if="
@@ -94,71 +93,58 @@
               :href="data.sourceDocumentationReference"
               target="_blank"
               rel="noopener"
+              class="table-link"
             >
-              Link
+              <i class="pi pi-external-link" />
             </a>
-            <span v-else>No link available</span>
+            <span v-else class="no-link">—</span>
           </template>
         </Column>
-        <Column sortable header="DB ETL Link" field="cdmEtlReference">
+        <Column header="ETL" field="cdmEtlReference">
           <template #body="{ data }">
             <a
               v-if="data.cdmEtlReference && data.cdmEtlReference !== 'None'"
               :href="data.cdmEtlReference"
               target="_blank"
               rel="noopener"
+              class="table-link"
             >
-              Link
+              <i class="pi pi-external-link" />
             </a>
-            <span v-else>No link available</span>
+            <span v-else class="no-link">—</span>
           </template>
         </Column>
-        <Column
-          sortable
-          header="Source Data Release Date"
-          field="sourceReleaseDate"
-        >
+        <Column sortable header="Source Release" field="sourceReleaseDate">
           <template #body="{ data }">{{
             formatDate(data.sourceReleaseDate)
           }}</template>
         </Column>
-        <Column sortable header="CDM DB Release Date" field="cdmReleaseDate">
+        <Column sortable header="CDM Release" field="cdmReleaseDate">
           <template #body="{ data }">{{
             formatDate(data.cdmReleaseDate)
           }}</template>
         </Column>
-        <Column sortable header="CDM Version" field="cdmVersion" />
-        <Column
-          sortable
-          header="Vocabulary Version"
-          field="vocabularyVersion"
-        />
+        <Column sortable header="CDM Ver." field="cdmVersion" />
+        <Column sortable header="Vocab Ver." field="vocabularyVersion" />
         <Column sortable header="DB ID" field="databaseId" />
-        <Column
-          sortable
-          header="Max Obs. Period End Date"
-          field="maxObsPeriodEndDate"
-        >
+        <Column sortable header="Max Obs. End" field="maxObsPeriodEndDate">
           <template #body="{ data }">{{
             formatDate(data.maxObsPeriodEndDate)
           }}</template>
         </Column>
       </DataTable>
     </div>
-  </Panel>
+  </div>
 </template>
 
 <script setup lang="ts">
-import Tooltip from "primevue/tooltip";
 import { ref, onMounted } from "vue";
-import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { useStore } from "vuex";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
-import Button from "primevue/button";
 
 const store = useStore();
 const data = ref([]);
@@ -194,4 +180,38 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.datasources {
+  max-width: 1400px;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+}
+
+.section-header h3 {
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-color, #1e293b);
+}
+
+.section {
+  background: var(--bg-surface-0, #ffffff);
+  border: 1px solid var(--bg-surface-300, #cbd5e1);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.table-link {
+  color: var(--primary-500, #3b82f6);
+  font-size: 0.8125rem;
+}
+
+.table-link:hover {
+  color: var(--primary-700, #1d4ed8);
+}
+
+.no-link {
+  color: var(--text-color-secondary, #cbd5e1);
+}
+</style>

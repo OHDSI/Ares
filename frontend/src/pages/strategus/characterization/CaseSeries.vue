@@ -1,70 +1,10 @@
 <template>
   <div class="case-series">
-    <Message :closable="false" severity="info">
-      <div class="flex flex-col gap-1">
-        <p>
-          View features that occur before target index, between target index and
-          outcome, and after outcome for patients with the outcome during the
-          time-at-risk.
-        </p>
-      </div>
-    </Message>
+    <div class="section">
+      <label class="field-label">Outcome</label>
+      <OutcomeSelector v-model="selectedOutcome" :options="outcomeOptions" />
 
-    <Panel header="Options" toggleable class="options-panel">
-      <label class="field-label">Select Outcome</label>
-      <DataTable
-        :value="outcomeOptions"
-        v-model:selection="selectedOutcome"
-        selectionMode="single"
-        dataKey="cohortId"
-        :paginator="outcomeOptions.length > 10"
-        :rows="10"
-        filterDisplay="row"
-        v-model:filters="outcomeFilters"
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        class="selector-table"
-      >
-        <Column selectionMode="single" headerStyle="width: 3rem" />
-        <Column
-          field="parentName"
-          header="Outcome"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortName"
-          header="Subset"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortId"
-          header="Cohort ID"
-          sortable
-          style="width: 100px"
-        />
-      </DataTable>
-
-      <div class="options-row mt-3">
+      <div class="controls-row">
         <div>
           <label class="field-label">Database</label>
           <Dropdown
@@ -93,254 +33,256 @@
             :disabled="!washoutOptions.length"
           />
         </div>
+        <div class="control-action">
+          <Button
+            :disabled="generateDisabled"
+            label="Generate"
+            @click="generate"
+          />
+        </div>
       </div>
+    </div>
 
-      <Button
-        :disabled="generateDisabled"
-        label="Generate"
-        :loading="loading"
-        @click="generate"
-        class="mt-3"
-      />
-    </Panel>
+    <ContextBar
+      v-if="showResults"
+      :items="[
+        targetName,
+        outcomeName,
+        selectedDatabaseName,
+        `TAR: ${selectedTar}`,
+        `Washout: ${selectedWashout}d`,
+      ]"
+    />
 
-    <Panel v-if="showResults" header="Selected" toggleable class="mt-3">
-      <div class="selected-summary">
-        <span><strong>Target:</strong> {{ targetName }}</span>
-        <span><strong>Outcome:</strong> {{ outcomeName }}</span>
-        <span><strong>Database:</strong> {{ selectedDatabaseName }}</span>
-        <span><strong>TAR:</strong> {{ selectedTar }}</span>
-        <span><strong>Washout:</strong> {{ selectedWashout }} days</span>
-      </div>
-    </Panel>
+    <p v-if="showResults && helpText" class="help-note">{{ helpText }}</p>
 
-    <Message v-if="showResults && helpText" :closable="false" severity="info">
-      <div class="flex flex-col gap-1">
-        <p>
-          {{ helpText }}
-        </p>
-      </div>
-    </Message>
-    <Panel class="mt-3" header="Results">
-      <TabView v-if="showResults" class="mt-3">
-        <TabPanel header="Binary Feature Table">
-          <DataTable
-            :value="binaryRows"
-            :paginator="true"
-            :rows="25"
-            :rowsPerPageOptions="[10, 25, 50, 100]"
-            filterDisplay="row"
-            v-model:filters="binaryTableFilters"
-            sortMode="multiple"
-            removableSort
-            :striped-rows="store.getters.getSettings.strippedRows"
-            size="small"
-            class="result-table"
-          >
-            <ColumnGroup type="header">
-              <Row>
-                <Column header="Covariate" :rowspan="2" />
-                <Column
-                  v-if="hasBinaryPhase('Before')"
-                  header="Pre-exposure"
-                  :colspan="2"
-                />
-                <Column
-                  v-if="hasBinaryPhase('During')"
-                  header="Between exposure &amp; outcome"
-                  :colspan="2"
-                />
-                <Column
-                  v-if="hasBinaryPhase('After')"
-                  header="Post-outcome"
-                  :colspan="2"
-                />
-              </Row>
-              <Row>
-                <template v-if="hasBinaryPhase('Before')"
-                  ><Column header="No." /><Column header="%"
-                /></template>
-                <template v-if="hasBinaryPhase('During')"
-                  ><Column header="No." /><Column header="%"
-                /></template>
-                <template v-if="hasBinaryPhase('After')"
-                  ><Column header="No." /><Column header="%"
-                /></template>
-              </Row>
-            </ColumnGroup>
+    <div v-if="showResults" class="section results-body">
+      <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
 
-            <Column
-              field="covariateName"
-              :showFilterMenu="false"
-              style="min-width: 300px"
+      <Transition name="tab-fade" mode="out-in"
+        ><div :key="activeResultTab">
+          <div v-if="activeResultTab === 0">
+            <DataTable
+              :value="binaryRows"
+              :paginator="true"
+              :rows="25"
+              :rowsPerPageOptions="[10, 25, 50, 100]"
+              filterDisplay="row"
+              v-model:filters="binaryTableFilters"
+              sortMode="multiple"
+              removableSort
+              :striped-rows="store.getters.getSettings.strippedRows"
+              size="small"
+              class="result-table"
             >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <template v-if="hasBinaryPhase('Before')">
-              <Column field="sumValue_Before"
-                ><template #body="{ data }">{{
-                  formatCensored(data.sumValue_Before)
-                }}</template></Column
-              >
-              <Column field="averageValue_Before" sortable
-                ><template #body="{ data }">{{
-                  formatPct(data.averageValue_Before)
-                }}</template></Column
-              >
-            </template>
-            <template v-if="hasBinaryPhase('During')">
-              <Column field="sumValue_During"
-                ><template #body="{ data }">{{
-                  formatCensored(data.sumValue_During)
-                }}</template></Column
-              >
-              <Column field="averageValue_During" sortable
-                ><template #body="{ data }">{{
-                  formatPct(data.averageValue_During)
-                }}</template></Column
-              >
-            </template>
-            <template v-if="hasBinaryPhase('After')">
-              <Column field="sumValue_After"
-                ><template #body="{ data }">{{
-                  formatCensored(data.sumValue_After)
-                }}</template></Column
-              >
-              <Column field="averageValue_After" sortable
-                ><template #body="{ data }">{{
-                  formatPct(data.averageValue_After)
-                }}</template></Column
-              >
-            </template>
-          </DataTable>
-        </TabPanel>
+              <ColumnGroup type="header">
+                <Row>
+                  <Column header="Covariate" :rowspan="2" />
+                  <Column
+                    v-if="hasBinaryPhase('Before')"
+                    header="Pre-exposure"
+                    :colspan="2"
+                  />
+                  <Column
+                    v-if="hasBinaryPhase('During')"
+                    header="Between exposure &amp; outcome"
+                    :colspan="2"
+                  />
+                  <Column
+                    v-if="hasBinaryPhase('After')"
+                    header="Post-outcome"
+                    :colspan="2"
+                  />
+                </Row>
+                <Row>
+                  <template v-if="hasBinaryPhase('Before')"
+                    ><Column header="No." /><Column header="%"
+                  /></template>
+                  <template v-if="hasBinaryPhase('During')"
+                    ><Column header="No." /><Column header="%"
+                  /></template>
+                  <template v-if="hasBinaryPhase('After')"
+                    ><Column header="No." /><Column header="%"
+                  /></template>
+                </Row>
+              </ColumnGroup>
 
-        <TabPanel header="Continuous Feature Table">
-          <DataTable
-            :value="continuousRows"
-            :paginator="true"
-            :rows="25"
-            :rowsPerPageOptions="[10, 25, 50, 100]"
-            filterDisplay="row"
-            v-model:filters="continuousTableFilters"
-            sortMode="multiple"
-            removableSort
-            stripedRows
-            size="small"
-            class="result-table"
-          >
-            <ColumnGroup type="header">
-              <Row>
-                <Column header="Covariate" :rowspan="2" />
-                <Column header="ID" :rowspan="2" />
-                <Column
-                  v-if="hasContinuousPhase('Before')"
-                  header="Pre-exposure"
-                  :colspan="6"
-                />
-                <Column
-                  v-if="hasContinuousPhase('During')"
-                  header="Between exposure &amp; outcome"
-                  :colspan="6"
-                />
-                <Column
-                  v-if="hasContinuousPhase('After')"
-                  header="Post-outcome"
-                  :colspan="6"
-                />
-              </Row>
-              <Row>
-                <template
-                  v-for="phase in presentContinuousPhases"
-                  :key="'ch-' + phase"
-                >
-                  <Column header="Count" />
-                  <Column header="Min" />
-                  <Column header="Max" />
-                  <Column header="Mean" />
-                  <Column header="StDev" />
-                  <Column header="Median" />
+              <Column
+                field="covariateName"
+                :showFilterMenu="false"
+                style="min-width: 300px"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
                 </template>
-              </Row>
-            </ColumnGroup>
-
-            <Column
-              field="covariateName"
-              :showFilterMenu="false"
-              style="min-width: 300px"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
+              </Column>
+              <template v-if="hasBinaryPhase('Before')">
+                <Column field="sumValue_Before"
+                  ><template #body="{ data }">{{
+                    formatCensored(data.sumValue_Before)
+                  }}</template></Column
+                >
+                <Column field="averageValue_Before" sortable
+                  ><template #body="{ data }">{{
+                    formatPct(data.averageValue_Before)
+                  }}</template></Column
+                >
               </template>
-            </Column>
-            <Column field="covariateId" />
-            <template
-              v-for="phase in presentContinuousPhases"
-              :key="'cc-' + phase"
+              <template v-if="hasBinaryPhase('During')">
+                <Column field="sumValue_During"
+                  ><template #body="{ data }">{{
+                    formatCensored(data.sumValue_During)
+                  }}</template></Column
+                >
+                <Column field="averageValue_During" sortable
+                  ><template #body="{ data }">{{
+                    formatPct(data.averageValue_During)
+                  }}</template></Column
+                >
+              </template>
+              <template v-if="hasBinaryPhase('After')">
+                <Column field="sumValue_After"
+                  ><template #body="{ data }">{{
+                    formatCensored(data.sumValue_After)
+                  }}</template></Column
+                >
+                <Column field="averageValue_After" sortable
+                  ><template #body="{ data }">{{
+                    formatPct(data.averageValue_After)
+                  }}</template></Column
+                >
+              </template>
+            </DataTable>
+          </div>
+
+          <div v-else-if="activeResultTab === 1">
+            <DataTable
+              :value="continuousRows"
+              :paginator="true"
+              :rows="25"
+              :rowsPerPageOptions="[10, 25, 50, 100]"
+              filterDisplay="row"
+              v-model:filters="continuousTableFilters"
+              sortMode="multiple"
+              removableSort
+              :striped-rows="store.getters.getSettings.strippedRows"
+              size="small"
+              class="result-table"
             >
-              <Column :field="'countValue_' + phase"
-                ><template #body="{ data }">{{
-                  formatCensored(data["countValue_" + phase])
-                }}</template></Column
+              <ColumnGroup type="header">
+                <Row>
+                  <Column header="Covariate" :rowspan="2" />
+                  <Column header="ID" :rowspan="2" />
+                  <Column
+                    v-if="hasContinuousPhase('Before')"
+                    header="Pre-exposure"
+                    :colspan="6"
+                  />
+                  <Column
+                    v-if="hasContinuousPhase('During')"
+                    header="Between exposure &amp; outcome"
+                    :colspan="6"
+                  />
+                  <Column
+                    v-if="hasContinuousPhase('After')"
+                    header="Post-outcome"
+                    :colspan="6"
+                  />
+                </Row>
+                <Row>
+                  <template
+                    v-for="phase in presentContinuousPhases"
+                    :key="'ch-' + phase"
+                  >
+                    <Column header="Count" /><Column header="Min" /><Column
+                      header="Max"
+                    />
+                    <Column header="Mean" /><Column header="StDev" /><Column
+                      header="Median"
+                    />
+                  </template>
+                </Row>
+              </ColumnGroup>
+
+              <Column
+                field="covariateName"
+                :showFilterMenu="false"
+                style="min-width: 300px"
               >
-              <Column :field="'minValue_' + phase"
-                ><template #body="{ data }">{{
-                  formatNum(data["minValue_" + phase])
-                }}</template></Column
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column field="covariateId" />
+              <template
+                v-for="phase in presentContinuousPhases"
+                :key="'cc-' + phase"
               >
-              <Column :field="'maxValue_' + phase"
-                ><template #body="{ data }">{{
-                  formatNum(data["maxValue_" + phase])
-                }}</template></Column
-              >
-              <Column :field="'averageValue_' + phase"
-                ><template #body="{ data }">{{
-                  formatNum(data["averageValue_" + phase])
-                }}</template></Column
-              >
-              <Column :field="'standardDeviation_' + phase"
-                ><template #body="{ data }">{{
-                  formatNum(data["standardDeviation_" + phase])
-                }}</template></Column
-              >
-              <Column :field="'medianValue_' + phase"
-                ><template #body="{ data }">{{
-                  formatNum(data["medianValue_" + phase])
-                }}</template></Column
-              >
-            </template>
-          </DataTable>
-        </TabPanel>
-      </TabView>
-      <p
-        v-else-if="(!selectedOutcome || !showResults) && !loading"
-        class="empty-hint"
+                <Column :field="'countValue_' + phase"
+                  ><template #body="{ data }">{{
+                    formatCensored(data["countValue_" + phase])
+                  }}</template></Column
+                >
+                <Column :field="'minValue_' + phase"
+                  ><template #body="{ data }">{{
+                    formatNum(data["minValue_" + phase])
+                  }}</template></Column
+                >
+                <Column :field="'maxValue_' + phase"
+                  ><template #body="{ data }">{{
+                    formatNum(data["maxValue_" + phase])
+                  }}</template></Column
+                >
+                <Column :field="'averageValue_' + phase"
+                  ><template #body="{ data }">{{
+                    formatNum(data["averageValue_" + phase])
+                  }}</template></Column
+                >
+                <Column :field="'standardDeviation_' + phase"
+                  ><template #body="{ data }">{{
+                    formatNum(data["standardDeviation_" + phase])
+                  }}</template></Column
+                >
+                <Column :field="'medianValue_' + phase"
+                  ><template #body="{ data }">{{
+                    formatNum(data["medianValue_" + phase])
+                  }}</template></Column
+                >
+              </template>
+            </DataTable>
+          </div>
+        </div></Transition
       >
-        Select an outcome, database, TAR, and washout above, then click Generate
-        to view risk factor results.
-      </p>
-    </Panel>
+    </div>
+
+    <div v-else-if="!loading" class="section empty-state">
+      Select an outcome, database, TAR, and washout, then click Generate.
+    </div>
+
+    <ResultsLoader :loader-state="loaderState" />
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
+<script setup lang="ts">
+import { ref, computed, watch, nextTick, onMounted, toRef } from "vue";
 
-import Panel from "primevue/panel";
-import TabView from "primevue/tabview";
-import TabPanel from "primevue/tabpanel";
+import ResultsLoader from "./shared/ResultsLoader.vue";
+import ViewToggle from "./shared/ViewToggle.vue";
+import OutcomeSelector from "./shared/OutcomeSelector.vue";
+import ContextBar from "./shared/ContextBar.vue";
+import { useAvailableDatabases } from "./shared/useAvailableDatabases";
+import { useTarWashout } from "./shared/useTarWashout";
+import { formatCensored, formatPct, formatNum } from "./shared/formatters";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
@@ -351,41 +293,40 @@ import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
-import Message from "primevue/message";
 import { useStore } from "vuex";
 
 const store = useStore();
 
 const props = defineProps({
-  targetRow: {
-    type: Object,
-  },
-  outcomeTable: {
-    type: Array,
-  },
+  targetRow: { type: Object },
+  outcomeTable: { type: Array },
+  initialUrlState: { type: Object, default: null },
 });
+
+const emit = defineEmits(["state-change"]);
 
 const loading = ref(false);
 const showResults = ref(false);
+const loaderState = ref("idle");
+const lastGeneratedConfig = ref(null);
+
+const activeResultTab = ref(0);
+const resultTabs = [
+  { key: "binary", label: "Binary Features" },
+  { key: "continuous", label: "Continuous Features" },
+];
 
 const selectedOutcome = ref(null);
 const selectedDatabase = ref(null);
 const selectedTar = ref(null);
 const selectedWashout = ref(null);
 
-const lastGeneratedConfig = ref(null);
-
 const binaryRows = ref([]);
 const continuousRows = ref([]);
 const helpText = ref(null);
-
 const binaryPhases = ref([]);
 const continuousPhases = ref([]);
 
-const outcomeFilters = ref({
-  parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  cohortName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 const binaryTableFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -402,34 +343,9 @@ const selectedDatabaseName = computed(
       ?.name ?? ""
 );
 
-const availableDatabases = computed(() => {
-  if (!props.targetRow) return [];
-  const names = props.targetRow.databaseString.split(", ");
-  const ids = props.targetRow.databaseIdString.split(", ");
-  return names.map((name, i) => ({ name, id: ids[i] }));
-});
-
-const tarOptions = computed(() => {
-  const o = selectedOutcome.value;
-  if (!o?.tarNames) return [];
-  return o.tarNames.split(":");
-});
-
-const tarValues = computed(() => {
-  const o = selectedOutcome.value;
-  if (!o?.tarStrings) return [];
-  return o.tarStrings.split(":").map((s) => {
-    const [riskWindowStart, startAnchor, riskWindowEnd, endAnchor] =
-      s.split("/");
-    return { riskWindowStart, startAnchor, riskWindowEnd, endAnchor };
-  });
-});
-
-const washoutOptions = computed(() => {
-  const o = selectedOutcome.value;
-  if (!o?.outcomeWashoutDays) return [];
-  return o.outcomeWashoutDays.split(":");
-});
+const availableDatabases = useAvailableDatabases(toRef(props, "targetRow"));
+const { tarOptions, tarValues, washoutOptions } =
+  useTarWashout(selectedOutcome);
 
 function hasBinaryPhase(phase) {
   return binaryPhases.value.includes(phase);
@@ -457,19 +373,6 @@ watch(
     showResults.value = false;
   }
 );
-
-function formatCensored(val) {
-  if (val == null) return "< min threshold";
-  return val >= 0 ? val : `< ${Math.abs(val)}`;
-}
-function formatPct(val) {
-  if (val == null) return "";
-  return `${(val * 100).toFixed(2)}%`;
-}
-function formatNum(val) {
-  if (val == null) return "";
-  return typeof val === "number" ? val.toFixed(2) : val;
-}
 
 async function fetchBinaryCaseSeries(targetId, outcomeId, databaseId, tar) {
   const res = await StrategusService.characterization.getBinaryCaseSeries({
@@ -579,7 +482,10 @@ async function generate() {
     return;
   }
 
+  showResults.value = false;
   loading.value = true;
+  loaderState.value = "loading";
+  const loadStart = Date.now();
   try {
     const targetId = props.targetRow.cohortId;
     const outcomeId = selectedOutcome.value.cohortId;
@@ -589,6 +495,7 @@ async function generate() {
 
     if (!tar || !tar.startAnchor) {
       showResults.value = false;
+      loaderState.value = "idle";
       return;
     }
 
@@ -622,33 +529,48 @@ async function generate() {
     continuousPhases.value = detectPhases(continuousRows.value, "countValue");
 
     const N = counts[0]?.personCount ?? "?";
-    helpText.value = `A summary of what the ${N} cases had ${
+    helpText.value = `Summary of ${N} cases: ${
       preDur ?? "?"
-    } days before target index and up to target index (pre-exposure), after target index and before outcome index (between exposure and outcome), and from outcome index up to ${
+    }d before target index (pre-exposure), between target and outcome (during), and ${
       postDur ?? "?"
-    } days after outcome index (post-outcome). Cases are patients in the target cohort for the first time, with a minimum of ${
+    }d after outcome (post-outcome). Min ${
       minObs ?? "?"
-    } days observation prior to target index and who had the outcome recorded during the time-at-risk period.`;
+    }d prior observation required.`;
 
+    if (Date.now() - loadStart >= 600) {
+      loaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    loaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
     showResults.value = true;
-
     lastGeneratedConfig.value = {
       selectedDatabaseName: selectedDatabaseName.value,
       selectedOutcome: selectedOutcome?.value?.cohortId,
       selectedTar: selectedTar.value,
       selectedWashout: selectedWashout.value,
     };
+    emit("state-change", {
+      outcomeId: selectedOutcome.value.cohortId,
+      databaseId: selectedDatabase.value,
+      tar: selectedTar.value,
+      washout: selectedWashout.value,
+    });
+  } catch {
+    loaderState.value = "error";
   } finally {
     loading.value = false;
   }
 }
 
 const generateDisabled = computed(() => {
-  if (!selectedTar.value) return true;
-  if (!selectedDatabaseName.value) return true;
-  if (!selectedOutcome.value) return true;
-  if (!selectedWashout.value) return true;
-
+  if (
+    !selectedTar.value ||
+    !selectedDatabaseName.value ||
+    !selectedOutcome.value ||
+    !selectedWashout.value
+  )
+    return true;
   if (!lastGeneratedConfig.value) return false;
   return (
     selectedDatabaseName.value ===
@@ -659,56 +581,63 @@ const generateDisabled = computed(() => {
     selectedWashout.value === lastGeneratedConfig.value.selectedWashout
   );
 });
+
+onMounted(async () => {
+  const url = props.initialUrlState;
+  if (url?.outcomeId && outcomeOptions.value.length) {
+    const match = outcomeOptions.value.find(
+      (o) => o.cohortId === url.outcomeId
+    );
+    if (match) selectedOutcome.value = match;
+  }
+  if (
+    url?.databaseId &&
+    availableDatabases.value.some((d) => d.id === url.databaseId)
+  ) {
+    selectedDatabase.value = url.databaseId;
+  }
+  await nextTick();
+  if (url?.tar && tarOptions.value.includes(url.tar))
+    selectedTar.value = url.tar;
+  if (url?.washout && washoutOptions.value.includes(url.washout))
+    selectedWashout.value = url.washout;
+  await nextTick();
+  if (
+    selectedOutcome.value &&
+    selectedDatabase.value &&
+    selectedTar.value &&
+    selectedWashout.value
+  ) {
+    await generate();
+  }
+});
 </script>
 
 <style scoped>
+@import "./shared/styles.css";
+
 .case-series {
-  padding: 1rem;
-}
-.help-text {
-  color: var(--text-color-secondary, #6b7280);
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
-}
-.field-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.375rem;
-  font-size: 0.875rem;
-}
-.options-panel {
-  margin-top: 0.75rem;
-}
-.selector-table {
-  margin-bottom: 1rem;
-  font-size: 0.8125rem;
-}
-.options-row {
   display: flex;
-  gap: 1.5rem;
-  align-items: start;
-  flex-wrap: wrap;
-}
-.options-row > div {
-  min-width: 180px;
-}
-.selected-summary {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  font-size: 0.875rem;
-}
-.result-table {
-  font-size: 0.8125rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.w-full {
-  width: 100%;
+.controls-row {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
 }
 
-.empty-hint {
-  text-align: center;
-  color: #999;
-  padding: 2rem 0;
+.controls-row > div {
+  min-width: 160px;
+}
+
+.help-note {
+  font-size: 0.8125rem;
+  color: var(--text-color-secondary, #64748b);
+  padding: 0 0.25rem;
+  margin: 0;
+  line-height: 1.4;
 }
 </style>

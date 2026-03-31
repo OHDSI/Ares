@@ -45,14 +45,14 @@ export const routes: RouteRecordRaw[] = [
   },
 
   {
-    path: "/strategus",
+    path: "/characterization",
     components: { main: ReportsView },
-    redirect: { name: "strategus" },
+    redirect: { name: "characterization" },
     meta: { showModules: true },
     children: [
       {
-        path: "strategus",
-        name: "strategus",
+        path: "characterization",
+        name: "characterization",
         components: { reportsView: Strategus },
       },
       // { path: "/home", name: "home", components: { reportsView: Home } },

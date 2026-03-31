@@ -1,70 +1,13 @@
 <template>
   <div class="cohort-comparison">
-    <Message :closable="false" severity="info">
-      <div class="flex flex-col gap-1">
-        <p>
-          Compare covariates at index between two cohorts within the same
-          database.
-        </p>
-      </div>
-    </Message>
+    <div class="section">
+      <label class="field-label">Comparator</label>
+      <OutcomeSelector
+        v-model="selectedComparator"
+        :options="comparatorOptions"
+      />
 
-    <Panel header="Options" toggleable class="options-panel">
-      <label class="field-label">Select Comparator</label>
-      <DataTable
-        :value="comparatorOptions"
-        v-model:selection="selectedComparator"
-        selectionMode="single"
-        dataKey="cohortId"
-        :paginator="comparatorOptions.length > 10"
-        :rows="10"
-        filterDisplay="row"
-        v-model:filters="comparatorFilters"
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        class="comparator-table"
-      >
-        <Column selectionMode="single" headerStyle="width: 3rem" />
-
-        <Column
-          field="parentName"
-          header="Comparator"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortName"
-          header="Subset"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortId"
-          header="Cohort ID"
-          sortable
-          style="width: 100px"
-        />
-      </DataTable>
-
-      <div class="options-row mt-3">
+      <div class="controls-row">
         <div>
           <label class="field-label">Database</label>
           <Dropdown
@@ -76,271 +19,289 @@
             class="w-full"
           />
         </div>
-        <div class="generate-btn">
+        <div class="control-action">
           <Button
             :disabled="generateDisabled"
             label="Generate"
-            :loading="loading"
             @click="generate"
           />
         </div>
       </div>
-    </Panel>
+    </div>
 
-    <Panel v-if="showResults" header="Selected" toggleable class="mt-3">
-      <div class="selected-summary">
-        <span><strong>Target:</strong> {{ targetName }}</span>
-        <span><strong>Comparator:</strong> {{ comparatorName }}</span>
-        <span><strong>Database:</strong> {{ selectedDatabaseName }}</span>
-      </div>
-    </Panel>
+    <ContextBar
+      v-if="showResults"
+      :items="[targetName, `vs ${comparatorName}`, selectedDatabaseName]"
+    />
 
-    <Panel class="mt-3" header="Results">
-      <TabView v-if="showResults" class="mt-3">
-        <TabPanel header="Binary Table">
-          <p class="help-text" v-if="covRef.length">
-            This analysis shows the fraction of patients in the cohorts
-            (restricted to first index date and requiring
-            {{ covRef[0]?.minPriorObservation }} days observation prior to
-            index) with a history of each binary feature across databases.
-          </p>
-          <DataTable
-            :value="filteredBinaryRows"
-            :paginator="true"
-            :rows="25"
-            :rowsPerPageOptions="[10, 25, 50, 100]"
-            filterDisplay="row"
-            v-model:filters="binaryFilters"
-            sortMode="multiple"
-            removableSort
-            stripedRows
-            size="small"
-            class="result-table"
-          >
-            <ColumnGroup type="header">
-              <Row>
-                <Column header="Covariate" :rowspan="2" />
-                <Column header="ID" :rowspan="2" />
-                <Column
-                  v-for="ref in covRef"
-                  :key="'bhdr-' + ref.id"
-                  :header="columnGroupLabel(ref)"
-                  :colspan="2"
-                />
-                <Column v-if="covRef.length === 2" header="SMD" :rowspan="2" />
-                <Column
-                  v-if="covRef.length === 2"
-                  header="|SMD|"
-                  :rowspan="2"
-                />
-              </Row>
-              <Row>
-                <template v-for="ref in covRef" :key="'bsub-' + ref.id">
-                  <Column header="Count" />
-                  <Column header="%" />
-                </template>
-              </Row>
-            </ColumnGroup>
+    <div v-if="showResults" class="section results-body">
+      <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
 
-            <Column field="covariateName" :showFilterMenu="false">
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column field="covariateId" />
-            <template v-for="ref in covRef" :key="'bcol-' + ref.id">
-              <Column :field="'sumValue_' + ref.id">
-                <template #body="{ data }">{{
-                  formatCount(data["sumValue_" + ref.id])
-                }}</template>
-              </Column>
-              <Column :field="'averageValue_' + ref.id" sortable>
-                <template #body="{ data }">{{
-                  formatPercent(data["averageValue_" + ref.id])
-                }}</template>
-              </Column>
-            </template>
-            <Column v-if="covRef.length === 2" field="SMD" sortable>
-              <template #body="{ data }">{{ formatSmd(data.SMD) }}</template>
-            </Column>
-            <Column
-              v-if="covRef.length === 2"
-              field="absSMD"
-              sortable
-              :showFilterMenu="false"
+      <Transition name="tab-fade" mode="out-in"
+        ><div :key="activeResultTab">
+          <div v-if="activeResultTab === 0">
+            <p class="table-note" v-if="covRef.length">
+              Fraction of patients ({{ covRef[0]?.minPriorObservation }}d prior
+              obs.) with each binary feature.
+            </p>
+            <DataTable
+              :value="filteredBinaryRows"
+              :paginator="true"
+              :rows="25"
+              :rowsPerPageOptions="[10, 25, 50, 100]"
+              filterDisplay="row"
+              v-model:filters="binaryFilters"
+              sortMode="multiple"
+              removableSort
+              :striped-rows="store.getters.getSettings.strippedRows"
+              size="small"
+              class="result-table"
             >
-              <template #body="{ data }">{{ formatSmd(data.absSMD) }}</template>
-              <template #filter="{}">
-                <div class="smd-filter">
-                  <Slider
-                    v-model="binaryAbsSmdMin"
-                    :min="0"
-                    :max="smdMax"
-                    :step="0.01"
-                    class="smd-slider"
+              <ColumnGroup type="header">
+                <Row>
+                  <Column header="Covariate" :rowspan="2" />
+                  <Column header="ID" :rowspan="2" />
+                  <Column
+                    v-for="ref in covRef"
+                    :key="'bhdr-' + ref.id"
+                    :header="columnGroupLabel(ref)"
+                    :colspan="2"
                   />
-                  <span class="smd-val"
-                    >≥ {{ binaryAbsSmdMin.toFixed(2) }}</span
-                  >
-                </div>
-              </template>
-            </Column>
-          </DataTable>
-        </TabPanel>
 
-        <TabPanel header="Binary Plot">
-          <p class="help-text">
-            Compare binary features between target and comparator cohorts.
-          </p>
-          <div v-if="covRef.length === 2" class="scatter-container">
-            <div ref="scatterEl" class="scatter-chart"></div>
+                  <Column
+                    v-if="covRef.length === 2"
+                    header="SMD"
+                    :rowspan="2"
+                    sortField="SMD"
+                    sortable
+                  />
+                  <Column
+                    v-if="covRef.length === 2"
+                    header="|SMD|"
+                    :rowspan="2"
+                    sortField="absSMD"
+                    sortable
+                  />
+                </Row>
+                <Row>
+                  <template v-for="ref in covRef" :key="'bsub-' + ref.id">
+                    <Column header="Count" />
+                    <Column header="%" />
+                  </template>
+                </Row>
+              </ColumnGroup>
+
+              <Column field="covariateName" :showFilterMenu="false">
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column field="covariateId" />
+              <template v-for="ref in covRef" :key="'bcol-' + ref.id">
+                <Column :field="'sumValue_' + ref.id">
+                  <template #body="{ data }">{{
+                    formatCount(data["sumValue_" + ref.id])
+                  }}</template>
+                </Column>
+                <Column :field="'averageValue_' + ref.id" sortable>
+                  <template #body="{ data }">{{
+                    formatPercent(data["averageValue_" + ref.id])
+                  }}</template>
+                </Column>
+              </template>
+              <Column v-if="covRef.length === 2" field="SMD" sortable>
+                <template #body="{ data }">{{ formatSmd(data.SMD) }}</template>
+              </Column>
+              <Column
+                v-if="covRef.length === 2"
+                field="absSMD"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #body="{ data }">{{
+                  formatSmd(data.absSMD)
+                }}</template>
+                <template #filter="{}">
+                  <div class="smd-filter">
+                    <Slider
+                      v-model="binaryAbsSmdMin"
+                      :min="0"
+                      :max="smdMax"
+                      :step="0.01"
+                      class="smd-slider"
+                    />
+                    <span class="smd-val"
+                      >≥ {{ binaryAbsSmdMin.toFixed(2) }}</span
+                    >
+                  </div>
+                </template>
+              </Column>
+            </DataTable>
           </div>
-          <p v-else class="help-text">
-            Need exactly 2 cohorts with data to plot.
-          </p>
-        </TabPanel>
-
-        <TabPanel header="Continuous">
-          <p class="help-text" v-if="covRef.length">
-            This analysis shows continuous feature distributions in the cohorts
-            (restricted to first index date and requiring
-            {{ covRef[0]?.minPriorObservation }} days observation prior to
-            index) across databases.
-          </p>
-          <DataTable
-            :value="filteredContinuousRows"
-            :paginator="true"
-            :rows="25"
-            :rowsPerPageOptions="[10, 25, 50, 100]"
-            filterDisplay="row"
-            v-model:filters="continuousFilters"
-            sortMode="multiple"
-            removableSort
-            stripedRows
-            size="small"
-            class="result-table"
-          >
-            <ColumnGroup type="header">
-              <Row>
-                <Column header="Covariate" :rowspan="2" />
-                <Column header="ID" :rowspan="2" />
-                <Column
-                  v-for="ref in covRef"
-                  :key="'chdr-' + ref.id"
-                  :header="columnGroupLabel(ref)"
-                  :colspan="6"
-                />
-                <Column v-if="covRef.length === 2" header="SMD" :rowspan="2" />
-                <Column
-                  v-if="covRef.length === 2"
-                  header="|SMD|"
-                  :rowspan="2"
-                />
-              </Row>
-              <Row>
-                <template v-for="ref in covRef" :key="'csub-' + ref.id">
-                  <Column header="Count" />
-                  <Column header="Mean" />
-                  <Column header="StDev" />
-                  <Column header="Median" />
-                  <Column header="Min" />
-                  <Column header="Max" />
-                </template>
-              </Row>
-            </ColumnGroup>
-
-            <Column field="covariateName" :showFilterMenu="false">
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column field="covariateId" />
-            <template v-for="ref in covRef" :key="'ccol-' + ref.id">
-              <Column :field="'countValue_' + ref.id">
-                <template #body="{ data }">{{
-                  formatCount(data["countValue_" + ref.id])
-                }}</template>
-              </Column>
-              <Column :field="'averageValue_' + ref.id">
-                <template #body="{ data }">{{
-                  formatNum(data["averageValue_" + ref.id])
-                }}</template>
-              </Column>
-              <Column :field="'standardDeviation_' + ref.id">
-                <template #body="{ data }">{{
-                  formatNum(data["standardDeviation_" + ref.id])
-                }}</template>
-              </Column>
-              <Column :field="'medianValue_' + ref.id">
-                <template #body="{ data }">{{
-                  formatNum(data["medianValue_" + ref.id])
-                }}</template>
-              </Column>
-              <Column :field="'minValue_' + ref.id">
-                <template #body="{ data }">{{
-                  formatNum(data["minValue_" + ref.id])
-                }}</template>
-              </Column>
-              <Column :field="'maxValue_' + ref.id">
-                <template #body="{ data }">{{
-                  formatNum(data["maxValue_" + ref.id])
-                }}</template>
-              </Column>
-            </template>
-            <Column v-if="covRef.length === 2" field="SMD" sortable>
-              <template #body="{ data }">{{ formatSmd(data.SMD) }}</template>
-            </Column>
-            <Column
-              v-if="covRef.length === 2"
-              field="absSMD"
-              sortable
-              :showFilterMenu="false"
+          <div v-if="activeResultTab === 1">
+            <div v-if="covRef.length === 2" class="scatter-container">
+              <div ref="scatterEl" class="scatter-chart"></div>
+            </div>
+            <p v-else class="table-note">
+              Need exactly 2 cohorts with data to plot.
+            </p>
+          </div>
+          <div v-if="activeResultTab === 2">
+            <p class="table-note" v-if="covRef.length">
+              Continuous feature distributions ({{
+                covRef[0]?.minPriorObservation
+              }}d prior obs.) across cohorts.
+            </p>
+            <DataTable
+              :value="filteredContinuousRows"
+              :paginator="true"
+              :rows="25"
+              :rowsPerPageOptions="[10, 25, 50, 100]"
+              filterDisplay="row"
+              v-model:filters="continuousFilters"
+              sortMode="multiple"
+              removableSort
+              :striped-rows="store.getters.getSettings.strippedRows"
+              size="small"
+              class="result-table"
             >
-              <template #body="{ data }">{{ formatSmd(data.absSMD) }}</template>
-              <template #filter="{}">
-                <div class="smd-filter">
-                  <Slider
-                    v-model="continuousAbsSmdMin"
-                    :min="0"
-                    :max="smdMax"
-                    :step="0.01"
-                    class="smd-slider"
+              <ColumnGroup type="header">
+                <Row>
+                  <Column header="Covariate" :rowspan="2" />
+                  <Column header="ID" :rowspan="2" />
+                  <Column
+                    v-for="ref in covRef"
+                    :key="'chdr-' + ref.id"
+                    :header="columnGroupLabel(ref)"
+                    :colspan="6"
                   />
-                  <span class="smd-val"
-                    >≥ {{ continuousAbsSmdMin.toFixed(2) }}</span
-                  >
-                </div>
+                  <Column
+                    v-if="covRef.length === 2"
+                    header="SMD"
+                    :rowspan="2"
+                    sortField="SMD"
+                    sortable
+                  />
+                  <Column
+                    v-if="covRef.length === 2"
+                    header="|SMD|"
+                    :rowspan="2"
+                    sortField="absSMD"
+                    sortable
+                  />
+                </Row>
+                <Row>
+                  <template v-for="ref in covRef" :key="'csub-' + ref.id">
+                    <Column header="Count" />
+                    <Column header="Mean" />
+                    <Column header="StDev" />
+                    <Column header="Median" />
+                    <Column header="Min" />
+                    <Column header="Max" />
+                  </template>
+                </Row>
+              </ColumnGroup>
+
+              <Column field="covariateName" :showFilterMenu="false">
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column field="covariateId" />
+              <template v-for="ref in covRef" :key="'ccol-' + ref.id">
+                <Column :field="'countValue_' + ref.id">
+                  <template #body="{ data }">{{
+                    formatCount(data["countValue_" + ref.id])
+                  }}</template>
+                </Column>
+                <Column :field="'averageValue_' + ref.id">
+                  <template #body="{ data }">{{
+                    formatNum(data["averageValue_" + ref.id])
+                  }}</template>
+                </Column>
+                <Column :field="'standardDeviation_' + ref.id">
+                  <template #body="{ data }">{{
+                    formatNum(data["standardDeviation_" + ref.id])
+                  }}</template>
+                </Column>
+                <Column :field="'medianValue_' + ref.id">
+                  <template #body="{ data }">{{
+                    formatNum(data["medianValue_" + ref.id])
+                  }}</template>
+                </Column>
+                <Column :field="'minValue_' + ref.id">
+                  <template #body="{ data }">{{
+                    formatNum(data["minValue_" + ref.id])
+                  }}</template>
+                </Column>
+                <Column :field="'maxValue_' + ref.id">
+                  <template #body="{ data }">{{
+                    formatNum(data["maxValue_" + ref.id])
+                  }}</template>
+                </Column>
               </template>
-            </Column>
-          </DataTable>
-        </TabPanel>
-      </TabView>
-      <p
-        v-else-if="(!selectedComparator || !showResults) && !loading"
-        class="empty-hint"
+              <Column v-if="covRef.length === 2" field="SMD" sortable>
+                <template #body="{ data }">{{ formatSmd(data.SMD) }}</template>
+              </Column>
+              <Column
+                v-if="covRef.length === 2"
+                field="absSMD"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #body="{ data }">{{
+                  formatSmd(data.absSMD)
+                }}</template>
+                <template #filter="{}">
+                  <div class="smd-filter">
+                    <Slider
+                      v-model="continuousAbsSmdMin"
+                      :min="0"
+                      :max="smdMax"
+                      :step="0.01"
+                      class="smd-slider"
+                    />
+                    <span class="smd-val"
+                      >≥ {{ continuousAbsSmdMin.toFixed(2) }}</span
+                    >
+                  </div>
+                </template>
+              </Column>
+            </DataTable>
+          </div>
+        </div></Transition
       >
-        Select a comparator, database, then click Generate to view risk factor
-        results.
-      </p>
-    </Panel>
+    </div>
+
+    <div v-else-if="!loading" class="section empty-state">
+      Select a comparator and database, then click Generate.
+    </div>
+
+    <ResultsLoader :loader-state="loaderState" />
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch, nextTick } from "vue";
+<script setup lang="ts">
+import { ref, computed, watch, nextTick, onMounted, toRef } from "vue";
 import * as echarts from "echarts";
 
-import Panel from "primevue/panel";
+import ResultsLoader from "./shared/ResultsLoader.vue";
+import ViewToggle from "./shared/ViewToggle.vue";
+import OutcomeSelector from "./shared/OutcomeSelector.vue";
+import ContextBar from "./shared/ContextBar.vue";
+import { useAvailableDatabases } from "./shared/useAvailableDatabases";
+import { formatPercent, formatCount, formatSmd } from "./shared/formatters";
+import { classifyDomain, domainColors } from "./shared/domainColors";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import DataTable from "primevue/datatable";
@@ -354,24 +315,29 @@ import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
-import Message from "primevue/message";
 import { useStore } from "vuex";
 
 const store = useStore();
 
 const props = defineProps({
-  targetRow: {
-    type: Object,
-  },
-  targetTable: {
-    type: Array,
-  },
+  targetRow: { type: Object },
+  targetTable: { type: Array },
+  initialUrlState: { type: Object, default: null },
 });
+
+const emit = defineEmits(["state-change"]);
 
 const loading = ref(false);
 const showResults = ref(false);
-
+const loaderState = ref("idle");
 const lastGeneratedConfig = ref(null);
+
+const activeResultTab = ref(0);
+const resultTabs = [
+  { key: "binary", label: "Binary Table" },
+  { key: "plot", label: "Binary Plot" },
+  { key: "continuous", label: "Continuous Table" },
+];
 
 const selectedComparator = ref(null);
 const selectedDatabase = ref(null);
@@ -401,10 +367,6 @@ const filteredContinuousRows = computed(() => {
 const scatterEl = ref(null);
 let chartInstance = null;
 
-const comparatorFilters = ref({
-  parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  cohortName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 const binaryFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -412,12 +374,7 @@ const continuousFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const availableDatabases = computed(() => {
-  if (!props.targetRow) return [];
-  const names = props.targetRow.databaseString.split(", ");
-  const ids = props.targetRow.databaseIdString.split(", ");
-  return names.map((name, i) => ({ name, id: ids[i] }));
-});
+const availableDatabases = useAvailableDatabases(toRef(props, "targetRow"));
 
 const comparatorOptions = computed(() =>
   (props.targetTable ?? []).filter(
@@ -452,21 +409,15 @@ watch(
   }
 );
 
-function formatPercent(val) {
-  if (val == null) return "";
-  return val >= 0 ? `${(val * 100).toFixed(3)} %` : "< min threshold";
-}
-function formatCount(val) {
-  if (val == null) return "";
-  return val >= 0 ? val : "< min threshold";
-}
+watch(activeResultTab, () => {
+  if (activeResultTab.value === 1) {
+    renderScatterPlot();
+  }
+});
+
 function formatNum(val) {
   if (val == null) return "";
   return val >= 0 ? val.toFixed(3) : `< ${Math.abs(val).toFixed(3)}`;
-}
-function formatSmd(val) {
-  if (val == null) return "";
-  return val.toFixed(3);
 }
 
 async function fetchBinaryData(targetIds, databaseId) {
@@ -495,7 +446,10 @@ async function generate() {
     return;
   }
 
+  showResults.value = false;
   loading.value = true;
+  loaderState.value = "loading";
+  const loadStart = Date.now();
   try {
     const targetIds = [
       props.targetRow.cohortId,
@@ -505,12 +459,9 @@ async function generate() {
 
     const binaryResult = await fetchBinaryData(targetIds, dbId);
 
-    if (!binaryResult.covRef?.length) {
+    if (!binaryResult.covRef?.length || binaryResult.covRef.length < 2) {
       showResults.value = false;
-      return;
-    }
-    if (binaryResult.covRef.length < 2) {
-      showResults.value = false;
+      loaderState.value = "idle";
       return;
     }
 
@@ -520,7 +471,18 @@ async function generate() {
     const continuousResult = await fetchContinuousData(targetIds, dbId);
     continuousRows.value = continuousResult.covariates ?? [];
 
+    if (Date.now() - loadStart >= 600) {
+      loaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    loaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
     showResults.value = true;
+
+    emit("state-change", {
+      comparatorId: selectedComparator.value.cohortId,
+      databaseId: selectedDatabase.value,
+    });
 
     binaryAbsSmdMin.value = 0;
     continuousAbsSmdMin.value = 0;
@@ -531,42 +493,15 @@ async function generate() {
       database: selectedDatabaseName.value,
       comparator: comparatorName.value,
     };
+  } catch {
+    loaderState.value = "error";
   } finally {
     loading.value = false;
   }
 }
 
-function classifyDomain(name) {
-  const lower = name?.toLowerCase() ?? "";
-  const first = lower.split(/\s/)[0];
-  if (lower.includes("condition_") || first === "condition") return "Condition";
-  if (lower.includes("drug_") || first === "drug") return "Drug";
-  if (lower.includes("procedure_") || first === "procedure") return "Procedure";
-  if (lower.includes("measurement_") || first === "measurement")
-    return "Measurement";
-  if (lower.includes("observation_") || first === "observation")
-    return "Observation";
-  if (lower.includes("device_") || first === "device") return "Device";
-  if (lower.includes("cohort_") || first === "cohort") return "Cohort";
-  if (lower.includes("visit_") || first === "visit") return "Visit";
-  return "Demographic";
-}
-
-const domainColors = {
-  Condition: "#4e79a7",
-  Drug: "#f28e2b",
-  Procedure: "#e15759",
-  Measurement: "#76b7b2",
-  Observation: "#59a14f",
-  Device: "#edc948",
-  Cohort: "#b07aa1",
-  Visit: "#ff9da7",
-  Demographic: "#9c755f",
-};
-
 async function renderScatterPlot() {
   if (covRef.value.length < 2) return;
-
   await nextTick();
   if (!scatterEl.value) return;
 
@@ -606,7 +541,7 @@ async function renderScatterPlot() {
     title: {
       text: `Database: ${selectedDatabaseName.value}`,
       left: "center",
-      textStyle: { fontSize: 16 },
+      textStyle: { fontSize: 14 },
     },
     legend: {
       right: 0,
@@ -650,84 +585,80 @@ async function renderScatterPlot() {
 const generateDisabled = computed(() => {
   if (!selectedComparator.value) return true;
   if (!selectedDatabaseName.value) return true;
-
   if (!lastGeneratedConfig.value) return false;
   return (
     comparatorName.value === lastGeneratedConfig.value.comparator &&
     selectedDatabaseName.value === lastGeneratedConfig.value.database
   );
 });
+
+onMounted(async () => {
+  const url = props.initialUrlState;
+  await nextTick();
+
+  if (
+    url?.databaseId &&
+    availableDatabases.value.some((d) => d.id === url.databaseId)
+  ) {
+    selectedDatabase.value = url.databaseId;
+  }
+
+  if (url?.comparatorId && comparatorOptions.value.length) {
+    const match = comparatorOptions.value.find(
+      (c) => c.cohortId === url.comparatorId
+    );
+    if (match) selectedComparator.value = match;
+  }
+
+  if (selectedDatabase.value && selectedComparator.value) {
+    await generate();
+  }
+});
 </script>
 
 <style scoped>
+@import "./shared/styles.css";
+
 .cohort-comparison {
-  padding: 1rem;
-}
-.help-text {
-  color: var(--text-color-secondary, #6b7280);
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
-}
-.field-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.375rem;
-  font-size: 0.875rem;
-}
-.options-panel {
-  margin-top: 0.75rem;
-}
-.comparator-table {
-  margin-bottom: 1rem;
-  font-size: 0.8125rem;
-}
-.options-row {
   display: flex;
-  gap: 1.5rem;
-  align-items: end;
+  flex-direction: column;
+  gap: 0.75rem;
 }
-.options-row > div:first-child {
+
+.controls-row {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-end;
+}
+
+.controls-row > div:first-child {
   min-width: 250px;
 }
-.selected-summary {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  font-size: 0.875rem;
-}
-.result-table {
-  font-size: 0.8125rem;
-}
+
 .scatter-container {
   max-width: 700px;
-  margin-top: 0.75rem;
 }
+
 .scatter-chart {
   width: 100%;
   height: 500px;
 }
+
 .smd-filter {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   min-width: 120px;
 }
+
 .smd-slider {
   flex: 1;
   min-width: 70px;
 }
+
 .smd-val {
   font-size: 0.75rem;
   white-space: nowrap;
   color: var(--text-color-secondary, #6b7280);
-}
-.w-full {
-  width: 100%;
-}
-
-.empty-hint {
-  text-align: center;
-  color: #999;
-  padding: 2rem 0;
 }
 </style>

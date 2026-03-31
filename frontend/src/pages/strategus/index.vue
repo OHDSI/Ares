@@ -1,37 +1,180 @@
 <template>
-  <TabView @update:activeIndex="setCurrentTab" :active-index="getCurrentTab">
-    <TabPanel header="Data Sources"> <DataSources /> </TabPanel>
-    <TabPanel header="Characterization"> <Characterization /> </TabPanel>
-  </TabView>
+  <div class="strategus-layout">
+    <aside
+      class="strategus-sidebar"
+      @mouseenter="sidebarOpen = true"
+      @mouseleave="sidebarOpen = false"
+    >
+      <nav class="sidebar-nav">
+        <button
+          v-for="(section, idx) in sections"
+          :key="section.key"
+          :class="['nav-item', { active: currentSection === idx }]"
+          @click="setCurrentTab(idx)"
+          v-tooltip.right="{
+            value: section.label,
+            disabled: sidebarOpen,
+            pt: {
+              root: '',
+              arrow: {
+                style: {
+                  borderRightColor: 'var(--surface-800)',
+                },
+              },
+              text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black text-xs font-normal p-2',
+            },
+          }"
+        >
+          <i :class="section.icon" />
+          <span class="nav-label">{{ section.label }}</span>
+        </button>
+      </nav>
+    </aside>
+
+    <main class="strategus-content">
+      <Transition name="section-fade" mode="out-in">
+        <component
+          :is="sections[currentSection].component"
+          :key="currentSection"
+        />
+      </Transition>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, markRaw } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import TabView from "primevue/tabview";
-import TabPanel from "primevue/tabpanel";
-
-import About from "@/pages/strategus/About.vue";
 import DataSources from "@/pages/strategus/DataSources.vue";
 import Characterization from "@/pages/strategus/characterization/Characterization.vue";
-import PatientPrediction from "@/pages/strategus/PatientPrediction.vue";
 
 const router = useRouter();
 const route = useRoute();
+const sidebarOpen = ref(false);
 
-const getCurrentTab = computed(() => {
-  return parseInt(route.query.tab) || 0;
+const sections = [
+  {
+    key: "datasources",
+    label: "Data Sources",
+    icon: "pi pi-database",
+    component: markRaw(DataSources),
+  },
+  {
+    key: "characterization",
+    label: "Characterization",
+    icon: "pi pi-chart-bar",
+    component: markRaw(Characterization),
+  },
+];
+
+const currentSection = computed(() => {
+  return parseInt(route.query.report as string) || 0;
 });
 
-const setCurrentTab = function (val) {
-  router.push({
-    query: {
-      tab: val,
-    },
-  });
+const setCurrentTab = function (val: number) {
+  router.push({ query: { report: val } });
 };
-//main view: vertical or horizontal tabs
 </script>
 
-<style scoped></style>
+<style scoped>
+.strategus-layout {
+  display: flex;
+}
+
+.strategus-sidebar {
+  width: 52px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--surface-200, #e5e7eb);
+  background: var(--surface-50, #f8fafc);
+  padding: 1rem 0;
+  transition: width 0.2s ease;
+  overflow: hidden;
+}
+
+.strategus-sidebar:hover {
+  width: 210px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 0 6px 6px 0;
+  background: transparent;
+  color: var(--text-color-secondary, #64748b);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  background: var(--surface-100, #f1f5f9);
+  color: var(--text-color, #334155);
+  border-left-color: var(--surface-300, #cbd5e1);
+}
+
+.nav-item.active {
+  background: var(--primary-50, #eff6ff);
+  color: var(--primary-700, #1d4ed8);
+  font-weight: 600;
+  border-left-color: var(--primary-500, #3b82f6);
+}
+
+.nav-item i {
+  width: 1.25rem;
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+.nav-item.active i {
+  color: var(--primary-500, #3b82f6);
+}
+
+.nav-label {
+  opacity: 0;
+  transition: opacity 0.15s ease 0.05s;
+}
+
+.strategus-sidebar:hover .nav-label {
+  opacity: 1;
+}
+
+.strategus-content {
+  flex: 1;
+  min-width: 0;
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+}
+
+.section-fade-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.section-fade-enter-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.section-fade-enter-from,
+.section-fade-leave-to {
+  opacity: 0;
+}
+
+.section-fade-enter-from {
+  transform: translateY(5px);
+}
+</style>

@@ -57,7 +57,7 @@ function redirectToHome() {
 }
 
 function redirectToStrategus() {
-  router.push("/strategus");
+  router.push("/characterization");
 }
 </script>
 

@@ -1,15 +1,17 @@
 <template>
+  <Transition name="page-fade">
+    <div
+      v-if="!store.getters.getErrors && loaderState === 'idle'"
+      class="mt-10 mb-16"
+    >
+      <router-view name="reportsView" />
+    </div>
+  </Transition>
   <div
-    v-if="!store.getters.getErrors && store.getters.dataInStore"
-    class="mt-10 mb-16"
-  >
-    <router-view name="reportsView" />
-  </div>
-  <div
-    v-if="!store.getters.dataInStore && !store.getters.getErrors"
+    v-if="loaderState !== 'idle' && !store.getters.getErrors"
     class="flex flex-col gap-2 justify-center items-center content-center h-[70vh]"
   >
-    <ProgressCircle />
+    <BlackHoleLoading text="Loading..." size="lg" :state="loaderState" />
   </div>
   <BottomNav />
 
@@ -39,7 +41,7 @@ import getFilesByView from "../config/dataLoadConfig";
 
 import { useStore } from "vuex";
 
-import { watch, computed, onMounted } from "vue";
+import { watch, computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import {
   LOAD_API_NOTES,
@@ -51,9 +53,29 @@ import SelectionEditDialog from "@/widgets/selectionEditDialog/ui/selectionEditD
 import ProgressCircle from "@/entities/ProgressCircle.vue";
 import environment from "@/shared/api/environment";
 import { pageCharts } from "@/processes/exploreReports/config/pageCharts";
+import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
 
 const route = useRoute();
 const store = useStore();
+
+const loaderState = ref(store.getters.dataInStore ? "idle" : "loading");
+let loadStart = Date.now();
+
+watch(
+  () => store.getters.dataInStore,
+  async (val) => {
+    if (val) {
+      if (Date.now() - loadStart >= 600) {
+        loaderState.value = "success";
+        await new Promise((r) => setTimeout(r, 1100));
+      }
+      loaderState.value = "idle";
+    } else {
+      loadStart = Date.now();
+      loaderState.value = "loading";
+    }
+  }
+);
 
 const path = computed(function () {
   return JSON.stringify({
@@ -111,4 +133,18 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.page-fade-leave-active {
+  transition: opacity 0.1s ease;
+}
+.page-fade-enter-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+}
+.page-fade-enter-from {
+  transform: translateY(6px);
+}
+</style>

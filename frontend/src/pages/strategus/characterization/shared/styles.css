@@ -1,0 +1,87 @@
+.section {
+  background: var(--bg-surface-0, #ffffff);
+  border: 1.2px solid var(--bg-surface-300, #cbd5e1);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.field-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-color, #334155);
+}
+
+.sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--bg-surface-300, #000000);
+  flex-shrink: 0;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-color-secondary, #94a3b8);
+  padding: 2.5rem 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.result-table {
+  font-size: 0.8125rem;
+}
+
+.selector-table {
+  margin-bottom: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.control-action {
+  padding-bottom: 1px;
+}
+
+.table-note {
+  color: var(--text-color-secondary, #64748b);
+  font-size: 0.8125rem;
+  margin: 0 0 0.5rem 0;
+}
+
+@keyframes bh-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.results-ctx {
+  animation: bh-reveal 0.35s ease both;
+}
+
+.results-body {
+  animation: bh-reveal 0.4s ease both;
+}
+
+.tab-fade-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.tab-fade-enter-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.tab-fade-enter-from,
+.tab-fade-leave-to {
+  opacity: 0;
+}
+
+.tab-fade-enter-from {
+  transform: translateY(4px);
+}

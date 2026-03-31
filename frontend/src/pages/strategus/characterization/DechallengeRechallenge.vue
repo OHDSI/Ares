@@ -1,106 +1,33 @@
 <template>
   <div class="dechal-rechal">
-    <Message :closable="false" severity="info">
-      <p>
-        View how often the outcome occurs just before the target stops (a
-        positive dechallenge) and how often the outcome restarts shortly after
-        the target restarts (positive rechallenge).
-      </p>
-    </Message>
+    <div class="section">
+      <label class="field-label">Outcome</label>
+      <OutcomeSelector v-model="selectedOutcome" :options="outcomeOptions" />
 
-    <Panel header="Options" toggleable class="options-panel">
-      <label class="field-label">Select Outcome</label>
-      <DataTable
-        :value="outcomeOptions"
-        v-model:selection="selectedOutcome"
-        selectionMode="single"
-        dataKey="cohortId"
-        :paginator="outcomeOptions.length > 10"
-        :rows="10"
-        filterDisplay="row"
-        v-model:filters="outcomeFilters"
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        class="selector-table"
-      >
-        <Column selectionMode="single" headerStyle="width: 3rem" />
+      <Button :disabled="generateDisabled" label="Generate" @click="generate" />
+    </div>
 
-        <Column
-          field="parentName"
-          header="Outcome"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortName"
-          header="Subset"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortId"
-          header="Cohort ID"
-          sortable
-          style="width: 100px"
-        />
-      </DataTable>
-
-      <Button
-        :disabled="generateDisabled"
-        label="Generate"
-        :loading="loading"
-        @click="generate"
-        class="mt-3"
-      />
-    </Panel>
-
-    <Panel v-if="showResults" header="Selected" toggleable class="mt-3">
-      <div class="selected-summary">
-        <span><strong>Target:</strong> {{ targetName }}</span>
-        <span><strong>Outcome:</strong> {{ outcomeName }}</span>
-      </div>
-    </Panel>
+    <ContextBar v-if="showResults" :items="[targetName, outcomeName]" />
 
     <Message
       v-if="showResults && targetWarning"
       severity="warn"
-      class="mt-3"
       :closable="false"
     >
-      WARNING: The target cohort does not have multiple records per person, so
-      observing rechallenge attempts is not possible.
+      The target cohort does not have multiple records per person — rechallenge
+      attempts cannot be observed.
     </Message>
     <Message
       v-if="showResults && outcomeWarning"
       severity="warn"
-      class="mt-3"
       :closable="false"
     >
-      WARNING: The outcome cohort does not have multiple records per person, so
-      observing rechallenge attempts is not possible.
+      The outcome cohort does not have multiple records per person — rechallenge
+      attempts cannot be observed.
     </Message>
 
-    <Panel header="Results" class="mt-3">
+    <div v-if="showResults" class="section results-body">
       <DataTable
-        v-if="showResults"
         :value="tableData"
         :paginator="tableData.length > 25"
         :rows="25"
@@ -129,7 +56,7 @@
         </Column>
         <Column
           field="dechallengeStopInterval"
-          header="Dechallenge Stop Interval"
+          header="Stop Interval"
           sortable
           :showFilterMenu="false"
         >
@@ -144,7 +71,7 @@
         </Column>
         <Column
           field="dechallengeEvaluationWindow"
-          header="Dechallenge Eval Window"
+          header="Eval Window"
           sortable
           :showFilterMenu="false"
         >
@@ -157,12 +84,12 @@
             />
           </template>
         </Column>
-        <Column field="numExposureEras" header="# Exposure Eras" sortable>
+        <Column field="numExposureEras" header="# Exp Eras" sortable>
           <template #body="{ data }">{{
             formatCensored(data.numExposureEras)
           }}</template>
         </Column>
-        <Column field="numPersonsExposed" header="# Exposed Persons" sortable>
+        <Column field="numPersonsExposed" header="# Exposed" sortable>
           <template #body="{ data }">{{
             formatCensored(data.numPersonsExposed)
           }}</template>
@@ -172,83 +99,67 @@
             formatCensored(data.numCases)
           }}</template>
         </Column>
-        <Column field="dechallengeAttempt" header="# Dechal Attempts" sortable>
+        <Column field="dechallengeAttempt" header="# D.Attempt" sortable>
           <template #body="{ data }">{{
             formatCensored(data.dechallengeAttempt)
           }}</template>
         </Column>
-        <Column field="dechallengeFail" header="# Dechal Fails" sortable>
+        <Column field="dechallengeFail" header="# D.Fail" sortable>
           <template #body="{ data }">{{
             formatCensored(data.dechallengeFail)
           }}</template>
         </Column>
-        <Column field="dechallengeSuccess" header="# Dechal Successes" sortable>
+        <Column field="dechallengeSuccess" header="# D.Success" sortable>
           <template #body="{ data }">{{
             formatCensored(data.dechallengeSuccess)
           }}</template>
         </Column>
-        <Column
-          field="pctDechallengeAttempt"
-          header="% Dechal Attempt"
-          sortable
-        >
+        <Column field="pctDechallengeAttempt" header="% D.Attempt" sortable>
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeAttempt)
           }}</template>
         </Column>
-        <Column
-          field="pctDechallengeSuccess"
-          header="% Dechal Success"
-          sortable
-        >
+        <Column field="pctDechallengeSuccess" header="% D.Success" sortable>
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeSuccess)
           }}</template>
         </Column>
-        <Column field="pctDechallengeFail" header="% Dechal Fail" sortable>
+        <Column field="pctDechallengeFail" header="% D.Fail" sortable>
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeFail)
           }}</template>
         </Column>
-        <Column field="rechallengeAttempt" header="# Rechal Attempts" sortable>
+        <Column field="rechallengeAttempt" header="# R.Attempt" sortable>
           <template #body="{ data }">{{
             formatCensored(data.rechallengeAttempt)
           }}</template>
         </Column>
-        <Column field="rechallengeFail" header="# Rechal Fails" sortable>
+        <Column field="rechallengeFail" header="# R.Fail" sortable>
           <template #body="{ data }">{{
             formatCensored(data.rechallengeFail)
           }}</template>
         </Column>
-        <Column field="rechallengeSuccess" header="# Rechal Successes" sortable>
+        <Column field="rechallengeSuccess" header="# R.Success" sortable>
           <template #body="{ data }">{{
             formatCensored(data.rechallengeSuccess)
           }}</template>
         </Column>
-        <Column
-          field="pctRechallengeAttempt"
-          header="% Rechal Attempt"
-          sortable
-        >
+        <Column field="pctRechallengeAttempt" header="% R.Attempt" sortable>
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeAttempt)
           }}</template>
         </Column>
-        <Column
-          field="pctRechallengeSuccess"
-          header="% Rechal Success"
-          sortable
-        >
+        <Column field="pctRechallengeSuccess" header="% R.Success" sortable>
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeSuccess)
           }}</template>
         </Column>
-        <Column field="pctRechallengeFail" header="% Rechal Fail" sortable>
+        <Column field="pctRechallengeFail" header="% R.Fail" sortable>
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeFail)
           }}</template>
         </Column>
-        <Column header="Actions" style="width: 80px">
+        <Column header="" style="width: 70px">
           <template #body="{ data, index }">
             <Button
               label="Fails"
@@ -260,13 +171,13 @@
           </template>
         </Column>
       </DataTable>
-      <p
-        v-else-if="(!selectedOutcome || !showResults) && !loading"
-        class="empty-hint"
-      >
-        Select an outcome, then click Generate to view risk factor results.
-      </p>
-    </Panel>
+    </div>
+
+    <div v-else-if="!loading" class="section empty-state">
+      Select an outcome, then click Generate.
+    </div>
+
+    <ResultsLoader :loader-state="loaderState" />
 
     <Dialog
       v-model:visible="failsDialogVisible"
@@ -277,16 +188,18 @@
       <div v-if="failPlotData" class="fails-chart-container">
         <div ref="failsChartEl" class="fails-chart"></div>
       </div>
-      <p v-else class="help-text">No fails to display.</p>
+      <p v-else class="table-note">No fails to display.</p>
     </Dialog>
   </div>
 </template>
 
-<script setup>
-import { computed, nextTick, ref, watch } from "vue";
+<script setup lang="ts">
+import { ref, computed, watch, nextTick, onMounted } from "vue";
 import * as echarts from "echarts";
 
-import Panel from "primevue/panel";
+import ResultsLoader from "./shared/ResultsLoader.vue";
+import OutcomeSelector from "./shared/OutcomeSelector.vue";
+import ContextBar from "./shared/ContextBar.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
@@ -301,16 +214,16 @@ import { useStore } from "vuex";
 const store = useStore();
 
 const props = defineProps({
-  targetRow: {
-    type: Object,
-  },
-  outcomeTable: {
-    type: Array,
-  },
+  targetRow: { type: Object },
+  outcomeTable: { type: Array },
+  initialUrlState: { type: Object, default: null },
 });
+
+const emit = defineEmits(["state-change"]);
 
 const loading = ref(false);
 const showResults = ref(false);
+const loaderState = ref("idle");
 const selectedOutcome = ref(null);
 const tableData = ref([]);
 const targetWarning = ref(false);
@@ -322,10 +235,6 @@ const failPlotData = ref(null);
 const failsChartEl = ref(null);
 let failsChart = null;
 
-const outcomeFilters = ref({
-  parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  cohortName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 const tableFilters = ref({
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   dechallengeStopInterval: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -347,7 +256,6 @@ watch(
   }
 );
 
-//todo: use shared
 function formatCensored(val) {
   if (val == null) return "";
   return val < 0 ? `< ${Math.abs(val)}` : val;
@@ -396,7 +304,10 @@ async function generate() {
     return;
   }
 
+  showResults.value = false;
   loading.value = true;
+  loaderState.value = "loading";
+  const loadStart = Date.now();
   try {
     const targetId = props.targetRow.cohortId;
     const outcomeId = selectedOutcome.value.cohortId;
@@ -410,10 +321,17 @@ async function generate() {
     tableData.value = data;
     targetWarning.value = targetUnique.isUnique;
     outcomeWarning.value = outcomeUnique.isUnique;
+    if (Date.now() - loadStart >= 600) {
+      loaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    loaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
     showResults.value = true;
-    lastGeneratedConfig.value = {
-      outcome: outcomeId,
-    };
+    lastGeneratedConfig.value = { outcome: outcomeId };
+    emit("state-change", { outcomeId: selectedOutcome.value.cohortId });
+  } catch {
+    loaderState.value = "error";
   } finally {
     loading.value = false;
   }
@@ -436,16 +354,13 @@ async function showFails(rowData, index) {
 
   failPlotData.value = data;
   failsDialogVisible.value = true;
-
   await nextTick();
   renderFailsChart(data);
 }
 
-//todo: use shared component
 function renderFailsChart(data) {
   if (!failsChartEl.value) return;
 
-  // sort by exposure start → outcome start
   const sorted = [...data].sort(
     (a, b) =>
       a.dechallengeExposureStartDateOffset -
@@ -459,20 +374,18 @@ function renderFailsChart(data) {
   const persons = [...new Set(sorted.map((r) => r.personKey))];
   const pidMap = new Map(persons.map((pk, i) => [pk, persons.length - i]));
 
-  const dechalExposure = []; // line segments
+  const dechalExposure = [];
   const rechalExposure = [];
-  const dechalOutcome = []; // scatter points
+  const dechalOutcome = [];
   const rechalOutcome = [];
 
   for (const r of sorted) {
     const y = pidMap.get(r.personKey);
-
     dechalExposure.push(
       [r.dechallengeExposureStartDateOffset, y, r.dechallengeExposureNumber],
       [r.dechallengeExposureEndDateOffset, y, r.dechallengeExposureNumber],
       [null, null, null]
     );
-
     if (r.dechallengeOutcomeStartDateOffset != null) {
       dechalOutcome.push([
         r.dechallengeOutcomeStartDateOffset,
@@ -480,7 +393,6 @@ function renderFailsChart(data) {
         r.dechallengeOutcomeNumber,
       ]);
     }
-
     if (r.rechallengeExposureStartDateOffset != null) {
       rechalExposure.push(
         [r.rechallengeExposureStartDateOffset, y, r.rechallengeExposureNumber],
@@ -488,7 +400,6 @@ function renderFailsChart(data) {
         [null, null, null]
       );
     }
-
     if (r.rechallengeOutcomeStartDateOffset != null) {
       rechalOutcome.push([
         r.rechallengeOutcomeStartDateOffset,
@@ -580,49 +491,37 @@ const generateDisabled = computed(() => {
   if (!lastGeneratedConfig.value) return false;
   return selectedOutcome.value.cohortId === lastGeneratedConfig.value.outcome;
 });
+
+onMounted(async () => {
+  const url = props.initialUrlState;
+
+  if (url?.outcomeId && outcomeOptions.value.length) {
+    const match = outcomeOptions.value.find(
+      (o) => o.cohortId === url.outcomeId
+    );
+    if (match) selectedOutcome.value = match;
+  }
+
+  await nextTick();
+  if (selectedOutcome.value) await generate();
+});
 </script>
 
 <style scoped>
+@import "./shared/styles.css";
+
 .dechal-rechal {
-  padding: 1rem;
-}
-.help-text {
-  color: var(--text-color-secondary, #6b7280);
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
-}
-.field-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.375rem;
-  font-size: 0.875rem;
-}
-.options-panel {
-  margin-top: 0.75rem;
-}
-.selector-table {
-  margin-bottom: 1rem;
-  font-size: 0.8125rem;
-}
-.selected-summary {
   display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-  font-size: 0.875rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
-.result-table {
-  font-size: 0.8125rem;
-}
+
 .fails-chart-container {
   width: 100%;
 }
+
 .fails-chart {
   width: 100%;
   height: 450px;
-}
-.empty-hint {
-  text-align: center;
-  color: #999;
-  padding: 2rem 0;
 }
 </style>

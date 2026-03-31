@@ -1,215 +1,166 @@
 <template>
   <div class="incidence-rates">
-    <Panel header="Options" toggleable class="options-panel">
-      <label class="field-label">Select Outcomes</label>
-      <DataTable
-        :value="outcomeOptions"
-        v-model:selection="selectedOutcomes"
-        selectionMode="multiple"
-        dataKey="cohortId"
-        :paginator="outcomeOptions.length > 10"
-        :rows="10"
-        filterDisplay="row"
-        v-model:filters="outcomeFilters"
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        class="selector-table"
-      >
-        <Column selectionMode="multiple" headerStyle="width: 3rem" />
-        <Column
-          field="parentName"
-          header="Outcome"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortName"
-          header="Subset"
-          sortable
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          field="cohortId"
-          header="Cohort ID"
-          sortable
-          style="width: 100px"
-        />
-      </DataTable>
-      <Button
-        :disabled="generateDisabled"
-        label="Generate"
-        :loading="loading"
-        @click="generate"
-        class="mt-3"
+    <div class="section">
+      <label class="field-label">Outcomes</label>
+      <OutcomeSelector
+        v-model="selectedOutcomes"
+        :options="outcomeOptions"
+        :multiple="true"
       />
-    </Panel>
 
-    <Panel header="Results" class="mt-3">
-      <TabView v-if="showResults">
-        <TabPanel header="Incidence Rate Table">
-          <div class="table-filters">
-            <div>
-              <label class="field-label">Filter By Database</label>
-              <MultiSelect
-                v-model="tableDatabases"
-                :options="uniqueDatabases"
-                placeholder="All"
-                filter
-                display="chip"
-                class="w-full"
-              />
+      <Button :disabled="generateDisabled" label="Generate" @click="generate" />
+    </div>
+
+    <ContextBar
+      v-if="showResults"
+      :items="[
+        targetName,
+        selectedOutcomes.map((o) => o.cohortName).join(', '),
+      ]"
+    />
+
+    <div v-if="showResults" class="section results-body">
+      <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
+
+      <Transition name="tab-fade" mode="out-in"
+        ><div :key="activeResultTab">
+          <div v-if="activeResultTab === 0">
+            <div class="table-filters">
+              <div>
+                <label class="field-label">Database</label>
+                <MultiSelect
+                  v-model="tableDatabases"
+                  :options="uniqueDatabases"
+                  placeholder="All"
+                  filter
+                  display="chip"
+                  class="w-full"
+                />
+              </div>
+              <div class="strat-checks">
+                <div>
+                  <Checkbox
+                    v-model="includeAge"
+                    :binary="true"
+                    inputId="ageStrat"
+                  /><label for="ageStrat">Age stratified</label>
+                </div>
+                <div>
+                  <Checkbox
+                    v-model="includeSex"
+                    :binary="true"
+                    inputId="sexStrat"
+                  /><label for="sexStrat">Sex stratified</label>
+                </div>
+                <div>
+                  <Checkbox
+                    v-model="includeYear"
+                    :binary="true"
+                    inputId="yearStrat"
+                  /><label for="yearStrat">Year stratified</label>
+                </div>
+              </div>
             </div>
-            <div class="strat-checks">
-              <div>
-                <Checkbox
-                  v-model="includeAge"
-                  :binary="true"
-                  inputId="ageStrat"
-                /><label for="ageStrat">Include age stratified</label>
-              </div>
-              <div>
-                <Checkbox
-                  v-model="includeSex"
-                  :binary="true"
-                  inputId="sexStrat"
-                /><label for="sexStrat">Include sex stratified</label>
-              </div>
-              <div>
-                <Checkbox
-                  v-model="includeYear"
-                  :binary="true"
-                  inputId="yearStrat"
-                /><label for="yearStrat">Include year stratified</label>
-              </div>
-            </div>
+
+            <DataTable
+              v-if="tableRows.length"
+              :value="tableRows"
+              :paginator="true"
+              :rows="25"
+              :rowsPerPageOptions="[10, 25, 50, 100]"
+              filterDisplay="row"
+              v-model:filters="tableFilters"
+              sortMode="multiple"
+              removableSort
+              :striped-rows="store.getters.getSettings.strippedRows"
+              size="small"
+              class="result-table mt-3"
+            >
+              <Column
+                field="databaseName"
+                header="Database"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="outcomeName"
+                header="Outcome"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <Dropdown
+                    v-model="filterModel.value"
+                    :options="uniqueOutcomeNames"
+                    placeholder="All"
+                    :showClear="true"
+                    class="w-full"
+                    @change="filterCallback()"
+                  />
+                </template>
+              </Column>
+              <Column field="tar" header="TAR" sortable :showFilterMenu="false">
+                <template #filter="{ filterModel, filterCallback }">
+                  <Dropdown
+                    v-model="filterModel.value"
+                    :options="uniqueTars"
+                    placeholder="All"
+                    :showClear="true"
+                    class="w-full"
+                    @change="filterCallback()"
+                  />
+                </template>
+              </Column>
+              <Column field="ageGroupName" header="Age" sortable />
+              <Column field="genderName" header="Sex" sortable />
+              <Column field="startYear" header="Year" sortable />
+              <Column
+                field="cleanWindow"
+                header="Clean Win."
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <Dropdown
+                    v-model="filterModel.value"
+                    :options="uniqueCleanWindows"
+                    placeholder="All"
+                    :showClear="true"
+                    class="w-full"
+                    @change="filterCallback()"
+                  />
+                </template>
+              </Column>
+              <Column field="personsAtRisk" header="Persons" sortable />
+              <Column field="personDays" header="Person Days" sortable />
+              <Column field="outcomes" header="Outcomes" sortable />
+              <Column
+                field="incidenceProportionP100p"
+                header="Prop. /100p"
+                sortable
+              >
+                <template #body="{ data }">{{
+                  formatNum(data.incidenceProportionP100p)
+                }}</template>
+              </Column>
+              <Column field="incidenceRateP100py" header="Rate /100py" sortable>
+                <template #body="{ data }">{{
+                  formatNum(data.incidenceRateP100py)
+                }}</template>
+              </Column>
+            </DataTable>
           </div>
 
-          <DataTable
-            v-if="tableRows.length"
-            :value="tableRows"
-            :paginator="true"
-            :rows="25"
-            :rowsPerPageOptions="[10, 25, 50, 100]"
-            filterDisplay="row"
-            v-model:filters="tableFilters"
-            sortMode="multiple"
-            removableSort
-            :striped-rows="store.getters.getSettings.strippedRows"
-            size="small"
-            class="result-table mt-3"
-          >
-            <Column
-              field="databaseName"
-              header="Database"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <InputText
-                  v-model="filterModel.value"
-                  @input="filterCallback()"
-                  placeholder="Search..."
-                  size="small"
-                />
-              </template>
-            </Column>
-            <Column
-              field="outcomeName"
-              header="Outcome"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <Dropdown
-                  v-model="filterModel.value"
-                  :options="uniqueOutcomeNames"
-                  placeholder="All"
-                  :showClear="true"
-                  class="w-full"
-                  @change="filterCallback()"
-                />
-              </template>
-            </Column>
-            <Column
-              field="tar"
-              header="Time-at-risk"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <Dropdown
-                  v-model="filterModel.value"
-                  :options="uniqueTars"
-                  placeholder="All"
-                  :showClear="true"
-                  class="w-full"
-                  @change="filterCallback()"
-                />
-              </template>
-            </Column>
-            <Column field="ageGroupName" header="Age Group" sortable />
-            <Column field="genderName" header="Sex" sortable />
-            <Column field="startYear" header="Index Year" sortable />
-            <Column
-              field="cleanWindow"
-              header="Clean Window"
-              sortable
-              :showFilterMenu="false"
-            >
-              <template #filter="{ filterModel, filterCallback }">
-                <Dropdown
-                  v-model="filterModel.value"
-                  :options="uniqueCleanWindows"
-                  placeholder="All"
-                  :showClear="true"
-                  class="w-full"
-                  @change="filterCallback()"
-                />
-              </template>
-            </Column>
-            <Column field="personsAtRisk" header="No. Persons" sortable />
-            <Column field="personDays" header="Person Days" sortable />
-            <Column field="outcomes" header="No. Outcomes" sortable />
-            <Column
-              field="incidenceProportionP100p"
-              header="Inc. Proportion /100p"
-              sortable
-            >
-              <template #body="{ data }">{{
-                formatNum(data.incidenceProportionP100p)
-              }}</template>
-            </Column>
-            <Column
-              field="incidenceRateP100py"
-              header="Inc. Rate /100py"
-              sortable
-            >
-              <template #body="{ data }">{{
-                formatNum(data.incidenceRateP100py)
-              }}</template>
-            </Column>
-          </DataTable>
-        </TabPanel>
-        <Panel class="mt-3" header="Results">
-          <TabPanel header="Incidence Rate Plots">
+          <div v-else-if="activeResultTab === 1">
             <div class="plot-filters">
               <div>
                 <label class="field-label">Database</label>
@@ -234,7 +185,7 @@
                 />
               </div>
               <div>
-                <label class="field-label">Report Type</label>
+                <label class="field-label">X-Axis</label>
                 <Dropdown
                   v-model="plotXAxis"
                   :options="['Age', 'Year']"
@@ -257,30 +208,31 @@
                   /><label for="plotFixed">Fixed y-scale</label>
                 </div>
               </div>
-              <Button label="View Plot" @click="renderPlot" size="small" />
+              <div class="plot-action">
+                <Button label="View Plot" @click="renderPlot" size="small" />
+              </div>
             </div>
-            <div ref="plotEl" class="inc-chart mt-3"></div>
-          </TabPanel>
-        </Panel>
-      </TabView>
+            <div ref="plotEl" class="inc-chart"></div>
+          </div></div
+      ></Transition>
+    </div>
 
-      <p
-        v-else-if="(!selectedOutcomes.length || !showResults) && !loading"
-        class="empty-hint"
-      >
-        Select an comparator, then click Generate to view risk factor results.
-      </p>
-    </Panel>
+    <div v-else-if="!loading" class="section empty-state">
+      Select one or more outcomes, then click Generate.
+    </div>
+
+    <ResultsLoader :loader-state="loaderState" />
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch, nextTick } from "vue";
+<script setup lang="ts">
+import { ref, computed, watch, nextTick, onMounted } from "vue";
 import * as echarts from "echarts";
 
-import Panel from "primevue/panel";
-import TabView from "primevue/tabview";
-import TabPanel from "primevue/tabpanel";
+import ResultsLoader from "./shared/ResultsLoader.vue";
+import ViewToggle from "./shared/ViewToggle.vue";
+import OutcomeSelector from "./shared/OutcomeSelector.vue";
+import ContextBar from "./shared/ContextBar.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import MultiSelect from "primevue/multiselect";
@@ -295,18 +247,25 @@ import { useStore } from "vuex";
 const store = useStore();
 
 const props = defineProps({
-  targetRow: {
-    type: Object,
-  },
-  outcomeTable: {
-    type: Array,
-  },
+  targetRow: { type: Object },
+  outcomeTable: { type: Array },
+  initialUrlState: { type: Object, default: null },
 });
+
+const emit = defineEmits(["state-change"]);
 
 const loading = ref(false);
 const showResults = ref(false);
+const loaderState = ref("idle");
 const selectedOutcomes = ref([]);
 const fullData = ref([]);
+const lastGeneratedConfig = ref(null);
+
+const activeResultTab = ref(0);
+const resultTabs = [
+  { key: "table", label: "Table" },
+  { key: "plots", label: "Plots" },
+];
 
 const tableDatabases = ref([]);
 const includeAge = ref(false);
@@ -322,12 +281,6 @@ const plotFixedY = ref(true);
 const plotEl = ref(null);
 let chartInstance = null;
 
-const lastGeneratedConfig = ref(null);
-
-const outcomeFilters = ref({
-  parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  cohortName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 const tableFilters = ref({
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   outcomeName: { value: null, matchMode: FilterMatchMode.EQUALS },
@@ -338,6 +291,7 @@ const tableFilters = ref({
 const outcomeOptions = computed(() =>
   (props.outcomeTable ?? []).filter((r) => r.cohortIncidence === 1)
 );
+const targetName = computed(() => props.targetRow?.cohortName ?? "");
 
 const uniqueDatabases = computed(() =>
   [...new Set(fullData.value.map((r) => r.databaseName))].sort()
@@ -360,7 +314,6 @@ watch(
   }
 );
 
-//todo: replace with existing shared one
 function formatNum(val) {
   if (val == null) return "";
   return Number(val).toFixed(2);
@@ -380,7 +333,10 @@ async function generate() {
     return;
   }
 
+  showResults.value = false;
   loading.value = true;
+  loaderState.value = "loading";
+  const loadStart = Date.now();
   try {
     const outcomeIds = selectedOutcomes.value.map((o) => o.cohortId);
     const data = await fetchIncidenceData(props.targetRow.cohortId, outcomeIds);
@@ -391,12 +347,21 @@ async function generate() {
     plotOutcomes.value = [...uniqueOutcomeNames.value];
 
     tableRows.value = [];
+    if (Date.now() - loadStart >= 600) {
+      loaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    loaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
     showResults.value = true;
     applyTableFilter();
 
-    lastGeneratedConfig.value = {
-      selectedOutcomes: selectedOutcomes.value,
-    };
+    lastGeneratedConfig.value = { selectedOutcomes: selectedOutcomes.value };
+    emit("state-change", {
+      outcomeIds: selectedOutcomes.value.map((o) => o.cohortId),
+    });
+  } catch {
+    loaderState.value = "error";
   } finally {
     loading.value = false;
   }
@@ -404,9 +369,8 @@ async function generate() {
 
 function applyTableFilter() {
   let data = fullData.value;
-  if (tableDatabases.value.length) {
+  if (tableDatabases.value.length)
     data = data.filter((r) => tableDatabases.value.includes(r.databaseName));
-  }
   if (!includeAge.value) data = data.filter((r) => r.ageGroupName === "Any");
   if (!includeSex.value) data = data.filter((r) => r.genderName === "Any");
   if (!includeYear.value) data = data.filter((r) => r.startYear === "Any");
@@ -417,7 +381,6 @@ watch([tableDatabases, includeAge, includeSex, includeYear], () => {
   if (showResults.value) applyTableFilter();
 });
 
-//todo: replace with internal one, will need to think how to adjust hight
 async function renderPlot() {
   await nextTick();
   if (!plotEl.value) return;
@@ -435,11 +398,8 @@ async function renderPlot() {
     );
   }
 
-  if (!plotSexStratify.value) {
-    data = data.filter((r) => r.genderName === "Any");
-  } else {
-    data = data.filter((r) => r.genderName !== "Any");
-  }
+  if (!plotSexStratify.value) data = data.filter((r) => r.genderName === "Any");
+  else data = data.filter((r) => r.genderName !== "Any");
 
   if (plotDatabases.value.length)
     data = data.filter((r) => plotDatabases.value.includes(r.databaseName));
@@ -485,7 +445,6 @@ async function renderPlot() {
     titles = [],
     seriesList = [];
   let gi = 0;
-
   const globalMax = Math.max(...data.map((r) => r.incidenceRateP100py), 1);
 
   for (let ri = 0; ri < rows; ri++) {
@@ -499,7 +458,6 @@ async function renderPlot() {
         width: `${cellW - 12}%`,
         height: `${cellH - 18}%`,
       });
-
       xAxes.push({
         gridIndex: gi,
         type: "category",
@@ -538,7 +496,6 @@ async function renderPlot() {
           );
           return row?.incidenceRateP100py ?? null;
         });
-
         seriesList.push({
           name: cv,
           type: "line",
@@ -590,75 +547,86 @@ async function renderPlot() {
 const generateDisabled = computed(() => {
   if (!selectedOutcomes.value.length) return true;
   if (!lastGeneratedConfig.value) return false;
-
   return selectedOutcomes.value.every((id) =>
     lastGeneratedConfig.value.selectedOutcomes.includes(id)
   );
 });
+
+onMounted(async () => {
+  const url = props.initialUrlState;
+  if (url?.outcomeIds?.length && outcomeOptions.value.length) {
+    const matches = outcomeOptions.value.filter((o) =>
+      url.outcomeIds.includes(o.cohortId)
+    );
+    if (matches.length) selectedOutcomes.value = matches;
+  }
+  await nextTick();
+  if (selectedOutcomes.value.length) {
+    await generate();
+    applyTableFilter();
+  }
+});
 </script>
 
 <style scoped>
+@import "./shared/styles.css";
+
 .incidence-rates {
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
-.field-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.375rem;
-  font-size: 0.875rem;
-}
-.options-panel {
-  margin-top: 0.75rem;
-}
-.selector-table {
-  margin-bottom: 1rem;
-  font-size: 0.8125rem;
-}
-.result-table {
-  font-size: 0.8125rem;
-}
+
 .table-filters {
   display: flex;
   gap: 1.5rem;
-  align-items: end;
+  align-items: flex-end;
   flex-wrap: wrap;
+  margin-bottom: 0.5rem;
 }
+
 .table-filters > div:first-child {
   min-width: 250px;
 }
+
 .plot-filters {
   display: flex;
   gap: 1rem;
-  align-items: end;
+  align-items: flex-end;
   flex-wrap: wrap;
+  margin-bottom: 0.75rem;
 }
+
 .plot-filters > div {
-  min-width: 160px;
+  min-width: 150px;
   flex: 1;
 }
+
+.plot-action {
+  flex: none;
+  padding-bottom: 1px;
+}
+
 .strat-checks {
   display: flex;
   gap: 1rem;
   align-items: center;
   flex-wrap: wrap;
 }
+
 .strat-checks > div {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
+
 .inc-chart {
   width: 100%;
   min-height: 400px;
 }
-.w-full {
-  width: 100%;
-}
 
-.empty-hint {
-  text-align: center;
-  color: #999;
-  padding: 2rem 0;
+.mt-3 {
+  margin-top: 0.75rem;
 }
 </style>
