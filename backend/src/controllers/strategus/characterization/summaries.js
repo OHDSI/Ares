@@ -1,4 +1,5 @@
 import { queryDb } from '../../../config/postgresDbConnection.js';
+import logger from '../../../utils/logger.js';
 import { getCohortDefinitions, extractSubsetCohorts } from './helpers/cohortDefinitions.js';
 import { getIncidenceTargets, getIncidenceOutcomes } from './helpers/incidenceTargets.js';
 import { getCharacterizationTargets, getCharacterizationOutcomes } from './helpers/characterizationTargets.js';
@@ -259,18 +260,31 @@ export async function getOutcomeTable({
                                           printTimes = false,
                                       }) {
     const totalStart = Date.now();
-    let start = Date.now();
 
-    let cohorts = (await getCohortDefinitions({ schema }))
-        .map((r) => ({
-            cohortId: r.cohortDefinitionId,
-            cohortName: r.cohortName,
-            subsetParent: r.subsetParent,
-            subsetDefinitionId: r.subsetDefinitionId,
-        }));
+    function timed(label, fn) {
+        const t = Date.now();
+        return fn().then((res) => {
+            logger.debug(`[getOutcomeTable] ${label}: ${Date.now() - t}ms`);
+            return res;
+        });
+    }
 
-    if (printTimes) console.log(`extracting outcome cohorts: ${Date.now() - start}ms`);
-    start = Date.now();
+    const [rawCohorts, rawCounts, inc, char, pred, cm, sccs] = await Promise.all([
+        timed('cohortDefinitions', () => getCohortDefinitions({ schema })),
+        timed('cohortCounts', () => fetchCohortCountsRaw(schema, cgTablePrefix, databaseTable)),
+        getIncidenceInclusion ? timed('incidenceOutcomes', () => safeCall(() => getIncidenceOutcomes({ schema, cgTablePrefix, ciTablePrefix, targetId }))) : null,
+        getCharacterizationInclusion ? timed('characterizationOutcomes', () => safeCall(() => getCharacterizationOutcomes({ schema, cgTablePrefix, cTablePrefix, targetId, printTimes }))) : null,
+        getPredictionInclusion ? timed('predictionOutcomes', () => safeCall(() => getPredictionOutcomes({ schema, cgTablePrefix, plpTablePrefix, targetId }))) : null,
+        getCohortMethodInclusion ? timed('cmOutcomes', () => safeCall(() => getCmOutcomes({ schema, cgTablePrefix, cmTablePrefix, targetId }))) : null,
+        getSccsInclusion ? timed('sccsOutcomes', () => safeCall(() => getSccsOutcomes({ schema, cgTablePrefix, sccsTablePrefix, targetId }))) : null,
+    ]);
+
+    let cohorts = rawCohorts.map((r) => ({
+        cohortId: r.cohortDefinitionId,
+        cohortName: r.cohortName,
+        subsetParent: r.subsetParent,
+        subsetDefinitionId: r.subsetDefinitionId,
+    }));
 
     const parents = new Map();
     for (const c of cohorts) {
@@ -282,51 +296,15 @@ export async function getOutcomeTable({
         c.parentName = parents.get(c.subsetParent) ?? null;
     }
 
-    if (printTimes) console.log(`processing outcome parent cohorts: ${Date.now() - start}ms`);
-    start = Date.now();
-
-    const rawCounts = await fetchCohortCountsRaw(schema, cgTablePrefix, databaseTable);
     const counts = summarizeCounts(rawCounts);
-
     let cohortCounts = leftMerge(cohorts, counts, ['cohortId'], ['cohortId'])
         .filter((r) => r.numDatabase != null);
 
-    if (printTimes) console.log(`adding outcome cohort counts: ${Date.now() - start}ms`);
-
-    if (getIncidenceInclusion) {
-        start = Date.now();
-        const inc = await safeCall(() => getIncidenceOutcomes({ schema, cgTablePrefix, ciTablePrefix, targetId }));
-        if (inc) cohortCounts = leftMerge(cohortCounts, inc, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
-        if (printTimes) console.log(`finding incidence outcomes: ${Date.now() - start}ms`);
-    }
-
-    if (getCharacterizationInclusion) {
-        start = Date.now();
-        const char = await safeCall(() => getCharacterizationOutcomes({ schema, cgTablePrefix, cTablePrefix, targetId, printTimes }));
-        if (char) cohortCounts = leftMerge(cohortCounts, char, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
-        if (printTimes) console.log(`extracting characterization outcomes: ${Date.now() - start}ms`);
-    }
-
-    if (getPredictionInclusion) {
-        start = Date.now();
-        const pred = await safeCall(() => getPredictionOutcomes({ schema, cgTablePrefix, plpTablePrefix, targetId }));
-        if (pred) cohortCounts = leftMerge(cohortCounts, pred, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
-        if (printTimes) console.log(`extracting prediction outcomes: ${Date.now() - start}ms`);
-    }
-
-    if (getCohortMethodInclusion) {
-        start = Date.now();
-        const cm = await safeCall(() => getCmOutcomes({ schema, cgTablePrefix, cmTablePrefix, targetId }));
-        if (cm) cohortCounts = leftMerge(cohortCounts, cm, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
-        if (printTimes) console.log(`extracting cohort method outcomes: ${Date.now() - start}ms`);
-    }
-
-    if (getSccsInclusion) {
-        start = Date.now();
-        const sccs = await safeCall(() => getSccsOutcomes({ schema, cgTablePrefix, sccsTablePrefix, targetId }));
-        if (sccs) cohortCounts = leftMerge(cohortCounts, sccs, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
-        if (printTimes) console.log(`extracting sccs outcomes: ${Date.now() - start}ms`);
-    }
+    if (inc) cohortCounts = leftMerge(cohortCounts, inc, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
+    if (char) cohortCounts = leftMerge(cohortCounts, char, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
+    if (pred) cohortCounts = leftMerge(cohortCounts, pred, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
+    if (cm) cohortCounts = leftMerge(cohortCounts, cm, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
+    if (sccs) cohortCounts = leftMerge(cohortCounts, sccs, ['cohortId', 'cohortName'], ['cohortDefinitionId', 'cohortName']);
 
     fillNulls(cohortCounts);
     ensureColumns(cohortCounts, OUTCOME_ANALYSIS_COLUMNS);
@@ -335,21 +313,11 @@ export async function getOutcomeTable({
         OUTCOME_ANALYSIS_COLUMNS.some((col) => r[col] !== 0)
     );
 
-    cohortCounts = cohortCounts.filter((r) =>
-        OUTCOME_ANALYSIS_COLUMNS.some((col) => r[col] !== 0)
-    );
-
-
     cohortCounts.sort((a, b) =>
         String(a.parentName ?? '').localeCompare(String(b.parentName ?? ''))
         || String(a.cohortName ?? '').localeCompare(String(b.cohortName ?? ''))
     );
 
-    // cohortCounts.sort((a, b) =>
-    //     (a.parentName ?? '').localeCompare(b.parentName ?? '')
-    //     || (a.cohortName ?? '').localeCompare(b.cohortName ?? '')
-    // );
-
-    console.log(`-- Total time for extracting outcome table: ${Date.now() - totalStart}ms`);
+    logger.debug(`[getOutcomeTable] total: ${Date.now() - totalStart}ms`);
     return cohortCounts;
 }
