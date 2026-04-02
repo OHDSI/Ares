@@ -1,4 +1,5 @@
 import { queryDb } from '../../../../config/postgresDbConnection.js';
+import logger from '../../../../utils/logger.js';
 
 function addOptionalClause(condition, clause) {
     return condition ? clause : '';
@@ -183,9 +184,20 @@ export async function getCharacterizationOutcomes({
     const cdTargetClause = addOptionalClause(targetId != null,
         `AND cd.target_cohort_id IN (${(targetId != null ? toArray(targetId) : []).map((_, i) => `@targetId${i}`).join(',')})`);
 
-    if (useTte) {
-        let start = Date.now();
-        const tteRows = await safeQuery(`
+    const detailParams = {};
+    const detailTargetClause = addOptionalClause(targetId != null,
+        `AND target_cohort_id IN (${buildInClause('dtTargetId', toArray(targetId ?? []), detailParams)})`);
+
+    function timed(label, fn) {
+        const t = Date.now();
+        return fn().then((res) => {
+            logger.debug(`[getCharacterizationOutcomes] ${label}: ${Date.now() - t}ms`);
+            return res;
+        });
+    }
+
+    const [tteRows, dcrcRows, rfRows, detailRows] = await Promise.all([
+        useTte ? timed('time_to_event', () => safeQuery(`
       SELECT
         cg.cohort_name,
         tte.outcome_cohort_definition_id AS cohort_definition_id,
@@ -196,14 +208,8 @@ export async function getCharacterizationOutcomes({
         ON tte.outcome_cohort_definition_id = cg.cohort_definition_id
       ${targetClause}
       GROUP BY cg.cohort_name, tte.outcome_cohort_definition_id
-    `, params);
-        if (tteRows) allRows.push(...tteRows);
-        if (printTimes) console.log(`extracting time_to_event data: ${Date.now() - start}ms`);
-    }
-
-    if (useDcrc) {
-        let start = Date.now();
-        const dcrcRows = await safeQuery(`
+    `, params)) : null,
+        useDcrc ? timed('dechallenge_rechallenge', () => safeQuery(`
       SELECT
         cg.cohort_name,
         dr.outcome_cohort_definition_id AS cohort_definition_id,
@@ -214,14 +220,8 @@ export async function getCharacterizationOutcomes({
         ON dr.outcome_cohort_definition_id = cg.cohort_definition_id
       ${drTargetClause}
       GROUP BY cg.cohort_name, dr.outcome_cohort_definition_id
-    `, params);
-        if (dcrcRows) allRows.push(...dcrcRows);
-        if (printTimes) console.log(`extracting dechallenge_rechallenge data: ${Date.now() - start}ms`);
-    }
-
-    if (useRf) {
-        let start = Date.now();
-        const rfRows = await safeQuery(`
+    `, params)) : null,
+        useRf ? timed('cohort_details', () => safeQuery(`
       SELECT
         cg.cohort_name,
         cd.outcome_cohort_id AS cohort_definition_id,
@@ -233,31 +233,8 @@ export async function getCharacterizationOutcomes({
       WHERE cd.cohort_type = 'Cases'
         ${cdTargetClause}
       GROUP BY cg.cohort_name, cd.outcome_cohort_id
-    `, params);
-        if (rfRows) allRows.push(...rfRows);
-        if (printTimes) console.log(`extracting cohort_details data: ${Date.now() - start}ms`);
-    }
-
-    if (allRows.length === 0) {
-        console.log('No outcomes found');
-        console.log(`Extracting characterization outcomes took: ${Date.now() - totalStart}ms`);
-        return null;
-    }
-
-    const colTypes = ['timeToEvent', 'dechalRechal', 'riskFactors'];
-    const outcomes = pivotType(allRows, colTypes);
-
-    for (const o of outcomes) {
-        o.caseSeries = o.riskFactors;
-    }
-
-    if (useRf) {
-        let start = Date.now();
-        const detailParams = {};
-        const detailTargetClause = addOptionalClause(targetId != null,
-            `AND target_cohort_id IN (${buildInClause('dtTargetId', toArray(targetId ?? []), detailParams)})`);
-
-        const detailRows = await safeQuery(`
+    `, params)) : null,
+        useRf ? timed('cohort_counts', () => safeQuery(`
       SELECT DISTINCT
         outcome_cohort_id AS cohort_definition_id,
         risk_window_start,
@@ -269,41 +246,58 @@ export async function getCharacterizationOutcomes({
       WHERE outcome_cohort_id IS NOT NULL
         AND outcome_cohort_id != 0
         ${detailTargetClause}
-    `, detailParams);
+    `, detailParams)) : null,
+    ]);
 
-        if (detailRows) {
-            const groups = new Map();
-            for (const r of detailRows) {
-                if (!groups.has(r.cohortDefinitionId)) groups.set(r.cohortDefinitionId, []);
-                groups.get(r.cohortDefinitionId).push(r);
-            }
+    logger.debug(`[getCharacterizationOutcomes] all parallel queries: ${Date.now() - totalStart}ms`);
 
-            const detailMap = new Map();
-            for (const [id, rows] of groups) {
-                const tarNames = [...new Set(rows.map((r) =>
-                    `(${r.startAnchor} + ${r.riskWindowStart}) - (${r.endAnchor} + ${r.riskWindowEnd})`
-                ))];
-                const tarStrings = [...new Set(rows.map((r) =>
-                    `${r.riskWindowStart}/${r.startAnchor}/${r.riskWindowEnd}/${r.endAnchor}`
-                ))];
-                const washouts = [...new Set(rows.map((r) => r.outcomeWashoutDays))];
+    if (tteRows) allRows.push(...tteRows);
+    if (dcrcRows) allRows.push(...dcrcRows);
+    if (rfRows) allRows.push(...rfRows);
 
-                detailMap.set(id, {
-                    tarNames: tarNames.join(':'),
-                    tarStrings: tarStrings.join(':'),
-                    outcomeWashoutDays: washouts.join(':'),
-                });
-            }
-
-            for (const o of outcomes) {
-                const detail = detailMap.get(o.cohortDefinitionId);
-                if (detail) Object.assign(o, detail);
-            }
-        }
-
-        if (printTimes) console.log(`processing characterization outcomes and adding tars/washout: ${Date.now() - start}ms`);
+    if (allRows.length === 0) {
+        console.log('No outcomes found');
+        logger.debug(`[getCharacterizationOutcomes] no outcomes found, total: ${Date.now() - totalStart}ms`);
+        return null;
     }
 
-    console.log(`Extracting characterization outcomes took: ${Date.now() - totalStart}ms`);
+    const colTypes = ['timeToEvent', 'dechalRechal', 'riskFactors'];
+    const outcomes = pivotType(allRows, colTypes);
+
+    for (const o of outcomes) {
+        o.caseSeries = o.riskFactors;
+    }
+
+    if (useRf && detailRows) {
+        const groups = new Map();
+        for (const r of detailRows) {
+            if (!groups.has(r.cohortDefinitionId)) groups.set(r.cohortDefinitionId, []);
+            groups.get(r.cohortDefinitionId).push(r);
+        }
+
+        const detailMap = new Map();
+        for (const [id, rows] of groups) {
+            const tarNames = [...new Set(rows.map((r) =>
+                `(${r.startAnchor} + ${r.riskWindowStart}) - (${r.endAnchor} + ${r.riskWindowEnd})`
+            ))];
+            const tarStrings = [...new Set(rows.map((r) =>
+                `${r.riskWindowStart}/${r.startAnchor}/${r.riskWindowEnd}/${r.endAnchor}`
+            ))];
+            const washouts = [...new Set(rows.map((r) => r.outcomeWashoutDays))];
+
+            detailMap.set(id, {
+                tarNames: tarNames.join(':'),
+                tarStrings: tarStrings.join(':'),
+                outcomeWashoutDays: washouts.join(':'),
+            });
+        }
+
+        for (const o of outcomes) {
+            const detail = detailMap.get(o.cohortDefinitionId);
+            if (detail) Object.assign(o, detail);
+        }
+    }
+
+    logger.debug(`[getCharacterizationOutcomes] total: ${Date.now() - totalStart}ms`);
     return outcomes;
 }
