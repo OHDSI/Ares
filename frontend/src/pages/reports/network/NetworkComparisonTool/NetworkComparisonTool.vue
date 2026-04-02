@@ -216,7 +216,12 @@
           <NetworkConceptReport v-if="conceptData" :data="conceptData" />
           <div class="flex justify-center items-center h-full" v-else>
             <!--            <AnimatedLogo />-->
-            <BlackHoleLoading size="lg" :state="drilldownLoaderState" />
+            <BlackHoleLoading
+              :escalate="true"
+              text="Fetching..."
+              size="lg"
+              :state="drilldownLoaderState"
+            />
           </div>
         </div>
       </Sidebar>

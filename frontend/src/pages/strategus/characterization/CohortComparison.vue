@@ -31,13 +31,17 @@
 
     <ContextBar
       v-if="showResults"
-      :items="[targetName, `vs ${comparatorName}`, selectedDatabaseName]"
+      :items="[
+        targetName,
+        `vs ${lastGeneratedConfig.comparator}`,
+        lastGeneratedConfig.database,
+      ]"
     />
 
     <div v-if="showResults" class="section results-body">
       <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
 
-      <Transition name="tab-fade" mode="out-in"
+      <Transition name="tab-fade" mode="out-in" @enter="onTabEnter"
         ><div :key="activeResultTab">
           <div v-if="activeResultTab === 0">
             <p class="table-note" v-if="covRef.length">
@@ -59,8 +63,16 @@
             >
               <ColumnGroup type="header">
                 <Row>
-                  <Column header="Covariate" :rowspan="2" />
-                  <Column header="ID" :rowspan="2" />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Covariate"
+                    :rowspan="2"
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="ID"
+                    :rowspan="2"
+                  />
                   <Column
                     v-for="ref in covRef"
                     :key="'bhdr-' + ref.id"
@@ -70,6 +82,7 @@
 
                   <Column
                     v-if="covRef.length === 2"
+                    :pt="{ headerContent: 'justify-end' }"
                     header="SMD"
                     :rowspan="2"
                     sortField="SMD"
@@ -77,6 +90,7 @@
                   />
                   <Column
                     v-if="covRef.length === 2"
+                    :pt="{ headerContent: 'justify-end' }"
                     header="|SMD|"
                     :rowspan="2"
                     sortField="absSMD"
@@ -85,13 +99,20 @@
                 </Row>
                 <Row>
                   <template v-for="ref in covRef" :key="'bsub-' + ref.id">
-                    <Column header="Count" />
-                    <Column header="%" />
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Count"
+                    />
+                    <Column :pt="{ headerContent: 'justify-end' }" header="%" />
                   </template>
                 </Row>
               </ColumnGroup>
 
-              <Column field="covariateName" :showFilterMenu="false">
+              <Column
+                style="text-align: start"
+                field="covariateName"
+                :showFilterMenu="false"
+              >
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
                     v-model="filterModel.value"
@@ -101,23 +122,33 @@
                   />
                 </template>
               </Column>
-              <Column field="covariateId" />
+              <Column style="text-align: start" field="covariateId" />
               <template v-for="ref in covRef" :key="'bcol-' + ref.id">
-                <Column :field="'sumValue_' + ref.id">
+                <Column style="text-align: end" :field="'sumValue_' + ref.id">
                   <template #body="{ data }">{{
                     formatCount(data["sumValue_" + ref.id])
                   }}</template>
                 </Column>
-                <Column :field="'averageValue_' + ref.id" sortable>
+                <Column
+                  style="text-align: end"
+                  :field="'averageValue_' + ref.id"
+                  sortable
+                >
                   <template #body="{ data }">{{
                     formatPercent(data["averageValue_" + ref.id])
                   }}</template>
                 </Column>
               </template>
-              <Column v-if="covRef.length === 2" field="SMD" sortable>
+              <Column
+                style="text-align: end"
+                v-if="covRef.length === 2"
+                field="SMD"
+                sortable
+              >
                 <template #body="{ data }">{{ formatSmd(data.SMD) }}</template>
               </Column>
               <Column
+                style="text-align: end"
                 v-if="covRef.length === 2"
                 field="absSMD"
                 sortable
@@ -172,8 +203,16 @@
             >
               <ColumnGroup type="header">
                 <Row>
-                  <Column header="Covariate" :rowspan="2" />
-                  <Column header="ID" :rowspan="2" />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Covariate"
+                    :rowspan="2"
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="ID"
+                    :rowspan="2"
+                  />
                   <Column
                     v-for="ref in covRef"
                     :key="'chdr-' + ref.id"
@@ -182,6 +221,7 @@
                   />
                   <Column
                     v-if="covRef.length === 2"
+                    :pt="{ headerContent: 'justify-end' }"
                     header="SMD"
                     :rowspan="2"
                     sortField="SMD"
@@ -189,6 +229,7 @@
                   />
                   <Column
                     v-if="covRef.length === 2"
+                    :pt="{ headerContent: 'justify-end' }"
                     header="|SMD|"
                     :rowspan="2"
                     sortField="absSMD"
@@ -197,17 +238,39 @@
                 </Row>
                 <Row>
                   <template v-for="ref in covRef" :key="'csub-' + ref.id">
-                    <Column header="Count" />
-                    <Column header="Mean" />
-                    <Column header="StDev" />
-                    <Column header="Median" />
-                    <Column header="Min" />
-                    <Column header="Max" />
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Count"
+                    />
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Mean"
+                    />
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="StDev"
+                    />
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Median"
+                    />
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Min"
+                    />
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Max"
+                    />
                   </template>
                 </Row>
               </ColumnGroup>
 
-              <Column field="covariateName" :showFilterMenu="false">
+              <Column
+                style="text-align: start"
+                field="covariateName"
+                :showFilterMenu="false"
+              >
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
                     v-model="filterModel.value"
@@ -217,43 +280,58 @@
                   />
                 </template>
               </Column>
-              <Column field="covariateId" />
+              <Column style="text-align: start" field="covariateId" />
               <template v-for="ref in covRef" :key="'ccol-' + ref.id">
-                <Column :field="'countValue_' + ref.id">
+                <Column style="text-align: end" :field="'countValue_' + ref.id">
                   <template #body="{ data }">{{
                     formatCount(data["countValue_" + ref.id])
                   }}</template>
                 </Column>
-                <Column :field="'averageValue_' + ref.id">
+                <Column
+                  style="text-align: end"
+                  :field="'averageValue_' + ref.id"
+                >
                   <template #body="{ data }">{{
                     formatNum(data["averageValue_" + ref.id])
                   }}</template>
                 </Column>
-                <Column :field="'standardDeviation_' + ref.id">
+                <Column
+                  style="text-align: end"
+                  :field="'standardDeviation_' + ref.id"
+                >
                   <template #body="{ data }">{{
                     formatNum(data["standardDeviation_" + ref.id])
                   }}</template>
                 </Column>
-                <Column :field="'medianValue_' + ref.id">
+                <Column
+                  style="text-align: end"
+                  :field="'medianValue_' + ref.id"
+                >
                   <template #body="{ data }">{{
                     formatNum(data["medianValue_" + ref.id])
                   }}</template>
                 </Column>
-                <Column :field="'minValue_' + ref.id">
+                <Column style="text-align: end" :field="'minValue_' + ref.id">
                   <template #body="{ data }">{{
                     formatNum(data["minValue_" + ref.id])
                   }}</template>
                 </Column>
-                <Column :field="'maxValue_' + ref.id">
+                <Column style="text-align: end" :field="'maxValue_' + ref.id">
                   <template #body="{ data }">{{
                     formatNum(data["maxValue_" + ref.id])
                   }}</template>
                 </Column>
               </template>
-              <Column v-if="covRef.length === 2" field="SMD" sortable>
+              <Column
+                style="text-align: end"
+                v-if="covRef.length === 2"
+                field="SMD"
+                sortable
+              >
                 <template #body="{ data }">{{ formatSmd(data.SMD) }}</template>
               </Column>
               <Column
+                style="text-align: end"
                 v-if="covRef.length === 2"
                 field="absSMD"
                 sortable
@@ -409,11 +487,9 @@ watch(
   }
 );
 
-watch(activeResultTab, () => {
-  if (activeResultTab.value === 1) {
-    renderScatterPlot();
-  }
-});
+function onTabEnter() {
+  if (activeResultTab.value === 1) renderScatterPlot();
+}
 
 function formatNum(val) {
   if (val == null) return "";
@@ -477,11 +553,16 @@ async function generate() {
     }
     loaderState.value = "idle";
     await new Promise((r) => setTimeout(r, 220));
+    lastGeneratedConfig.value = {
+      database: selectedDatabaseName.value,
+      comparator: comparatorName.value,
+    };
     showResults.value = true;
 
     emit("state-change", {
       comparatorId: selectedComparator.value.cohortId,
       databaseId: selectedDatabase.value,
+      ctxItems: [`vs ${comparatorName.value}`, selectedDatabaseName.value],
     });
 
     binaryAbsSmdMin.value = 0;
@@ -489,10 +570,6 @@ async function generate() {
 
     await nextTick();
     renderScatterPlot();
-    lastGeneratedConfig.value = {
-      database: selectedDatabaseName.value,
-      comparator: comparatorName.value,
-    };
   } catch {
     loaderState.value = "error";
   } finally {
@@ -633,10 +710,6 @@ onMounted(async () => {
 
 .controls-row > div:first-child {
   min-width: 250px;
-}
-
-.scatter-container {
-  max-width: 700px;
 }
 
 .scatter-chart {

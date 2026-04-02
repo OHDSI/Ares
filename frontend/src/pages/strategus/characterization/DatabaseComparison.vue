@@ -470,10 +470,19 @@ async function generate() {
     showPlot.value = false;
 
     lastGeneratedConfig.value = {
-      databases: [...selectedDatabases.value],
+      databaseIds: [...selectedDatabases.value],
+      databases: availableDatabases.value
+        .filter((d) => selectedDatabases.value.includes(d.id))
+        .map((d) => d.name),
       threshold: minThreshold.value,
     };
-    emit("state-change", { databaseIds: selectedDatabases.value });
+    emit("state-change", {
+      databaseIds: selectedDatabases.value,
+      ctxItems: [
+        ...lastGeneratedConfig.value.databases,
+        `Threshold ${minThreshold.value}`,
+      ],
+    });
   } catch {
     loaderState.value = "error";
   } finally {
@@ -565,9 +574,9 @@ const generateDisabled = computed(() => {
   return (
     minThreshold.value === lastGeneratedConfig.value.threshold &&
     selectedDatabases.value.length ===
-      lastGeneratedConfig.value.databases.length &&
+      lastGeneratedConfig.value.databaseIds.length &&
     selectedDatabases.value.every((id) =>
-      lastGeneratedConfig.value.databases.includes(id)
+      lastGeneratedConfig.value.databaseIds.includes(id)
     )
   );
 });

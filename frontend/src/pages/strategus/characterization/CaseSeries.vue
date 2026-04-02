@@ -47,10 +47,10 @@
       v-if="showResults"
       :items="[
         targetName,
-        outcomeName,
-        selectedDatabaseName,
-        `TAR: ${selectedTar}`,
-        `Washout: ${selectedWashout}d`,
+        lastGeneratedConfig.outcomeName,
+        lastGeneratedConfig.selectedDatabaseName,
+        `TAR: ${lastGeneratedConfig.selectedTar}`,
+        `Washout: ${lastGeneratedConfig.selectedWashout}d`,
       ]"
     />
 
@@ -77,7 +77,11 @@
             >
               <ColumnGroup type="header">
                 <Row>
-                  <Column header="Covariate" :rowspan="2" />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Covariate"
+                    :rowspan="2"
+                  />
                   <Column
                     v-if="hasBinaryPhase('Before')"
                     header="Pre-exposure"
@@ -96,13 +100,25 @@
                 </Row>
                 <Row>
                   <template v-if="hasBinaryPhase('Before')"
-                    ><Column header="No." /><Column header="%"
+                    ><Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="No." /><Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="%"
                   /></template>
                   <template v-if="hasBinaryPhase('During')"
-                    ><Column header="No." /><Column header="%"
+                    ><Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="No." /><Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="%"
                   /></template>
                   <template v-if="hasBinaryPhase('After')"
-                    ><Column header="No." /><Column header="%"
+                    ><Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="No." /><Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="%"
                   /></template>
                 </Row>
               </ColumnGroup>
@@ -110,7 +126,7 @@
               <Column
                 field="covariateName"
                 :showFilterMenu="false"
-                style="min-width: 300px"
+                style="text-align: start"
               >
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
@@ -122,36 +138,45 @@
                 </template>
               </Column>
               <template v-if="hasBinaryPhase('Before')">
-                <Column field="sumValue_Before"
+                <Column style="text-align: end" field="sumValue_Before"
                   ><template #body="{ data }">{{
                     formatCensored(data.sumValue_Before)
                   }}</template></Column
                 >
-                <Column field="averageValue_Before" sortable
+                <Column
+                  style="text-align: end"
+                  field="averageValue_Before"
+                  sortable
                   ><template #body="{ data }">{{
                     formatPct(data.averageValue_Before)
                   }}</template></Column
                 >
               </template>
               <template v-if="hasBinaryPhase('During')">
-                <Column field="sumValue_During"
+                <Column style="text-align: end" field="sumValue_During"
                   ><template #body="{ data }">{{
                     formatCensored(data.sumValue_During)
                   }}</template></Column
                 >
-                <Column field="averageValue_During" sortable
+                <Column
+                  style="text-align: end"
+                  field="averageValue_During"
+                  sortable
                   ><template #body="{ data }">{{
                     formatPct(data.averageValue_During)
                   }}</template></Column
                 >
               </template>
               <template v-if="hasBinaryPhase('After')">
-                <Column field="sumValue_After"
+                <Column style="text-align: end" field="sumValue_After"
                   ><template #body="{ data }">{{
                     formatCensored(data.sumValue_After)
                   }}</template></Column
                 >
-                <Column field="averageValue_After" sortable
+                <Column
+                  style="text-align: end"
+                  field="averageValue_After"
+                  sortable
                   ><template #body="{ data }">{{
                     formatPct(data.averageValue_After)
                   }}</template></Column
@@ -176,8 +201,16 @@
             >
               <ColumnGroup type="header">
                 <Row>
-                  <Column header="Covariate" :rowspan="2" />
-                  <Column header="ID" :rowspan="2" />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Covariate"
+                    :rowspan="2"
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="ID"
+                    :rowspan="2"
+                  />
                   <Column
                     v-if="hasContinuousPhase('Before')"
                     header="Pre-exposure"
@@ -199,10 +232,24 @@
                     v-for="phase in presentContinuousPhases"
                     :key="'ch-' + phase"
                   >
-                    <Column header="Count" /><Column header="Min" /><Column
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Count"
+                    /><Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Min"
+                    /><Column
+                      :pt="{ headerContent: 'justify-end' }"
                       header="Max"
                     />
-                    <Column header="Mean" /><Column header="StDev" /><Column
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="Mean"
+                    /><Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="StDev"
+                    /><Column
+                      :pt="{ headerContent: 'justify-end' }"
                       header="Median"
                     />
                   </template>
@@ -212,7 +259,7 @@
               <Column
                 field="covariateName"
                 :showFilterMenu="false"
-                style="min-width: 300px"
+                style="text-align: start"
               >
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
@@ -223,37 +270,39 @@
                   />
                 </template>
               </Column>
-              <Column field="covariateId" />
+              <Column style="text-align: start" field="covariateId" />
               <template
                 v-for="phase in presentContinuousPhases"
                 :key="'cc-' + phase"
               >
-                <Column :field="'countValue_' + phase"
+                <Column style="text-align: end" :field="'countValue_' + phase"
                   ><template #body="{ data }">{{
                     formatCensored(data["countValue_" + phase])
                   }}</template></Column
                 >
-                <Column :field="'minValue_' + phase"
+                <Column style="text-align: end" :field="'minValue_' + phase"
                   ><template #body="{ data }">{{
                     formatNum(data["minValue_" + phase])
                   }}</template></Column
                 >
-                <Column :field="'maxValue_' + phase"
+                <Column style="text-align: end" :field="'maxValue_' + phase"
                   ><template #body="{ data }">{{
                     formatNum(data["maxValue_" + phase])
                   }}</template></Column
                 >
-                <Column :field="'averageValue_' + phase"
+                <Column style="text-align: end" :field="'averageValue_' + phase"
                   ><template #body="{ data }">{{
                     formatNum(data["averageValue_" + phase])
                   }}</template></Column
                 >
-                <Column :field="'standardDeviation_' + phase"
+                <Column
+                  style="text-align: end"
+                  :field="'standardDeviation_' + phase"
                   ><template #body="{ data }">{{
                     formatNum(data["standardDeviation_" + phase])
                   }}</template></Column
                 >
-                <Column :field="'medianValue_' + phase"
+                <Column style="text-align: end" :field="'medianValue_' + phase"
                   ><template #body="{ data }">{{
                     formatNum(data["medianValue_" + phase])
                   }}</template></Column
@@ -545,6 +594,7 @@ async function generate() {
     await new Promise((r) => setTimeout(r, 220));
     showResults.value = true;
     lastGeneratedConfig.value = {
+      outcomeName: outcomeName.value,
       selectedDatabaseName: selectedDatabaseName.value,
       selectedOutcome: selectedOutcome?.value?.cohortId,
       selectedTar: selectedTar.value,
@@ -555,6 +605,12 @@ async function generate() {
       databaseId: selectedDatabase.value,
       tar: selectedTar.value,
       washout: selectedWashout.value,
+      ctxItems: [
+        outcomeName.value,
+        selectedDatabaseName.value,
+        `TAR: ${selectedTar.value}`,
+        `Washout: ${selectedWashout.value}d`,
+      ],
     });
   } catch {
     loaderState.value = "error";

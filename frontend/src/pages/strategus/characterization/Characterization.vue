@@ -204,6 +204,18 @@
                 }}</span>
                 <span class="sticky-sep">·</span>
                 <span class="sticky-tab">{{ currentAnalysis?.label }}</span>
+                <Transition name="ctx-appear">
+                  <span
+                    v-if="stickyCtxItems.length && !ctxBarVisible"
+                    class="sticky-ctx-group"
+                  >
+                    <span class="sticky-vdivider" />
+                    <template v-for="(item, i) in stickyCtxItems" :key="i">
+                      <span v-if="i > 0" class="sticky-dot" />
+                      <span class="sticky-ctx">{{ item }}</span>
+                    </template>
+                  </span>
+                </Transition>
               </div>
               <div class="sticky-pills">
                 <button
@@ -287,7 +299,7 @@ import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacteriza
 
 const route = useRoute();
 const store = useStore();
-const { readUrl, writeUrl, updateUrl, clearChildParams, isSelfWrite } =
+const { readUrl, updateUrl, clearChildParams, isSelfWrite } =
   useCharacterizationUrl();
 
 const ANALYSIS_DEFS = [
@@ -369,7 +381,10 @@ const navKey = ref(0);
 
 const pillNavAnchor = ref(null);
 const pillNavVisible = ref(true);
+const stickyCtxItems = ref([]);
+const ctxBarVisible = ref(true);
 let observer = null;
+let ctxObserver = null;
 
 const targetFilters = ref({
   parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -445,11 +460,15 @@ function onAnalysisComponentEnter() {
 }
 
 function onChildStateChange(childState) {
+  if (childState.ctxItems) {
+    stickyCtxItems.value = childState.ctxItems;
+  }
+  const { ctxItems: _, ...urlState } = childState;
   updateUrl({
     report: route.query.report,
     targetId: selectedTarget.value?.cohortId,
     tab: activeTabKey(),
-    ...childState,
+    ...urlState,
   });
 }
 
@@ -525,8 +544,25 @@ function setupObserver() {
   observer.observe(pillNavAnchor.value);
 }
 
+function setupCtxObserver() {
+  if (ctxObserver) ctxObserver.disconnect();
+  const el = document.querySelector(".results-ctx");
+  if (!el) {
+    ctxBarVisible.value = true;
+    return;
+  }
+  ctxObserver = new IntersectionObserver(
+    ([entry]) => {
+      ctxBarVisible.value = entry.isIntersecting;
+    },
+    { threshold: 0 }
+  );
+  ctxObserver.observe(el);
+}
+
 watch(selectedTarget, async (newTarget, oldTarget) => {
   pillNavVisible.value = true;
+  stickyCtxItems.value = [];
   if (!newTarget) {
     outcomeTable.value = [];
     return;
@@ -544,14 +580,21 @@ watch(selectedTarget, async (newTarget, oldTarget) => {
   }
 });
 
-watch(activeTab, () => {
-  if (selectedTarget.value && !initialUrlState.value) {
-    writeUrl({
-      report: route.query.report,
-      targetId: selectedTarget.value.cohortId,
-      tab: activeTabKey(),
-    });
+watch(stickyCtxItems, async (items) => {
+  if (items.length) {
+    await nextTick();
+    setupCtxObserver();
+  } else {
+    if (ctxObserver) {
+      ctxObserver.disconnect();
+      ctxObserver = null;
+    }
+    ctxBarVisible.value = true;
   }
+});
+
+watch(activeTab, () => {
+  stickyCtxItems.value = [];
 });
 
 onBeforeRouteUpdate((to) => {
@@ -603,7 +646,7 @@ onBeforeRouteUpdate((to) => {
     return;
   }
 
-  // Same target — sync tab and child params
+  // Same target - sync tab and child params
   const newTabIdx = tabKeyToIndex(newState.tab);
   if (activeTab.value !== newTabIdx) {
     activeTab.value = newTabIdx;
@@ -642,6 +685,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   if (observer) observer.disconnect();
+  if (ctxObserver) ctxObserver.disconnect();
 });
 </script>
 
@@ -789,47 +833,102 @@ onBeforeUnmount(() => {
 
 .sticky-bar {
   position: fixed;
-  top: 0;
-  left: 52px;
-  right: 0;
+  top: 6px;
+  left: calc(52px + 1.5rem);
+  right: 1.5rem;
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.4rem 1.5rem;
-  background: #ffffff;
-  border-bottom: 1px solid var(--surface-300, #cbd5e1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  gap: 1rem;
+  padding: 0 1.25rem;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--surface-200, #e2e8f0);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .sticky-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .sticky-target {
   font-weight: 600;
   color: var(--text-color, #1e293b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
 }
 
 .sticky-sep {
-  color: var(--text-color, #1e293b);
+  color: var(--text-color-secondary, #94a3b8);
+  flex-shrink: 0;
 }
 
 .sticky-tab {
   color: var(--primary-700, #1d4ed8);
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sticky-vdivider {
+  display: inline-block;
+  width: 1px;
+  height: 1rem;
+  background: var(--surface-300, #cbd5e1);
+  margin: 0 0.3rem;
+  flex-shrink: 0;
+}
+
+.sticky-dot {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--surface-400, #94a3b8);
+  flex-shrink: 0;
+}
+
+.sticky-ctx {
+  color: var(--text-color-secondary, #64748b);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.sticky-ctx-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ctx-appear-enter-active,
+.ctx-appear-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ctx-appear-enter-from,
+.ctx-appear-leave-to {
+  opacity: 0;
+  transform: translateX(-8px);
 }
 
 .sticky-pills {
   display: flex;
   gap: 0.25rem;
+  flex-shrink: 0;
 }
 
 .sticky-pill {
-  padding: 0.25rem 0.625rem;
+  padding: 0.2rem 0.5rem;
   border: none;
   border-radius: 4px;
   background: transparent;

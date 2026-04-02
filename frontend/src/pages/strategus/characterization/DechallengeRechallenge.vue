@@ -7,14 +7,17 @@
       <Button :disabled="generateDisabled" label="Generate" @click="generate" />
     </div>
 
-    <ContextBar v-if="showResults" :items="[targetName, outcomeName]" />
+    <ContextBar
+      v-if="showResults"
+      :items="[targetName, lastGeneratedConfig.outcomeName]"
+    />
 
     <Message
       v-if="showResults && targetWarning"
       severity="warn"
       :closable="false"
     >
-      The target cohort does not have multiple records per person — rechallenge
+      The target cohort does not have multiple records per person - rechallenge
       attempts cannot be observed.
     </Message>
     <Message
@@ -22,7 +25,7 @@
       severity="warn"
       :closable="false"
     >
-      The outcome cohort does not have multiple records per person — rechallenge
+      The outcome cohort does not have multiple records per person - rechallenge
       attempts cannot be observed.
     </Message>
 
@@ -40,6 +43,8 @@
         class="result-table"
       >
         <Column
+          style="text-align: start"
+          :pt="{ headerContent: 'justify-start' }"
           field="databaseName"
           header="Database"
           sortable
@@ -55,6 +60,8 @@
           </template>
         </Column>
         <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
           field="dechallengeStopInterval"
           header="Stop Interval"
           sortable
@@ -70,6 +77,8 @@
           </template>
         </Column>
         <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
           field="dechallengeEvaluationWindow"
           header="Eval Window"
           sortable
@@ -84,77 +93,167 @@
             />
           </template>
         </Column>
-        <Column field="numExposureEras" header="# Exp Eras" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="numExposureEras"
+          header="# Exp Eras"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.numExposureEras)
           }}</template>
         </Column>
-        <Column field="numPersonsExposed" header="# Exposed" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="numPersonsExposed"
+          header="# Exposed"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.numPersonsExposed)
           }}</template>
         </Column>
-        <Column field="numCases" header="# Cases" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="numCases"
+          header="# Cases"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.numCases)
           }}</template>
         </Column>
-        <Column field="dechallengeAttempt" header="# D.Attempt" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="dechallengeAttempt"
+          header="# D.Attempt"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.dechallengeAttempt)
           }}</template>
         </Column>
-        <Column field="dechallengeFail" header="# D.Fail" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="dechallengeFail"
+          header="# D.Fail"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.dechallengeFail)
           }}</template>
         </Column>
-        <Column field="dechallengeSuccess" header="# D.Success" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="dechallengeSuccess"
+          header="# D.Success"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.dechallengeSuccess)
           }}</template>
         </Column>
-        <Column field="pctDechallengeAttempt" header="% D.Attempt" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="pctDechallengeAttempt"
+          header="% D.Attempt"
+          sortable
+        >
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeAttempt)
           }}</template>
         </Column>
-        <Column field="pctDechallengeSuccess" header="% D.Success" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="pctDechallengeSuccess"
+          header="% D.Success"
+          sortable
+        >
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeSuccess)
           }}</template>
         </Column>
-        <Column field="pctDechallengeFail" header="% D.Fail" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="pctDechallengeFail"
+          header="% D.Fail"
+          sortable
+        >
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeFail)
           }}</template>
         </Column>
-        <Column field="rechallengeAttempt" header="# R.Attempt" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="rechallengeAttempt"
+          header="# R.Attempt"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.rechallengeAttempt)
           }}</template>
         </Column>
-        <Column field="rechallengeFail" header="# R.Fail" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="rechallengeFail"
+          header="# R.Fail"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.rechallengeFail)
           }}</template>
         </Column>
-        <Column field="rechallengeSuccess" header="# R.Success" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="rechallengeSuccess"
+          header="# R.Success"
+          sortable
+        >
           <template #body="{ data }">{{
             formatCensored(data.rechallengeSuccess)
           }}</template>
         </Column>
-        <Column field="pctRechallengeAttempt" header="% R.Attempt" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="pctRechallengeAttempt"
+          header="% R.Attempt"
+          sortable
+        >
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeAttempt)
           }}</template>
         </Column>
-        <Column field="pctRechallengeSuccess" header="% R.Success" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="pctRechallengeSuccess"
+          header="% R.Success"
+          sortable
+        >
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeSuccess)
           }}</template>
         </Column>
-        <Column field="pctRechallengeFail" header="% R.Fail" sortable>
+        <Column
+          style="text-align: end"
+          :pt="{ headerContent: 'justify-end' }"
+          field="pctRechallengeFail"
+          header="% R.Fail"
+          sortable
+        >
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeFail)
           }}</template>
@@ -328,8 +427,14 @@ async function generate() {
     loaderState.value = "idle";
     await new Promise((r) => setTimeout(r, 220));
     showResults.value = true;
-    lastGeneratedConfig.value = { outcome: outcomeId };
-    emit("state-change", { outcomeId: selectedOutcome.value.cohortId });
+    lastGeneratedConfig.value = {
+      outcome: outcomeId,
+      outcomeName: outcomeName.value,
+    };
+    emit("state-change", {
+      outcomeId: selectedOutcome.value.cohortId,
+      ctxItems: [outcomeName.value],
+    });
   } catch {
     loaderState.value = "error";
   } finally {

@@ -13,10 +13,7 @@
 
     <ContextBar
       v-if="showResults"
-      :items="[
-        targetName,
-        selectedOutcomes.map((o) => o.cohortName).join(', '),
-      ]"
+      :items="[targetName, lastGeneratedConfig.outcomeNames]"
     />
 
     <div v-if="showResults" class="section results-body">
@@ -77,6 +74,8 @@
               class="result-table mt-3"
             >
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
                 field="databaseName"
                 header="Database"
                 sortable
@@ -92,6 +91,8 @@
                 </template>
               </Column>
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
                 field="outcomeName"
                 header="Outcome"
                 sortable
@@ -108,7 +109,14 @@
                   />
                 </template>
               </Column>
-              <Column field="tar" header="TAR" sortable :showFilterMenu="false">
+              <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
+                field="tar"
+                header="TAR"
+                sortable
+                :showFilterMenu="false"
+              >
                 <template #filter="{ filterModel, filterCallback }">
                   <Dropdown
                     v-model="filterModel.value"
@@ -120,10 +128,30 @@
                   />
                 </template>
               </Column>
-              <Column field="ageGroupName" header="Age" sortable />
-              <Column field="genderName" header="Sex" sortable />
-              <Column field="startYear" header="Year" sortable />
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
+                field="ageGroupName"
+                header="Age"
+                sortable
+              />
+              <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
+                field="genderName"
+                header="Sex"
+                sortable
+              />
+              <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
+                field="startYear"
+                header="Year"
+                sortable
+              />
+              <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
                 field="cleanWindow"
                 header="Clean Win."
                 sortable
@@ -140,10 +168,30 @@
                   />
                 </template>
               </Column>
-              <Column field="personsAtRisk" header="Persons" sortable />
-              <Column field="personDays" header="Person Days" sortable />
-              <Column field="outcomes" header="Outcomes" sortable />
               <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
+                field="personsAtRisk"
+                header="Persons"
+                sortable
+              />
+              <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
+                field="personDays"
+                header="Person Days"
+                sortable
+              />
+              <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
+                field="outcomes"
+                header="Outcomes"
+                sortable
+              />
+              <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
                 field="incidenceProportionP100p"
                 header="Prop. /100p"
                 sortable
@@ -152,7 +200,13 @@
                   formatNum(data.incidenceProportionP100p)
                 }}</template>
               </Column>
-              <Column field="incidenceRateP100py" header="Rate /100py" sortable>
+              <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
+                field="incidenceRateP100py"
+                header="Rate /100py"
+                sortable
+              >
                 <template #body="{ data }">{{
                   formatNum(data.incidenceRateP100py)
                 }}</template>
@@ -356,9 +410,13 @@ async function generate() {
     showResults.value = true;
     applyTableFilter();
 
-    lastGeneratedConfig.value = { selectedOutcomes: selectedOutcomes.value };
+    lastGeneratedConfig.value = {
+      selectedOutcomes: selectedOutcomes.value,
+      outcomeNames: selectedOutcomes.value.map((o) => o.cohortName).join(", "),
+    };
     emit("state-change", {
       outcomeIds: selectedOutcomes.value.map((o) => o.cohortId),
+      ctxItems: [selectedOutcomes.value.map((o) => o.cohortName).join(", ")],
     });
   } catch {
     loaderState.value = "error";

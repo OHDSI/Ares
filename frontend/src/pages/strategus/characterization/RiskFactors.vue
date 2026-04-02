@@ -47,10 +47,10 @@
       v-if="showResults"
       :items="[
         targetName,
-        outcomeName,
-        selectedDatabaseName,
-        `TAR: ${selectedTar}`,
-        `Washout: ${selectedWashout}d`,
+        lastGeneratedConfig.outcomeName,
+        lastGeneratedConfig.selectedDatabaseName,
+        `TAR: ${lastGeneratedConfig.selectedTar}`,
+        `Washout: ${lastGeneratedConfig.selectedWashout}d`,
       ]"
     />
 
@@ -79,11 +79,22 @@
             >
               <ColumnGroup type="header">
                 <Row>
-                  <Column header="Covariate" :rowspan="2" />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Covariate"
+                    :rowspan="2"
+                  />
                   <Column :header="`Case (N=${caseN})`" :colspan="2" />
                   <Column :header="`Non-Case (N=${nonCaseN})`" :colspan="2" />
-                  <Column header="SMD" :rowspan="2" sortField="SMD" sortable />
                   <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="SMD"
+                    :rowspan="2"
+                    sortField="SMD"
+                    sortable
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
                     header="|SMD|"
                     :rowspan="2"
                     sortField="absSMD"
@@ -91,17 +102,23 @@
                   />
                 </Row>
                 <Row>
-                  <Column header="Count" />
-                  <Column header="%" />
-                  <Column header="Count" />
-                  <Column header="%" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Count"
+                  />
+                  <Column :pt="{ headerContent: 'justify-end' }" header="%" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Count"
+                  />
+                  <Column :pt="{ headerContent: 'justify-end' }" header="%" />
                 </Row>
               </ColumnGroup>
 
               <Column
                 field="covariateName"
                 :showFilterMenu="false"
-                style="min-width: 300px"
+                style="text-align: start"
               >
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
@@ -112,30 +129,35 @@
                   />
                 </template>
               </Column>
-              <Column field="caseCount">
+              <Column style="text-align: end" field="caseCount">
                 <template #body="{ data }">{{
                   formatCensored(data.caseCount)
                 }}</template>
               </Column>
-              <Column field="caseAverage" sortable>
+              <Column style="text-align: end" field="caseAverage" sortable>
                 <template #body="{ data }">{{
                   formatPct(data.caseAverage)
                 }}</template>
               </Column>
-              <Column field="nonCaseCount">
+              <Column style="text-align: end" field="nonCaseCount">
                 <template #body="{ data }">{{
                   formatCensored(data.nonCaseCount)
                 }}</template>
               </Column>
-              <Column field="nonCaseAverage" sortable>
+              <Column style="text-align: end" field="nonCaseAverage" sortable>
                 <template #body="{ data }">{{
                   formatPct(data.nonCaseAverage)
                 }}</template>
               </Column>
-              <Column field="SMD" sortable>
+              <Column style="text-align: end" field="SMD" sortable>
                 <template #body="{ data }">{{ formatNum(data.SMD) }}</template>
               </Column>
-              <Column field="absSMD" sortable :showFilterMenu="false">
+              <Column
+                style="text-align: end"
+                field="absSMD"
+                sortable
+                :showFilterMenu="false"
+              >
                 <template #body="{ data }">{{
                   formatNum(data.absSMD)
                 }}</template>
@@ -177,11 +199,22 @@
             >
               <ColumnGroup type="header">
                 <Row>
-                  <Column header="Covariate" :rowspan="2" />
+                  <Column
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Covariate"
+                    :rowspan="2"
+                  />
                   <Column :header="`Case (N=${caseN})`" :colspan="6" />
                   <Column :header="`Target (N=${targetN})`" :colspan="6" />
-                  <Column header="SMD" :rowspan="2" sortField="SMD" sortable />
                   <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="SMD"
+                    :rowspan="2"
+                    sortField="SMD"
+                    sortable
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
                     header="|SMD|"
                     :rowspan="2"
                     sortField="absSMD"
@@ -189,25 +222,49 @@
                   />
                 </Row>
                 <Row>
-                  <Column header="Count" />
-                  <Column header="Min" />
-                  <Column header="Max" />
-                  <Column header="Mean" />
-                  <Column header="StDev" />
-                  <Column header="Median" />
-                  <Column header="Count" />
-                  <Column header="Min" />
-                  <Column header="Max" />
-                  <Column header="Mean" />
-                  <Column header="StDev" />
-                  <Column header="Median" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Count"
+                  />
+                  <Column :pt="{ headerContent: 'justify-end' }" header="Min" />
+                  <Column :pt="{ headerContent: 'justify-end' }" header="Max" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Mean"
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="StDev"
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Median"
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Count"
+                  />
+                  <Column :pt="{ headerContent: 'justify-end' }" header="Min" />
+                  <Column :pt="{ headerContent: 'justify-end' }" header="Max" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Mean"
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="StDev"
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Median"
+                  />
                 </Row>
               </ColumnGroup>
 
               <Column
                 field="covariateName"
                 :showFilterMenu="false"
-                style="min-width: 300px"
+                style="text-align: start"
               >
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
@@ -218,72 +275,77 @@
                   />
                 </template>
               </Column>
-              <Column field="caseCountValue"
+              <Column style="text-align: end" field="caseCountValue"
                 ><template #body="{ data }">{{
                   formatCensored(data.caseCountValue)
                 }}</template></Column
               >
-              <Column field="caseMinValue"
+              <Column style="text-align: end" field="caseMinValue"
                 ><template #body="{ data }">{{
                   formatNum(data.caseMinValue)
                 }}</template></Column
               >
-              <Column field="caseMaxValue"
+              <Column style="text-align: end" field="caseMaxValue"
                 ><template #body="{ data }">{{
                   formatNum(data.caseMaxValue)
                 }}</template></Column
               >
-              <Column field="caseAverageValue"
+              <Column style="text-align: end" field="caseAverageValue"
                 ><template #body="{ data }">{{
                   formatNum(data.caseAverageValue)
                 }}</template></Column
               >
-              <Column field="caseStandardDeviation"
+              <Column style="text-align: end" field="caseStandardDeviation"
                 ><template #body="{ data }">{{
                   formatNum(data.caseStandardDeviation)
                 }}</template></Column
               >
-              <Column field="caseMedianValue"
+              <Column style="text-align: end" field="caseMedianValue"
                 ><template #body="{ data }">{{
                   formatNum(data.caseMedianValue)
                 }}</template></Column
               >
-              <Column field="targetCountValue"
+              <Column style="text-align: end" field="targetCountValue"
                 ><template #body="{ data }">{{
                   formatCensored(data.targetCountValue)
                 }}</template></Column
               >
-              <Column field="targetMinValue"
+              <Column style="text-align: end" field="targetMinValue"
                 ><template #body="{ data }">{{
                   formatNum(data.targetMinValue)
                 }}</template></Column
               >
-              <Column field="targetMaxValue"
+              <Column style="text-align: end" field="targetMaxValue"
                 ><template #body="{ data }">{{
                   formatNum(data.targetMaxValue)
                 }}</template></Column
               >
-              <Column field="targetAverageValue"
+              <Column style="text-align: end" field="targetAverageValue"
                 ><template #body="{ data }">{{
                   formatNum(data.targetAverageValue)
                 }}</template></Column
               >
-              <Column field="targetStandardDeviation"
+              <Column style="text-align: end" field="targetStandardDeviation"
                 ><template #body="{ data }">{{
                   formatNum(data.targetStandardDeviation)
                 }}</template></Column
               >
-              <Column field="targetMedianValue"
+              <Column style="text-align: end" field="targetMedianValue"
                 ><template #body="{ data }">{{
                   formatNum(data.targetMedianValue)
                 }}</template></Column
               >
-              <Column field="SMD" sortable
+              <Column style="text-align: end" field="SMD" sortable
                 ><template #body="{ data }">{{
                   formatNum(data.SMD)
                 }}</template></Column
               >
-              <Column field="absSMD" sortable :showFilterMenu="false">
+              <Column
+                style="text-align: end"
+                field="absSMD"
+                sortable
+                :showFilterMenu="false"
+              >
                 <template #body="{ data }">{{
                   formatNum(data.absSMD)
                 }}</template>
@@ -545,6 +607,7 @@ async function generate() {
     await new Promise((r) => setTimeout(r, 220));
     showResults.value = true;
     lastGeneratedConfig.value = {
+      outcomeName: outcomeName.value,
       selectedDatabaseName: selectedDatabaseName.value,
       selectedOutcome: selectedOutcome?.value?.cohortId,
       selectedTar: selectedTar.value,
@@ -555,6 +618,12 @@ async function generate() {
       databaseId: selectedDatabase.value,
       tar: selectedTar.value,
       washout: selectedWashout.value,
+      ctxItems: [
+        outcomeName.value,
+        selectedDatabaseName.value,
+        `TAR: ${selectedTar.value}`,
+        `Washout: ${selectedWashout.value}d`,
+      ],
     });
   } catch {
     loaderState.value = "error";

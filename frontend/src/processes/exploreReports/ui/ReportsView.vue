@@ -11,7 +11,12 @@
     v-if="loaderState !== 'idle' && !store.getters.getErrors"
     class="flex flex-col gap-2 justify-center items-center content-center h-[70vh]"
   >
-    <BlackHoleLoading text="Loading..." size="lg" :state="loaderState" />
+    <BlackHoleLoading
+      :escalate="true"
+      text="Fetching..."
+      size="lg"
+      :state="loaderState"
+    />
   </div>
   <BottomNav />
 

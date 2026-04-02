@@ -7,7 +7,10 @@
       <Button :disabled="generateDisabled" label="Generate" @click="generate" />
     </div>
 
-    <ContextBar v-if="showResults" :items="[targetName, outcomeName]" />
+    <ContextBar
+      v-if="showResults"
+      :items="[targetName, lastGeneratedConfig.outcomeName]"
+    />
 
     <div v-if="showResults" class="section results-body">
       <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
@@ -73,6 +76,8 @@
               class="result-table"
             >
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
                 field="databaseName"
                 header="Database"
                 sortable
@@ -88,10 +93,11 @@
                 </template>
               </Column>
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
                 field="targetName"
                 header="Target"
                 sortable
-                style="min-width: 200px"
                 :showFilterMenu="false"
               >
                 <template #filter="{ filterModel, filterCallback }">
@@ -104,6 +110,8 @@
                 </template>
               </Column>
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
                 field="outcomeName"
                 header="Outcome"
                 sortable
@@ -119,6 +127,8 @@
                 </template>
               </Column>
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
                 field="outcomeType"
                 header="Outcome Type"
                 sortable
@@ -134,6 +144,8 @@
                 </template>
               </Column>
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
                 field="targetOutcomeType"
                 header="Timing"
                 sortable
@@ -149,6 +161,8 @@
                 </template>
               </Column>
               <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
                 field="timeToEvent"
                 header="Days"
                 sortable
@@ -164,6 +178,8 @@
                 </template>
               </Column>
               <Column
+                style="text-align: end"
+                :pt="{ headerContent: 'justify-end' }"
                 field="numEvents"
                 header="# Events"
                 sortable
@@ -182,6 +198,8 @@
                 </template>
               </Column>
               <Column
+                style="text-align: start"
+                :pt="{ headerContent: 'justify-start' }"
                 field="timeScale"
                 header="Scale"
                 sortable
@@ -362,11 +380,17 @@ async function generate() {
     }
     loaderState.value = "idle";
     await new Promise((r) => setTimeout(r, 220));
+    lastGeneratedConfig.value = {
+      outcome: selectedOutcome.value.cohortId,
+      outcomeName: outcomeName.value,
+    };
     showResults.value = true;
     await nextTick();
     renderChart();
-    lastGeneratedConfig.value = { outcome: selectedOutcome.value.cohortId };
-    emit("state-change", { outcomeId: selectedOutcome.value.cohortId });
+    emit("state-change", {
+      outcomeId: selectedOutcome.value.cohortId,
+      ctxItems: [outcomeName.value],
+    });
   } catch {
     loaderState.value = "error";
   } finally {
@@ -443,7 +467,7 @@ async function renderChart() {
       nameGap: 35,
     });
     titles.push({
-      text: `${dbName} — ${ts}`,
+      text: `${dbName} - ${ts}`,
       left: `${col * cellW + cellW / 2 + 1}%`,
       top: `${row * cellH + 1}%`,
       textAlign: "center",
