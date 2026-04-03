@@ -80,7 +80,9 @@
         />
         <circle cx="0" cy="0" r="17" fill="url(#bh-core-grad)" />
       </svg>
-      <span class="bh-label" :class="labelSizeClass">{{ text }}</span>
+      <span ref="labelRef" class="bh-label" :class="labelSizeClass">{{
+        text
+      }}</span>
     </div>
   </Transition>
 </template>
@@ -248,97 +250,164 @@ const svgMarginBottom = computed(() => {
 });
 
 const svgRef = ref(null);
+const labelRef = ref(null);
 let bhAnims = [];
 
 function startBHAnim() {
   stopBHAnim();
+  if (labelRef.value) labelRef.value.style.letterSpacing = "";
   const el = svgRef.value;
   if (!el) return;
 
   if (props.escalate) escalationTimer = setTimeout(startEscalation, 10_000);
 
   activeRings.value.forEach(({ r, period }, i) => {
+    const target = el.querySelector(`[data-bh-idx="${i}"]`);
     bhAnims.push(
       anime({
-        targets: el.querySelector(`[data-bh-idx="${i}"]`),
+        targets: target,
         strokeDashoffset: [0, -circ(r)],
         duration: period,
         easing: "linear",
         loop: true,
       })
     );
+    bhAnims.push(
+      anime({
+        targets: target,
+        scale: [1.45, 1],
+        opacity: [0, 1],
+        duration: 900,
+        delay: (activeRings.value.length - 1 - i) * 80,
+        easing: "easeOutCubic",
+      })
+    );
   });
 
   bhAnims.push(
     anime({
       targets: el.querySelector(".bh-photon"),
-      opacity: [0.5, 0.9, 0.5],
+      opacity: [0, 0.9, 0.5],
       duration: T_PHOTON_SPHERE,
       easing: "easeInOutSine",
       loop: true,
+      delay: activeRings.value.length * 80,
     })
   );
 }
 
 function playSuccessAnim() {
-  stopBHAnim();
+  stopEscalation();
+  const extraCircles = [...escalatedCircles];
+  escalatedCircles = [];
   const el = svgRef.value;
   if (!el) return;
 
-  activeRings.value.forEach(({ r }, i) => {
-    const target = el.querySelector(`[data-bh-idx="${i}"]`);
-    const cur = parseFloat(target.getAttribute("stroke-dashoffset") || 0);
+  const successStagger = extraCircles.length > 1 ? 200 / (extraCircles.length - 1) : 0;
+  extraCircles.forEach((c, i) => {
     bhAnims.push(
       anime({
-        targets: target,
-        strokeDashoffset: cur - circ(r) * 0.4,
-        duration: 1100,
-        easing: "easeInOutSine",
+        targets: c,
+        r: 0,
+        opacity: 0,
+        duration: 700,
+        delay: i * successStagger,
+        easing: "easeInQuart",
+        complete: () => c.parentNode?.removeChild(c),
       })
     );
   });
-}
 
-function playErrorAnim() {
-  stopBHAnim();
-  const el = svgRef.value;
-  if (!el) return;
-
-  activeRings.value.forEach(({ r, arcs, gaps }, i) => {
-    const target = el.querySelector(`[data-bh-idx="${i}"]`);
-    const cur = parseFloat(target.getAttribute("stroke-dashoffset") || 0);
-    const delay = i * 150;
-
+  if (labelRef.value) {
     bhAnims.push(
       anime({
-        targets: target,
-        strokeDashoffset: cur - circ(r) * 0.3,
-        opacity: 0.12,
-        duration: 2000,
-        delay,
+        targets: labelRef.value,
+        letterSpacing: "0.1em",
+        duration: 900,
         easing: "easeOutCubic",
       })
     );
+  }
 
-    const proxy = { a1: arcs[0], a2: arcs[1], g1: gaps[0], g2: gaps[1] };
+  const n = activeRings.value.length;
+  activeRings.value.forEach((_, i) => {
+    const target = el.querySelector(`[data-bh-idx="${i}"]`);
+    if (!target) return;
+    // outer rings start first, cascade inward
+    const delay = (n - 1 - i) * 110;
     bhAnims.push(
       anime({
-        targets: proxy,
-        a1: arcs[0] * 0.12,
-        a2: arcs[1] * 0.12,
-        g1: gaps[0] + arcs[0] * 0.88,
-        g2: gaps[1] + arcs[1] * 0.88,
-        duration: 2000,
+        targets: target,
+        r: 0,
+        opacity: 0,
+        duration: 750,
         delay,
-        easing: "easeOutCubic",
-        update: () => {
-          target.setAttribute(
-            "stroke-dasharray",
-            `${proxy.a1.toFixed(1)} ${proxy.g1.toFixed(1)} ${proxy.a2.toFixed(
-              1
-            )} ${proxy.g2.toFixed(1)}`
-          );
-        },
+        easing: "easeInQuart",
+      })
+    );
+  });
+
+  // photon ring flares then collapses last
+  bhAnims.push(
+    anime({
+      targets: el.querySelector(".bh-photon"),
+      opacity: [0.9, 1, 0],
+      r: 0,
+      duration: 650,
+      delay: n * 110,
+      easing: "easeInQuart",
+    })
+  );
+}
+
+function playErrorAnim() {
+  stopEscalation();
+  const extraCircles = [...escalatedCircles];
+  escalatedCircles = [];
+  const el = svgRef.value;
+  if (!el) return;
+
+  const errorStagger = extraCircles.length > 1 ? 300 / (extraCircles.length - 1) : 0;
+  extraCircles.forEach((c, i) => {
+    const r = parseFloat(c.getAttribute("r") || 0);
+    bhAnims.push(
+      anime({
+        targets: c,
+        r: r + 60,
+        opacity: 0,
+        strokeWidth: 0,
+        duration: 1400,
+        delay: i * errorStagger,
+        easing: "easeOutQuart",
+        complete: () => c.parentNode?.removeChild(c),
+      })
+    );
+  });
+
+  if (labelRef.value) {
+    bhAnims.push(
+      anime({
+        targets: labelRef.value,
+        letterSpacing: "0.1em",
+        duration: 400,
+        easing: "easeOutQuart",
+      })
+    );
+  }
+
+  // inner rings erupt first, cascade outward
+  activeRings.value.forEach(({ r }, i) => {
+    const target = el.querySelector(`[data-bh-idx="${i}"]`);
+    if (!target) return;
+    bhAnims.push(
+      anime({
+        targets: target,
+        r: r + 60,
+        opacity: 0,
+        strokeWidth: 0,
+        duration: 1600,
+        delay: i * 120,
+        easing: "easeOutQuart",
       })
     );
   });
@@ -346,9 +415,11 @@ function playErrorAnim() {
   bhAnims.push(
     anime({
       targets: el.querySelector(".bh-photon"),
-      opacity: 0,
-      duration: 1800,
-      easing: "easeOutQuad",
+      r: 52,
+      opacity: [0.9, 1, 0],
+      strokeWidth: 0,
+      duration: 1200,
+      easing: "easeOutQuart",
     })
   );
 }
@@ -377,6 +448,17 @@ function startEscalation() {
   const initCount = RING_COUNT[props.size];
   const anchor = el.querySelector('[fill="url(#bh-shadow-grad)"]');
   let idx = initCount;
+
+  if (labelRef.value) {
+    bhAnims.push(
+      anime({
+        targets: labelRef.value,
+        letterSpacing: "0.8em",
+        duration: 30_000,
+        easing: "easeInQuad",
+      })
+    );
+  }
 
   ringAddInterval = setInterval(() => {
     if (idx >= MAX_ESCALATED_RINGS) {
@@ -416,15 +498,23 @@ function startEscalation() {
   }, 500);
 }
 
-function stopBHAnim() {
-  bhAnims.forEach((a) => a.pause());
-  bhAnims = [];
+function stopEscalation() {
   clearTimeout(escalationTimer);
   clearInterval(ringAddInterval);
   escalationTimer = null;
   ringAddInterval = null;
+}
+
+function clearEscalatedCircles() {
   escalatedCircles.forEach((c) => c.parentNode?.removeChild(c));
   escalatedCircles = [];
+}
+
+function stopBHAnim() {
+  bhAnims.forEach((a) => a.pause());
+  bhAnims = [];
+  stopEscalation();
+  clearEscalatedCircles();
 }
 
 watch(
