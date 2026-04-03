@@ -16,11 +16,7 @@
             disabled: sidebarOpen,
             pt: {
               root: '',
-              arrow: {
-                style: {
-                  borderRightColor: 'var(--surface-800)',
-                },
-              },
+              arrow: { style: {} },
               text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black text-xs font-normal p-2',
             },
           }"
@@ -45,13 +41,25 @@
 <script setup lang="ts">
 import { computed, ref, markRaw } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 import DataSources from "@/pages/strategus/DataSources.vue";
 import Characterization from "@/pages/strategus/characterization/Characterization.vue";
 
 const router = useRouter();
 const route = useRoute();
+const store = useStore();
 const sidebarOpen = ref(false);
+
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+const sidebarBorder = computed(() => (darkMode.value ? "#2a2a2a" : "#e5e7eb"));
+const navItemColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
+const navItemHoverColor = computed(() =>
+  darkMode.value ? "#e2e8f0" : "#334155"
+);
+const navItemHoverBorder = computed(() =>
+  darkMode.value ? "#4b5563" : "#cbd5e1"
+);
 
 const sections = [
   {
@@ -85,8 +93,7 @@ const setCurrentTab = function (val: number) {
 .strategus-sidebar {
   width: 52px;
   flex-shrink: 0;
-  border-right: 1px solid var(--surface-200, #e5e7eb);
-  background: var(--surface-50, #f8fafc);
+  border-right: 1px solid v-bind(sidebarBorder);
   padding: 1rem 0;
   transition: width 0.2s ease;
   overflow: hidden;
@@ -112,7 +119,7 @@ const setCurrentTab = function (val: number) {
   border-left: 3px solid transparent;
   border-radius: 0 6px 6px 0;
   background: transparent;
-  color: var(--text-color-secondary, #64748b);
+  color: v-bind(navItemColor);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -122,14 +129,12 @@ const setCurrentTab = function (val: number) {
 }
 
 .nav-item:hover {
-  background: var(--surface-100, #f1f5f9);
-  color: var(--text-color, #334155);
-  border-left-color: var(--surface-300, #cbd5e1);
+  color: v-bind(navItemHoverColor);
+  border-left-color: v-bind(navItemHoverBorder);
 }
 
 .nav-item.active {
-  background: var(--primary-50, #eff6ff);
-  color: var(--primary-700, #1d4ed8);
+  color: v-bind(navItemHoverColor);
   font-weight: 600;
   border-left-color: var(--primary-500, #3b82f6);
 }
@@ -139,10 +144,6 @@ const setCurrentTab = function (val: number) {
   text-align: center;
   flex-shrink: 0;
   font-size: 1.25rem;
-}
-
-.nav-item.active i {
-  color: var(--primary-500, #3b82f6);
 }
 
 .nav-label {

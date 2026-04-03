@@ -144,6 +144,14 @@
               :value="'#' + selectedTarget.cohortId"
               severity="info"
               class="active-target-tag"
+              :pt="{
+                root: {
+                  style: {
+                    color: tagTextColor,
+                    border: 'none',
+                  },
+                },
+              }"
             />
             <span class="active-target-divider" />
             <Button
@@ -179,9 +187,9 @@
                   value: analysis.description,
                   pt: {
                     root: 'absolute',
-                    arrow: {
-                      style: { borderBottomColor: 'var(--surface-800)' },
-                    },
+                    // arrow: {
+                    //   style: { borderBottomColor: 'var(--surface-200)' },
+                    // },
                     text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-normal p-2 max-w-xs',
                   },
                 }"
@@ -299,6 +307,48 @@ import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacteriza
 
 const route = useRoute();
 const store = useStore();
+
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
+const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#cbd5e1"));
+const headerColor = computed(() => (darkMode.value ? "#f1f5f9" : "#1e293b"));
+const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
+const pillTextColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
+const pillHoverColor = computed(() => (darkMode.value ? "#e2e8f0" : "#334155"));
+const activeTargetBorder = computed(() =>
+  darkMode.value ? "#3a3a3a" : "#e5e7eb"
+);
+const dividerBg = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
+const activeTargetNameColor = computed(() =>
+  darkMode.value ? "#f1f5f9" : "#1e293b"
+);
+const stickyBarBg = computed(() =>
+  darkMode.value ? "rgba(33,33,33,0.92)" : "rgba(255,255,255,0.92)"
+);
+const stickyBarBorder = computed(() =>
+  darkMode.value ? "#3a3a3a" : "#e2e8f0"
+);
+const stickyTargetColor = computed(() =>
+  darkMode.value ? "#f1f5f9" : "#1e293b"
+);
+const stickyCtxColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
+const stickyPillColor = computed(() =>
+  darkMode.value ? "#6b7280" : "#94a3b8"
+);
+const stickyPillHoverColor = computed(() =>
+  darkMode.value ? "#e2e8f0" : "#334155"
+);
+const tagTextColor = computed(() => (darkMode.value ? "#94a3b8" : "#475569"));
+
+const pillActiveBg = computed(() =>
+  darkMode.value ? "rgba(255,255,255,0.1)" : "transparent"
+);
+const pillActiveShadow = computed(() =>
+  darkMode.value
+    ? "0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)"
+    : "0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06)"
+);
+
 const { readUrl, updateUrl, clearChildParams, isSelfWrite } =
   useCharacterizationUrl();
 
@@ -722,16 +772,16 @@ onBeforeUnmount(() => {
 .section-header h3 {
   font-weight: 700;
   margin: 0;
-  color: var(--text-color, #1e293b);
+  color: v-bind(headerColor);
 }
 
 .section-sub {
-  color: var(--text-color-secondary, #94a3b8);
+  color: v-bind(mutedColor);
 }
 
 .section {
-  background: var(--bg-surface-0, #ffffff);
-  border: 1.2px solid var(--bg-surface-300, #cbd5e1);
+  background: v-bind(sectionBg);
+  border: 1.2px solid v-bind(sectionBorder);
   border-radius: 8px;
   padding: 1rem;
 }
@@ -740,8 +790,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   padding: 0.625rem 1rem;
-  background: var(--surface-50, #f8fafc);
-  border: 1px solid var(--surface-200, #e5e7eb);
+  //border: 1px solid v-bind(activeTargetBorder);
   border-radius: 8px;
 }
 
@@ -749,7 +798,7 @@ onBeforeUnmount(() => {
   display: inline-block;
   width: 1.5px;
   height: 1.125rem;
-  background: var(--bg-surface-300, #cbd5e1);
+  background: v-bind(dividerBg);
   margin: 0 0.25rem;
 }
 
@@ -763,12 +812,12 @@ onBeforeUnmount(() => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-color-secondary, #94a3b8);
+  color: v-bind(mutedColor);
 }
 
 .active-target-name {
   font-weight: 600;
-  color: var(--text-color, #1e293b);
+  color: v-bind(activeTargetNameColor);
 }
 
 .active-target-tag {
@@ -791,7 +840,6 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
-  background: var(--surface-100, #f1f5f9);
   padding: 0.3125rem;
   border-radius: 8px;
 }
@@ -801,7 +849,7 @@ onBeforeUnmount(() => {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: var(--text-color-secondary, #64748b);
+  color: v-bind(pillTextColor);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -809,20 +857,19 @@ onBeforeUnmount(() => {
 }
 
 .pill:hover {
-  background: var(--surface-0, #fff);
-  color: var(--text-color, #334155);
+  color: v-bind(pillHoverColor);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .pill.active {
-  background: var(--surface-0, #fff);
-  color: var(--primary-700, #1d4ed8);
+  color: v-bind(pillHoverColor);
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
+  background: v-bind(pillActiveBg);
+  box-shadow: v-bind(pillActiveShadow);
 }
 
 .unavailable-icon {
-  color: var(--text-color-secondary, #cbd5e1);
+  color: #cbd5e1;
   opacity: 0.5;
   cursor: help;
 }
@@ -843,9 +890,9 @@ onBeforeUnmount(() => {
   gap: 1rem;
   padding: 0 1.25rem;
   height: 38px;
-  background: rgba(255, 255, 255, 0.92);
+  background: v-bind(stickyBarBg);
   backdrop-filter: blur(8px);
-  border: 1px solid var(--surface-200, #e2e8f0);
+  border: 1px solid v-bind(stickyBarBorder);
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
@@ -861,7 +908,7 @@ onBeforeUnmount(() => {
 
 .sticky-target {
   font-weight: 600;
-  color: var(--text-color, #1e293b);
+  color: v-bind(stickyTargetColor);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -869,12 +916,12 @@ onBeforeUnmount(() => {
 }
 
 .sticky-sep {
-  color: var(--text-color-secondary, #94a3b8);
+  color: v-bind(mutedColor);
   flex-shrink: 0;
 }
 
 .sticky-tab {
-  color: var(--primary-700, #1d4ed8);
+  color: inherit;
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
@@ -884,7 +931,6 @@ onBeforeUnmount(() => {
   display: inline-block;
   width: 1px;
   height: 1rem;
-  background: var(--surface-300, #cbd5e1);
   margin: 0 0.3rem;
   flex-shrink: 0;
 }
@@ -894,12 +940,11 @@ onBeforeUnmount(() => {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: var(--surface-400, #94a3b8);
   flex-shrink: 0;
 }
 
 .sticky-ctx {
-  color: var(--text-color-secondary, #64748b);
+  color: v-bind(stickyCtxColor);
   font-size: 0.75rem;
   white-space: nowrap;
 }
@@ -932,7 +977,7 @@ onBeforeUnmount(() => {
   border: none;
   border-radius: 4px;
   background: transparent;
-  color: var(--text-color-secondary, #94a3b8);
+  color: v-bind(stickyPillColor);
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
@@ -941,14 +986,13 @@ onBeforeUnmount(() => {
 }
 
 .sticky-pill:hover {
-  background: var(--surface-100, #f1f5f9);
-  color: var(--text-color, #334155);
+  color: v-bind(stickyPillHoverColor);
 }
 
 .sticky-pill.active {
-  background: var(--primary-50, #eff6ff);
-  color: var(--primary-700, #1d4ed8);
+  color: v-bind(stickyPillHoverColor);
   font-weight: 600;
+  background: v-bind(pillActiveBg);
 }
 
 .sticky-fade-enter-active,

@@ -1,6 +1,6 @@
 .section {
-  background: var(--bg-surface-0, #ffffff);
-  border: 1.2px solid var(--bg-surface-300, #cbd5e1);
+  background: #ffffff;
+  border: 1.2px solid #cbd5e1;
   border-radius: 8px;
   padding: 1rem;
 }
@@ -10,20 +10,20 @@
   font-weight: 600;
   font-size: 0.8125rem;
   margin-bottom: 0.25rem;
-  color: var(--text-color, #334155);
+  color: #334155;
 }
 
 .sep {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--bg-surface-300, #000000);
+  background: #000000;
   flex-shrink: 0;
 }
 
 .empty-state {
   text-align: center;
-  color: var(--text-color-secondary, #94a3b8);
+  color: #94a3b8;
   padding: 2.5rem 1rem;
 }
 
@@ -45,7 +45,7 @@
 }
 
 .table-note {
-  color: var(--text-color-secondary, #64748b);
+  color: #64748b;
   font-size: 0.8125rem;
   margin: 0 0 0.5rem 0;
 }
@@ -67,6 +67,28 @@
 
 .results-body {
   animation: bh-reveal 0.4s ease both;
+}
+
+
+.dark .section {
+  background: #212121;
+  border-color: #3a3a3a;
+}
+
+.dark .field-label {
+  color: #94a3b8;
+}
+
+.dark .sep {
+  background: #6b7280;
+}
+
+.dark .empty-state {
+  color: #9ca3af;
+}
+
+.dark .table-note {
+  color: #9ca3af;
 }
 
 .tab-fade-leave-active {

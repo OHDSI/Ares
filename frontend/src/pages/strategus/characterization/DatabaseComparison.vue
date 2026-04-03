@@ -327,6 +327,8 @@ import { StrategusService } from "@/shared/api/aresApi/services/strategusService
 import { useStore } from "vuex";
 
 const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+const labelColor = computed(() => (darkMode.value ? "#94a3b8" : "#334155"));
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -617,7 +619,7 @@ onMounted(async () => {
   display: block;
   font-weight: 600;
   margin-bottom: 0.25rem;
-  color: var(--text-color, #334155);
+  color: v-bind(labelColor);
 }
 
 .control-databases {
@@ -628,7 +630,7 @@ onMounted(async () => {
   font-weight: 600;
   font-size: 0.8125rem;
   margin-bottom: 0.25rem;
-  color: var(--text-color, #334155);
+  color: v-bind(labelColor);
 }
 
 .control-threshold {
@@ -655,7 +657,7 @@ onMounted(async () => {
   display: block;
   font-weight: 600;
   margin-bottom: 0.25rem;
-  color: var(--text-color, #334155);
+  color: v-bind(labelColor);
 }
 
 .plot-action {

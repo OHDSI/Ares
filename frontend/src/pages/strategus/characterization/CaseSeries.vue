@@ -345,6 +345,8 @@ import { StrategusService } from "@/shared/api/aresApi/services/strategusService
 import { useStore } from "vuex";
 
 const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+const helpNoteColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -691,7 +693,7 @@ onMounted(async () => {
 
 .help-note {
   font-size: 0.8125rem;
-  color: var(--text-color-secondary, #64748b);
+  color: v-bind(helpNoteColor);
   padding: 0 0.25rem;
   margin: 0;
   line-height: 1.4;

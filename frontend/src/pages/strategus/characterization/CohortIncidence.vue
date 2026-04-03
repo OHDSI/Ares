@@ -299,6 +299,11 @@ import { StrategusService } from "@/shared/api/aresApi/services/strategusService
 import { useStore } from "vuex";
 
 const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+
+watch(darkMode, () => {
+  if (showResults.value && activeResultTab.value === 1) renderPlot();
+});
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -571,12 +576,13 @@ async function renderPlot() {
   }
 
   if (chartInstance) chartInstance.dispose();
-  chartInstance = echarts.init(plotEl.value);
+  chartInstance = echarts.init(plotEl.value, darkMode.value ? "dark" : null);
 
   const chartHeight = Math.max(400, rows * 280);
   plotEl.value.style.height = `${chartHeight}px`;
 
   chartInstance.setOption({
+    backgroundColor: "transparent",
     title: [
       {
         text: "Incidence Rates",

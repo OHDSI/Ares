@@ -245,6 +245,11 @@ import { StrategusService } from "@/shared/api/aresApi/services/strategusService
 import { useStore } from "vuex";
 
 const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+
+watch(darkMode, () => {
+  if (showResults.value) renderChart();
+});
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -496,12 +501,13 @@ async function renderChart() {
   }
 
   if (chartInstance) chartInstance.dispose();
-  chartInstance = echarts.init(chartEl.value);
+  chartInstance = echarts.init(chartEl.value, darkMode.value ? "dark" : null);
 
   const chartHeight = Math.max(400, rowCount * 300);
   chartEl.value.style.height = `${chartHeight}px`;
 
   chartInstance.setOption({
+    backgroundColor: "transparent",
     title: titles,
     tooltip: {
       trigger: "item",

@@ -401,6 +401,8 @@ import { StrategusService } from "@/shared/api/aresApi/services/strategusService
 import { useStore } from "vuex";
 
 const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+const smdValColor = computed(() => (darkMode.value ? "#9ca3af" : "#6b7280"));
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -725,6 +727,6 @@ onMounted(async () => {
 .smd-val {
   font-size: 0.75rem;
   white-space: nowrap;
-  color: var(--text-color-secondary, #6b7280);
+  color: v-bind(smdValColor);
 }
 </style>

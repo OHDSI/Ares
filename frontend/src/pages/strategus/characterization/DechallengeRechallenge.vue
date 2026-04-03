@@ -311,6 +311,7 @@ import { StrategusService } from "@/shared/api/aresApi/services/strategusService
 import { useStore } from "vuex";
 
 const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -515,9 +516,10 @@ function renderFailsChart(data) {
   }
 
   if (failsChart) failsChart.dispose();
-  failsChart = echarts.init(failsChartEl.value);
+  failsChart = echarts.init(failsChartEl.value, darkMode.value ? "dark" : null);
 
   failsChart.setOption({
+    backgroundColor: "transparent",
     tooltip: {
       trigger: "item",
       formatter: (p) => {

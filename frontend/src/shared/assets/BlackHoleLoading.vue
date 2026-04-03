@@ -80,9 +80,12 @@
         />
         <circle cx="0" cy="0" r="17" fill="url(#bh-core-grad)" />
       </svg>
-      <span ref="labelRef" class="bh-label" :class="labelSizeClass">{{
-        text
-      }}</span>
+      <span
+        ref="labelRef"
+        class="bh-label"
+        :class="[labelSizeClass, { 'bh-label--dark': darkMode }]"
+        >{{ text }}</span
+      >
     </div>
   </Transition>
 </template>
@@ -90,6 +93,7 @@
 <script setup>
 import { ref, computed, nextTick, onMounted, onUnmounted, watch } from "vue";
 import anime from "animejs";
+import { useStore } from "vuex";
 
 const props = defineProps({
   size: {
@@ -114,7 +118,7 @@ const props = defineProps({
   },
   escalate: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 });
 
@@ -181,30 +185,36 @@ function beamingArcs(r) {
   return [(TOTAL_ARC * bright) / sum, (TOTAL_ARC * dim) / sum];
 }
 
-// Accretion-disk color: [inner-hot, peak, outer-dark]
+// Accretion-disk color: [inner-hot, peak, outer-dark (light bg), outer-dark (dark bg)]
 const THEMES = {
-  orange: ["#fff4d0", "#f97316", "#150300"],
-  blue: ["#e0f2ff", "#3b82f6", "#03080f"],
-  purple: ["#ede9fe", "#6366f1", "#03030f"],
-  teal: ["#ccfbf1", "#14b8a6", "#030f0d"],
-  red: ["#fff1f0", "#ef4444", "#150000"],
+  orange: ["#fff4d0", "#f97316", "#150300", "#3a1800"],
+  blue: ["#e0f2ff", "#3b82f6", "#03080f", "#041828"],
+  purple: ["#ede9fe", "#6366f1", "#03030f", "#0e0525"],
+  teal: ["#ccfbf1", "#14b8a6", "#030f0d", "#041a14"],
+  red: ["#fff1f0", "#ef4444", "#150000", "#280505"],
 };
 
-function diskColor(t, theme) {
-  const [inner, peak, outer] = THEMES[theme] ?? THEMES.orange;
+function diskColor(t, theme, isDark = false) {
+  const [inner, peak, outerLight, outerDark] = THEMES[theme] ?? THEMES.orange;
+  const outer = isDark ? outerDark : outerLight;
   if (t < 0.45) return hexLerp(inner, peak, t / 0.45);
   return hexLerp(peak, outer, (t - 0.45) / 0.55);
 }
 
+const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+
 // Monochrome palette
 const MONO_INNER_COLOR = "#e2e8f0"; // near-white
-const MONO_OUTER_COLOR = "#060c15"; // near-black
+const MONO_OUTER_COLOR_LIGHT = "#060c15"; // near-black (light bg)
+const MONO_OUTER_COLOR_DARK = "#2a3d52"; // dark slate (visible on dark bg)
 const MONO_ARC1_RATIO = 0.207; // symmetric fixed arcs
 const MONO_ARC2_RATIO = 0.146;
 
 // Ring geometry
-function buildRings(n, theme) {
+function buildRings(n, theme, isDark = false) {
   const isColored = theme !== "mono";
+  const monoOuter = isDark ? MONO_OUTER_COLOR_DARK : MONO_OUTER_COLOR_LIGHT;
   return Array.from({ length: n }, (_, i) => {
     const t = n === 1 ? 0 : i / (n - 1);
     const r = Math.round(BASE_R * Math.pow(MAX_R / BASE_R, t));
@@ -219,8 +229,8 @@ function buildRings(n, theme) {
       r,
       period: orbitalPeriod(r),
       stroke: isColored
-        ? diskColor(t, theme)
-        : hexLerp(MONO_INNER_COLOR, MONO_OUTER_COLOR, t),
+        ? diskColor(t, theme, isDark)
+        : hexLerp(MONO_INNER_COLOR, monoOuter, t),
       strokeWidth: +(INNER_WIDTH + (OUTER_WIDTH - INNER_WIDTH) * t).toFixed(1),
       arcs: [a1, a2],
       gaps: [g, g],
@@ -234,7 +244,7 @@ const labelSizeClass = computed(
 );
 
 const activeRings = computed(() =>
-  buildRings(RING_COUNT[props.size], props.theme)
+  buildRings(RING_COUNT[props.size], props.theme, darkMode.value)
 );
 
 const MAX_ESCALATED_RINGS = 50;
@@ -256,6 +266,7 @@ let bhAnims = [];
 function startBHAnim() {
   stopBHAnim();
   if (labelRef.value) labelRef.value.style.letterSpacing = "";
+  if (svgRef.value) svgRef.value.style.transform = "";
   const el = svgRef.value;
   if (!el) return;
 
@@ -303,7 +314,8 @@ function playSuccessAnim() {
   const el = svgRef.value;
   if (!el) return;
 
-  const successStagger = extraCircles.length > 1 ? 200 / (extraCircles.length - 1) : 0;
+  const successStagger =
+    extraCircles.length > 1 ? 200 / (extraCircles.length - 1) : 0;
   extraCircles.forEach((c, i) => {
     bhAnims.push(
       anime({
@@ -358,70 +370,106 @@ function playSuccessAnim() {
       easing: "easeInQuart",
     })
   );
+
+  // core shrinks into nothing once the innermost ring starts collapsing
+  bhAnims.push(
+    anime({
+      targets: svgRef.value,
+      scale: 0,
+      duration: 380,
+      delay: (n - 1) * 110,
+      easing: "easeInQuart",
+    })
+  );
 }
 
 function playErrorAnim() {
+  // Keep orbit animations running - rings drift while still spinning
   stopEscalation();
   const extraCircles = [...escalatedCircles];
   escalatedCircles = [];
   const el = svgRef.value;
   if (!el) return;
 
-  const errorStagger = extraCircles.length > 1 ? 300 / (extraCircles.length - 1) : 0;
+  const RED = "#ef4444";
+  const RED_HOT = "#ff3333";
+
+  //0. rings bleed to red while still in orbit
+  activeRings.value.forEach((_, i) => {
+    const t = el.querySelector(`[data-bh-idx="${i}"]`);
+    if (t) {
+      anime({
+        targets: t,
+        stroke: RED_HOT,
+        duration: 300,
+        easing: "easeOutQuad",
+      });
+    }
+  });
+
+  const photon = el.querySelector(".bh-photon");
+  // 1. rings drift apart - each in a unique direction
+  // Golden-angle spread (137.5°) gives natural, non-uniform distribution
+  // easeOutSine = gentle deceleration so momentum visibly carries them
+  activeRings.value.forEach((_, i) => {
+    const target = el.querySelector(`[data-bh-idx="${i}"]`);
+    if (!target) return;
+    const angle = (i * 137.5 * Math.PI) / 180;
+    const dist = 10 + i * 4;
+    bhAnims.push(
+      anime({
+        targets: target,
+        translateX: Math.cos(angle) * dist,
+        translateY: Math.sin(angle) * dist,
+        opacity: 0,
+        duration: 700,
+        delay: 150,
+        easing: "easeOutSine",
+      })
+    );
+  });
+
+  // 2. photon ring just fades in place
+  if (photon) {
+    bhAnims.push(
+      anime({
+        targets: photon,
+        opacity: 0,
+        duration: 700,
+        delay: 150,
+        easing: "easeOutSine",
+      })
+    );
+  }
+
+  // 3. escalated circles drift out
   extraCircles.forEach((c, i) => {
-    const r = parseFloat(c.getAttribute("r") || 0);
+    const angle = (i * 137.5 * Math.PI) / 180;
     bhAnims.push(
       anime({
         targets: c,
-        r: r + 60,
+        translateX: Math.cos(angle) * 15,
+        translateY: Math.sin(angle) * 15,
         opacity: 0,
-        strokeWidth: 0,
-        duration: 1400,
-        delay: i * errorStagger,
-        easing: "easeOutQuart",
+        duration: 700,
+        delay: 150,
+        easing: "easeOutSine",
         complete: () => c.parentNode?.removeChild(c),
       })
     );
   });
 
+  // 4. label turns red
   if (labelRef.value) {
     bhAnims.push(
       anime({
         targets: labelRef.value,
-        letterSpacing: "0.1em",
+        color: RED,
         duration: 400,
-        easing: "easeOutQuart",
+        easing: "easeOutQuad",
       })
     );
   }
-
-  // inner rings erupt first, cascade outward
-  activeRings.value.forEach(({ r }, i) => {
-    const target = el.querySelector(`[data-bh-idx="${i}"]`);
-    if (!target) return;
-    bhAnims.push(
-      anime({
-        targets: target,
-        r: r + 60,
-        opacity: 0,
-        strokeWidth: 0,
-        duration: 1600,
-        delay: i * 120,
-        easing: "easeOutQuart",
-      })
-    );
-  });
-
-  bhAnims.push(
-    anime({
-      targets: el.querySelector(".bh-photon"),
-      r: 52,
-      opacity: [0.9, 1, 0],
-      strokeWidth: 0,
-      duration: 1200,
-      easing: "easeOutQuart",
-    })
-  );
 }
 
 function startEscalation() {
@@ -436,7 +484,7 @@ function startEscalation() {
       if (target)
         anime({
           targets: target,
-          stroke: diskColor(t, "orange"),
+          stroke: diskColor(t, "orange", darkMode.value),
           duration: 5000,
           easing: "easeInOutQuad",
         });
@@ -444,8 +492,13 @@ function startEscalation() {
   }
 
   const escalationTheme = props.theme === "mono" ? "orange" : props.theme;
-  const fullRings = buildRings(MAX_ESCALATED_RINGS, escalationTheme);
+  const fullRings = buildRings(
+    MAX_ESCALATED_RINGS,
+    escalationTheme,
+    darkMode.value
+  );
   const initCount = RING_COUNT[props.size];
+
   const anchor = el.querySelector('[fill="url(#bh-shadow-grad)"]');
   let idx = initCount;
 
@@ -560,9 +613,13 @@ onUnmounted(() => stopBHAnim());
 }
 
 .bh-label {
-  color: #94a3b8;
+  color: #64748b;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 500;
+}
+
+.bh-label--dark {
+  color: #94a3b8;
 }
 </style>

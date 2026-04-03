@@ -40,11 +40,7 @@
                 value: data.sourceDescription,
                 pt: {
                   root: 'absolute',
-                  arrow: {
-                    style: {
-                      borderTopColor: 'var(--surface-800)',
-                    },
-                  },
+                  arrow: { style: {} },
                   text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-light p-2 break-words text-wrap max-w-[20ch]',
                 },
               }"
@@ -138,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
@@ -148,6 +144,10 @@ import { StrategusService } from "@/shared/api/aresApi/services/strategusService
 
 const store = useStore();
 const data = ref([]);
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
+const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#cbd5e1"));
+const headerColor = computed(() => (darkMode.value ? "#f1f5f9" : "#1e293b"));
 const loading = ref(false);
 
 const filters = ref({
@@ -192,23 +192,23 @@ onMounted(async () => {
 .section-header h3 {
   font-weight: 700;
   margin: 0;
-  color: var(--text-color, #1e293b);
+  color: v-bind(headerColor);
 }
 
 .section {
-  background: var(--bg-surface-0, #ffffff);
-  border: 1px solid var(--bg-surface-300, #cbd5e1);
+  background: v-bind(sectionBg);
+  border: 1px solid v-bind(sectionBorder);
   border-radius: 8px;
   padding: 1rem;
 }
 
 .table-link {
-  color: var(--primary-500, #3b82f6);
+  color: inherit;
   font-size: 0.8125rem;
 }
 
 .table-link:hover {
-  color: var(--primary-700, #1d4ed8);
+  color: inherit;
 }
 
 .no-link {
