@@ -18,8 +18,10 @@ export default {
       },
 
       // Shape
-      "border-0 dark:border",
-      "shadow-lg",
+      {
+        "border-0 dark:border dark:border-surface-700": props.modal,
+        "shadow-2xl": props.modal,
+      },
 
       // Colors
       "bg-surface-0 dark:bg-surface-900",
@@ -118,7 +120,12 @@ export default {
       { "p-5": !props.position == "full" },
 
       // Background and Effects
-      { "bg-black/40": props.modal, "backdrop-blur-sm": props.modal },
+      {
+        "bg-white/80 dark:bg-black/80": props.modal,
+        "border-none": props.modal,
+      },
+      // For Dark Mode
+      // { "bg-gray-900/98": props.modal, "shadow-2xl": props.modal },
     ],
   }),
   transition: ({ props }) => {
