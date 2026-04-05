@@ -138,49 +138,119 @@
                 </template>
               </Column>
               <template v-if="hasBinaryPhase('Before')">
-                <Column style="text-align: end" field="sumValue_Before"
-                  ><template #body="{ data }">{{
-                    formatCensored(data.sumValue_Before)
-                  }}</template></Column
+                <Column
+                  style="text-align: end"
+                  field="sumValue_Before"
+                  sortable
+                  :showFilterMenu="false"
                 >
+                  <template #body="{ data }">{{
+                    formatCensored(data.sumValue_Before)
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+
                 <Column
                   style="text-align: end"
                   field="averageValue_Before"
                   sortable
-                  ><template #body="{ data }">{{
-                    formatPct(data.averageValue_Before)
-                  }}</template></Column
+                  :showFilterMenu="false"
                 >
+                  <template #body="{ data }">{{
+                    formatPct(data.averageValue_Before)
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
               </template>
               <template v-if="hasBinaryPhase('During')">
-                <Column style="text-align: end" field="sumValue_During"
-                  ><template #body="{ data }">{{
-                    formatCensored(data.sumValue_During)
-                  }}</template></Column
+                <Column
+                  style="text-align: end"
+                  field="sumValue_During"
+                  sortable
+                  :showFilterMenu="false"
                 >
+                  <template #body="{ data }">{{
+                    formatCensored(data.sumValue_During)
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
                 <Column
                   style="text-align: end"
                   field="averageValue_During"
                   sortable
-                  ><template #body="{ data }">{{
-                    formatPct(data.averageValue_During)
-                  }}</template></Column
+                  :showFilterMenu="false"
                 >
+                  <template #body="{ data }">{{
+                    formatPct(data.averageValue_During)
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
               </template>
               <template v-if="hasBinaryPhase('After')">
-                <Column style="text-align: end" field="sumValue_After"
-                  ><template #body="{ data }">{{
-                    formatCensored(data.sumValue_After)
-                  }}</template></Column
+                <Column
+                  style="text-align: end"
+                  field="sumValue_After"
+                  sortable
+                  :showFilterMenu="false"
                 >
+                  <template #body="{ data }">{{
+                    formatCensored(data.sumValue_After)
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
                 <Column
                   style="text-align: end"
                   field="averageValue_After"
                   sortable
-                  ><template #body="{ data }">{{
-                    formatPct(data.averageValue_After)
-                  }}</template></Column
+                  :showFilterMenu="false"
                 >
+                  <template #body="{ data }">{{
+                    formatPct(data.averageValue_After)
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
               </template>
             </DataTable>
           </div>
@@ -270,48 +340,137 @@
                   />
                 </template>
               </Column>
-              <Column style="text-align: start" field="covariateId" />
+              <Column
+                style="text-align: start"
+                field="covariateId"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <template
                 v-for="phase in presentContinuousPhases"
                 :key="'cc-' + phase"
               >
-                <Column style="text-align: end" :field="'countValue_' + phase"
-                  ><template #body="{ data }">{{
+                <Column
+                  style="text-align: end"
+                  :field="'countValue_' + phase"
+                  sortable
+                  :showFilterMenu="false"
+                >
+                  <template #body="{ data }">{{
                     formatCensored(data["countValue_" + phase])
-                  }}</template></Column
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  style="text-align: end"
+                  :field="'minValue_' + phase"
+                  sortable
+                  :showFilterMenu="false"
                 >
-                <Column style="text-align: end" :field="'minValue_' + phase"
-                  ><template #body="{ data }">{{
+                  <template #body="{ data }">{{
                     formatNum(data["minValue_" + phase])
-                  }}</template></Column
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  style="text-align: end"
+                  :field="'maxValue_' + phase"
+                  sortable
+                  :showFilterMenu="false"
                 >
-                <Column style="text-align: end" :field="'maxValue_' + phase"
-                  ><template #body="{ data }">{{
+                  <template #body="{ data }">{{
                     formatNum(data["maxValue_" + phase])
-                  }}</template></Column
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  style="text-align: end"
+                  :field="'averageValue_' + phase"
+                  sortable
+                  :showFilterMenu="false"
                 >
-                <Column style="text-align: end" :field="'averageValue_' + phase"
-                  ><template #body="{ data }">{{
+                  <template #body="{ data }">{{
                     formatNum(data["averageValue_" + phase])
-                  }}</template></Column
-                >
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
                 <Column
                   style="text-align: end"
                   :field="'standardDeviation_' + phase"
-                  ><template #body="{ data }">{{
+                  sortable
+                  :showFilterMenu="false"
+                >
+                  <template #body="{ data }">{{
                     formatNum(data["standardDeviation_" + phase])
-                  }}</template></Column
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  style="text-align: end"
+                  :field="'medianValue_' + phase"
+                  sortable
+                  :showFilterMenu="false"
                 >
-                <Column style="text-align: end" :field="'medianValue_' + phase"
-                  ><template #body="{ data }">{{
+                  <template #body="{ data }">{{
                     formatNum(data["medianValue_" + phase])
-                  }}</template></Column
-                >
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
               </template>
             </DataTable>
-          </div>
-        </div></Transition
-      >
+          </div></div
+      ></Transition>
     </div>
 
     <div v-else-if="!loading" class="section empty-state">
@@ -380,9 +539,40 @@ const continuousPhases = ref([]);
 
 const binaryTableFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  sumValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  averageValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  sumValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  averageValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  sumValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  averageValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const continuousTableFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  covariateId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  countValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  minValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  maxValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  averageValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  standardDeviation_Before: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  medianValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  countValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  minValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  maxValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  averageValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  standardDeviation_During: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  medianValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  countValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  minValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  maxValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  averageValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  standardDeviation_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  medianValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);

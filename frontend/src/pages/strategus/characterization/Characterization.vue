@@ -58,13 +58,40 @@
                 />
               </template>
             </Column>
-            <Column field="cohortId" header="ID" sortable style="width: 80px" />
+            <Column
+              field="cohortId"
+              header="ID"
+              sortable
+              :showFilterMenu="false"
+              style="width: 80px"
+            >
+              <template #filter="{ filterModel, filterCallback }">
+                <InputText
+                  v-model="filterModel.value"
+                  @input="filterCallback()"
+                  placeholder="Search..."
+                  size="small"
+                />
+              </template>
+            </Column>
             <Column
               field="databaseComparator"
               header="DB Comp"
               sortable
+              :showFilterMenu="false"
               style="width: 80px"
             >
+              <template #filter="{ filterModel, filterCallback }">
+                <MultiSelect
+                  v-model="filterModel.value"
+                  :options="boolOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Any"
+                  size="small"
+                  @change="filterCallback()"
+                />
+              </template>
               <template #body="{ data }">{{
                 data.databaseComparator ? "✔️" : "❌"
               }}</template>
@@ -73,8 +100,20 @@
               field="cohortComparator"
               header="Cohort Comp"
               sortable
+              :showFilterMenu="false"
               style="width: 80px"
             >
+              <template #filter="{ filterModel, filterCallback }">
+                <MultiSelect
+                  v-model="filterModel.value"
+                  :options="boolOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Any"
+                  size="small"
+                  @change="filterCallback()"
+                />
+              </template>
               <template #body="{ data }">{{
                 data.cohortComparator ? "✔️" : "❌"
               }}</template>
@@ -83,8 +122,20 @@
               field="dechalRechal"
               header="Dechal"
               sortable
+              :showFilterMenu="false"
               style="width: 80px"
             >
+              <template #filter="{ filterModel, filterCallback }">
+                <MultiSelect
+                  v-model="filterModel.value"
+                  :options="boolOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Any"
+                  size="small"
+                  @change="filterCallback()"
+                />
+              </template>
               <template #body="{ data }">{{
                 data.dechalRechal ? "✔️" : "❌"
               }}</template>
@@ -93,8 +144,20 @@
               field="riskFactors"
               header="Risk Factors"
               sortable
+              :showFilterMenu="false"
               style="width: 80px"
             >
+              <template #filter="{ filterModel, filterCallback }">
+                <MultiSelect
+                  v-model="filterModel.value"
+                  :options="boolOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Any"
+                  size="small"
+                  @change="filterCallback()"
+                />
+              </template>
               <template #body="{ data }">{{
                 data.riskFactors ? "✔️" : "❌"
               }}</template>
@@ -103,8 +166,20 @@
               field="timeToEvent"
               header="TTE"
               sortable
+              :showFilterMenu="false"
               style="width: 80px"
             >
+              <template #filter="{ filterModel, filterCallback }">
+                <MultiSelect
+                  v-model="filterModel.value"
+                  :options="boolOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Any"
+                  size="small"
+                  @change="filterCallback()"
+                />
+              </template>
               <template #body="{ data }">{{
                 data.timeToEvent ? "✔️" : "❌"
               }}</template>
@@ -113,8 +188,20 @@
               field="caseSeries"
               header="Case Series"
               sortable
+              :showFilterMenu="false"
               style="width: 80px"
             >
+              <template #filter="{ filterModel, filterCallback }">
+                <MultiSelect
+                  v-model="filterModel.value"
+                  :options="boolOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Any"
+                  size="small"
+                  @change="filterCallback()"
+                />
+              </template>
               <template #body="{ data }">{{
                 data.caseSeries ? "✔️" : "❌"
               }}</template>
@@ -123,8 +210,20 @@
               field="cohortIncidence"
               header="Incidence"
               sortable
+              :showFilterMenu="false"
               style="width: 80px"
             >
+              <template #filter="{ filterModel, filterCallback }">
+                <MultiSelect
+                  v-model="filterModel.value"
+                  :options="boolOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Any"
+                  size="small"
+                  @change="filterCallback()"
+                />
+              </template>
               <template #body="{ data }">{{
                 data.cohortIncidence ? "✔️" : "❌"
               }}</template>
@@ -290,6 +389,7 @@ import Tag from "primevue/tag";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
+import MultiSelect from "primevue/multiselect";
 import Message from "primevue/message";
 import { FilterMatchMode } from "primevue/api";
 
@@ -436,9 +536,22 @@ const ctxBarVisible = ref(true);
 let observer = null;
 let ctxObserver = null;
 
+const boolOptions = [
+  { label: "Yes", value: 1 },
+  { label: "No", value: 0 },
+];
+
 const targetFilters = ref({
   parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   cohortName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  cohortId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  databaseComparator: { value: null, matchMode: FilterMatchMode.IN },
+  cohortComparator: { value: null, matchMode: FilterMatchMode.IN },
+  dechalRechal: { value: null, matchMode: FilterMatchMode.IN },
+  riskFactors: { value: null, matchMode: FilterMatchMode.IN },
+  timeToEvent: { value: null, matchMode: FilterMatchMode.IN },
+  caseSeries: { value: null, matchMode: FilterMatchMode.IN },
+  cohortIncidence: { value: null, matchMode: FilterMatchMode.IN },
 });
 
 const targetRow = computed(() => {
@@ -696,7 +809,6 @@ onBeforeRouteUpdate((to) => {
     return;
   }
 
-  // Same target - sync tab and child params
   const newTabIdx = tabKeyToIndex(newState.tab);
   if (activeTab.value !== newTabIdx) {
     activeTab.value = newTabIdx;

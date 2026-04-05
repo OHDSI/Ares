@@ -134,21 +134,51 @@
                 field="ageGroupName"
                 header="Age"
                 sortable
-              />
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <Column
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="genderName"
                 header="Sex"
                 sortable
-              />
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <Column
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="startYear"
                 header="Year"
                 sortable
-              />
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <Column
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
@@ -174,31 +204,70 @@
                 field="personsAtRisk"
                 header="Persons"
                 sortable
-              />
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <Column
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="personDays"
                 header="Person Days"
                 sortable
-              />
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <Column
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="outcomes"
                 header="Outcomes"
                 sortable
-              />
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <Column
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="incidenceProportionP100p"
                 header="Prop. /100p"
                 sortable
+                :showFilterMenu="false"
               >
                 <template #body="{ data }">{{
                   formatNum(data.incidenceProportionP100p)
                 }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
               <Column
                 style="text-align: end"
@@ -206,10 +275,19 @@
                 field="incidenceRateP100py"
                 header="Rate /100py"
                 sortable
+                :showFilterMenu="false"
               >
                 <template #body="{ data }">{{
                   formatNum(data.incidenceRateP100py)
                 }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
             </DataTable>
           </div>
@@ -344,7 +422,18 @@ const tableFilters = ref({
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   outcomeName: { value: null, matchMode: FilterMatchMode.EQUALS },
   tar: { value: null, matchMode: FilterMatchMode.EQUALS },
+  ageGroupName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  genderName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  startYear: { value: null, matchMode: FilterMatchMode.CONTAINS },
   cleanWindow: { value: null, matchMode: FilterMatchMode.EQUALS },
+  personsAtRisk: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  personDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  outcomes: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  incidenceProportionP100p: {
+    value: null,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  incidenceRateP100py: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 const outcomeOptions = computed(() =>

@@ -53,8 +53,6 @@
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
-              filterDisplay="row"
-              v-model:filters="binaryFilters"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -65,45 +63,121 @@
                 <Row>
                   <Column
                     :pt="{ headerContent: 'justify-start' }"
-                    header="Covariate"
-                    :rowspan="2"
-                  />
+                    :rowspan="3"
+                    sortField="covariateName"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Covariate</span>
+                        <FilterInput
+                          :filterObj="binaryFilters.covariateName"
+                          placeholder="Search..."
+                        />
+                      </div>
+                    </template>
+                  </Column>
                   <Column
                     :pt="{ headerContent: 'justify-start' }"
-                    header="ID"
-                    :rowspan="2"
-                  />
+                    :rowspan="3"
+                    sortField="covariateId"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>ID</span>
+                        <FilterInput
+                          :filterObj="binaryFilters.covariateId"
+                          placeholder="Search..."
+                        />
+                      </div>
+                    </template>
+                  </Column>
                   <Column
                     v-for="ref in covRef"
                     :key="'bhdr-' + ref.id"
                     :header="columnGroupLabel(ref)"
                     :colspan="2"
                   />
-
                   <Column
                     v-if="covRef.length === 2"
                     :pt="{ headerContent: 'justify-end' }"
-                    header="SMD"
-                    :rowspan="2"
+                    :rowspan="3"
                     sortField="SMD"
                     sortable
-                  />
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>SMD</span>
+                        <FilterInput
+                          v-if="binaryFilters.SMD"
+                          :filterObj="binaryFilters.SMD"
+                        />
+                      </div>
+                    </template>
+                  </Column>
                   <Column
                     v-if="covRef.length === 2"
                     :pt="{ headerContent: 'justify-end' }"
-                    header="|SMD|"
-                    :rowspan="2"
+                    :rowspan="3"
                     sortField="absSMD"
                     sortable
-                  />
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>|SMD|</span>
+                        <div class="smd-filter">
+                          <Slider
+                            v-model="binaryAbsSmdMin"
+                            :min="0"
+                            :max="smdMax"
+                            :step="0.01"
+                            class="smd-slider"
+                          />
+                          <span class="smd-val"
+                            >≥ {{ binaryAbsSmdMin.toFixed(2) }}</span
+                          >
+                        </div>
+                      </div>
+                    </template>
+                  </Column>
                 </Row>
                 <Row>
                   <template v-for="ref in covRef" :key="'bsub-' + ref.id">
                     <Column
                       :pt="{ headerContent: 'justify-end' }"
                       header="Count"
+                      :sortField="'sumValue_' + ref.id"
+                      sortable
                     />
-                    <Column :pt="{ headerContent: 'justify-end' }" header="%" />
+                    <Column
+                      :pt="{ headerContent: 'justify-end' }"
+                      header="%"
+                      :sortField="'averageValue_' + ref.id"
+                      sortable
+                    />
+                  </template>
+                </Row>
+                <Row>
+                  <template v-for="ref in covRef" :key="'bflt-' + ref.id">
+                    <Column :pt="{ headerContent: 'justify-end' }">
+                      <template #header>
+                        <FilterInput
+                          v-if="binaryFilters['sumValue_' + ref.id]"
+                          :filterObj="binaryFilters['sumValue_' + ref.id]"
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column :pt="{ headerContent: 'justify-end' }">
+                      <template #header>
+                        <FilterInput
+                          v-if="binaryFilters['averageValue_' + ref.id]"
+                          :filterObj="binaryFilters['averageValue_' + ref.id]"
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
                   </template>
                 </Row>
               </ColumnGroup>
@@ -122,21 +196,57 @@
                   />
                 </template>
               </Column>
-              <Column style="text-align: start" field="covariateId" />
+              <Column
+                style="text-align: start"
+                field="covariateId"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <template v-for="ref in covRef" :key="'bcol-' + ref.id">
-                <Column style="text-align: end" :field="'sumValue_' + ref.id">
+                <Column
+                  style="text-align: end"
+                  :field="'sumValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                >
                   <template #body="{ data }">{{
                     formatCount(data["sumValue_" + ref.id])
                   }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
                 </Column>
                 <Column
                   style="text-align: end"
                   :field="'averageValue_' + ref.id"
                   sortable
+                  :showFilterMenu="false"
                 >
                   <template #body="{ data }">{{
                     formatPercent(data["averageValue_" + ref.id])
                   }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
                 </Column>
               </template>
               <Column
@@ -144,8 +254,17 @@
                 v-if="covRef.length === 2"
                 field="SMD"
                 sortable
+                :showFilterMenu="false"
               >
                 <template #body="{ data }">{{ formatSmd(data.SMD) }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
               <Column
                 style="text-align: end"
@@ -193,8 +312,6 @@
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
-              filterDisplay="row"
-              v-model:filters="continuousFilters"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -205,14 +322,36 @@
                 <Row>
                   <Column
                     :pt="{ headerContent: 'justify-start' }"
-                    header="Covariate"
-                    :rowspan="2"
-                  />
+                    :rowspan="3"
+                    sortField="covariateName"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Covariate</span>
+                        <FilterInput
+                          :filterObj="continuousFilters.covariateName"
+                          placeholder="Search..."
+                        />
+                      </div>
+                    </template>
+                  </Column>
                   <Column
                     :pt="{ headerContent: 'justify-start' }"
-                    header="ID"
-                    :rowspan="2"
-                  />
+                    :rowspan="3"
+                    sortField="covariateId"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>ID</span>
+                        <FilterInput
+                          :filterObj="continuousFilters.covariateId"
+                          placeholder="Search..."
+                        />
+                      </div>
+                    </template>
+                  </Column>
                   <Column
                     v-for="ref in covRef"
                     :key="'chdr-' + ref.id"
@@ -222,46 +361,150 @@
                   <Column
                     v-if="covRef.length === 2"
                     :pt="{ headerContent: 'justify-end' }"
-                    header="SMD"
-                    :rowspan="2"
+                    :rowspan="3"
                     sortField="SMD"
                     sortable
-                  />
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>SMD</span>
+                        <FilterInput
+                          v-if="continuousFilters.SMD"
+                          :filterObj="continuousFilters.SMD"
+                        />
+                      </div>
+                    </template>
+                  </Column>
                   <Column
                     v-if="covRef.length === 2"
                     :pt="{ headerContent: 'justify-end' }"
-                    header="|SMD|"
-                    :rowspan="2"
+                    :rowspan="3"
                     sortField="absSMD"
                     sortable
-                  />
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>|SMD|</span>
+                        <div class="smd-filter">
+                          <Slider
+                            v-model="continuousAbsSmdMin"
+                            :min="0"
+                            :max="smdMax"
+                            :step="0.01"
+                            class="smd-slider"
+                          />
+                          <span class="smd-val"
+                            >≥ {{ continuousAbsSmdMin.toFixed(2) }}</span
+                          >
+                        </div>
+                      </div>
+                    </template>
+                  </Column>
                 </Row>
                 <Row>
                   <template v-for="ref in covRef" :key="'csub-' + ref.id">
                     <Column
                       :pt="{ headerContent: 'justify-end' }"
                       header="Count"
+                      :sortField="'countValue_' + ref.id"
+                      sortable
                     />
                     <Column
                       :pt="{ headerContent: 'justify-end' }"
                       header="Mean"
+                      :sortField="'averageValue_' + ref.id"
+                      sortable
                     />
                     <Column
                       :pt="{ headerContent: 'justify-end' }"
                       header="StDev"
+                      :sortField="'standardDeviation_' + ref.id"
+                      sortable
                     />
                     <Column
                       :pt="{ headerContent: 'justify-end' }"
                       header="Median"
+                      :sortField="'medianValue_' + ref.id"
+                      sortable
                     />
                     <Column
                       :pt="{ headerContent: 'justify-end' }"
                       header="Min"
+                      :sortField="'minValue_' + ref.id"
+                      sortable
                     />
                     <Column
                       :pt="{ headerContent: 'justify-end' }"
                       header="Max"
+                      :sortField="'maxValue_' + ref.id"
+                      sortable
                     />
+                  </template>
+                </Row>
+                <Row>
+                  <template v-for="ref in covRef" :key="'cflt-' + ref.id">
+                    <Column :pt="{ headerContent: 'justify-end' }">
+                      <template #header>
+                        <FilterInput
+                          v-if="continuousFilters['countValue_' + ref.id]"
+                          :filterObj="continuousFilters['countValue_' + ref.id]"
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column :pt="{ headerContent: 'justify-end' }">
+                      <template #header>
+                        <FilterInput
+                          v-if="continuousFilters['averageValue_' + ref.id]"
+                          :filterObj="
+                            continuousFilters['averageValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column :pt="{ headerContent: 'justify-end' }">
+                      <template #header>
+                        <FilterInput
+                          v-if="
+                            continuousFilters['standardDeviation_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousFilters['standardDeviation_' + ref.id]
+                          "
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column :pt="{ headerContent: 'justify-end' }">
+                      <template #header>
+                        <FilterInput
+                          v-if="continuousFilters['medianValue_' + ref.id]"
+                          :filterObj="
+                            continuousFilters['medianValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column :pt="{ headerContent: 'justify-end' }">
+                      <template #header>
+                        <FilterInput
+                          v-if="continuousFilters['minValue_' + ref.id]"
+                          :filterObj="continuousFilters['minValue_' + ref.id]"
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column :pt="{ headerContent: 'justify-end' }">
+                      <template #header>
+                        <FilterInput
+                          v-if="continuousFilters['maxValue_' + ref.id]"
+                          :filterObj="continuousFilters['maxValue_' + ref.id]"
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
                   </template>
                 </Row>
               </ColumnGroup>
@@ -280,46 +523,129 @@
                   />
                 </template>
               </Column>
-              <Column style="text-align: start" field="covariateId" />
+              <Column
+                style="text-align: start"
+                field="covariateId"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <template v-for="ref in covRef" :key="'ccol-' + ref.id">
-                <Column style="text-align: end" :field="'countValue_' + ref.id">
+                <Column
+                  style="text-align: end"
+                  :field="'countValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                >
                   <template #body="{ data }">{{
                     formatCount(data["countValue_" + ref.id])
                   }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
                 </Column>
                 <Column
                   style="text-align: end"
                   :field="'averageValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["averageValue_" + ref.id])
                   }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
                 </Column>
                 <Column
                   style="text-align: end"
                   :field="'standardDeviation_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["standardDeviation_" + ref.id])
                   }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
                 </Column>
                 <Column
                   style="text-align: end"
                   :field="'medianValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["medianValue_" + ref.id])
                   }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
                 </Column>
-                <Column style="text-align: end" :field="'minValue_' + ref.id">
+                <Column
+                  style="text-align: end"
+                  :field="'minValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                >
                   <template #body="{ data }">{{
                     formatNum(data["minValue_" + ref.id])
                   }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
                 </Column>
-                <Column style="text-align: end" :field="'maxValue_' + ref.id">
+                <Column
+                  style="text-align: end"
+                  :field="'maxValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                >
                   <template #body="{ data }">{{
                     formatNum(data["maxValue_" + ref.id])
                   }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
                 </Column>
               </template>
               <Column
@@ -327,8 +653,17 @@
                 v-if="covRef.length === 2"
                 field="SMD"
                 sortable
+                :showFilterMenu="false"
               >
                 <template #body="{ data }">{{ formatSmd(data.SMD) }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
               <Column
                 style="text-align: end"
@@ -373,6 +708,7 @@
 import { ref, computed, watch, nextTick, onMounted, toRef } from "vue";
 import * as echarts from "echarts";
 
+import FilterInput from "./shared/FilterInput.vue";
 import ResultsLoader from "./shared/ResultsLoader.vue";
 import ViewToggle from "./shared/ViewToggle.vue";
 import OutcomeSelector from "./shared/OutcomeSelector.vue";
@@ -435,17 +771,37 @@ const continuousAbsSmdMin = ref(0);
 const smdMax = ref(2);
 
 const filteredBinaryRows = computed(() => {
-  if (binaryAbsSmdMin.value <= 0) return binaryRows.value;
-  return binaryRows.value.filter(
-    (r) => (r.absSMD ?? 0) >= binaryAbsSmdMin.value
-  );
+  let rows = binaryRows.value;
+  for (const [key, filter] of Object.entries(binaryFilters.value)) {
+    if (filter.value != null && filter.value !== "") {
+      const val = String(filter.value).toLowerCase();
+      rows = rows.filter((r) =>
+        String(r[key] ?? "")
+          .toLowerCase()
+          .includes(val)
+      );
+    }
+  }
+  if (binaryAbsSmdMin.value > 0)
+    rows = rows.filter((r) => (r.absSMD ?? 0) >= binaryAbsSmdMin.value);
+  return rows;
 });
 
 const filteredContinuousRows = computed(() => {
-  if (continuousAbsSmdMin.value <= 0) return continuousRows.value;
-  return continuousRows.value.filter(
-    (r) => (r.absSMD ?? 0) >= continuousAbsSmdMin.value
-  );
+  let rows = continuousRows.value;
+  for (const [key, filter] of Object.entries(continuousFilters.value)) {
+    if (filter.value != null && filter.value !== "") {
+      const val = String(filter.value).toLowerCase();
+      rows = rows.filter((r) =>
+        String(r[key] ?? "")
+          .toLowerCase()
+          .includes(val)
+      );
+    }
+  }
+  if (continuousAbsSmdMin.value > 0)
+    rows = rows.filter((r) => (r.absSMD ?? 0) >= continuousAbsSmdMin.value);
+  return rows;
 });
 
 const scatterEl = ref(null);
@@ -453,9 +809,53 @@ let chartInstance = null;
 
 const binaryFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  covariateId: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const continuousFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  covariateId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+watch(covRef, (newRefs) => {
+  const bin = {
+    covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    covariateId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  };
+  const cont = {
+    covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    covariateId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  };
+  for (const ref of newRefs) {
+    bin[`sumValue_${ref.id}`] = {
+      value: null,
+      matchMode: FilterMatchMode.CONTAINS,
+    };
+    bin[`averageValue_${ref.id}`] = {
+      value: null,
+      matchMode: FilterMatchMode.CONTAINS,
+    };
+    for (const f of [
+      "countValue",
+      "averageValue",
+      "standardDeviation",
+      "medianValue",
+      "minValue",
+      "maxValue",
+    ]) {
+      cont[`${f}_${ref.id}`] = {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+      };
+    }
+  }
+  if (newRefs.length === 2) {
+    bin.SMD = { value: null, matchMode: FilterMatchMode.CONTAINS };
+    bin.absSMD = { value: null, matchMode: FilterMatchMode.CONTAINS };
+    cont.SMD = { value: null, matchMode: FilterMatchMode.CONTAINS };
+    cont.absSMD = { value: null, matchMode: FilterMatchMode.CONTAINS };
+  }
+  binaryFilters.value = bin;
+  continuousFilters.value = cont;
 });
 
 const availableDatabases = useAvailableDatabases(toRef(props, "targetRow"));
@@ -740,5 +1140,12 @@ onMounted(async () => {
   font-size: 0.75rem;
   white-space: nowrap;
   color: v-bind(smdValColor);
+}
+
+.col-header-with-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
 }
 </style>

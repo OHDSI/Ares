@@ -69,8 +69,6 @@
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
-              filterDisplay="row"
-              v-model:filters="binaryTableFilters"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -81,37 +79,119 @@
                 <Row>
                   <Column
                     :pt="{ headerContent: 'justify-start' }"
-                    header="Covariate"
-                    :rowspan="2"
-                  />
+                    :rowspan="3"
+                    sortField="covariateName"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Covariate</span>
+                        <FilterInput
+                          :filterObj="binaryTableFilters.covariateName"
+                          placeholder="Search..."
+                        />
+                      </div>
+                    </template>
+                  </Column>
                   <Column :header="`Case (N=${caseN})`" :colspan="2" />
                   <Column :header="`Non-Case (N=${nonCaseN})`" :colspan="2" />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
-                    header="SMD"
-                    :rowspan="2"
+                    :rowspan="3"
                     sortField="SMD"
                     sortable
-                  />
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>SMD</span>
+                        <FilterInput :filterObj="binaryTableFilters.SMD" />
+                      </div>
+                    </template>
+                  </Column>
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
-                    header="|SMD|"
-                    :rowspan="2"
+                    :rowspan="3"
                     sortField="absSMD"
                     sortable
-                  />
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>|SMD|</span>
+                        <div class="smd-filter">
+                          <Slider
+                            v-model="binaryAbsSmdMin"
+                            :min="0"
+                            :max="smdMax"
+                            :step="0.01"
+                            class="smd-slider"
+                          />
+                          <span class="smd-val"
+                            >≥ {{ binaryAbsSmdMin.toFixed(2) }}</span
+                          >
+                        </div>
+                      </div>
+                    </template>
+                  </Column>
                 </Row>
                 <Row>
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="Count"
+                    sortField="caseCount"
+                    sortable
                   />
-                  <Column :pt="{ headerContent: 'justify-end' }" header="%" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="%"
+                    sortField="caseAverage"
+                    sortable
+                  />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="Count"
+                    sortField="nonCaseCount"
+                    sortable
                   />
-                  <Column :pt="{ headerContent: 'justify-end' }" header="%" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="%"
+                    sortField="nonCaseAverage"
+                    sortable
+                  />
+                </Row>
+                <Row>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="binaryTableFilters.caseCount"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="binaryTableFilters.caseAverage"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="binaryTableFilters.nonCaseCount"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="binaryTableFilters.nonCaseAverage"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
                 </Row>
               </ColumnGroup>
 
@@ -129,28 +209,93 @@
                   />
                 </template>
               </Column>
-              <Column style="text-align: end" field="caseCount">
+              <Column
+                style="text-align: end"
+                field="caseCount"
+                sortable
+                :showFilterMenu="false"
+              >
                 <template #body="{ data }">{{
                   formatCensored(data.caseCount)
                 }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
-              <Column style="text-align: end" field="caseAverage" sortable>
+              <Column
+                style="text-align: end"
+                field="caseAverage"
+                sortable
+                :showFilterMenu="false"
+              >
                 <template #body="{ data }">{{
                   formatPct(data.caseAverage)
                 }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
-              <Column style="text-align: end" field="nonCaseCount">
+              <Column
+                style="text-align: end"
+                field="nonCaseCount"
+                sortable
+                :showFilterMenu="false"
+              >
                 <template #body="{ data }">{{
                   formatCensored(data.nonCaseCount)
                 }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
-              <Column style="text-align: end" field="nonCaseAverage" sortable>
+              <Column
+                style="text-align: end"
+                field="nonCaseAverage"
+                sortable
+                :showFilterMenu="false"
+              >
                 <template #body="{ data }">{{
                   formatPct(data.nonCaseAverage)
                 }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
-              <Column style="text-align: end" field="SMD" sortable>
+              <Column
+                style="text-align: end"
+                field="SMD"
+                sortable
+                :showFilterMenu="false"
+              >
                 <template #body="{ data }">{{ formatNum(data.SMD) }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
               </Column>
               <Column
                 style="text-align: end"
@@ -189,8 +334,6 @@
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
-              filterDisplay="row"
-              v-model:filters="continuousTableFilters"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -201,63 +344,235 @@
                 <Row>
                   <Column
                     :pt="{ headerContent: 'justify-start' }"
-                    header="Covariate"
-                    :rowspan="2"
-                  />
+                    :rowspan="3"
+                    sortField="covariateName"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Covariate</span>
+                        <FilterInput
+                          :filterObj="continuousTableFilters.covariateName"
+                          placeholder="Search..."
+                        />
+                      </div>
+                    </template>
+                  </Column>
                   <Column :header="`Case (N=${caseN})`" :colspan="6" />
                   <Column :header="`Target (N=${targetN})`" :colspan="6" />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
-                    header="SMD"
-                    :rowspan="2"
+                    :rowspan="3"
                     sortField="SMD"
                     sortable
-                  />
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>SMD</span>
+                        <FilterInput :filterObj="continuousTableFilters.SMD" />
+                      </div>
+                    </template>
+                  </Column>
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
-                    header="|SMD|"
-                    :rowspan="2"
+                    :rowspan="3"
                     sortField="absSMD"
                     sortable
-                  />
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>|SMD|</span>
+                        <div class="smd-filter">
+                          <Slider
+                            v-model="continuousAbsSmdMin"
+                            :min="0"
+                            :max="smdMax"
+                            :step="0.01"
+                            class="smd-slider"
+                          />
+                          <span class="smd-val"
+                            >≥ {{ continuousAbsSmdMin.toFixed(2) }}</span
+                          >
+                        </div>
+                      </div>
+                    </template>
+                  </Column>
                 </Row>
                 <Row>
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="Count"
+                    sortField="caseCountValue"
+                    sortable
                   />
-                  <Column :pt="{ headerContent: 'justify-end' }" header="Min" />
-                  <Column :pt="{ headerContent: 'justify-end' }" header="Max" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Min"
+                    sortField="caseMinValue"
+                    sortable
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Max"
+                    sortField="caseMaxValue"
+                    sortable
+                  />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="Mean"
+                    sortField="caseAverageValue"
+                    sortable
                   />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="StDev"
+                    sortField="caseStandardDeviation"
+                    sortable
                   />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="Median"
+                    sortField="caseMedianValue"
+                    sortable
                   />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="Count"
+                    sortField="targetCountValue"
+                    sortable
                   />
-                  <Column :pt="{ headerContent: 'justify-end' }" header="Min" />
-                  <Column :pt="{ headerContent: 'justify-end' }" header="Max" />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Min"
+                    sortField="targetMinValue"
+                    sortable
+                  />
+                  <Column
+                    :pt="{ headerContent: 'justify-end' }"
+                    header="Max"
+                    sortField="targetMaxValue"
+                    sortable
+                  />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="Mean"
+                    sortField="targetAverageValue"
+                    sortable
                   />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="StDev"
+                    sortField="targetStandardDeviation"
+                    sortable
                   />
                   <Column
                     :pt="{ headerContent: 'justify-end' }"
                     header="Median"
+                    sortField="targetMedianValue"
+                    sortable
                   />
+                </Row>
+                <Row>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.caseCountValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.caseMinValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.caseMaxValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.caseAverageValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="
+                          continuousTableFilters.caseStandardDeviation
+                        "
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.caseMedianValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.targetCountValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.targetMinValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.targetMaxValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.targetAverageValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="
+                          continuousTableFilters.targetStandardDeviation
+                        "
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
+                  <Column :pt="{ headerContent: 'justify-end' }">
+                    <template #header>
+                      <FilterInput
+                        :filterObj="continuousTableFilters.targetMedianValue"
+                        input-style="width:100%"
+                      />
+                    </template>
+                  </Column>
                 </Row>
               </ColumnGroup>
 
@@ -275,71 +590,238 @@
                   />
                 </template>
               </Column>
-              <Column style="text-align: end" field="caseCountValue"
-                ><template #body="{ data }">{{
+              <Column
+                style="text-align: end"
+                field="caseCountValue"
+                sortable
+                :showFilterMenu="false"
+              >
+                <template #body="{ data }">{{
                   formatCensored(data.caseCountValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="caseMinValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="caseMinValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.caseMinValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="caseMaxValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="caseMaxValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.caseMaxValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="caseAverageValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="caseAverageValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.caseAverageValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="caseStandardDeviation"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="caseStandardDeviation"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.caseStandardDeviation)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="caseMedianValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="caseMedianValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.caseMedianValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="targetCountValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="targetCountValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatCensored(data.targetCountValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="targetMinValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="targetMinValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.targetMinValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="targetMaxValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="targetMaxValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.targetMaxValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="targetAverageValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="targetAverageValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.targetAverageValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="targetStandardDeviation"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="targetStandardDeviation"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.targetStandardDeviation)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="targetMedianValue"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="targetMedianValue"
-                ><template #body="{ data }">{{
+                <template #body="{ data }">{{
                   formatNum(data.targetMedianValue)
-                }}</template></Column
+                }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                style="text-align: end"
+                field="SMD"
+                sortable
+                :showFilterMenu="false"
               >
-              <Column style="text-align: end" field="SMD" sortable
-                ><template #body="{ data }">{{
-                  formatNum(data.SMD)
-                }}</template></Column
-              >
+                <template #body="{ data }">{{ formatNum(data.SMD) }}</template>
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Filter..."
+                    size="small"
+                  />
+                </template>
+              </Column>
               <Column
                 style="text-align: end"
                 field="absSMD"
@@ -396,6 +878,7 @@ import Dropdown from "primevue/dropdown";
 import Slider from "primevue/slider";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
+import FilterInput from "./shared/FilterInput.vue";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
@@ -441,9 +924,27 @@ const smdMax = ref(2);
 
 const binaryTableFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  caseCount: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  caseAverage: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  nonCaseCount: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  nonCaseAverage: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  SMD: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const continuousTableFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  caseCountValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  caseMinValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  caseMaxValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  caseAverageValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  caseStandardDeviation: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  caseMedianValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  targetCountValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  targetMinValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  targetMaxValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  targetAverageValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  targetStandardDeviation: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  targetMedianValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  SMD: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);
@@ -462,17 +963,37 @@ const { tarOptions, tarValues, washoutOptions } =
   useTarWashout(selectedOutcome);
 
 const filteredBinaryRows = computed(() => {
-  if (binaryAbsSmdMin.value <= 0) return binaryRows.value;
-  return binaryRows.value.filter(
-    (r) => (r.absSMD ?? 0) >= binaryAbsSmdMin.value
-  );
+  let rows = binaryRows.value;
+  for (const [key, filter] of Object.entries(binaryTableFilters.value)) {
+    if (filter.value != null && filter.value !== "") {
+      const val = String(filter.value).toLowerCase();
+      rows = rows.filter((r) =>
+        String(r[key] ?? "")
+          .toLowerCase()
+          .includes(val)
+      );
+    }
+  }
+  if (binaryAbsSmdMin.value > 0)
+    rows = rows.filter((r) => (r.absSMD ?? 0) >= binaryAbsSmdMin.value);
+  return rows;
 });
 
 const filteredContinuousRows = computed(() => {
-  if (continuousAbsSmdMin.value <= 0) return continuousRows.value;
-  return continuousRows.value.filter(
-    (r) => (r.absSMD ?? 0) >= continuousAbsSmdMin.value
-  );
+  let rows = continuousRows.value;
+  for (const [key, filter] of Object.entries(continuousTableFilters.value)) {
+    if (filter.value != null && filter.value !== "") {
+      const val = String(filter.value).toLowerCase();
+      rows = rows.filter((r) =>
+        String(r[key] ?? "")
+          .toLowerCase()
+          .includes(val)
+      );
+    }
+  }
+  if (continuousAbsSmdMin.value > 0)
+    rows = rows.filter((r) => (r.absSMD ?? 0) >= continuousAbsSmdMin.value);
+  return rows;
 });
 
 watch(selectedOutcome, () => {
@@ -728,5 +1249,12 @@ onMounted(async () => {
   font-size: 0.75rem;
   white-space: nowrap;
   color: v-bind(smdValColor);
+}
+
+.col-header-with-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
 }
 </style>

@@ -99,21 +99,40 @@
           field="numExposureEras"
           header="# Exp Eras"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.numExposureEras)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
+
         <Column
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="numPersonsExposed"
           header="# Exposed"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.numPersonsExposed)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -121,10 +140,19 @@
           field="numCases"
           header="# Cases"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.numCases)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -132,10 +160,19 @@
           field="dechallengeAttempt"
           header="# D.Attempt"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.dechallengeAttempt)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -143,10 +180,19 @@
           field="dechallengeFail"
           header="# D.Fail"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.dechallengeFail)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -154,10 +200,19 @@
           field="dechallengeSuccess"
           header="# D.Success"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.dechallengeSuccess)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -165,10 +220,19 @@
           field="pctDechallengeAttempt"
           header="% D.Attempt"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeAttempt)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -176,10 +240,19 @@
           field="pctDechallengeSuccess"
           header="% D.Success"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeSuccess)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -187,10 +260,19 @@
           field="pctDechallengeFail"
           header="% D.Fail"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatPct(data.pctDechallengeFail)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -198,10 +280,19 @@
           field="rechallengeAttempt"
           header="# R.Attempt"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.rechallengeAttempt)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -209,10 +300,19 @@
           field="rechallengeFail"
           header="# R.Fail"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.rechallengeFail)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -220,10 +320,19 @@
           field="rechallengeSuccess"
           header="# R.Success"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatCensored(data.rechallengeSuccess)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -231,10 +340,19 @@
           field="pctRechallengeAttempt"
           header="% R.Attempt"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeAttempt)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -242,10 +360,19 @@
           field="pctRechallengeSuccess"
           header="% R.Success"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeSuccess)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column
           style="text-align: end"
@@ -253,10 +380,19 @@
           field="pctRechallengeFail"
           header="% R.Fail"
           sortable
+          :showFilterMenu="false"
         >
           <template #body="{ data }">{{
             formatPct(data.pctRechallengeFail)
           }}</template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText
+              v-model="filterModel.value"
+              @input="filterCallback()"
+              placeholder="Filter..."
+              size="small"
+            />
+          </template>
         </Column>
         <Column header="" style="width: 70px">
           <template #body="{ data, index }">
@@ -342,6 +478,21 @@ const tableFilters = ref({
     value: null,
     matchMode: FilterMatchMode.CONTAINS,
   },
+  numExposureEras: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  numPersonsExposed: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  numCases: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  dechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  dechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  dechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  pctDechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  pctDechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  pctDechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  rechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  rechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  rechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  pctRechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  pctRechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  pctRechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);
