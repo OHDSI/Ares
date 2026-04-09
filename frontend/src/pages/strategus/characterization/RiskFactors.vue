@@ -34,11 +34,7 @@
           />
         </div>
         <div class="control-action">
-          <Button
-            :disabled="generateDisabled"
-            label="Generate"
-            @click="generate"
-          />
+          <GenerateButton :disabled="generateDisabled" @click="generate" />
         </div>
       </div>
     </div>
@@ -64,6 +60,22 @@
               Fraction of patients ({{ helpTextObs }}d prior obs.) stratified by
               outcome during time-at-risk.
             </p>
+            <div class="table-controls">
+              <div class="col-selector">
+                <label class="field-label">Columns</label>
+                <MultiSelect
+                  v-model="selectedColumns"
+                  :options="rfColumnOptions"
+                  option-label="label"
+                  option-value="key"
+                  placeholder="Select columns"
+                  display="chip"
+                  :filter="true"
+                  :pt="colSelectorPt"
+                  class="w-full"
+                />
+              </div>
+            </div>
             <DataTable
               :value="filteredBinaryRows"
               :paginator="true"
@@ -78,6 +90,7 @@
               <ColumnGroup type="header">
                 <Row>
                   <Column
+                    :hidden="!selectedColumns.includes('covariateName')"
                     :pt="{ headerContent: 'justify-start' }"
                     :rowspan="3"
                     sortField="covariateName"
@@ -96,6 +109,7 @@
                   <Column :header="`Case (N=${caseN})`" :colspan="2" />
                   <Column :header="`Non-Case (N=${nonCaseN})`" :colspan="2" />
                   <Column
+                    :hidden="!selectedColumns.includes('SMD')"
                     :pt="{ headerContent: 'justify-end' }"
                     :rowspan="3"
                     sortField="SMD"
@@ -109,6 +123,7 @@
                     </template>
                   </Column>
                   <Column
+                    :hidden="!selectedColumns.includes('absSMD')"
                     :pt="{ headerContent: 'justify-end' }"
                     :rowspan="3"
                     sortField="absSMD"
@@ -135,24 +150,28 @@
                 </Row>
                 <Row>
                   <Column
+                    :hidden="!selectedColumns.includes('caseCount')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Count"
                     sortField="caseCount"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedColumns.includes('caseAverage')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="%"
                     sortField="caseAverage"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedColumns.includes('nonCaseCount')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Count"
                     sortField="nonCaseCount"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedColumns.includes('nonCaseAverage')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="%"
                     sortField="nonCaseAverage"
@@ -160,7 +179,10 @@
                   />
                 </Row>
                 <Row>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedColumns.includes('caseCount')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="binaryTableFilters.caseCount"
@@ -168,7 +190,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedColumns.includes('caseAverage')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="binaryTableFilters.caseAverage"
@@ -176,7 +201,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedColumns.includes('nonCaseCount')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="binaryTableFilters.nonCaseCount"
@@ -184,7 +212,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedColumns.includes('nonCaseAverage')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="binaryTableFilters.nonCaseAverage"
@@ -196,6 +227,7 @@
               </ColumnGroup>
 
               <Column
+                :hidden="!selectedColumns.includes('covariateName')"
                 field="covariateName"
                 :showFilterMenu="false"
                 style="text-align: start"
@@ -210,6 +242,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('caseCount')"
                 style="text-align: end"
                 field="caseCount"
                 sortable
@@ -228,6 +261,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('caseAverage')"
                 style="text-align: end"
                 field="caseAverage"
                 sortable
@@ -246,6 +280,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('nonCaseCount')"
                 style="text-align: end"
                 field="nonCaseCount"
                 sortable
@@ -264,6 +299,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('nonCaseAverage')"
                 style="text-align: end"
                 field="nonCaseAverage"
                 sortable
@@ -282,6 +318,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('SMD')"
                 style="text-align: end"
                 field="SMD"
                 sortable
@@ -298,6 +335,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('absSMD')"
                 style="text-align: end"
                 field="absSMD"
                 sortable
@@ -329,6 +367,22 @@
               Continuous feature distributions ({{ helpTextObs }}d prior obs.)
               stratified by outcome during time-at-risk.
             </p>
+            <div class="table-controls">
+              <div class="col-selector">
+                <label class="field-label">Columns</label>
+                <MultiSelect
+                  v-model="selectedContinuousColumns"
+                  :options="rfContinuousColumnOptions"
+                  option-label="label"
+                  option-value="key"
+                  placeholder="Select columns"
+                  display="chip"
+                  :filter="true"
+                  :pt="colSelectorPt"
+                  class="w-full"
+                />
+              </div>
+            </div>
             <DataTable
               :value="filteredContinuousRows"
               :paginator="true"
@@ -343,6 +397,9 @@
               <ColumnGroup type="header">
                 <Row>
                   <Column
+                    :hidden="
+                      !selectedContinuousColumns.includes('covariateName')
+                    "
                     :pt="{ headerContent: 'justify-start' }"
                     :rowspan="3"
                     sortField="covariateName"
@@ -358,9 +415,18 @@
                       </div>
                     </template>
                   </Column>
-                  <Column :header="`Case (N=${caseN})`" :colspan="6" />
-                  <Column :header="`Target (N=${targetN})`" :colspan="6" />
                   <Column
+                    :header="`Case (N=${caseN})`"
+                    :hidden="rfCaseGroupHidden"
+                    :colspan="rfCaseGroupColspan"
+                  />
+                  <Column
+                    :header="`Target (N=${targetN})`"
+                    :hidden="rfTargetGroupHidden"
+                    :colspan="rfTargetGroupColspan"
+                  />
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('SMD')"
                     :pt="{ headerContent: 'justify-end' }"
                     :rowspan="3"
                     sortField="SMD"
@@ -374,6 +440,7 @@
                     </template>
                   </Column>
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('absSMD')"
                     :pt="{ headerContent: 'justify-end' }"
                     :rowspan="3"
                     sortField="absSMD"
@@ -400,72 +467,86 @@
                 </Row>
                 <Row>
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('caseCount')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Count"
                     sortField="caseCountValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('caseMin')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Min"
                     sortField="caseMinValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('caseMax')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Max"
                     sortField="caseMaxValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('caseMean')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Mean"
                     sortField="caseAverageValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('caseStdev')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="StDev"
                     sortField="caseStandardDeviation"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('caseMedian')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Median"
                     sortField="caseMedianValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('targetCount')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Count"
                     sortField="targetCountValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('targetMin')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Min"
                     sortField="targetMinValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('targetMax')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Max"
                     sortField="targetMaxValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('targetMean')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="Mean"
                     sortField="targetAverageValue"
                     sortable
                   />
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('targetStdev')"
                     :pt="{ headerContent: 'justify-end' }"
                     header="StDev"
                     sortField="targetStandardDeviation"
                     sortable
                   />
                   <Column
+                    :hidden="
+                      !selectedContinuousColumns.includes('targetMedian')
+                    "
                     :pt="{ headerContent: 'justify-end' }"
                     header="Median"
                     sortField="targetMedianValue"
@@ -473,7 +554,10 @@
                   />
                 </Row>
                 <Row>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('caseCount')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.caseCountValue"
@@ -481,7 +565,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('caseMin')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.caseMinValue"
@@ -489,7 +576,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('caseMax')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.caseMaxValue"
@@ -497,7 +587,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('caseMean')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.caseAverageValue"
@@ -505,7 +598,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('caseStdev')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="
@@ -515,7 +611,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('caseMedian')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.caseMedianValue"
@@ -523,7 +622,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('targetCount')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.targetCountValue"
@@ -531,7 +633,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('targetMin')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.targetMinValue"
@@ -539,7 +644,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('targetMax')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.targetMaxValue"
@@ -547,7 +655,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('targetMean')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.targetAverageValue"
@@ -555,7 +666,10 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('targetStdev')"
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="
@@ -565,7 +679,12 @@
                       />
                     </template>
                   </Column>
-                  <Column :pt="{ headerContent: 'justify-end' }">
+                  <Column
+                    :hidden="
+                      !selectedContinuousColumns.includes('targetMedian')
+                    "
+                    :pt="{ headerContent: 'justify-end' }"
+                  >
                     <template #header>
                       <FilterInput
                         :filterObj="continuousTableFilters.targetMedianValue"
@@ -577,6 +696,7 @@
               </ColumnGroup>
 
               <Column
+                :hidden="!selectedContinuousColumns.includes('covariateName')"
                 field="covariateName"
                 :showFilterMenu="false"
                 style="text-align: start"
@@ -591,6 +711,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('caseCount')"
                 style="text-align: end"
                 field="caseCountValue"
                 sortable
@@ -609,6 +730,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('caseMin')"
                 style="text-align: end"
                 field="caseMinValue"
                 sortable
@@ -627,6 +749,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('caseMax')"
                 style="text-align: end"
                 field="caseMaxValue"
                 sortable
@@ -645,6 +768,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('caseMean')"
                 style="text-align: end"
                 field="caseAverageValue"
                 sortable
@@ -663,6 +787,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('caseStdev')"
                 style="text-align: end"
                 field="caseStandardDeviation"
                 sortable
@@ -681,6 +806,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('caseMedian')"
                 style="text-align: end"
                 field="caseMedianValue"
                 sortable
@@ -699,6 +825,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('targetCount')"
                 style="text-align: end"
                 field="targetCountValue"
                 sortable
@@ -717,6 +844,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('targetMin')"
                 style="text-align: end"
                 field="targetMinValue"
                 sortable
@@ -735,6 +863,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('targetMax')"
                 style="text-align: end"
                 field="targetMaxValue"
                 sortable
@@ -753,6 +882,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('targetMean')"
                 style="text-align: end"
                 field="targetAverageValue"
                 sortable
@@ -771,6 +901,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('targetStdev')"
                 style="text-align: end"
                 field="targetStandardDeviation"
                 sortable
@@ -789,6 +920,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('targetMedian')"
                 style="text-align: end"
                 field="targetMedianValue"
                 sortable
@@ -807,6 +939,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('SMD')"
                 style="text-align: end"
                 field="SMD"
                 sortable
@@ -823,6 +956,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('absSMD')"
                 style="text-align: end"
                 field="absSMD"
                 sortable
@@ -870,22 +1004,129 @@ import ContextBar from "./shared/ContextBar.vue";
 import { useAvailableDatabases } from "./shared/useAvailableDatabases";
 import { useTarWashout } from "./shared/useTarWashout";
 import { formatCensored, formatPct, formatNum } from "./shared/formatters";
+import { colSelectorPt } from "./shared/colSelectorPt";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
+import MultiSelect from "primevue/multiselect";
 import Slider from "primevue/slider";
-import Button from "primevue/button";
+import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import FilterInput from "./shared/FilterInput.vue";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 const smdValColor = computed(() => (darkMode.value ? "#9ca3af" : "#6b7280"));
+
+const STORAGE_KEY_BINARY = "char:riskFactors:binary";
+const STORAGE_KEY_CONT = "char:riskFactors:continuous";
+
+const rfColumnOptions = [
+  { label: "Covariate", key: "covariateName" },
+  { label: "Case Count", key: "caseCount" },
+  { label: "Case %", key: "caseAverage" },
+  { label: "Non-Case Count", key: "nonCaseCount" },
+  { label: "Non-Case %", key: "nonCaseAverage" },
+  { label: "SMD", key: "SMD" },
+  { label: "|SMD|", key: "absSMD" },
+];
+const RF_DEFAULT_BINARY = [
+  "covariateName",
+  "caseCount",
+  "caseAverage",
+  "nonCaseCount",
+  "nonCaseAverage",
+  "absSMD",
+];
+const selectedColumns = ref(
+  store.getters.getSettings.columnSelection?.[STORAGE_KEY_BINARY]?.length
+    ? store.getters.getSettings.columnSelection[STORAGE_KEY_BINARY]
+    : RF_DEFAULT_BINARY
+);
+watch(selectedColumns, (val) => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY_BINARY]: val });
+});
+
+const rfContinuousColumnOptions = [
+  { label: "Covariate", key: "covariateName" },
+  { label: "Case Count", key: "caseCount" },
+  { label: "Case Min", key: "caseMin" },
+  { label: "Case Max", key: "caseMax" },
+  { label: "Case Mean", key: "caseMean" },
+  { label: "Case StDev", key: "caseStdev" },
+  { label: "Case Median", key: "caseMedian" },
+  { label: "Target Count", key: "targetCount" },
+  { label: "Target Min", key: "targetMin" },
+  { label: "Target Max", key: "targetMax" },
+  { label: "Target Mean", key: "targetMean" },
+  { label: "Target StDev", key: "targetStdev" },
+  { label: "Target Median", key: "targetMedian" },
+  { label: "SMD", key: "SMD" },
+  { label: "|SMD|", key: "absSMD" },
+];
+const RF_DEFAULT_CONT = [
+  "covariateName",
+  "caseCount",
+  "caseMin",
+  "caseMax",
+  "caseMean",
+  "caseStdev",
+  "caseMedian",
+  "targetCount",
+  "targetMin",
+  "targetMax",
+  "targetMean",
+  "targetStdev",
+  "targetMedian",
+  "absSMD",
+];
+const selectedContinuousColumns = ref(
+  store.getters.getSettings.columnSelection?.[STORAGE_KEY_CONT]?.length
+    ? store.getters.getSettings.columnSelection[STORAGE_KEY_CONT]
+    : RF_DEFAULT_CONT
+);
+watch(selectedContinuousColumns, (val) => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY_CONT]: val });
+});
+
+const rfCaseCols = [
+  "caseCount",
+  "caseMin",
+  "caseMax",
+  "caseMean",
+  "caseStdev",
+  "caseMedian",
+];
+const rfTargetCols = [
+  "targetCount",
+  "targetMin",
+  "targetMax",
+  "targetMean",
+  "targetStdev",
+  "targetMedian",
+];
+const rfCaseGroupColspan = computed(
+  () =>
+    rfCaseCols.filter((k) => selectedContinuousColumns.value.includes(k))
+      .length || 1
+);
+const rfCaseGroupHidden = computed(
+  () => !rfCaseCols.some((k) => selectedContinuousColumns.value.includes(k))
+);
+const rfTargetGroupColspan = computed(
+  () =>
+    rfTargetCols.filter((k) => selectedContinuousColumns.value.includes(k))
+      .length || 1
+);
+const rfTargetGroupHidden = computed(
+  () => !rfTargetCols.some((k) => selectedContinuousColumns.value.includes(k))
+);
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -1256,5 +1497,18 @@ onMounted(async () => {
   flex-direction: column;
   gap: 4px;
   width: 100%;
+}
+
+.table-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.col-selector {
+  min-width: 200px;
+  flex: 1 1 500px;
 }
 </style>

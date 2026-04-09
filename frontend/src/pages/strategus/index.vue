@@ -93,7 +93,6 @@ const setCurrentTab = function (val: number) {
 .strategus-sidebar {
   width: 52px;
   flex-shrink: 0;
-  border-right: 1px solid v-bind(sidebarBorder);
   padding: 1rem 0;
   transition: width 0.2s ease;
   overflow: hidden;

@@ -4,7 +4,7 @@
       <label class="field-label">Outcome</label>
       <OutcomeSelector v-model="selectedOutcome" :options="outcomeOptions" />
 
-      <Button :disabled="generateDisabled" label="Generate" @click="generate" />
+      <GenerateButton :disabled="generateDisabled" @click="generate" />
     </div>
 
     <ContextBar
@@ -30,6 +30,22 @@
     </Message>
 
     <div v-if="showResults" class="section results-body">
+      <div class="table-controls">
+        <div class="col-selector">
+          <label class="field-label">Columns</label>
+          <MultiSelect
+            v-model="selectedColumns"
+            :options="drColumnOptions"
+            option-label="label"
+            option-value="key"
+            placeholder="Select columns"
+            display="chip"
+            :filter="true"
+            :pt="colSelectorPt"
+            class="w-full"
+          />
+        </div>
+      </div>
       <DataTable
         :value="tableData"
         :paginator="tableData.length > 25"
@@ -43,6 +59,7 @@
         class="result-table"
       >
         <Column
+          :hidden="!selectedColumns.includes('databaseName')"
           style="text-align: start"
           :pt="{ headerContent: 'justify-start' }"
           field="databaseName"
@@ -60,6 +77,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('dechallengeStopInterval')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="dechallengeStopInterval"
@@ -77,6 +95,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('dechallengeEvaluationWindow')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="dechallengeEvaluationWindow"
@@ -94,6 +113,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('numExposureEras')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="numExposureEras"
@@ -115,6 +135,7 @@
         </Column>
 
         <Column
+          :hidden="!selectedColumns.includes('numPersonsExposed')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="numPersonsExposed"
@@ -135,6 +156,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('numCases')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="numCases"
@@ -155,6 +177,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('dechallengeAttempt')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="dechallengeAttempt"
@@ -175,6 +198,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('dechallengeFail')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="dechallengeFail"
@@ -195,6 +219,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('dechallengeSuccess')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="dechallengeSuccess"
@@ -215,6 +240,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('pctDechallengeAttempt')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="pctDechallengeAttempt"
@@ -235,6 +261,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('pctDechallengeSuccess')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="pctDechallengeSuccess"
@@ -255,6 +282,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('pctDechallengeFail')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="pctDechallengeFail"
@@ -275,6 +303,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('rechallengeAttempt')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="rechallengeAttempt"
@@ -295,6 +324,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('rechallengeFail')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="rechallengeFail"
@@ -315,6 +345,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('rechallengeSuccess')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="rechallengeSuccess"
@@ -335,6 +366,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('pctRechallengeAttempt')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="pctRechallengeAttempt"
@@ -355,6 +387,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('pctRechallengeSuccess')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="pctRechallengeSuccess"
@@ -375,6 +408,7 @@
           </template>
         </Column>
         <Column
+          :hidden="!selectedColumns.includes('pctRechallengeFail')"
           style="text-align: end"
           :pt="{ headerContent: 'justify-end' }"
           field="pctRechallengeFail"
@@ -394,13 +428,19 @@
             />
           </template>
         </Column>
-        <Column header="" style="width: 70px">
+        <Column
+          header="Fails"
+          style="width: 56px; text-align: center"
+          :pt="{ headerContent: 'justify-center' }"
+        >
           <template #body="{ data, index }">
             <Button
-              label="Fails"
+              icon="pi pi-chart-line"
               size="small"
               severity="secondary"
               text
+              rounded
+              v-tooltip.top="'View fail cases'"
               @click="showFails(data, index)"
             />
           </template>
@@ -414,22 +454,38 @@
 
     <ResultsLoader :loader-state="loaderState" />
 
-    <Dialog
-      v-model:visible="failsDialogVisible"
-      header="Failed Dechallenge Cases"
-      :modal="true"
-      :style="{ width: '80vw' }"
-    >
-      <div v-if="failPlotData" class="fails-chart-container">
-        <div ref="failsChartEl" class="fails-chart"></div>
-      </div>
-      <p v-else class="table-note">No fails to display.</p>
-    </Dialog>
+    <Teleport to="body">
+      <Transition name="fails-modal">
+        <div
+          v-if="failsDialogVisible"
+          class="fails-modal-backdrop"
+          @click.self="failsDialogVisible = false"
+        >
+          <div class="fails-modal-panel section">
+            <div class="fails-modal-header">
+              <span class="fails-modal-title">Failed Dechallenge Cases</span>
+              <Button
+                icon="pi pi-times"
+                severity="secondary"
+                text
+                rounded
+                size="small"
+                @click="failsDialogVisible = false"
+              />
+            </div>
+            <div v-if="failPlotData" class="fails-chart-container">
+              <div ref="failsChartEl" class="fails-chart"></div>
+            </div>
+            <p v-else class="table-note">No fails to display.</p>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from "vue";
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import * as echarts from "echarts";
 
 import ResultsLoader from "./shared/ResultsLoader.vue";
@@ -438,16 +494,63 @@ import ContextBar from "./shared/ContextBar.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
+import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import Message from "primevue/message";
-import Dialog from "primevue/dialog";
+import MultiSelect from "primevue/multiselect";
+import { colSelectorPt } from "./shared/colSelectorPt";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
+
+const STORAGE_KEY = "char:dechalRechal";
+
+const drColumnOptions = [
+  { label: "Database", key: "databaseName" },
+  { label: "Stop Interval", key: "dechallengeStopInterval" },
+  { label: "Eval Window", key: "dechallengeEvaluationWindow" },
+  { label: "# Exp Eras", key: "numExposureEras" },
+  { label: "# Exposed", key: "numPersonsExposed" },
+  { label: "# Cases", key: "numCases" },
+  { label: "# D.Attempt", key: "dechallengeAttempt" },
+  { label: "# D.Fail", key: "dechallengeFail" },
+  { label: "# D.Success", key: "dechallengeSuccess" },
+  { label: "% D.Attempt", key: "pctDechallengeAttempt" },
+  { label: "% D.Success", key: "pctDechallengeSuccess" },
+  { label: "% D.Fail", key: "pctDechallengeFail" },
+  { label: "# R.Attempt", key: "rechallengeAttempt" },
+  { label: "# R.Fail", key: "rechallengeFail" },
+  { label: "# R.Success", key: "rechallengeSuccess" },
+  { label: "% R.Attempt", key: "pctRechallengeAttempt" },
+  { label: "% R.Success", key: "pctRechallengeSuccess" },
+  { label: "% R.Fail", key: "pctRechallengeFail" },
+];
+const DR_DEFAULT_COLUMNS = [
+  "databaseName",
+  "dechallengeStopInterval",
+  "dechallengeEvaluationWindow",
+  "numExposureEras",
+  "numPersonsExposed",
+  "numCases",
+  "dechallengeAttempt",
+  "dechallengeFail",
+  "dechallengeSuccess",
+  "rechallengeAttempt",
+  "rechallengeSuccess",
+];
+const selectedColumns = ref(
+  store.getters.getSettings.columnSelection?.[STORAGE_KEY]?.length
+    ? store.getters.getSettings.columnSelection[STORAGE_KEY]
+    : DR_DEFAULT_COLUMNS
+);
+watch(selectedColumns, (val) => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY]: val });
+});
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -750,7 +853,15 @@ const generateDisabled = computed(() => {
   return selectedOutcome.value.cohortId === lastGeneratedConfig.value.outcome;
 });
 
+function onKeyDown(e: KeyboardEvent) {
+  if (e.key === "Escape" && failsDialogVisible.value) {
+    failsDialogVisible.value = false;
+  }
+}
+
 onMounted(async () => {
+  window.addEventListener("keydown", onKeyDown);
+
   const url = props.initialUrlState;
 
   if (url?.outcomeId && outcomeOptions.value.length) {
@@ -763,6 +874,10 @@ onMounted(async () => {
   await nextTick();
   if (selectedOutcome.value) await generate();
 });
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", onKeyDown);
+});
 </script>
 
 <style scoped>
@@ -774,6 +889,42 @@ onMounted(async () => {
   gap: 0.75rem;
 }
 
+.fails-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.fails-modal-panel {
+  width: 80vw;
+  max-width: 1200px;
+  max-height: 85vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fails-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fails-modal-title {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #1e293b;
+}
+
+.dark .fails-modal-title {
+  color: #e2e8f0;
+}
+
 .fails-chart-container {
   width: 100%;
 }
@@ -781,5 +932,41 @@ onMounted(async () => {
 .fails-chart {
   width: 100%;
   height: 450px;
+}
+
+.table-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.col-selector {
+  min-width: 200px;
+  flex: 1 1 400px;
+}
+</style>
+
+<style>
+.fails-modal-enter-active,
+.fails-modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fails-modal-enter-active .fails-modal-panel,
+.fails-modal-leave-active .fails-modal-panel {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fails-modal-enter-from,
+.fails-modal-leave-to {
+  opacity: 0;
+}
+
+.fails-modal-enter-from .fails-modal-panel,
+.fails-modal-leave-to .fails-modal-panel {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
 }
 </style>

@@ -28,6 +28,7 @@
           <ToggleDarkMode />
           <StickyNavBar />
           <TableStrippedRowsToggle />
+          <PersistColumnSelection />
           <DrillDownViewOptions />
         </div>
         <Divider></Divider>
@@ -60,6 +61,7 @@ import Divider from "primevue/divider";
 import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode/ToggleDefaultAnnotatonsMode.vue";
 import StickyNavBar from "@/widgets/settings/ui/components/stickyNavBar";
 import TableStrippedRowsToggle from "@/widgets/settings/ui/components/strippedRows";
+import PersistColumnSelection from "@/widgets/settings/ui/components/persistColumnSelection";
 
 import { computed } from "vue";
 import { useStore } from "vuex";

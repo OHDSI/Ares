@@ -20,11 +20,7 @@
           />
         </div>
         <div class="control-action">
-          <Button
-            :disabled="generateDisabled"
-            label="Generate"
-            @click="generate"
-          />
+          <GenerateButton :disabled="generateDisabled" @click="generate" />
         </div>
       </div>
     </div>
@@ -48,6 +44,22 @@
               Fraction of patients ({{ covRef[0]?.minPriorObservation }}d prior
               obs.) with each binary feature.
             </p>
+            <div class="table-controls">
+              <div class="col-selector">
+                <label class="field-label">Columns</label>
+                <MultiSelect
+                  v-model="selectedBinaryColumns"
+                  :options="ccBinaryColumnOptions"
+                  option-label="label"
+                  option-value="key"
+                  placeholder="All columns"
+                  display="chip"
+                  :filter="true"
+                  :pt="colSelectorPt"
+                  class="w-full"
+                />
+              </div>
+            </div>
             <DataTable
               :value="filteredBinaryRows"
               :paginator="true"
@@ -62,6 +74,7 @@
               <ColumnGroup type="header">
                 <Row>
                   <Column
+                    :hidden="!selectedBinaryColumns.includes('covariateName')"
                     :pt="{ headerContent: 'justify-start' }"
                     :rowspan="3"
                     sortField="covariateName"
@@ -78,6 +91,7 @@
                     </template>
                   </Column>
                   <Column
+                    :hidden="!selectedBinaryColumns.includes('covariateId')"
                     :pt="{ headerContent: 'justify-start' }"
                     :rowspan="3"
                     sortField="covariateId"
@@ -97,10 +111,14 @@
                     v-for="ref in covRef"
                     :key="'bhdr-' + ref.id"
                     :header="columnGroupLabel(ref)"
-                    :colspan="2"
+                    :hidden="ccBinaryGroupHidden"
+                    :colspan="ccBinaryGroupColspan"
                   />
                   <Column
-                    v-if="covRef.length === 2"
+                    :hidden="
+                      covRef.length !== 2 ||
+                      !selectedBinaryColumns.includes('SMD')
+                    "
                     :pt="{ headerContent: 'justify-end' }"
                     :rowspan="3"
                     sortField="SMD"
@@ -117,7 +135,10 @@
                     </template>
                   </Column>
                   <Column
-                    v-if="covRef.length === 2"
+                    :hidden="
+                      covRef.length !== 2 ||
+                      !selectedBinaryColumns.includes('absSMD')
+                    "
                     :pt="{ headerContent: 'justify-end' }"
                     :rowspan="3"
                     sortField="absSMD"
@@ -145,12 +166,14 @@
                 <Row>
                   <template v-for="ref in covRef" :key="'bsub-' + ref.id">
                     <Column
+                      :hidden="!selectedBinaryColumns.includes('counts')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Count"
                       :sortField="'sumValue_' + ref.id"
                       sortable
                     />
                     <Column
+                      :hidden="!selectedBinaryColumns.includes('pct')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="%"
                       :sortField="'averageValue_' + ref.id"
@@ -160,7 +183,10 @@
                 </Row>
                 <Row>
                   <template v-for="ref in covRef" :key="'bflt-' + ref.id">
-                    <Column :pt="{ headerContent: 'justify-end' }">
+                    <Column
+                      :hidden="!selectedBinaryColumns.includes('counts')"
+                      :pt="{ headerContent: 'justify-end' }"
+                    >
                       <template #header>
                         <FilterInput
                           v-if="binaryFilters['sumValue_' + ref.id]"
@@ -169,7 +195,10 @@
                         />
                       </template>
                     </Column>
-                    <Column :pt="{ headerContent: 'justify-end' }">
+                    <Column
+                      :hidden="!selectedBinaryColumns.includes('pct')"
+                      :pt="{ headerContent: 'justify-end' }"
+                    >
                       <template #header>
                         <FilterInput
                           v-if="binaryFilters['averageValue_' + ref.id]"
@@ -183,6 +212,7 @@
               </ColumnGroup>
 
               <Column
+                :hidden="!selectedBinaryColumns.includes('covariateName')"
                 style="text-align: start"
                 field="covariateName"
                 :showFilterMenu="false"
@@ -197,6 +227,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedBinaryColumns.includes('covariateId')"
                 style="text-align: start"
                 field="covariateId"
                 sortable
@@ -213,6 +244,7 @@
               </Column>
               <template v-for="ref in covRef" :key="'bcol-' + ref.id">
                 <Column
+                  :hidden="!selectedBinaryColumns.includes('counts')"
                   style="text-align: end"
                   :field="'sumValue_' + ref.id"
                   sortable
@@ -231,6 +263,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedBinaryColumns.includes('pct')"
                   style="text-align: end"
                   :field="'averageValue_' + ref.id"
                   sortable
@@ -250,8 +283,10 @@
                 </Column>
               </template>
               <Column
+                :hidden="
+                  covRef.length !== 2 || !selectedBinaryColumns.includes('SMD')
+                "
                 style="text-align: end"
-                v-if="covRef.length === 2"
                 field="SMD"
                 sortable
                 :showFilterMenu="false"
@@ -267,8 +302,11 @@
                 </template>
               </Column>
               <Column
+                :hidden="
+                  covRef.length !== 2 ||
+                  !selectedBinaryColumns.includes('absSMD')
+                "
                 style="text-align: end"
-                v-if="covRef.length === 2"
                 field="absSMD"
                 sortable
                 :showFilterMenu="false"
@@ -307,6 +345,22 @@
                 covRef[0]?.minPriorObservation
               }}d prior obs.) across cohorts.
             </p>
+            <div class="table-controls">
+              <div class="col-selector">
+                <label class="field-label">Columns</label>
+                <MultiSelect
+                  v-model="selectedContinuousColumns"
+                  :options="ccContinuousColumnOptions"
+                  option-label="label"
+                  option-value="key"
+                  placeholder="All columns"
+                  display="chip"
+                  :filter="true"
+                  :pt="colSelectorPt"
+                  class="w-full"
+                />
+              </div>
+            </div>
             <DataTable
               :value="filteredContinuousRows"
               :paginator="true"
@@ -321,6 +375,9 @@
               <ColumnGroup type="header">
                 <Row>
                   <Column
+                    :hidden="
+                      !selectedContinuousColumns.includes('covariateName')
+                    "
                     :pt="{ headerContent: 'justify-start' }"
                     :rowspan="3"
                     sortField="covariateName"
@@ -337,6 +394,7 @@
                     </template>
                   </Column>
                   <Column
+                    :hidden="!selectedContinuousColumns.includes('covariateId')"
                     :pt="{ headerContent: 'justify-start' }"
                     :rowspan="3"
                     sortField="covariateId"
@@ -356,10 +414,14 @@
                     v-for="ref in covRef"
                     :key="'chdr-' + ref.id"
                     :header="columnGroupLabel(ref)"
-                    :colspan="6"
+                    :hidden="ccContGroupHidden"
+                    :colspan="ccContGroupColspan"
                   />
                   <Column
-                    v-if="covRef.length === 2"
+                    :hidden="
+                      covRef.length !== 2 ||
+                      !selectedContinuousColumns.includes('SMD')
+                    "
                     :pt="{ headerContent: 'justify-end' }"
                     :rowspan="3"
                     sortField="SMD"
@@ -376,7 +438,10 @@
                     </template>
                   </Column>
                   <Column
-                    v-if="covRef.length === 2"
+                    :hidden="
+                      covRef.length !== 2 ||
+                      !selectedContinuousColumns.includes('absSMD')
+                    "
                     :pt="{ headerContent: 'justify-end' }"
                     :rowspan="3"
                     sortField="absSMD"
@@ -404,36 +469,42 @@
                 <Row>
                   <template v-for="ref in covRef" :key="'csub-' + ref.id">
                     <Column
+                      :hidden="!selectedContinuousColumns.includes('statCount')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Count"
                       :sortField="'countValue_' + ref.id"
                       sortable
                     />
                     <Column
+                      :hidden="!selectedContinuousColumns.includes('mean')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Mean"
                       :sortField="'averageValue_' + ref.id"
                       sortable
                     />
                     <Column
+                      :hidden="!selectedContinuousColumns.includes('stdev')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="StDev"
                       :sortField="'standardDeviation_' + ref.id"
                       sortable
                     />
                     <Column
+                      :hidden="!selectedContinuousColumns.includes('median')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Median"
                       :sortField="'medianValue_' + ref.id"
                       sortable
                     />
                     <Column
+                      :hidden="!selectedContinuousColumns.includes('min')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Min"
                       :sortField="'minValue_' + ref.id"
                       sortable
                     />
                     <Column
+                      :hidden="!selectedContinuousColumns.includes('max')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Max"
                       :sortField="'maxValue_' + ref.id"
@@ -443,7 +514,10 @@
                 </Row>
                 <Row>
                   <template v-for="ref in covRef" :key="'cflt-' + ref.id">
-                    <Column :pt="{ headerContent: 'justify-end' }">
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('statCount')"
+                      :pt="{ headerContent: 'justify-end' }"
+                    >
                       <template #header>
                         <FilterInput
                           v-if="continuousFilters['countValue_' + ref.id]"
@@ -452,7 +526,10 @@
                         />
                       </template>
                     </Column>
-                    <Column :pt="{ headerContent: 'justify-end' }">
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('mean')"
+                      :pt="{ headerContent: 'justify-end' }"
+                    >
                       <template #header>
                         <FilterInput
                           v-if="continuousFilters['averageValue_' + ref.id]"
@@ -463,7 +540,10 @@
                         />
                       </template>
                     </Column>
-                    <Column :pt="{ headerContent: 'justify-end' }">
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('stdev')"
+                      :pt="{ headerContent: 'justify-end' }"
+                    >
                       <template #header>
                         <FilterInput
                           v-if="
@@ -476,7 +556,10 @@
                         />
                       </template>
                     </Column>
-                    <Column :pt="{ headerContent: 'justify-end' }">
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('median')"
+                      :pt="{ headerContent: 'justify-end' }"
+                    >
                       <template #header>
                         <FilterInput
                           v-if="continuousFilters['medianValue_' + ref.id]"
@@ -487,7 +570,10 @@
                         />
                       </template>
                     </Column>
-                    <Column :pt="{ headerContent: 'justify-end' }">
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('min')"
+                      :pt="{ headerContent: 'justify-end' }"
+                    >
                       <template #header>
                         <FilterInput
                           v-if="continuousFilters['minValue_' + ref.id]"
@@ -496,7 +582,10 @@
                         />
                       </template>
                     </Column>
-                    <Column :pt="{ headerContent: 'justify-end' }">
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('max')"
+                      :pt="{ headerContent: 'justify-end' }"
+                    >
                       <template #header>
                         <FilterInput
                           v-if="continuousFilters['maxValue_' + ref.id]"
@@ -510,6 +599,7 @@
               </ColumnGroup>
 
               <Column
+                :hidden="!selectedContinuousColumns.includes('covariateName')"
                 style="text-align: start"
                 field="covariateName"
                 :showFilterMenu="false"
@@ -524,6 +614,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedContinuousColumns.includes('covariateId')"
                 style="text-align: start"
                 field="covariateId"
                 sortable
@@ -540,6 +631,7 @@
               </Column>
               <template v-for="ref in covRef" :key="'ccol-' + ref.id">
                 <Column
+                  :hidden="!selectedContinuousColumns.includes('statCount')"
                   style="text-align: end"
                   :field="'countValue_' + ref.id"
                   sortable
@@ -558,6 +650,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedContinuousColumns.includes('mean')"
                   style="text-align: end"
                   :field="'averageValue_' + ref.id"
                   sortable
@@ -576,6 +669,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedContinuousColumns.includes('stdev')"
                   style="text-align: end"
                   :field="'standardDeviation_' + ref.id"
                   sortable
@@ -594,6 +688,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedContinuousColumns.includes('median')"
                   style="text-align: end"
                   :field="'medianValue_' + ref.id"
                   sortable
@@ -612,6 +707,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedContinuousColumns.includes('min')"
                   style="text-align: end"
                   :field="'minValue_' + ref.id"
                   sortable
@@ -630,6 +726,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedContinuousColumns.includes('max')"
                   style="text-align: end"
                   :field="'maxValue_' + ref.id"
                   sortable
@@ -649,8 +746,11 @@
                 </Column>
               </template>
               <Column
+                :hidden="
+                  covRef.length !== 2 ||
+                  !selectedContinuousColumns.includes('SMD')
+                "
                 style="text-align: end"
-                v-if="covRef.length === 2"
                 field="SMD"
                 sortable
                 :showFilterMenu="false"
@@ -666,8 +766,11 @@
                 </template>
               </Column>
               <Column
+                :hidden="
+                  covRef.length !== 2 ||
+                  !selectedContinuousColumns.includes('absSMD')
+                "
                 style="text-align: end"
-                v-if="covRef.length === 2"
                 field="absSMD"
                 sortable
                 :showFilterMenu="false"
@@ -723,17 +826,96 @@ import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
+import MultiSelect from "primevue/multiselect";
+import { colSelectorPt } from "./shared/colSelectorPt";
 import Slider from "primevue/slider";
-import Button from "primevue/button";
+import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 const smdValColor = computed(() => (darkMode.value ? "#9ca3af" : "#6b7280"));
+
+const STORAGE_KEY_BINARY = "char:cohortComparison:binary";
+const STORAGE_KEY_CONT = "char:cohortComparison:continuous";
+
+const ccBinaryColumnOptions = [
+  { label: "Covariate", key: "covariateName" },
+  { label: "ID", key: "covariateId" },
+  { label: "Count", key: "counts" },
+  { label: "%", key: "pct" },
+  { label: "SMD", key: "SMD" },
+  { label: "|SMD|", key: "absSMD" },
+];
+const CC_DEFAULT_BINARY = ["covariateName", "counts", "pct", "SMD", "absSMD"];
+const selectedBinaryColumns = ref(
+  store.getters.getSettings.columnSelection?.[STORAGE_KEY_BINARY]?.length
+    ? store.getters.getSettings.columnSelection[STORAGE_KEY_BINARY]
+    : CC_DEFAULT_BINARY
+);
+watch(selectedBinaryColumns, (val) => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY_BINARY]: val });
+});
+
+const ccContinuousColumnOptions = [
+  { label: "Covariate", key: "covariateName" },
+  { label: "ID", key: "covariateId" },
+  { label: "Count", key: "statCount" },
+  { label: "Mean", key: "mean" },
+  { label: "StDev", key: "stdev" },
+  { label: "Median", key: "median" },
+  { label: "Min", key: "min" },
+  { label: "Max", key: "max" },
+  { label: "SMD", key: "SMD" },
+  { label: "|SMD|", key: "absSMD" },
+];
+const CC_DEFAULT_CONT = [
+  "covariateName",
+  "statCount",
+  "mean",
+  "stdev",
+  "median",
+  "min",
+  "max",
+  "SMD",
+  "absSMD",
+];
+const selectedContinuousColumns = ref(
+  store.getters.getSettings.columnSelection?.[STORAGE_KEY_CONT]?.length
+    ? store.getters.getSettings.columnSelection[STORAGE_KEY_CONT]
+    : CC_DEFAULT_CONT
+);
+watch(selectedContinuousColumns, (val) => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY_CONT]: val });
+});
+
+const ccBinaryGroupColspan = computed(() => {
+  const n =
+    (selectedBinaryColumns.value.includes("counts") ? 1 : 0) +
+    (selectedBinaryColumns.value.includes("pct") ? 1 : 0);
+  return n || 1;
+});
+const ccBinaryGroupHidden = computed(
+  () =>
+    !selectedBinaryColumns.value.includes("counts") &&
+    !selectedBinaryColumns.value.includes("pct")
+);
+
+const ccContStatsKeys = ["statCount", "mean", "stdev", "median", "min", "max"];
+const ccContGroupColspan = computed(
+  () =>
+    ccContStatsKeys.filter((k) => selectedContinuousColumns.value.includes(k))
+      .length || 1
+);
+const ccContGroupHidden = computed(
+  () =>
+    !ccContStatsKeys.some((k) => selectedContinuousColumns.value.includes(k))
+);
 
 watch(darkMode, () => {
   if (showResults.value && activeResultTab.value === 1) renderScatterPlot();
@@ -1147,5 +1329,18 @@ onMounted(async () => {
   flex-direction: column;
   gap: 4px;
   width: 100%;
+}
+
+.table-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.col-selector {
+  min-width: 200px;
+  flex: 1 1 400px;
 }
 </style>

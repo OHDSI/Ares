@@ -12,3 +12,4 @@ export const TOGGLE_STICKY_NAV_BAR = "toggleStickyNavBar";
 export const TOGGLE_STRIPPED_ROWS = "toggleStrippedRows";
 export const UPDATE_DEFAULT_SOURCES = "updateDefaultSources";
 export const CHANGE_DRILLDOWN_VIEW_OPTIONS = "changeDrilldownViewOptions";
+export const TOGGLE_PERSIST_COLUMN_SELECTION = "togglePersistColumnSelection";

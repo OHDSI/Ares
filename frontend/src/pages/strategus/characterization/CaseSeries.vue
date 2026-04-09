@@ -34,11 +34,7 @@
           />
         </div>
         <div class="control-action">
-          <Button
-            :disabled="generateDisabled"
-            label="Generate"
-            @click="generate"
-          />
+          <GenerateButton :disabled="generateDisabled" @click="generate" />
         </div>
       </div>
     </div>
@@ -62,6 +58,22 @@
       <Transition name="tab-fade" mode="out-in"
         ><div :key="activeResultTab">
           <div v-if="activeResultTab === 0">
+            <div class="table-controls">
+              <div class="col-selector">
+                <label class="field-label">Columns</label>
+                <MultiSelect
+                  v-model="selectedColumns"
+                  :options="csColumnOptions"
+                  option-label="label"
+                  option-value="key"
+                  placeholder="All columns"
+                  display="chip"
+                  :filter="true"
+                  :pt="colSelectorPt"
+                  class="w-full"
+                />
+              </div>
+            </div>
             <DataTable
               :value="binaryRows"
               :paginator="true"
@@ -78,45 +90,55 @@
               <ColumnGroup type="header">
                 <Row>
                   <Column
+                    :hidden="!selectedColumns.includes('covariateName')"
                     :pt="{ headerContent: 'justify-start' }"
                     header="Covariate"
                     :rowspan="2"
                   />
                   <Column
                     v-if="hasBinaryPhase('Before')"
+                    :hidden="csBinaryGroupHidden"
                     header="Pre-exposure"
-                    :colspan="2"
+                    :colspan="csBinaryGroupColspan"
                   />
                   <Column
                     v-if="hasBinaryPhase('During')"
+                    :hidden="csBinaryGroupHidden"
                     header="Between exposure &amp; outcome"
-                    :colspan="2"
+                    :colspan="csBinaryGroupColspan"
                   />
                   <Column
                     v-if="hasBinaryPhase('After')"
+                    :hidden="csBinaryGroupHidden"
                     header="Post-outcome"
-                    :colspan="2"
+                    :colspan="csBinaryGroupColspan"
                   />
                 </Row>
                 <Row>
                   <template v-if="hasBinaryPhase('Before')"
                     ><Column
+                      :hidden="!selectedColumns.includes('counts')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="No." /><Column
+                      :hidden="!selectedColumns.includes('pct')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="%"
                   /></template>
                   <template v-if="hasBinaryPhase('During')"
                     ><Column
+                      :hidden="!selectedColumns.includes('counts')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="No." /><Column
+                      :hidden="!selectedColumns.includes('pct')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="%"
                   /></template>
                   <template v-if="hasBinaryPhase('After')"
                     ><Column
+                      :hidden="!selectedColumns.includes('counts')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="No." /><Column
+                      :hidden="!selectedColumns.includes('pct')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="%"
                   /></template>
@@ -124,6 +146,7 @@
               </ColumnGroup>
 
               <Column
+                :hidden="!selectedColumns.includes('covariateName')"
                 field="covariateName"
                 :showFilterMenu="false"
                 style="text-align: start"
@@ -139,6 +162,7 @@
               </Column>
               <template v-if="hasBinaryPhase('Before')">
                 <Column
+                  :hidden="!selectedColumns.includes('counts')"
                   style="text-align: end"
                   field="sumValue_Before"
                   sortable
@@ -158,6 +182,7 @@
                 </Column>
 
                 <Column
+                  :hidden="!selectedColumns.includes('pct')"
                   style="text-align: end"
                   field="averageValue_Before"
                   sortable
@@ -178,6 +203,7 @@
               </template>
               <template v-if="hasBinaryPhase('During')">
                 <Column
+                  :hidden="!selectedColumns.includes('counts')"
                   style="text-align: end"
                   field="sumValue_During"
                   sortable
@@ -196,6 +222,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedColumns.includes('pct')"
                   style="text-align: end"
                   field="averageValue_During"
                   sortable
@@ -216,6 +243,7 @@
               </template>
               <template v-if="hasBinaryPhase('After')">
                 <Column
+                  :hidden="!selectedColumns.includes('counts')"
                   style="text-align: end"
                   field="sumValue_After"
                   sortable
@@ -234,6 +262,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedColumns.includes('pct')"
                   style="text-align: end"
                   field="averageValue_After"
                   sortable
@@ -256,6 +285,22 @@
           </div>
 
           <div v-else-if="activeResultTab === 1">
+            <div class="table-controls">
+              <div class="col-selector">
+                <label class="field-label">Columns</label>
+                <MultiSelect
+                  v-model="selectedColumns"
+                  :options="csColumnOptions"
+                  option-label="label"
+                  option-value="key"
+                  placeholder="All columns"
+                  display="chip"
+                  :filter="true"
+                  :pt="colSelectorPt"
+                  class="w-full"
+                />
+              </div>
+            </div>
             <DataTable
               :value="continuousRows"
               :paginator="true"
@@ -272,29 +317,34 @@
               <ColumnGroup type="header">
                 <Row>
                   <Column
+                    :hidden="!selectedColumns.includes('covariateName')"
                     :pt="{ headerContent: 'justify-start' }"
                     header="Covariate"
                     :rowspan="2"
                   />
                   <Column
+                    :hidden="!selectedColumns.includes('covariateId')"
                     :pt="{ headerContent: 'justify-start' }"
                     header="ID"
                     :rowspan="2"
                   />
                   <Column
                     v-if="hasContinuousPhase('Before')"
+                    :hidden="csContGroupHidden"
                     header="Pre-exposure"
-                    :colspan="6"
+                    :colspan="csContGroupColspan"
                   />
                   <Column
                     v-if="hasContinuousPhase('During')"
+                    :hidden="csContGroupHidden"
                     header="Between exposure &amp; outcome"
-                    :colspan="6"
+                    :colspan="csContGroupColspan"
                   />
                   <Column
                     v-if="hasContinuousPhase('After')"
+                    :hidden="csContGroupHidden"
                     header="Post-outcome"
-                    :colspan="6"
+                    :colspan="csContGroupColspan"
                   />
                 </Row>
                 <Row>
@@ -303,22 +353,28 @@
                     :key="'ch-' + phase"
                   >
                     <Column
+                      :hidden="!selectedColumns.includes('statCount')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Count"
                     /><Column
+                      :hidden="!selectedColumns.includes('min')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Min"
                     /><Column
+                      :hidden="!selectedColumns.includes('max')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Max"
                     />
                     <Column
+                      :hidden="!selectedColumns.includes('mean')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Mean"
                     /><Column
+                      :hidden="!selectedColumns.includes('stdev')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="StDev"
                     /><Column
+                      :hidden="!selectedColumns.includes('median')"
                       :pt="{ headerContent: 'justify-end' }"
                       header="Median"
                     />
@@ -327,6 +383,7 @@
               </ColumnGroup>
 
               <Column
+                :hidden="!selectedColumns.includes('covariateName')"
                 field="covariateName"
                 :showFilterMenu="false"
                 style="text-align: start"
@@ -341,6 +398,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('covariateId')"
                 style="text-align: start"
                 field="covariateId"
                 sortable
@@ -360,6 +418,7 @@
                 :key="'cc-' + phase"
               >
                 <Column
+                  :hidden="!selectedColumns.includes('statCount')"
                   style="text-align: end"
                   :field="'countValue_' + phase"
                   sortable
@@ -378,6 +437,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedColumns.includes('min')"
                   style="text-align: end"
                   :field="'minValue_' + phase"
                   sortable
@@ -396,6 +456,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedColumns.includes('max')"
                   style="text-align: end"
                   :field="'maxValue_' + phase"
                   sortable
@@ -414,6 +475,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedColumns.includes('mean')"
                   style="text-align: end"
                   :field="'averageValue_' + phase"
                   sortable
@@ -432,6 +494,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedColumns.includes('stdev')"
                   style="text-align: end"
                   :field="'standardDeviation_' + phase"
                   sortable
@@ -450,6 +513,7 @@
                   </template>
                 </Column>
                 <Column
+                  :hidden="!selectedColumns.includes('median')"
                   style="text-align: end"
                   :field="'medianValue_' + phase"
                   sortable
@@ -491,21 +555,77 @@ import ContextBar from "./shared/ContextBar.vue";
 import { useAvailableDatabases } from "./shared/useAvailableDatabases";
 import { useTarWashout } from "./shared/useTarWashout";
 import { formatCensored, formatPct, formatNum } from "./shared/formatters";
+import { colSelectorPt } from "./shared/colSelectorPt";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
-import Button from "primevue/button";
+import MultiSelect from "primevue/multiselect";
+import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
+
+const STORAGE_KEY = "char:caseSeries";
 const helpNoteColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
+
+const csColumnOptions = [
+  { label: "Covariate", key: "covariateName" },
+  { label: "ID", key: "covariateId" },
+  { label: "No.", key: "counts" },
+  { label: "%", key: "pct" },
+  { label: "Count", key: "statCount" },
+  { label: "Min", key: "min" },
+  { label: "Max", key: "max" },
+  { label: "Mean", key: "mean" },
+  { label: "StDev", key: "stdev" },
+  { label: "Median", key: "median" },
+];
+const CS_DEFAULT_COLUMNS = [
+  "covariateName",
+  "pct",
+  "statCount",
+  "min",
+  "max",
+  "mean",
+  "stdev",
+  "median",
+];
+const selectedColumns = ref(
+  store.getters.getSettings.columnSelection?.[STORAGE_KEY]?.length
+    ? store.getters.getSettings.columnSelection[STORAGE_KEY]
+    : CS_DEFAULT_COLUMNS
+);
+watch(selectedColumns, (val) => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY]: val });
+});
+
+const csBinaryGroupColspan = computed(() => {
+  const n =
+    (selectedColumns.value.includes("counts") ? 1 : 0) +
+    (selectedColumns.value.includes("pct") ? 1 : 0);
+  return n || 1;
+});
+const csBinaryGroupHidden = computed(
+  () =>
+    !selectedColumns.value.includes("counts") &&
+    !selectedColumns.value.includes("pct")
+);
+const csContStatsKeys = ["statCount", "min", "max", "mean", "stdev", "median"];
+const csContGroupColspan = computed(
+  () =>
+    csContStatsKeys.filter((k) => selectedColumns.value.includes(k)).length || 1
+);
+const csContGroupHidden = computed(
+  () => !csContStatsKeys.some((k) => selectedColumns.value.includes(k))
+);
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -887,5 +1007,18 @@ onMounted(async () => {
   padding: 0 0.25rem;
   margin: 0;
   line-height: 1.4;
+}
+
+.table-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.col-selector {
+  min-width: 200px;
+  flex: 1 1 400px;
 }
 </style>

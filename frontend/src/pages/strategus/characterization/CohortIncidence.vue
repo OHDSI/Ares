@@ -8,7 +8,7 @@
         :multiple="true"
       />
 
-      <Button :disabled="generateDisabled" label="Generate" @click="generate" />
+      <GenerateButton :disabled="generateDisabled" @click="generate" />
     </div>
 
     <ContextBar
@@ -31,6 +31,20 @@
                   placeholder="All"
                   filter
                   display="chip"
+                  class="w-full"
+                />
+              </div>
+              <div class="col-selector">
+                <label class="field-label">Columns</label>
+                <MultiSelect
+                  v-model="selectedColumns"
+                  :options="columnOptions"
+                  option-label="label"
+                  option-value="key"
+                  placeholder="All columns"
+                  display="chip"
+                  :filter="true"
+                  :pt="colSelectorPt"
                   class="w-full"
                 />
               </div>
@@ -74,6 +88,7 @@
               class="result-table mt-3"
             >
               <Column
+                :hidden="!selectedColumns.includes('databaseName')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="databaseName"
@@ -91,6 +106,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('outcomeName')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="outcomeName"
@@ -110,6 +126,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('tar')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="tar"
@@ -129,6 +146,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('ageGroupName')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="ageGroupName"
@@ -146,6 +164,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('genderName')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="genderName"
@@ -163,6 +182,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('startYear')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="startYear"
@@ -180,6 +200,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('cleanWindow')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="cleanWindow"
@@ -199,6 +220,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('personsAtRisk')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="personsAtRisk"
@@ -216,6 +238,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('personDays')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="personDays"
@@ -233,6 +256,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('outcomes')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="outcomes"
@@ -250,6 +274,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('incidenceProportionP100p')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="incidenceProportionP100p"
@@ -270,6 +295,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!selectedColumns.includes('incidenceRateP100py')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="incidenceRateP100py"
@@ -368,16 +394,53 @@ import ContextBar from "./shared/ContextBar.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import MultiSelect from "primevue/multiselect";
+import { colSelectorPt } from "./shared/colSelectorPt";
 import Dropdown from "primevue/dropdown";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
+import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
+
+const STORAGE_KEY = "char:cohortIncidence";
+
+const columnOptions = [
+  { label: "Database", key: "databaseName" },
+  { label: "Outcome", key: "outcomeName" },
+  { label: "TAR", key: "tar" },
+  { label: "Age", key: "ageGroupName" },
+  { label: "Sex", key: "genderName" },
+  { label: "Year", key: "startYear" },
+  { label: "Clean Win.", key: "cleanWindow" },
+  { label: "Persons at Risk", key: "personsAtRisk" },
+  { label: "Person Days", key: "personDays" },
+  { label: "Outcomes", key: "outcomes" },
+  { label: "Prop. /100p", key: "incidenceProportionP100p" },
+  { label: "Rate /100py", key: "incidenceRateP100py" },
+];
+const CI_DEFAULT_COLUMNS = [
+  "databaseName",
+  "outcomeName",
+  "tar",
+  "personsAtRisk",
+  "outcomes",
+  "incidenceProportionP100p",
+  "incidenceRateP100py",
+];
+const selectedColumns = ref(
+  store.getters.getSettings.columnSelection?.[STORAGE_KEY]?.length
+    ? store.getters.getSettings.columnSelection[STORAGE_KEY]
+    : CI_DEFAULT_COLUMNS
+);
+watch(selectedColumns, (val) => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY]: val });
+});
 
 watch(darkMode, () => {
   if (showResults.value && activeResultTab.value === 1) renderPlot();
@@ -740,6 +803,11 @@ onMounted(async () => {
 
 .table-filters > div:first-child {
   min-width: 250px;
+}
+
+.col-selector {
+  min-width: 200px;
+  flex: 1 1 400px;
 }
 
 .plot-filters {

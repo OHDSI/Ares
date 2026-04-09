@@ -14,6 +14,7 @@ import {
   TOGGLE_STRIPPED_ROWS,
   UPDATE_DEFAULT_SOURCES,
   CHANGE_DRILLDOWN_VIEW_OPTIONS,
+  TOGGLE_PERSIST_COLUMN_SELECTION,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -30,6 +31,7 @@ const state = {
     notesMode: false,
     user: null,
     columnSelection: {},
+    persistColumnSelection: true,
     stickyNavBar: true,
     strippedRows: false,
     defaultSources: {},
@@ -43,6 +45,9 @@ const state = {
 
 const getters = {
   getSettings: function (state) {
+    if (!state.settings.persistColumnSelection) {
+      return { ...state.settings, columnSelection: {} };
+    }
     return state.settings;
   },
   getVisibility: function (state): boolean {
@@ -89,10 +94,14 @@ const actions = {
     commit(SET_SETTINGS, { data: payload, field: "strippedRows" });
   },
   [UPDATE_COLUMN_SELECTION]({ commit, rootGetters }, payload) {
+    if (!rootGetters.getSettings.persistColumnSelection) return;
     commit(SET_SETTINGS, {
       data: { ...rootGetters.getSettings.columnSelection, ...payload },
       field: "columnSelection",
     });
+  },
+  [TOGGLE_PERSIST_COLUMN_SELECTION]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "persistColumnSelection" });
   },
   [UPDATE_DEFAULT_SOURCES]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "defaultSources" });

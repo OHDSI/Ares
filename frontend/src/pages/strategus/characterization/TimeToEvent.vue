@@ -4,7 +4,7 @@
       <label class="field-label">Outcome</label>
       <OutcomeSelector v-model="selectedOutcome" :options="outcomeOptions" />
 
-      <Button :disabled="generateDisabled" label="Generate" @click="generate" />
+      <GenerateButton :disabled="generateDisabled" @click="generate" />
     </div>
 
     <ContextBar
@@ -62,6 +62,22 @@
           </div>
 
           <div v-else-if="activeResultTab === 1">
+            <div class="table-controls">
+              <div class="col-selector">
+                <label class="field-label">Columns</label>
+                <MultiSelect
+                  v-model="tableSelectedColumns"
+                  :options="tableColumnOptions"
+                  option-label="label"
+                  option-value="key"
+                  placeholder="All columns"
+                  display="chip"
+                  :filter="true"
+                  :pt="colSelectorPt"
+                  class="w-full"
+                />
+              </div>
+            </div>
             <DataTable
               :value="allData"
               :paginator="true"
@@ -76,6 +92,7 @@
               class="result-table"
             >
               <Column
+                :hidden="!tableSelectedColumns.includes('databaseName')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="databaseName"
@@ -93,6 +110,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!tableSelectedColumns.includes('targetName')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="targetName"
@@ -110,6 +128,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!tableSelectedColumns.includes('outcomeName')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="outcomeName"
@@ -127,6 +146,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!tableSelectedColumns.includes('outcomeType')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="outcomeType"
@@ -144,6 +164,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!tableSelectedColumns.includes('targetOutcomeType')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="targetOutcomeType"
@@ -161,6 +182,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!tableSelectedColumns.includes('timeToEvent')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="timeToEvent"
@@ -178,6 +200,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!tableSelectedColumns.includes('numEvents')"
                 style="text-align: end"
                 :pt="{ headerContent: 'justify-end' }"
                 field="numEvents"
@@ -198,6 +221,7 @@
                 </template>
               </Column>
               <Column
+                :hidden="!tableSelectedColumns.includes('timeScale')"
                 style="text-align: start"
                 :pt="{ headerContent: 'justify-start' }"
                 field="timeScale"
@@ -238,14 +262,46 @@ import ContextBar from "./shared/ContextBar.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import MultiSelect from "primevue/multiselect";
-import Button from "primevue/button";
+import { colSelectorPt } from "./shared/colSelectorPt";
+import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
+import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
+
+const STORAGE_KEY = "char:timeToEvent";
+
+const tableColumnOptions = [
+  { label: "Database", key: "databaseName" },
+  { label: "Target", key: "targetName" },
+  { label: "Outcome", key: "outcomeName" },
+  { label: "Outcome Type", key: "outcomeType" },
+  { label: "Timing", key: "targetOutcomeType" },
+  { label: "Days", key: "timeToEvent" },
+  { label: "# Events", key: "numEvents" },
+  { label: "Scale", key: "timeScale" },
+];
+const TTE_DEFAULT_COLUMNS = [
+  "databaseName",
+  "outcomeName",
+  "outcomeType",
+  "targetOutcomeType",
+  "timeToEvent",
+  "numEvents",
+];
+const tableSelectedColumns = ref(
+  store.getters.getSettings.persistColumnSelection &&
+    store.getters.getSettings.columnSelection?.[STORAGE_KEY]?.length
+    ? store.getters.getSettings.columnSelection[STORAGE_KEY]
+    : TTE_DEFAULT_COLUMNS
+);
+watch(tableSelectedColumns, (val) => {
+  store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY]: val });
+});
 
 watch(darkMode, () => {
   if (showResults.value) renderChart();
@@ -571,5 +627,18 @@ onMounted(async () => {
 .tte-chart {
   width: 100%;
   min-height: 400px;
+}
+
+.table-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.col-selector {
+  min-width: 200px;
+  flex: 1 1 400px;
 }
 </style>
