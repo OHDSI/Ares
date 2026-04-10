@@ -30,6 +30,7 @@
                   :options="uniqueDatabases"
                   placeholder="All"
                   filter
+                  :pt="colSelectorPt"
                   display="chip"
                   class="w-full"
                 />

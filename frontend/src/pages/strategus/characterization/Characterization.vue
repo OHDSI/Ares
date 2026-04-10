@@ -92,9 +92,15 @@
                   @change="filterCallback()"
                 />
               </template>
-              <template #body="{ data }">{{
-                data.databaseComparator ? "✔️" : "❌"
-              }}</template>
+              <template #body="{ data }">
+                <i
+                  :class="
+                    data.databaseComparator
+                      ? 'pi pi-check text-green-600 dark:text-green-400'
+                      : 'pi pi-times text-red-400 dark:text-slate-500'
+                  "
+                />
+              </template>
             </Column>
             <Column
               field="cohortComparator"
@@ -114,9 +120,15 @@
                   @change="filterCallback()"
                 />
               </template>
-              <template #body="{ data }">{{
-                data.cohortComparator ? "✔️" : "❌"
-              }}</template>
+              <template #body="{ data }">
+                <i
+                  :class="
+                    data.cohortComparator
+                      ? 'pi pi-check text-green-600 dark:text-green-400'
+                      : 'pi pi-times text-red-400 dark:text-slate-500'
+                  "
+                />
+              </template>
             </Column>
             <Column
               field="dechalRechal"
@@ -136,9 +148,15 @@
                   @change="filterCallback()"
                 />
               </template>
-              <template #body="{ data }">{{
-                data.dechalRechal ? "✔️" : "❌"
-              }}</template>
+              <template #body="{ data }">
+                <i
+                  :class="
+                    data.dechalRechal
+                      ? 'pi pi-check text-green-600 dark:text-green-400'
+                      : 'pi pi-times text-red-400 dark:text-slate-500'
+                  "
+                />
+              </template>
             </Column>
             <Column
               field="riskFactors"
@@ -158,9 +176,15 @@
                   @change="filterCallback()"
                 />
               </template>
-              <template #body="{ data }">{{
-                data.riskFactors ? "✔️" : "❌"
-              }}</template>
+              <template #body="{ data }">
+                <i
+                  :class="
+                    data.riskFactors
+                      ? 'pi pi-check text-green-600 dark:text-green-400'
+                      : 'pi pi-times text-red-400 dark:text-slate-500'
+                  "
+                />
+              </template>
             </Column>
             <Column
               field="timeToEvent"
@@ -180,9 +204,15 @@
                   @change="filterCallback()"
                 />
               </template>
-              <template #body="{ data }">{{
-                data.timeToEvent ? "✔️" : "❌"
-              }}</template>
+              <template #body="{ data }">
+                <i
+                  :class="
+                    data.timeToEvent
+                      ? 'pi pi-check text-green-600 dark:text-green-400'
+                      : 'pi pi-times text-red-400 dark:text-slate-500'
+                  "
+                />
+              </template>
             </Column>
             <Column
               field="caseSeries"
@@ -202,9 +232,15 @@
                   @change="filterCallback()"
                 />
               </template>
-              <template #body="{ data }">{{
-                data.caseSeries ? "✔️" : "❌"
-              }}</template>
+              <template #body="{ data }">
+                <i
+                  :class="
+                    data.caseSeries
+                      ? 'pi pi-check text-green-600 dark:text-green-400'
+                      : 'pi pi-times text-red-400 dark:text-slate-500'
+                  "
+                />
+              </template>
             </Column>
             <Column
               field="cohortIncidence"
@@ -224,9 +260,15 @@
                   @change="filterCallback()"
                 />
               </template>
-              <template #body="{ data }">{{
-                data.cohortIncidence ? "✔️" : "❌"
-              }}</template>
+              <template #body="{ data }">
+                <i
+                  :class="
+                    data.cohortIncidence
+                      ? 'pi pi-check text-green-600 dark:text-green-400'
+                      : 'pi pi-times text-red-400 dark:text-slate-500'
+                  "
+                />
+              </template>
             </Column>
           </DataTable>
         </div>
