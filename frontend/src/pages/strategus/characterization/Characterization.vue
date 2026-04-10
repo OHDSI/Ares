@@ -286,21 +286,28 @@
                   value: analysis.description,
                   pt: {
                     root: 'absolute',
-                    // arrow: {
-                    //   style: { borderBottomColor: 'var(--surface-200)' },
-                    // },
                     text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-normal p-2 max-w-xs',
                   },
                 }"
               >
                 {{ analysis.label }}
               </button>
+              <span v-if="unavailableAnalyses.length" class="pill-divider" />
+              <span
+                v-for="analysis in unavailableAnalyses"
+                :key="analysis.key"
+                class="pill pill-unavailable"
+                v-tooltip.bottom="{
+                  value: 'No data available for this target',
+                  pt: {
+                    root: 'absolute',
+                    text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-normal p-2 max-w-xs',
+                  },
+                }"
+              >
+                {{ analysis.label }}
+              </span>
             </div>
-            <i
-              v-if="unavailableNames.length"
-              class="pi pi-info-circle unavailable-icon"
-              v-tooltip.bottom="'Not available: ' + unavailableNames.join(', ')"
-            />
           </div>
 
           <Transition name="sticky-fade">
@@ -578,10 +585,10 @@ const currentAnalysis = computed(
   () => availableAnalyses.value[activeTab.value] ?? availableAnalyses.value[0]
 );
 
-const unavailableNames = computed(() => {
+const unavailableAnalyses = computed(() => {
   const t = selectedTarget.value;
   if (!t) return [];
-  return ANALYSIS_DEFS.filter((a) => t[a.key] !== 1).map((a) => a.label);
+  return ANALYSIS_DEFS.filter((a) => t[a.key] !== 1);
 });
 
 function buildExtraProps(analysis) {
@@ -980,14 +987,20 @@ onBeforeUnmount(() => {
   box-shadow: v-bind(pillActiveShadow);
 }
 
-.unavailable-icon {
-  color: #cbd5e1;
+.pill-divider {
+  display: inline-block;
+  width: 1px;
+  height: 1.25rem;
+  background: v-bind(dividerBg);
+  margin: 0 0.125rem;
+  align-self: center;
   opacity: 0.5;
-  cursor: help;
 }
 
-.unavailable-icon:hover {
-  opacity: 0.8;
+.pill-unavailable {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: auto;
 }
 
 .sticky-bar {
