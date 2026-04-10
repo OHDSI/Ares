@@ -459,7 +459,7 @@ const store = useStore();
 
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
-const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#cbd5e1"));
+const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
 const headerColor = computed(() => (darkMode.value ? "#f1f5f9" : "#1e293b"));
 const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
 const pillTextColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
@@ -942,9 +942,10 @@ onBeforeUnmount(() => {
 
 .section {
   background: v-bind(sectionBg);
-  border: 1.2px solid v-bind(sectionBorder);
+  border: 1.5px solid v-bind(sectionBorder);
   border-radius: 8px;
   padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
 .active-target-bar {

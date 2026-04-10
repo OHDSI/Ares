@@ -75,6 +75,17 @@
                   class="w-full"
                 />
               </div>
+              <Button
+                :icon="
+                  showBinaryFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
+                "
+                :severity="showBinaryFilters ? 'primary' : 'secondary'"
+                text
+                rounded
+                class="filter-toggle-btn"
+                :title="showBinaryFilters ? 'Hide filters' : 'Show filters'"
+                @click="showBinaryFilters = !showBinaryFilters"
+              />
             </div>
             <DataTable
               :value="filteredBinaryRows"
@@ -92,7 +103,7 @@
                   <Column
                     :hidden="!selectedColumns.includes('covariateName')"
                     :pt="{ headerContent: 'justify-start' }"
-                    :rowspan="3"
+                    :rowspan="showBinaryFilters ? 3 : 2"
                     sortField="covariateName"
                     sortable
                   >
@@ -100,6 +111,7 @@
                       <div class="col-header-with-filter">
                         <span>Covariate</span>
                         <FilterInput
+                          v-if="showBinaryFilters"
                           :filterObj="binaryTableFilters.covariateName"
                           placeholder="Search..."
                         />
@@ -119,21 +131,24 @@
                   <Column
                     :hidden="!selectedColumns.includes('SMD')"
                     :pt="{ headerContent: 'justify-end' }"
-                    :rowspan="3"
+                    :rowspan="showBinaryFilters ? 3 : 2"
                     sortField="SMD"
                     sortable
                   >
                     <template #header>
                       <div class="col-header-with-filter">
                         <span>SMD</span>
-                        <FilterInput :filterObj="binaryTableFilters.SMD" />
+                        <FilterInput
+                          v-if="showBinaryFilters"
+                          :filterObj="binaryTableFilters.SMD"
+                        />
                       </div>
                     </template>
                   </Column>
                   <Column
                     :hidden="!selectedColumns.includes('absSMD')"
                     :pt="{ headerContent: 'justify-end' }"
-                    :rowspan="3"
+                    :rowspan="showBinaryFilters ? 3 : 2"
                     sortField="absSMD"
                     sortable
                   >
@@ -186,7 +201,7 @@
                     sortable
                   />
                 </Row>
-                <Row>
+                <Row v-if="showBinaryFilters">
                   <Column
                     :hidden="!selectedColumns.includes('caseCount')"
                     :pt="{ ...subPt(0), headerContent: 'justify-end' }"
@@ -394,6 +409,17 @@
                   class="w-full"
                 />
               </div>
+              <Button
+                :icon="
+                  showContinuousFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
+                "
+                :severity="showContinuousFilters ? 'primary' : 'secondary'"
+                text
+                rounded
+                class="filter-toggle-btn"
+                :title="showContinuousFilters ? 'Hide filters' : 'Show filters'"
+                @click="showContinuousFilters = !showContinuousFilters"
+              />
             </div>
             <DataTable
               :value="filteredContinuousRows"
@@ -413,7 +439,7 @@
                       !selectedContinuousColumns.includes('covariateName')
                     "
                     :pt="{ headerContent: 'justify-start' }"
-                    :rowspan="3"
+                    :rowspan="showContinuousFilters ? 3 : 2"
                     sortField="covariateName"
                     sortable
                   >
@@ -421,6 +447,7 @@
                       <div class="col-header-with-filter">
                         <span>Covariate</span>
                         <FilterInput
+                          v-if="showContinuousFilters"
                           :filterObj="continuousTableFilters.covariateName"
                           placeholder="Search..."
                         />
@@ -442,21 +469,24 @@
                   <Column
                     :hidden="!selectedContinuousColumns.includes('SMD')"
                     :pt="{ headerContent: 'justify-end' }"
-                    :rowspan="3"
+                    :rowspan="showContinuousFilters ? 3 : 2"
                     sortField="SMD"
                     sortable
                   >
                     <template #header>
                       <div class="col-header-with-filter">
                         <span>SMD</span>
-                        <FilterInput :filterObj="continuousTableFilters.SMD" />
+                        <FilterInput
+                          v-if="showContinuousFilters"
+                          :filterObj="continuousTableFilters.SMD"
+                        />
                       </div>
                     </template>
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('absSMD')"
                     :pt="{ headerContent: 'justify-end' }"
-                    :rowspan="3"
+                    :rowspan="showContinuousFilters ? 3 : 2"
                     sortField="absSMD"
                     sortable
                   >
@@ -567,7 +597,7 @@
                     sortable
                   />
                 </Row>
-                <Row>
+                <Row v-if="showContinuousFilters">
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseCount')"
                     :pt="{ ...subPt(0), headerContent: 'justify-end' }"
@@ -1033,6 +1063,7 @@ import { formatCensored, formatPct, formatNum } from "./shared/formatters";
 import { useGroupBanding } from "./shared/useGroupBanding";
 import CensoredCell from "./shared/CensoredCell.vue";
 import { colSelectorPt } from "./shared/colSelectorPt";
+import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
@@ -1167,6 +1198,8 @@ const emit = defineEmits(["state-change"]);
 
 const loading = ref(false);
 const showResults = ref(false);
+const showBinaryFilters = ref(false);
+const showContinuousFilters = ref(false);
 const loaderState = ref("idle");
 const lastGeneratedConfig = ref(null);
 
@@ -1539,5 +1572,22 @@ onMounted(async () => {
 .col-selector {
   min-width: 200px;
   flex: 1 1 500px;
+}
+
+.filter-toggle-btn {
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1rem;
+}
+
+:deep(.p-sortable-column-icon) {
+  opacity: 0.15;
+  transition: opacity 0.15s;
+}
+:deep(.p-sortable-column:hover .p-sortable-column-icon),
+:deep(.p-highlight .p-sortable-column-icon) {
+  opacity: 1;
 }
 </style>

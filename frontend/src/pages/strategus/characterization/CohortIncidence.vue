@@ -72,6 +72,15 @@
                   /><label for="yearStrat">Year stratified</label>
                 </div>
               </div>
+              <Button
+                :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
+                :severity="showFilters ? 'primary' : 'secondary'"
+                text
+                rounded
+                class="filter-toggle-btn"
+                :title="showFilters ? 'Hide filters' : 'Show filters'"
+                @click="showFilters = !showFilters"
+              />
             </div>
 
             <DataTable
@@ -80,7 +89,7 @@
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
-              filterDisplay="row"
+              :filterDisplay="showFilters ? 'row' : undefined"
               v-model:filters="tableFilters"
               sortMode="multiple"
               removableSort
@@ -457,6 +466,7 @@ const emit = defineEmits(["state-change"]);
 
 const loading = ref(false);
 const showResults = ref(false);
+const showFilters = ref(false);
 const loaderState = ref("idle");
 const selectedOutcomes = ref([]);
 const fullData = ref([]);
@@ -809,6 +819,23 @@ onMounted(async () => {
 .col-selector {
   min-width: 200px;
   flex: 1 1 400px;
+}
+
+.filter-toggle-btn {
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1rem;
+}
+
+:deep(.p-sortable-column-icon) {
+  opacity: 0.15;
+  transition: opacity 0.15s;
+}
+:deep(.p-sortable-column:hover .p-sortable-column-icon),
+:deep(.p-highlight .p-sortable-column-icon) {
+  opacity: 1;
 }
 
 .plot-filters {

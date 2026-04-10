@@ -18,7 +18,8 @@ defineProps<{
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 const contextColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
-const contextBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#e2e8f0"));
+const contextBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
+const contextBg = computed(() => (darkMode.value ? "#1c1c1c" : "#f8fafc"));
 </script>
 
 <style scoped>
@@ -31,8 +32,9 @@ const contextBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#e2e8f0"));
   font-size: 0.8125rem;
   color: v-bind(contextColor);
   padding: 0.5rem 0.75rem;
-  border-top: 1px solid v-bind(contextBorder);
-  border-bottom: 1px solid v-bind(contextBorder);
+  background: v-bind(contextBg);
+  border: 1px solid v-bind(contextBorder);
+  border-radius: 8px;
   flex-wrap: wrap;
 }
 </style>

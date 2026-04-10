@@ -73,13 +73,24 @@
                   class="w-full"
                 />
               </div>
+              <Button
+                :icon="
+                  showBinaryFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
+                "
+                :severity="showBinaryFilters ? 'primary' : 'secondary'"
+                text
+                rounded
+                class="filter-toggle-btn"
+                :title="showBinaryFilters ? 'Hide filters' : 'Show filters'"
+                @click="showBinaryFilters = !showBinaryFilters"
+              />
             </div>
             <DataTable
               :value="binaryRows"
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
-              filterDisplay="row"
+              :filterDisplay="showBinaryFilters ? 'row' : undefined"
               v-model:filters="binaryTableFilters"
               sortMode="multiple"
               removableSort
@@ -121,28 +132,46 @@
                   <template v-if="hasBinaryPhase('Before')"
                     ><Column
                       :hidden="!selectedColumns.includes('counts')"
-                      :pt="{ ...subPt(phaseIndex.Before), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex.Before),
+                        headerContent: 'justify-end',
+                      }"
                       header="No." /><Column
                       :hidden="!selectedColumns.includes('pct')"
-                      :pt="{ ...subPt(phaseIndex.Before), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex.Before),
+                        headerContent: 'justify-end',
+                      }"
                       header="%"
                   /></template>
                   <template v-if="hasBinaryPhase('During')"
                     ><Column
                       :hidden="!selectedColumns.includes('counts')"
-                      :pt="{ ...subPt(phaseIndex.During), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex.During),
+                        headerContent: 'justify-end',
+                      }"
                       header="No." /><Column
                       :hidden="!selectedColumns.includes('pct')"
-                      :pt="{ ...subPt(phaseIndex.During), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex.During),
+                        headerContent: 'justify-end',
+                      }"
                       header="%"
                   /></template>
                   <template v-if="hasBinaryPhase('After')"
                     ><Column
                       :hidden="!selectedColumns.includes('counts')"
-                      :pt="{ ...subPt(phaseIndex.After), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex.After),
+                        headerContent: 'justify-end',
+                      }"
                       header="No." /><Column
                       :hidden="!selectedColumns.includes('pct')"
-                      :pt="{ ...subPt(phaseIndex.After), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex.After),
+                        headerContent: 'justify-end',
+                      }"
                       header="%"
                   /></template>
                 </Row>
@@ -173,7 +202,9 @@
                   :pt="bodyPt(phaseIndex.Before)"
                 >
                   <template #body="{ data }">
-                    <CensoredCell :text="formatCensored(data.sumValue_Before)" />
+                    <CensoredCell
+                      :text="formatCensored(data.sumValue_Before)"
+                    />
                   </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
@@ -216,7 +247,9 @@
                   :pt="bodyPt(phaseIndex.During)"
                 >
                   <template #body="{ data }">
-                    <CensoredCell :text="formatCensored(data.sumValue_During)" />
+                    <CensoredCell
+                      :text="formatCensored(data.sumValue_During)"
+                    />
                   </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
@@ -309,13 +342,25 @@
                   class="w-full"
                 />
               </div>
+
+              <Button
+                :icon="
+                  showContinuousFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
+                "
+                :severity="showContinuousFilters ? 'primary' : 'secondary'"
+                text
+                rounded
+                class="filter-toggle-btn"
+                :title="showContinuousFilters ? 'Hide filters' : 'Show filters'"
+                @click="showContinuousFilters = !showContinuousFilters"
+              />
             </div>
             <DataTable
               :value="continuousRows"
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
-              filterDisplay="row"
+              :filterDisplay="showContinuousFilters ? 'row' : undefined"
               v-model:filters="continuousTableFilters"
               sortMode="multiple"
               removableSort
@@ -366,28 +411,46 @@
                   >
                     <Column
                       :hidden="!selectedColumns.includes('statCount')"
-                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex[phase]),
+                        headerContent: 'justify-end',
+                      }"
                       header="Count"
                     /><Column
                       :hidden="!selectedColumns.includes('min')"
-                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex[phase]),
+                        headerContent: 'justify-end',
+                      }"
                       header="Min"
                     /><Column
                       :hidden="!selectedColumns.includes('max')"
-                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex[phase]),
+                        headerContent: 'justify-end',
+                      }"
                       header="Max"
                     />
                     <Column
                       :hidden="!selectedColumns.includes('mean')"
-                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex[phase]),
+                        headerContent: 'justify-end',
+                      }"
                       header="Mean"
                     /><Column
                       :hidden="!selectedColumns.includes('stdev')"
-                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex[phase]),
+                        headerContent: 'justify-end',
+                      }"
                       header="StDev"
                     /><Column
                       :hidden="!selectedColumns.includes('median')"
-                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
+                      :pt="{
+                        ...subPt(phaseIndex[phase]),
+                        headerContent: 'justify-end',
+                      }"
                       header="Median"
                     />
                   </template>
@@ -438,7 +501,9 @@
                   :pt="bodyPt(phaseIndex[phase])"
                 >
                   <template #body="{ data }">
-                    <CensoredCell :text="formatCensored(data['countValue_' + phase])" />
+                    <CensoredCell
+                      :text="formatCensored(data['countValue_' + phase])"
+                    />
                   </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
@@ -576,6 +641,7 @@ import { formatCensored, formatPct, formatNum } from "./shared/formatters";
 import { useGroupBanding } from "./shared/useGroupBanding";
 import CensoredCell from "./shared/CensoredCell.vue";
 import { colSelectorPt } from "./shared/colSelectorPt";
+import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
@@ -657,6 +723,8 @@ const emit = defineEmits(["state-change"]);
 
 const loading = ref(false);
 const showResults = ref(false);
+const showBinaryFilters = ref(false);
+const showContinuousFilters = ref(false);
 const loaderState = ref("idle");
 const lastGeneratedConfig = ref(null);
 
@@ -1043,5 +1111,22 @@ onMounted(async () => {
 .col-selector {
   min-width: 200px;
   flex: 1 1 400px;
+}
+
+.filter-toggle-btn {
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1rem;
+}
+
+:deep(.p-sortable-column-icon) {
+  opacity: 0.15;
+  transition: opacity 0.15s;
+}
+:deep(.p-sortable-column:hover .p-sortable-column-icon),
+:deep(.p-highlight .p-sortable-column-icon) {
+  opacity: 1;
 }
 </style>
