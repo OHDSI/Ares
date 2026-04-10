@@ -121,9 +121,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.numExposureEras)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.numExposureEras)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -143,9 +143,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.numPersonsExposed)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.numPersonsExposed)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -164,9 +164,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.numCases)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.numCases)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -185,9 +185,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.dechallengeAttempt)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.dechallengeAttempt)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -206,9 +206,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.dechallengeFail)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.dechallengeFail)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -227,9 +227,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.dechallengeSuccess)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.dechallengeSuccess)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -311,9 +311,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.rechallengeAttempt)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.rechallengeAttempt)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -332,9 +332,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.rechallengeFail)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.rechallengeFail)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -353,9 +353,9 @@
           sortable
           :showFilterMenu="false"
         >
-          <template #body="{ data }">{{
-            formatCensored(data.rechallengeSuccess)
-          }}</template>
+          <template #body="{ data }">
+            <CensoredCell :text="formatCensored(data.rechallengeSuccess)" />
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText
               v-model="filterModel.value"
@@ -499,6 +499,7 @@ import InputText from "primevue/inputtext";
 import Message from "primevue/message";
 import MultiSelect from "primevue/multiselect";
 import { colSelectorPt } from "./shared/colSelectorPt";
+import CensoredCell from "./shared/CensoredCell.vue";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";

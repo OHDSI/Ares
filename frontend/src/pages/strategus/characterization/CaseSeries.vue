@@ -100,46 +100,49 @@
                     :hidden="csBinaryGroupHidden"
                     header="Pre-exposure"
                     :colspan="csBinaryGroupColspan"
+                    :pt="headerPt(phaseIndex.Before)"
                   />
                   <Column
                     v-if="hasBinaryPhase('During')"
                     :hidden="csBinaryGroupHidden"
                     header="Between exposure &amp; outcome"
                     :colspan="csBinaryGroupColspan"
+                    :pt="headerPt(phaseIndex.During)"
                   />
                   <Column
                     v-if="hasBinaryPhase('After')"
                     :hidden="csBinaryGroupHidden"
                     header="Post-outcome"
                     :colspan="csBinaryGroupColspan"
+                    :pt="headerPt(phaseIndex.After)"
                   />
                 </Row>
                 <Row>
                   <template v-if="hasBinaryPhase('Before')"
                     ><Column
                       :hidden="!selectedColumns.includes('counts')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex.Before), headerContent: 'justify-end' }"
                       header="No." /><Column
                       :hidden="!selectedColumns.includes('pct')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex.Before), headerContent: 'justify-end' }"
                       header="%"
                   /></template>
                   <template v-if="hasBinaryPhase('During')"
                     ><Column
                       :hidden="!selectedColumns.includes('counts')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex.During), headerContent: 'justify-end' }"
                       header="No." /><Column
                       :hidden="!selectedColumns.includes('pct')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex.During), headerContent: 'justify-end' }"
                       header="%"
                   /></template>
                   <template v-if="hasBinaryPhase('After')"
                     ><Column
                       :hidden="!selectedColumns.includes('counts')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex.After), headerContent: 'justify-end' }"
                       header="No." /><Column
                       :hidden="!selectedColumns.includes('pct')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex.After), headerContent: 'justify-end' }"
                       header="%"
                   /></template>
                 </Row>
@@ -167,10 +170,11 @@
                   field="sumValue_Before"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex.Before)"
                 >
-                  <template #body="{ data }">{{
-                    formatCensored(data.sumValue_Before)
-                  }}</template>
+                  <template #body="{ data }">
+                    <CensoredCell :text="formatCensored(data.sumValue_Before)" />
+                  </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
                       v-model="filterModel.value"
@@ -187,6 +191,7 @@
                   field="averageValue_Before"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex.Before)"
                 >
                   <template #body="{ data }">{{
                     formatPct(data.averageValue_Before)
@@ -208,10 +213,11 @@
                   field="sumValue_During"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex.During)"
                 >
-                  <template #body="{ data }">{{
-                    formatCensored(data.sumValue_During)
-                  }}</template>
+                  <template #body="{ data }">
+                    <CensoredCell :text="formatCensored(data.sumValue_During)" />
+                  </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
                       v-model="filterModel.value"
@@ -227,6 +233,7 @@
                   field="averageValue_During"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex.During)"
                 >
                   <template #body="{ data }">{{
                     formatPct(data.averageValue_During)
@@ -248,10 +255,11 @@
                   field="sumValue_After"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex.After)"
                 >
-                  <template #body="{ data }">{{
-                    formatCensored(data.sumValue_After)
-                  }}</template>
+                  <template #body="{ data }">
+                    <CensoredCell :text="formatCensored(data.sumValue_After)" />
+                  </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
                       v-model="filterModel.value"
@@ -267,6 +275,7 @@
                   field="averageValue_After"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex.After)"
                 >
                   <template #body="{ data }">{{
                     formatPct(data.averageValue_After)
@@ -333,49 +342,52 @@
                     :hidden="csContGroupHidden"
                     header="Pre-exposure"
                     :colspan="csContGroupColspan"
+                    :pt="headerPt(phaseIndex.Before)"
                   />
                   <Column
                     v-if="hasContinuousPhase('During')"
                     :hidden="csContGroupHidden"
                     header="Between exposure &amp; outcome"
                     :colspan="csContGroupColspan"
+                    :pt="headerPt(phaseIndex.During)"
                   />
                   <Column
                     v-if="hasContinuousPhase('After')"
                     :hidden="csContGroupHidden"
                     header="Post-outcome"
                     :colspan="csContGroupColspan"
+                    :pt="headerPt(phaseIndex.After)"
                   />
                 </Row>
                 <Row>
                   <template
-                    v-for="phase in presentContinuousPhases"
+                    v-for="(phase, i) in presentContinuousPhases"
                     :key="'ch-' + phase"
                   >
                     <Column
                       :hidden="!selectedColumns.includes('statCount')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
                       header="Count"
                     /><Column
                       :hidden="!selectedColumns.includes('min')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
                       header="Min"
                     /><Column
                       :hidden="!selectedColumns.includes('max')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
                       header="Max"
                     />
                     <Column
                       :hidden="!selectedColumns.includes('mean')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
                       header="Mean"
                     /><Column
                       :hidden="!selectedColumns.includes('stdev')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
                       header="StDev"
                     /><Column
                       :hidden="!selectedColumns.includes('median')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...subPt(phaseIndex[phase]), headerContent: 'justify-end' }"
                       header="Median"
                     />
                   </template>
@@ -423,10 +435,11 @@
                   :field="'countValue_' + phase"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex[phase])"
                 >
-                  <template #body="{ data }">{{
-                    formatCensored(data["countValue_" + phase])
-                  }}</template>
+                  <template #body="{ data }">
+                    <CensoredCell :text="formatCensored(data['countValue_' + phase])" />
+                  </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
                       v-model="filterModel.value"
@@ -442,6 +455,7 @@
                   :field="'minValue_' + phase"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex[phase])"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["minValue_" + phase])
@@ -461,6 +475,7 @@
                   :field="'maxValue_' + phase"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex[phase])"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["maxValue_" + phase])
@@ -480,6 +495,7 @@
                   :field="'averageValue_' + phase"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex[phase])"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["averageValue_" + phase])
@@ -499,6 +515,7 @@
                   :field="'standardDeviation_' + phase"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex[phase])"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["standardDeviation_" + phase])
@@ -518,6 +535,7 @@
                   :field="'medianValue_' + phase"
                   sortable
                   :showFilterMenu="false"
+                  :pt="bodyPt(phaseIndex[phase])"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["medianValue_" + phase])
@@ -555,6 +573,8 @@ import ContextBar from "./shared/ContextBar.vue";
 import { useAvailableDatabases } from "./shared/useAvailableDatabases";
 import { useTarWashout } from "./shared/useTarWashout";
 import { formatCensored, formatPct, formatNum } from "./shared/formatters";
+import { useGroupBanding } from "./shared/useGroupBanding";
+import CensoredCell from "./shared/CensoredCell.vue";
 import { colSelectorPt } from "./shared/colSelectorPt";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -707,6 +727,9 @@ const selectedDatabaseName = computed(
 const availableDatabases = useAvailableDatabases(toRef(props, "targetRow"));
 const { tarOptions, tarValues, washoutOptions } =
   useTarWashout(selectedOutcome);
+
+const { headerPt, subPt, bodyPt } = useGroupBanding();
+const phaseIndex = { Before: 0, During: 1, After: 2 };
 
 function hasBinaryPhase(phase) {
   return binaryPhases.value.includes(phase);

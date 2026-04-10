@@ -106,8 +106,16 @@
                       </div>
                     </template>
                   </Column>
-                  <Column :header="`Case (N=${caseN})`" :colspan="2" />
-                  <Column :header="`Non-Case (N=${nonCaseN})`" :colspan="2" />
+                  <Column
+                    :header="`Case (N=${caseN})`"
+                    :colspan="2"
+                    :pt="headerPt(0)"
+                  />
+                  <Column
+                    :header="`Non-Case (N=${nonCaseN})`"
+                    :colspan="2"
+                    :pt="headerPt(1)"
+                  />
                   <Column
                     :hidden="!selectedColumns.includes('SMD')"
                     :pt="{ headerContent: 'justify-end' }"
@@ -151,28 +159,28 @@
                 <Row>
                   <Column
                     :hidden="!selectedColumns.includes('caseCount')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                     header="Count"
                     sortField="caseCount"
                     sortable
                   />
                   <Column
                     :hidden="!selectedColumns.includes('caseAverage')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                     header="%"
                     sortField="caseAverage"
                     sortable
                   />
                   <Column
                     :hidden="!selectedColumns.includes('nonCaseCount')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                     header="Count"
                     sortField="nonCaseCount"
                     sortable
                   />
                   <Column
                     :hidden="!selectedColumns.includes('nonCaseAverage')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                     header="%"
                     sortField="nonCaseAverage"
                     sortable
@@ -181,7 +189,7 @@
                 <Row>
                   <Column
                     :hidden="!selectedColumns.includes('caseCount')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -192,7 +200,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedColumns.includes('caseAverage')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -203,7 +211,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedColumns.includes('nonCaseCount')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -214,7 +222,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedColumns.includes('nonCaseAverage')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -245,12 +253,13 @@
                 :hidden="!selectedColumns.includes('caseCount')"
                 style="text-align: end"
                 field="caseCount"
+                :pt="bodyPt(0)"
                 sortable
                 :showFilterMenu="false"
               >
-                <template #body="{ data }">{{
-                  formatCensored(data.caseCount)
-                }}</template>
+                <template #body="{ data }">
+                  <CensoredCell :text="formatCensored(data.caseCount)" />
+                </template>
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
                     v-model="filterModel.value"
@@ -264,6 +273,7 @@
                 :hidden="!selectedColumns.includes('caseAverage')"
                 style="text-align: end"
                 field="caseAverage"
+                :pt="bodyPt(0)"
                 sortable
                 :showFilterMenu="false"
               >
@@ -283,12 +293,13 @@
                 :hidden="!selectedColumns.includes('nonCaseCount')"
                 style="text-align: end"
                 field="nonCaseCount"
+                :pt="bodyPt(1)"
                 sortable
                 :showFilterMenu="false"
               >
-                <template #body="{ data }">{{
-                  formatCensored(data.nonCaseCount)
-                }}</template>
+                <template #body="{ data }">
+                  <CensoredCell :text="formatCensored(data.nonCaseCount)" />
+                </template>
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
                     v-model="filterModel.value"
@@ -302,6 +313,7 @@
                 :hidden="!selectedColumns.includes('nonCaseAverage')"
                 style="text-align: end"
                 field="nonCaseAverage"
+                :pt="bodyPt(1)"
                 sortable
                 :showFilterMenu="false"
               >
@@ -419,11 +431,13 @@
                     :header="`Case (N=${caseN})`"
                     :hidden="rfCaseGroupHidden"
                     :colspan="rfCaseGroupColspan"
+                    :pt="headerPt(0)"
                   />
                   <Column
                     :header="`Target (N=${targetN})`"
                     :hidden="rfTargetGroupHidden"
                     :colspan="rfTargetGroupColspan"
+                    :pt="headerPt(1)"
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('SMD')"
@@ -468,77 +482,77 @@
                 <Row>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseCount')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                     header="Count"
                     sortField="caseCountValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseMin')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                     header="Min"
                     sortField="caseMinValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseMax')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                     header="Max"
                     sortField="caseMaxValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseMean')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                     header="Mean"
                     sortField="caseAverageValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseStdev')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                     header="StDev"
                     sortField="caseStandardDeviation"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseMedian')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                     header="Median"
                     sortField="caseMedianValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetCount')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                     header="Count"
                     sortField="targetCountValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetMin')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                     header="Min"
                     sortField="targetMinValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetMax')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                     header="Max"
                     sortField="targetMaxValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetMean')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                     header="Mean"
                     sortField="targetAverageValue"
                     sortable
                   />
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetStdev')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                     header="StDev"
                     sortField="targetStandardDeviation"
                     sortable
@@ -547,7 +561,7 @@
                     :hidden="
                       !selectedContinuousColumns.includes('targetMedian')
                     "
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                     header="Median"
                     sortField="targetMedianValue"
                     sortable
@@ -556,7 +570,7 @@
                 <Row>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseCount')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -567,7 +581,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseMin')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -578,7 +592,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseMax')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -589,7 +603,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseMean')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -600,7 +614,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseStdev')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -613,7 +627,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('caseMedian')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -624,7 +638,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetCount')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -635,7 +649,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetMin')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -646,7 +660,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetMax')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -657,7 +671,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetMean')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -668,7 +682,7 @@
                   </Column>
                   <Column
                     :hidden="!selectedContinuousColumns.includes('targetStdev')"
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -683,7 +697,7 @@
                     :hidden="
                       !selectedContinuousColumns.includes('targetMedian')
                     "
-                    :pt="{ headerContent: 'justify-end' }"
+                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
                   >
                     <template #header>
                       <FilterInput
@@ -716,10 +730,11 @@
                 field="caseCountValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(0)"
               >
-                <template #body="{ data }">{{
-                  formatCensored(data.caseCountValue)
-                }}</template>
+                <template #body="{ data }">
+                  <CensoredCell :text="formatCensored(data.caseCountValue)" />
+                </template>
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
                     v-model="filterModel.value"
@@ -735,6 +750,7 @@
                 field="caseMinValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(0)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.caseMinValue)
@@ -754,6 +770,7 @@
                 field="caseMaxValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(0)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.caseMaxValue)
@@ -773,6 +790,7 @@
                 field="caseAverageValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(0)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.caseAverageValue)
@@ -792,6 +810,7 @@
                 field="caseStandardDeviation"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(0)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.caseStandardDeviation)
@@ -811,6 +830,7 @@
                 field="caseMedianValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(0)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.caseMedianValue)
@@ -830,10 +850,11 @@
                 field="targetCountValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(1)"
               >
-                <template #body="{ data }">{{
-                  formatCensored(data.targetCountValue)
-                }}</template>
+                <template #body="{ data }">
+                  <CensoredCell :text="formatCensored(data.targetCountValue)" />
+                </template>
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
                     v-model="filterModel.value"
@@ -849,6 +870,7 @@
                 field="targetMinValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(1)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.targetMinValue)
@@ -868,6 +890,7 @@
                 field="targetMaxValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(1)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.targetMaxValue)
@@ -887,6 +910,7 @@
                 field="targetAverageValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(1)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.targetAverageValue)
@@ -906,6 +930,7 @@
                 field="targetStandardDeviation"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(1)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.targetStandardDeviation)
@@ -925,6 +950,7 @@
                 field="targetMedianValue"
                 sortable
                 :showFilterMenu="false"
+                :pt="bodyPt(1)"
               >
                 <template #body="{ data }">{{
                   formatNum(data.targetMedianValue)
@@ -1004,6 +1030,8 @@ import ContextBar from "./shared/ContextBar.vue";
 import { useAvailableDatabases } from "./shared/useAvailableDatabases";
 import { useTarWashout } from "./shared/useTarWashout";
 import { formatCensored, formatPct, formatNum } from "./shared/formatters";
+import { useGroupBanding } from "./shared/useGroupBanding";
+import CensoredCell from "./shared/CensoredCell.vue";
 import { colSelectorPt } from "./shared/colSelectorPt";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -1023,6 +1051,7 @@ import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 const smdValColor = computed(() => (darkMode.value ? "#9ca3af" : "#6b7280"));
+const { headerPt, subPt, bodyPt } = useGroupBanding();
 
 const STORAGE_KEY_BINARY = "char:riskFactors:binary";
 const STORAGE_KEY_CONT = "char:riskFactors:continuous";

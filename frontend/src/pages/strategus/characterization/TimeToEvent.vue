@@ -208,9 +208,9 @@
                 sortable
                 :showFilterMenu="false"
               >
-                <template #body="{ data }">{{
-                  formatCensored(data.numEvents)
-                }}</template>
+                <template #body="{ data }">
+                  <CensoredCell :text="formatCensored(data.numEvents)" />
+                </template>
                 <template #filter="{ filterModel, filterCallback }">
                   <InputText
                     v-model="filterModel.value"
@@ -263,6 +263,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import MultiSelect from "primevue/multiselect";
 import { colSelectorPt } from "./shared/colSelectorPt";
+import CensoredCell from "./shared/CensoredCell.vue";
 import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";

@@ -113,6 +113,7 @@
                     :header="columnGroupLabel(ref)"
                     :hidden="ccBinaryGroupHidden"
                     :colspan="ccBinaryGroupColspan"
+                    :pt="dbHeaderPt(ref.id)"
                   />
                   <Column
                     :hidden="
@@ -167,14 +168,14 @@
                   <template v-for="ref in covRef" :key="'bsub-' + ref.id">
                     <Column
                       :hidden="!selectedBinaryColumns.includes('counts')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                       header="Count"
                       :sortField="'sumValue_' + ref.id"
                       sortable
                     />
                     <Column
                       :hidden="!selectedBinaryColumns.includes('pct')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                       header="%"
                       :sortField="'averageValue_' + ref.id"
                       sortable
@@ -185,7 +186,7 @@
                   <template v-for="ref in covRef" :key="'bflt-' + ref.id">
                     <Column
                       :hidden="!selectedBinaryColumns.includes('counts')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                     >
                       <template #header>
                         <FilterInput
@@ -197,7 +198,7 @@
                     </Column>
                     <Column
                       :hidden="!selectedBinaryColumns.includes('pct')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                     >
                       <template #header>
                         <FilterInput
@@ -249,10 +250,13 @@
                   :field="'sumValue_' + ref.id"
                   sortable
                   :showFilterMenu="false"
+                  :pt="dbBodyPt(ref.id)"
                 >
-                  <template #body="{ data }">{{
-                    formatCount(data["sumValue_" + ref.id])
-                  }}</template>
+                  <template #body="{ data }">
+                    <CensoredCell
+                      :text="formatCount(data['sumValue_' + ref.id])"
+                    />
+                  </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
                       v-model="filterModel.value"
@@ -268,10 +272,13 @@
                   :field="'averageValue_' + ref.id"
                   sortable
                   :showFilterMenu="false"
+                  :pt="dbBodyPt(ref.id)"
                 >
-                  <template #body="{ data }">{{
-                    formatPercent(data["averageValue_" + ref.id])
-                  }}</template>
+                  <template #body="{ data }">
+                    <CensoredCell
+                      :text="formatPercent(data['averageValue_' + ref.id])"
+                    />
+                  </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
                       v-model="filterModel.value"
@@ -416,6 +423,7 @@
                     :header="columnGroupLabel(ref)"
                     :hidden="ccContGroupHidden"
                     :colspan="ccContGroupColspan"
+                    :pt="dbHeaderPt(ref.id)"
                   />
                   <Column
                     :hidden="
@@ -470,42 +478,42 @@
                   <template v-for="ref in covRef" :key="'csub-' + ref.id">
                     <Column
                       :hidden="!selectedContinuousColumns.includes('statCount')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                       header="Count"
                       :sortField="'countValue_' + ref.id"
                       sortable
                     />
                     <Column
                       :hidden="!selectedContinuousColumns.includes('mean')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                       header="Mean"
                       :sortField="'averageValue_' + ref.id"
                       sortable
                     />
                     <Column
                       :hidden="!selectedContinuousColumns.includes('stdev')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                       header="StDev"
                       :sortField="'standardDeviation_' + ref.id"
                       sortable
                     />
                     <Column
                       :hidden="!selectedContinuousColumns.includes('median')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                       header="Median"
                       :sortField="'medianValue_' + ref.id"
                       sortable
                     />
                     <Column
                       :hidden="!selectedContinuousColumns.includes('min')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                       header="Min"
                       :sortField="'minValue_' + ref.id"
                       sortable
                     />
                     <Column
                       :hidden="!selectedContinuousColumns.includes('max')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                       header="Max"
                       :sortField="'maxValue_' + ref.id"
                       sortable
@@ -516,7 +524,7 @@
                   <template v-for="ref in covRef" :key="'cflt-' + ref.id">
                     <Column
                       :hidden="!selectedContinuousColumns.includes('statCount')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                     >
                       <template #header>
                         <FilterInput
@@ -528,7 +536,7 @@
                     </Column>
                     <Column
                       :hidden="!selectedContinuousColumns.includes('mean')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                     >
                       <template #header>
                         <FilterInput
@@ -542,7 +550,7 @@
                     </Column>
                     <Column
                       :hidden="!selectedContinuousColumns.includes('stdev')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                     >
                       <template #header>
                         <FilterInput
@@ -558,7 +566,7 @@
                     </Column>
                     <Column
                       :hidden="!selectedContinuousColumns.includes('median')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                     >
                       <template #header>
                         <FilterInput
@@ -572,7 +580,7 @@
                     </Column>
                     <Column
                       :hidden="!selectedContinuousColumns.includes('min')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                     >
                       <template #header>
                         <FilterInput
@@ -584,7 +592,7 @@
                     </Column>
                     <Column
                       :hidden="!selectedContinuousColumns.includes('max')"
-                      :pt="{ headerContent: 'justify-end' }"
+                      :pt="{ ...dbSubPt(ref.id), headerContent: 'justify-end' }"
                     >
                       <template #header>
                         <FilterInput
@@ -636,10 +644,13 @@
                   :field="'countValue_' + ref.id"
                   sortable
                   :showFilterMenu="false"
+                  :pt="dbBodyPt(ref.id)"
                 >
-                  <template #body="{ data }">{{
-                    formatCount(data["countValue_" + ref.id])
-                  }}</template>
+                  <template #body="{ data }">
+                    <CensoredCell
+                      :text="formatCount(data['countValue_' + ref.id])"
+                    />
+                  </template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
                       v-model="filterModel.value"
@@ -655,6 +666,7 @@
                   :field="'averageValue_' + ref.id"
                   sortable
                   :showFilterMenu="false"
+                  :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["averageValue_" + ref.id])
@@ -674,6 +686,7 @@
                   :field="'standardDeviation_' + ref.id"
                   sortable
                   :showFilterMenu="false"
+                  :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["standardDeviation_" + ref.id])
@@ -693,6 +706,7 @@
                   :field="'medianValue_' + ref.id"
                   sortable
                   :showFilterMenu="false"
+                  :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["medianValue_" + ref.id])
@@ -712,6 +726,7 @@
                   :field="'minValue_' + ref.id"
                   sortable
                   :showFilterMenu="false"
+                  :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["minValue_" + ref.id])
@@ -731,6 +746,7 @@
                   :field="'maxValue_' + ref.id"
                   sortable
                   :showFilterMenu="false"
+                  :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
                     formatNum(data["maxValue_" + ref.id])
@@ -819,6 +835,8 @@ import ContextBar from "./shared/ContextBar.vue";
 import { useAvailableDatabases } from "./shared/useAvailableDatabases";
 import { formatPercent, formatCount, formatSmd } from "./shared/formatters";
 import { classifyDomain, domainColors } from "./shared/domainColors";
+import { useGroupBanding } from "./shared/useGroupBanding";
+import CensoredCell from "./shared/CensoredCell.vue";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
 import DataTable from "primevue/datatable";
@@ -933,6 +951,19 @@ const loading = ref(false);
 const showResults = ref(false);
 const loaderState = ref("idle");
 const lastGeneratedConfig = ref(null);
+
+const dbIndexMap = computed(() => {
+  const map: Record<string, number> = {};
+  covRef.value.forEach((ref, i) => {
+    map[ref.id] = i;
+  });
+  return map;
+});
+
+const { headerPt, subPt, bodyPt } = useGroupBanding();
+const dbHeaderPt = (id: string) => headerPt(dbIndexMap.value[id] ?? 0);
+const dbSubPt = (id: string) => subPt(dbIndexMap.value[id] ?? 0);
+const dbBodyPt = (id: string) => bodyPt(dbIndexMap.value[id] ?? 0);
 
 const activeResultTab = ref(0);
 const resultTabs = [
