@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 import { mdiOpenInNew } from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 
 const store = useStore();
 </script>

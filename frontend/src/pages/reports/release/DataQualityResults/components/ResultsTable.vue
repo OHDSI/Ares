@@ -638,7 +638,7 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, onBeforeMount, Ref, ref, watch } from "vue";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { debounce } from "lodash";
 import { useRoute, useRouter } from "vue-router";

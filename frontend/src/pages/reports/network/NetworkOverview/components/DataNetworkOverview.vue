@@ -39,7 +39,7 @@ import { computed } from "vue";
 import { formatSI } from "@/shared/lib/formatters";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { mdiAccount, mdiDatabase, mdiDatabaseAlert, mdiHistory } from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import Panel from "primevue/panel";
 
 const store = useStore();

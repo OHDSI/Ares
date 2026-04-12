@@ -56,7 +56,7 @@ import {
   mdiContentSaveOutline,
   mdiAccountCircle,
 } from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import environment from "@/shared/api/environment";
 import {
   WEB_API_LOG_IN,

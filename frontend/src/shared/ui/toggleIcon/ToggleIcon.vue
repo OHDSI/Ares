@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import Button from "primevue/button";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import { isUndefined } from "lodash";
 
 const emit = defineEmits(["iconClicked"]);

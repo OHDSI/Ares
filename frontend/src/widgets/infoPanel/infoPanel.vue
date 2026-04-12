@@ -159,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import {
   mdiAccountGroup,
   mdiClockAlert,

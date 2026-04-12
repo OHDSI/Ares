@@ -41,7 +41,7 @@ import Button from "primevue/button";
 import { useRouter } from "vue-router";
 
 import { mdiDatabase } from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 
 const store = useStore();
 const router = useRouter();

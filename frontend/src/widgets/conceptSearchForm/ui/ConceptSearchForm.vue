@@ -424,7 +424,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { toRaw } from "vue";
 import MultiSelect from "primevue/multiselect";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 
 import { ref, onBeforeMount, watch, Ref, nextTick } from "vue";
 import { computed } from "vue";

@@ -139,7 +139,7 @@ import InputGroup from "primevue/inputgroup";
 import { useRoute, useRouter } from "vue-router";
 import { FilterMatchMode } from "primevue/api";
 import { mdiArrowDown, mdiArrowLeft, mdiArrowUp, mdiMinus } from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import { formatComma } from "@/shared/lib/formatters";
 
 const store = useStore();

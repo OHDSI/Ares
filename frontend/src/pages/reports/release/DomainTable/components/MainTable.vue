@@ -338,7 +338,7 @@ import {
   mdiHelpCircle,
   mdiTable,
 } from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import { links } from "@/shared/config/links";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 import { formatComma } from "@/shared/lib/formatters";

@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import MeasurementValueDistributionChart from "./charts/measurementValueDistributionChart/MeasurementValueDistributionChart.vue";
 import { computed } from "vue";
 import RecordCountProportionByMonth from "./charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";

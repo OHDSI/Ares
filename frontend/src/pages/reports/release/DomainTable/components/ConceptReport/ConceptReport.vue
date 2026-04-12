@@ -76,7 +76,7 @@ import RecordCountProportionByAgeSexYear from "./charts/RecordCountProportionByA
 import InfoPanel from "@/widgets/infoPanel";
 import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 import { mdiCheckNetwork } from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import Button from "primevue/button";
 
 const route = useRoute();

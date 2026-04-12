@@ -111,7 +111,7 @@ import CascadeSelect from "primevue/cascadeselect";
 import Dropdown from "primevue/dropdown";
 import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 
 import icon from "@/shared/assets/icon.png";
 import config from "@/widgets/explorer/config";

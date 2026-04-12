@@ -212,7 +212,7 @@ import InputText from "primevue/inputtext";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import { debounce } from "lodash";
 import { useRoute, useRouter } from "vue-router";
-import SvgIcon from "@jamescoyle/vue-icon";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 import { getValuesArray } from "@/shared/lib/utils";
 
