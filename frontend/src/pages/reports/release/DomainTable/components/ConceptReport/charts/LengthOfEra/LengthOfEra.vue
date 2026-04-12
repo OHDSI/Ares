@@ -86,7 +86,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .LENGTH_OF_ERA[0]
@@ -103,7 +103,6 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -113,6 +112,7 @@ import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionLengthOfEra from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/LengthOfEra/lengthOfEra";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();

@@ -40,8 +40,6 @@
 </template>
 
 <script setup lang="ts">
-import * as d3Format from "d3-format";
-
 import { computed, ref, watch, Ref } from "vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -50,6 +48,7 @@ import MultiSelect from "primevue/multiselect";
 import Divider from "primevue/divider";
 import Message from "primevue/message";
 import { useStore } from "vuex";
+import { formatComma } from "@/shared/lib/formatters";
 
 interface Props {
   data: [];
@@ -58,10 +57,6 @@ interface Props {
 const props = defineProps<Props>();
 
 const store = useStore();
-
-const formatComma = function (value) {
-  return d3Format.format(",")(value);
-};
 
 const switchDomains = ref([]);
 const items = ref([

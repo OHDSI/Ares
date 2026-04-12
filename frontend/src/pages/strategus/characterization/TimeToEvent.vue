@@ -278,6 +278,7 @@ import GenerateButton from "@/pages/strategus/characterization/shared/GenerateBu
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { formatCensored } from "@/shared/lib/formatters";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
@@ -411,11 +412,6 @@ watch(activeResultTab, async () => {
     await renderChart();
   }
 });
-
-function formatCensored(val) {
-  if (val == null) return "";
-  return val < 0 ? `< ${Math.abs(val)}` : val;
-}
 
 async function fetchTimeToEventData(targetId, outcomeId) {
   const res = await StrategusService.characterization.getTimeToEvent(

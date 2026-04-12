@@ -53,7 +53,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  ? formatComma(slotProps.data.COUNT_VALUE)
                   : "No data"
               }}
             </div>
@@ -69,7 +69,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
               )
@@ -88,7 +88,6 @@ import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
-import { helpers } from "@/shared/lib/mixins";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
@@ -100,6 +99,8 @@ import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionAgeSex from "@/pages/reports/release/PersonReport/charts/PopulationByAgeSex/personAgeSex";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const showTable = ref(false);
 

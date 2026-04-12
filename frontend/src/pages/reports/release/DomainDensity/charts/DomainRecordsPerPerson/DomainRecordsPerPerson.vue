@@ -42,7 +42,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.records
-                  ? helpers.formatComma(slotProps.data.records)
+                  ? formatComma(slotProps.data.records)
                   : "No data"
               }}
             </div>
@@ -58,7 +58,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.DATA_DENSITY.DATADENSITY_TOTAL[0]
               )
@@ -76,7 +76,6 @@ import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -86,6 +85,8 @@ import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionDomainRecordsPerPerson from "@/pages/reports/release/DomainDensity/charts/DomainRecordsPerPerson/domainRecordsPerPerson";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

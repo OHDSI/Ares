@@ -107,7 +107,7 @@
         <template #body="slotProps">
           {{
             slotProps.data.releases[0].count_person
-              ? helpers.formatComma(slotProps.data.releases[0].count_person)
+              ? formatComma(slotProps.data.releases[0].count_person)
               : 0
           }}
         </template>
@@ -138,9 +138,9 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import InputGroup from "primevue/inputgroup";
 import { useRoute, useRouter } from "vue-router";
 import { FilterMatchMode } from "primevue/api";
-import { helpers } from "@/shared/lib/mixins";
 import { mdiArrowDown, mdiArrowLeft, mdiArrowUp, mdiMinus } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
+import { formatComma } from "@/shared/lib/formatters";
 
 const store = useStore();
 const route = useRoute();

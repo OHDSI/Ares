@@ -20,12 +20,13 @@
 import Pivot from "@/widgets/pivot";
 import { useStore } from "vuex";
 import { NETWORK_PERFORMANCE } from "@/shared/config/files";
+import { formatTimestamp } from "@/shared/lib/formatters";
 
 const store = useStore();
 
 const aggregateTime = function (formatter?) {
   if (formatter == null) {
-    formatter = formatTime;
+    formatter = formatTimestamp;
   }
 
   return function (arg) {
@@ -49,19 +50,6 @@ const aggregateTime = function (formatter?) {
     };
   };
 };
-const formatTime = (function () {
-  return function (x) {
-    let seconds = Math.floor((x / 1000) % 60),
-      minutes = Math.floor((x / (1000 * 60)) % 60),
-      hours = Math.floor((x / (1000 * 60 * 60)) % 24);
-
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
-
-    return hours + ":" + minutes + ":" + seconds;
-  };
-})();
 </script>
 <script lang="ts">
 export default {

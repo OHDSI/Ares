@@ -86,7 +86,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
                   .OBSERVATION_PERIOD_LENGTH_BY_GENDER[0]
@@ -102,7 +102,6 @@
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -112,6 +111,7 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionYearsObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationBySex/yearsObservationBySex";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

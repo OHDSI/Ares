@@ -37,7 +37,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  ? formatComma(slotProps.data.COUNT_VALUE)
                   : 0
               }}
             </div>
@@ -53,7 +53,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .RECORDS_BY_UNIT[0]
@@ -70,7 +70,6 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { RecordsCountType } from "@/processes/exploreReports/model/interfaces/reportTypes/RecordsCountType";
 import { mdiCodeBraces } from "@mdi/js";
@@ -81,6 +80,8 @@ import Column from "primevue/column";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsRecordsByUnitFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/recordsByUnit/recordsByUnit";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 interface Props {
   data: RecordsCountType[];

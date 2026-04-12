@@ -59,7 +59,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.count_value
-                  ? helpers.formatComma(slotProps.data.count_value)
+                  ? formatComma(slotProps.data.count_value)
                   : "No data"
               }}
             </div>
@@ -79,7 +79,6 @@ import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import Panel from "primevue/panel";
-import { helpers } from "@/shared/lib/mixins";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
@@ -87,6 +86,7 @@ import useAnnotationControls from "@/shared/lib/composables/useAnnotationControl
 import { useRoute } from "vue-router";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsDataQualityResultsByDomain from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByDomain/dataQualityByDomain";
+import { formatComma } from "@/shared/lib/formatters";
 
 const store = useStore();
 const route = useRoute();

@@ -41,7 +41,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_PERSON
-                  ? helpers.formatComma(slotProps.data.COUNT_PERSON)
+                  ? formatComma(slotProps.data.COUNT_PERSON)
                   : "No data"
               }}
             </div>
@@ -57,7 +57,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
               )
@@ -77,7 +77,6 @@ import Panel from "primevue/panel";
 import { computed } from "vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { ref } from "vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
@@ -86,6 +85,8 @@ import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionYearOfBirth from "@/pages/reports/release/PersonReport/charts/PopulationByYearBirth/populationByYearOfBirth";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

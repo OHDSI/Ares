@@ -15,7 +15,7 @@ import { useStore } from "vuex";
 import { computed } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsEthnicity from "@/pages/reports/network/NetworkDiversityReport/charts/ethnicityChart/ethnicity";
-import { helpers } from "@/shared/lib/mixins";
+import { getValuesArray } from "@/shared/lib/utils";
 
 const store = useStore();
 
@@ -23,7 +23,7 @@ const data = computed(() => {
   return store.getters.getData.ethnicityData;
 });
 
-const trellis = helpers.getValuesArray(data.value, "DATA_SOURCE_KEY", true);
+const trellis = getValuesArray(data.value, "DATA_SOURCE_KEY", true);
 
 const facetCount = trellis.length;
 const perFacetHeight = 50;

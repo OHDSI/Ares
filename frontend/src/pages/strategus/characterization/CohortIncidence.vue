@@ -412,6 +412,7 @@ import GenerateButton from "@/pages/strategus/characterization/shared/GenerateBu
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { formatNum } from "@/shared/lib/formatters";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
@@ -535,11 +536,6 @@ watch(
     fullData.value = [];
   }
 );
-
-function formatNum(val) {
-  if (val == null) return "";
-  return Number(val).toFixed(2);
-}
 
 async function fetchIncidenceData(targetId, outcomeIds) {
   const res = await StrategusService.characterization.getIncidenceRates(

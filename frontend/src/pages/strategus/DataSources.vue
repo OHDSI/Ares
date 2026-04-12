@@ -141,6 +141,7 @@ import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import { useStore } from "vuex";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { formatDate } from "@/shared/lib/formatters";
 
 const store = useStore();
 const data = ref([]);
@@ -155,17 +156,6 @@ const filters = ref({
   cdmSourceAbbreviation: { value: null, matchMode: FilterMatchMode.CONTAINS },
   cdmHolder: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
-
-function formatDate(val: string | null) {
-  if (!val) return "";
-  const d = new Date(val);
-  if (isNaN(d.getTime())) return val;
-  return d.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
 
 onMounted(async () => {
   loading.value = true;

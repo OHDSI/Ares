@@ -32,7 +32,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.PERCENT_PEOPLE
-                  ? helpers.formatPercent(slotProps.data.PERCENT_PEOPLE)
+                  ? formatPercent(slotProps.data.PERCENT_PEOPLE)
                   : "No data"
               }}
             </div>
@@ -48,7 +48,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
                   .CUMULATIVE_DURATION[0]
@@ -64,7 +64,6 @@
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -74,6 +73,8 @@ import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsNetworkCumulative from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation/networkCumulative";
+import { formatPercent } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

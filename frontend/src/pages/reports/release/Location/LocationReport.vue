@@ -60,7 +60,7 @@ import Column from "primevue/column";
 import { useStore } from "vuex";
 import { computed } from "vue";
 import { LOCATION } from "@/shared/config/files";
-import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
+import { formatComma } from "@/shared/lib/formatters";
 
 const store = useStore();
 

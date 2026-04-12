@@ -205,7 +205,6 @@ import Column from "primevue/column";
 import { useStore } from "vuex";
 import { computed, ref, onMounted } from "vue";
 import MultiSelect from "primevue/multiselect";
-import { helpers } from "@/shared/lib/mixins";
 import { FilterMatchMode } from "primevue/api";
 import { mdiTable } from "@mdi/js";
 import InputGroup from "primevue/inputgroup";
@@ -215,6 +214,7 @@ import { debounce } from "lodash";
 import { useRoute, useRouter } from "vue-router";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { getValuesArray } from "@/shared/lib/utils";
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -328,14 +328,14 @@ const props = defineProps<Props>();
 const store = useStore();
 
 const domain_options = computed(() => {
-  return helpers.getValuesArray(props.data, "domain_id", true);
+  return getValuesArray(props.data, "domain_id", true);
 });
 const analysis_options = computed(() => {
-  return helpers.getValuesArray(props.data, "analysis_name", true);
+  return getValuesArray(props.data, "analysis_name", true);
 });
 
 const temporal_choice_options = computed(() => {
-  return helpers.getValuesArray(props.data, "temporal_choice", true);
+  return getValuesArray(props.data, "temporal_choice", true);
 });
 </script>
 

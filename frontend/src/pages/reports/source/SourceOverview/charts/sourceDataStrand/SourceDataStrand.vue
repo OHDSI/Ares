@@ -31,7 +31,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.count_records
-                  ? helpers.formatComma(slotProps.data.count_records)
+                  ? formatComma(slotProps.data.count_records)
                   : "No data"
               }}
             </div>
@@ -55,7 +55,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
               )
@@ -70,7 +70,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
@@ -83,6 +82,8 @@ const store = useStore();
 import { links } from "@/shared/config/links";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsDatastrand from "@/pages/reports/source/SourceOverview/charts/sourceDataStrand/dataStrand";
+import { formatComma } from "@/shared/lib/formatters";
+import { getValuesArray, openNewTab } from "@/shared/lib/utils";
 
 const data = computed(() => store.getters.getData.dataStrandReport);
 
@@ -92,7 +93,7 @@ function toggleTable(mode) {
   showTable.value = mode;
 }
 
-const trellis = helpers.getValuesArray(data.value, "cdm_release_key", true);
+const trellis = getValuesArray(data.value, "cdm_release_key", true);
 
 const facetCount = trellis.length;
 const perFacetHeight = 50;

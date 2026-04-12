@@ -247,7 +247,6 @@ import {
   COST_DOMAIN_SUMMARY,
   DOMAIN_SUMMARY,
 } from "@/shared/config/files";
-import { helpers } from "@/shared/lib/mixins";
 import InputText from "primevue/inputtext";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
@@ -259,6 +258,7 @@ import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
 import concept from "@/processes/exploreReports/model/store/postprocessing/conceptReport";
 import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
+import { formatComma, formatPercent } from "@/shared/lib/formatters";
 const route = useRoute();
 const store = useStore();
 const router = useRouter();
@@ -625,13 +625,13 @@ const reportColumnNames = {
           value: "NUM_PERSONS",
           link: true,
           sortable: true,
-          processingFunction: helpers.formatComma,
+          processingFunction: formatComma,
         },
         {
           name: "% Persons",
           value: "PERCENT_PERSONS",
           sortable: true,
-          processingFunction: helpers.formatPercent,
+          processingFunction: formatPercent,
         },
       ],
     },
@@ -651,7 +651,7 @@ const reportColumnNames = {
           link: true,
           value: "cohort_subjects",
           sortable: true,
-          processingFunction: helpers.formatComma,
+          processingFunction: formatComma,
         },
       ],
     },
@@ -671,7 +671,7 @@ const reportColumnNames = {
           link: true,
           value: "TOTAL_COST",
           sortable: true,
-          processingFunction: helpers.formatComma,
+          processingFunction: formatComma,
         },
       ],
     },

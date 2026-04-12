@@ -69,7 +69,7 @@
           v-if="store.getters.getData.isNotStationary"
           :icon="mdiClockAlert"
           :tooltip="store.getters.getData.seasonalityComment"
-          @iconClicked="helpers.openNewTab(links.getCastorLink())"
+          @iconClicked="openNewTab(links.getCastorLink())"
         />
         <ChartActionIcon
           :icon="mdiDatabaseClock"
@@ -81,7 +81,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .PREVALENCE_BY_MONTH[0]
@@ -101,7 +101,6 @@ import { useRoute, useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import {
@@ -116,6 +115,7 @@ import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import getEChartsOptionProportionByMonth from "./recordCountProportionByMonth";
 import Echarts from "@/widgets/echarts/Echarts.vue";
+import { openNewTab } from "@/shared/lib/utils";
 const store = useStore();
 const route = useRoute();
 const router = useRouter();

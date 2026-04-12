@@ -236,7 +236,7 @@
               >
                 <template #body="slotProps">
                   <div class="flex justify-end">
-                    {{ helpers.formatComma(slotProps.data.record_count) }}
+                    {{ formatComma(slotProps.data.record_count) }}
                   </div>
                 </template>
               </Column>
@@ -249,7 +249,7 @@
               >
                 <template #body="slotProps">
                   <div class="flex justify-end">
-                    {{ helpers.formatComma(slotProps.data.desc_record_count) }}
+                    {{ formatComma(slotProps.data.desc_record_count) }}
                   </div>
                 </template>
               </Column>
@@ -262,7 +262,7 @@
               >
                 <template #body="slotProps">
                   <div class="flex justify-end">
-                    {{ helpers.formatComma(slotProps.data.person_count) }}
+                    {{ formatComma(slotProps.data.person_count) }}
                   </div>
                 </template>
               </Column>
@@ -275,7 +275,7 @@
               >
                 <template #body="slotProps">
                   <div class="flex justify-end">
-                    {{ helpers.formatComma(slotProps.data.desc_person_count) }}
+                    {{ formatComma(slotProps.data.desc_person_count) }}
                   </div>
                 </template>
               </Column>
@@ -445,7 +445,8 @@ import {
   FETCH_VOCABULARIES,
 } from "@/shared/api/webAPI/data/store/actions.type";
 import { FilterMatchMode } from "primevue/api";
-import { helpers } from "@/shared/lib/mixins";
+import { formatComma } from "@/shared/lib/formatters";
+import { getValuesArray } from "@/shared/lib/utils";
 
 interface Props {
   addedConcepts: object;
@@ -466,11 +467,11 @@ const newFilters = ref({
 });
 
 const concept_class_options = computed(() => {
-  return helpers.getValuesArray(searchData.value, "CONCEPT_CLASS_ID", true);
+  return getValuesArray(searchData.value, "CONCEPT_CLASS_ID", true);
 });
 
 const standard_concept_options = computed(() => {
-  return helpers.getValuesArray(
+  return getValuesArray(
     searchData.value,
     "STANDARD_CONCEPT_CAPTION",
     true
@@ -478,11 +479,11 @@ const standard_concept_options = computed(() => {
 });
 
 const vocabulary_options = computed(() => {
-  return helpers.getValuesArray(searchData.value, "VOCABULARY_ID", true);
+  return getValuesArray(searchData.value, "VOCABULARY_ID", true);
 });
 
 const invalid_reason_options = computed(() => {
-  return helpers.getValuesArray(
+  return getValuesArray(
     searchData.value,
     "INVALID_REASON_CAPTION",
     true
@@ -490,7 +491,7 @@ const invalid_reason_options = computed(() => {
 });
 
 const domain_options = computed(() => {
-  return helpers.getValuesArray(searchData.value, "DOMAIN_ID", true);
+  return getValuesArray(searchData.value, "DOMAIN_ID", true);
 });
 
 const headers = ref({
@@ -690,7 +691,7 @@ const searchApi = async function () {
         let recordCount;
         store
           .dispatch(FETCH_CONCEPTS_RECORD_COUNT, {
-            conceptsList: helpers.getValuesArray(data, "CONCEPT_ID", true),
+            conceptsList: getValuesArray(data, "CONCEPT_ID", true),
           })
           .then((response) => {
             recordCount = response.data;

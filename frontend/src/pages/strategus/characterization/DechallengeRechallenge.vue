@@ -512,6 +512,7 @@ import CensoredCell from "./shared/CensoredCell.vue";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { formatCensored, formatPct } from "@/shared/lib/formatters";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
@@ -620,15 +621,6 @@ watch(
     tableData.value = [];
   }
 );
-
-function formatCensored(val) {
-  if (val == null) return "";
-  return val < 0 ? `< ${Math.abs(val)}` : val;
-}
-function formatPct(val) {
-  if (val == null) return "";
-  return `${(val * 100).toFixed(2)}%`;
-}
 
 async function fetchDechalRechalData(targetId, outcomeId) {
   const res = await StrategusService.characterization.getDechallengeRechallenge(

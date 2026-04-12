@@ -142,7 +142,7 @@ import {
   formatDurationMs,
   durationClassMs,
   formatSql,
-} from "../utils/formatters";
+} from "@/shared/lib/formatters";
 
 const props = defineProps({
   intervalSec: { type: Number, default: 2 },

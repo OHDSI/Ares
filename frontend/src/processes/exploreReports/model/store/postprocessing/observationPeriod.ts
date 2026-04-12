@@ -1,7 +1,7 @@
 import * as d3 from "d3-time-format";
 import { OBSERVATION_PERIOD } from "@/shared/config/files";
-import getPercentage from "@/shared/lib/get-percentage";
-import sortByRange from "@/shared/lib/range-sort";
+import { getPercentage } from "@/shared/lib/utils";
+import { sortByRange } from "@/shared/lib/utils";
 import { ObservationPeriodType } from "@/processes/exploreReports/model/interfaces/files/ObservationPeriodType";
 
 export default function observationPeriod(data) {

@@ -129,10 +129,10 @@
           <template #body="slotProps">
             <div
               :class="
-                helpers.getFontWeight(slotProps.data.PERCENT_PERSONS_NTILE)
+                getFontWeight(slotProps.data.PERCENT_PERSONS_NTILE)
               "
             >
-              {{ helpers.formatComma(slotProps.data.NUM_PERSONS) }}
+              {{ formatComma(slotProps.data.NUM_PERSONS) }}
             </div>
           </template>
         </Column>
@@ -148,7 +148,7 @@
             <div>
               {{
                 slotProps.data.DIFF_NUM_PERSONS
-                  ? helpers.formatComma(slotProps.data.DIFF_NUM_PERSONS)
+                  ? formatComma(slotProps.data.DIFF_NUM_PERSONS)
                   : "No data"
               }}
             </div>
@@ -165,7 +165,7 @@
           <template #body="slotProps">
             <div
               :class="
-                helpers.getFontWeight(slotProps.data.PERCENT_PERSONS_NTILE)
+                getFontWeight(slotProps.data.PERCENT_PERSONS_NTILE)
               "
             >
               {{ (slotProps.data.PERCENT_PERSONS * 100).toFixed(2) }} %
@@ -183,12 +183,12 @@
           <template #body="slotProps">
             <div
               :class="
-                helpers.getFontWeight(slotProps.data.DIFF_PERCENT_PERSONS_NTILE)
+                getFontWeight(slotProps.data.DIFF_PERCENT_PERSONS_NTILE)
               "
             >
               {{
                 slotProps.data.DIFF_PERCENT_PERSONS
-                  ? helpers.formatComma(slotProps.data.DIFF_PERCENT_PERSONS)
+                  ? formatComma(slotProps.data.DIFF_PERCENT_PERSONS)
                   : "No Data"
               }}
             </div>
@@ -205,7 +205,7 @@
           <template #body="slotProps">
             <div
               :class="
-                helpers.getFontWeight(slotProps.data.RECORDS_PER_PERSON_NTILE)
+                getFontWeight(slotProps.data.RECORDS_PER_PERSON_NTILE)
               "
             >
               {{ slotProps.data.RECORDS_PER_PERSON }}
@@ -300,7 +300,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.DOMAIN_SUMMARY[
                   route.params.domain.toUpperCase()
@@ -315,7 +315,6 @@
 </template>
 
 <script setup lang="ts">
-import { helpers } from "@/shared/lib/mixins";
 import { computed, onMounted, ref, watch } from "vue";
 import { debounce } from "lodash";
 import { DomainIssues } from "@/processes/exploreReports/model/interfaces/files/DomainIssues";
@@ -342,6 +341,8 @@ import {
 import SvgIcon from "@jamescoyle/vue-icon";
 import { links } from "@/shared/config/links";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { formatComma } from "@/shared/lib/formatters";
+import { getFontWeight, openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();

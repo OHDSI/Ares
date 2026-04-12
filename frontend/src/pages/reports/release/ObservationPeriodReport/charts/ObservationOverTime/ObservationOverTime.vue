@@ -51,7 +51,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  ? formatComma(slotProps.data.COUNT_VALUE)
                   : 0
               }}
             </div>
@@ -68,7 +68,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.PERCENT_VALUE
-                  ? helpers.formatPercent(slotProps.data.PERCENT_VALUE)
+                  ? formatPercent(slotProps.data.PERCENT_VALUE)
                   : 0
               }}
             </div>
@@ -85,7 +85,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
                   .OBSERVED_BY_MONTH[0]
@@ -105,7 +105,6 @@ import * as listeners from "@/pages/model/lib/listeners";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -115,6 +114,8 @@ import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionObservationByMonth from "@/pages/reports/release/ObservationPeriodReport/charts/ObservationOverTime/observationByMonth";
+import { formatComma, formatPercent } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

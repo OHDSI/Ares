@@ -90,22 +90,11 @@ import Column from "primevue/column";
 import Panel from "primevue/panel";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
+import { formatComma, isoToSymbol } from "@/shared/lib/formatters";
 
 const store = useStore();
 
 const data = computed(() => store.getters.getData.networkCostIndex);
-
-function isoToSymbol(code) {
-  if (!code) return "$";
-  const formatter = new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: code,
-    currencyDisplay: "symbol",
-    minimumFractionDigits: 0,
-  });
-  return formatter.format(0).replace(/\d|[.,\s]/g, "");
-}
 
 function redirectToPage(data) {
   return {

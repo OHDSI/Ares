@@ -26,7 +26,7 @@
               :to="getPersonLink(slotProps.data)"
               :title="slotProps.data.count_person"
               >{{
-                helpers.formatComma(slotProps.data.count_person)
+                formatComma(slotProps.data.count_person)
               }}</router-link
             >
           </div>
@@ -44,7 +44,7 @@
               class="text-blue-400 hover:underline"
               :to="getQualityLink(slotProps.data)"
               >{{
-                helpers.formatComma(slotProps.data.count_data_quality_issues)
+                formatComma(slotProps.data.count_data_quality_issues)
               }}</router-link
             >
           </div>
@@ -66,13 +66,13 @@
 
 <script setup lang="ts">
 import Panel from "primevue/panel";
-import { helpers } from "@/shared/lib/mixins";
 import { computed } from "vue";
 import { useStore } from "vuex";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { mdiClockOutline } from "@mdi/js";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import { formatComma } from "@/shared/lib/formatters";
 
 const store = useStore();
 

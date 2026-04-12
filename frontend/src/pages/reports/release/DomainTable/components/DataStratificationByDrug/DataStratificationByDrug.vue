@@ -39,7 +39,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.DOMAIN_SUMMARY
                   .DOMAIN_DRUG_STRATIFICATION
@@ -56,7 +56,6 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -66,6 +65,7 @@ import DataTable from "primevue/datatable";
 import { computed, ref, onMounted } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionSpecDrugTypeStratification from "@/pages/reports/release/DomainTable/components/DataStratificationByDrug/dataStratificationByDrug";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();

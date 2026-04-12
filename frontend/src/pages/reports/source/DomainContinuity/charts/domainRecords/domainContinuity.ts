@@ -1,4 +1,4 @@
-import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+import { kmbFormatter } from "@/shared/lib/formatters";
 
 export function getEChartsOverview({ zeroBaseline = false, data = [] }) {
   const domains = [...new Set(data.map((d) => d.domain))];

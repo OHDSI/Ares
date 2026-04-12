@@ -88,7 +88,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .VISIT_DURATION_BY_TYPE[0]
@@ -105,7 +105,6 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -115,6 +114,7 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionVisitDurationByType from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/VisitDurationByType/visitDurationByType";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();

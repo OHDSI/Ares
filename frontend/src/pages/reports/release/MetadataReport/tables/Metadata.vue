@@ -33,7 +33,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(store.getters.getQueryIndex.METADATA[0])
             )
           "
@@ -47,11 +47,11 @@ import { links } from "@/shared/config/links";
 
 import { useStore } from "vuex";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
-import { helpers } from "@/shared/lib/mixins";
 import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 </script>

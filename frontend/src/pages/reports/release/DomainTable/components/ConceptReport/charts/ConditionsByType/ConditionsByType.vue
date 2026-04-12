@@ -31,7 +31,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  ? formatComma(slotProps.data.COUNT_VALUE)
                   : "No data"
               }}
             </div>
@@ -46,7 +46,7 @@
           :icon="mdiHelpCircle"
           tooltip="Learn about Condition types."
           @iconClicked="
-            helpers.openNewTab(links.getDocsLink('CONDITION_OCCURRENCE'))
+            openNewTab(links.getDocsLink('CONDITION_OCCURRENCE'))
           "
         />
         <ChartActionIcon
@@ -54,7 +54,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .CONDITIONS_BY_TYPE[0]
@@ -72,7 +72,6 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
@@ -81,6 +80,8 @@ import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsConditionsByType from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/ConditionsByType/conditionsByType";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();

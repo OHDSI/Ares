@@ -194,7 +194,6 @@ import Column from "primevue/column";
 import { useStore } from "vuex";
 import { computed, ref, onMounted, toRaw } from "vue";
 import MultiSelect from "primevue/multiselect";
-import { helpers } from "@/shared/lib/mixins";
 import { FilterMatchMode } from "primevue/api";
 import { mdiTable } from "@mdi/js";
 import InputGroup from "primevue/inputgroup";
@@ -203,8 +202,9 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 import { useRoute } from "vue-router";
-import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
+import { formatComma } from "@/shared/lib/formatters";
 import { debounce } from "lodash";
+import { getValuesArray } from "@/shared/lib/utils";
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -311,15 +311,15 @@ const props = defineProps<Props>();
 const store = useStore();
 
 const domain_options = computed(() => {
-  return helpers.getValuesArray(props.data, "domain_field", true);
+  return getValuesArray(props.data, "domain_field", true);
 });
 
 const concept_options = computed(() => {
-  return helpers.getValuesArray(props.data, "concept_name", true);
+  return getValuesArray(props.data, "concept_name", true);
 });
 
 const vocabulary_id_options = computed(() => {
-  return helpers.getValuesArray(props.data, "vocabulary_id", true);
+  return getValuesArray(props.data, "vocabulary_id", true);
 });
 </script>
 

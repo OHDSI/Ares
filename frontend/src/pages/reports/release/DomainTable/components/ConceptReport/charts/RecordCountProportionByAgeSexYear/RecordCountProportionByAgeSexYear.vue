@@ -47,7 +47,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .PREVALENCE_BY_GENDER_AGE_YEAR[0]
@@ -65,7 +65,6 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
@@ -75,6 +74,7 @@ import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionRecordProportionByAgeSexYear from "./recordCountProportionByAgeSexYear";
+import { getValuesArray, openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();
@@ -89,7 +89,7 @@ const data = computed(() => {
   return store.getters.getData.conceptData.PREVALENCE_BY_GENDER_AGE_YEAR;
 });
 
-const trellis = helpers.getValuesArray(data.value, "TRELLIS_NAME", true);
+const trellis = getValuesArray(data.value, "TRELLIS_NAME", true);
 
 const facetCount = trellis.length;
 const perFacetHeight = 102;

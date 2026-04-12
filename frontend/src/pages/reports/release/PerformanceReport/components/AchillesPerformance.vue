@@ -62,14 +62,14 @@
           :icon="mdiOpenInNew"
           tooltip="This report
               describes how long each analysis executed during Achilles characterization took to run in seconds."
-          @iconClicked="helpers.openNewTab(links.getAchillesLink())"
+          @iconClicked="openNewTab(links.getAchillesLink())"
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.ACHILLES_PERFORMANCE[0]
               )
@@ -82,7 +82,6 @@
 </template>
 
 <script setup lang="ts">
-import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
@@ -95,6 +94,7 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 import { mdiCodeBraces, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

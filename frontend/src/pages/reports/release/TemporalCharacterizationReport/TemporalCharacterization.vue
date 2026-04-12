@@ -70,7 +70,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
               )
@@ -83,7 +83,6 @@
 </template>
 
 <script setup lang="ts">
-import { helpers } from "@/shared/lib/mixins";
 import { links } from "@/shared/config/links";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
@@ -96,6 +95,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
 import { mdiCodeBraces } from "@mdi/js";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const newFilters = ref({

@@ -41,7 +41,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.PERCENT_PEOPLE
-                  ? helpers.formatPercent(slotProps.data.PERCENT_PEOPLE)
+                  ? formatPercent(slotProps.data.PERCENT_PEOPLE)
                   : 0
               }}
             </div>
@@ -58,7 +58,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
                   .CUMULATIVE_DURATION[0]
@@ -77,7 +77,6 @@ import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -87,6 +86,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionCumulativeObservation from "@/pages/reports/release/ObservationPeriodReport/charts/CumulativeObservation/cumulativeObservation";
+import { formatPercent } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

@@ -109,11 +109,11 @@ import InputText from "primevue/inputtext";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
-import { formatComma } from "@/shared/lib/mixins/methods/formatComma";
+import { formatComma } from "@/shared/lib/formatters";
 import Dropdown from "primevue/dropdown";
-import { helpers } from "@/shared/lib/mixins";
 import { mdiCompareHorizontal } from "@mdi/js";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import { getValuesArray } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();
@@ -142,7 +142,7 @@ const displayedData = computed(() => {
 const selectedDomain = ref(null);
 
 const domains = computed(() => {
-  return helpers.getValuesArray(data.value.costTable, "DOMAIN_ID", true);
+  return getValuesArray(data.value.costTable, "DOMAIN_ID", true);
 });
 
 const compareToOtherSources = function () {

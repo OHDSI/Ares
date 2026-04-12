@@ -97,7 +97,7 @@
               <span>
                 {{
                   slotProps.data.RECORD_COUNT
-                    ? helpers.formatComma(slotProps.data.RECORD_COUNT)
+                    ? formatComma(slotProps.data.RECORD_COUNT)
                     : "No data"
                 }}</span
               >
@@ -117,7 +117,7 @@
     mapped to 0 (unknown concept). It provides a listing of all unmapped source
     values to be reviewed for potential inclusion or remediation."
             @iconClicked="
-              helpers.openNewTab(
+              openNewTab(
                 links.getSqlQueryLink(
                   store.getters.getQueryIndex.TEMPORAL_CHARACTERIZATION[0]
                 )
@@ -144,7 +144,6 @@
 </template>
 
 <script setup lang="ts">
-import { helpers } from "@/shared/lib/mixins";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 
@@ -160,6 +159,8 @@ import { links } from "@/shared/config/links";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Pivot from "@/widgets/pivot/ui/Pivot.vue";
 import MultiSelect from "primevue/multiselect";
+import { formatComma } from "@/shared/lib/formatters";
+import { getValuesArray, openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 
@@ -171,10 +172,10 @@ const newFilters = ref({
 });
 
 const cdmTableOptions = computed(() => {
-  return helpers.getValuesArray(filteredRecords.value, "CDM_TABLE_NAME", true);
+  return getValuesArray(filteredRecords.value, "CDM_TABLE_NAME", true);
 });
 const cdmFieldOptions = computed(() => {
-  return helpers.getValuesArray(filteredRecords.value, "CDM_FIELD_NAME", true);
+  return getValuesArray(filteredRecords.value, "CDM_FIELD_NAME", true);
 });
 
 const filteredRecords = computed(function () {

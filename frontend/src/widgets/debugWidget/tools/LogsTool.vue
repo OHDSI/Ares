@@ -87,7 +87,7 @@
 <script setup lang="ts">
 import { inject, toRef, onMounted } from "vue";
 import { useLogsTool } from "../composables/useLogsTool";
-import { formatLogTime } from "../utils/formatters";
+import { formatLogTime } from "@/shared/lib/formatters";
 
 const props = defineProps({
   intervalSec: { type: Number, default: 2 },

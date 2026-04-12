@@ -41,7 +41,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  ? formatComma(slotProps.data.COUNT_VALUE)
                   : "No data"
               }}
             </div>
@@ -57,7 +57,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.PERCENT_VALUE
-                  ? helpers.formatPercent(slotProps.data.PERCENT_VALUE)
+                  ? formatPercent(slotProps.data.PERCENT_VALUE)
                   : "No data"
               }}
             </div>
@@ -73,7 +73,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
                   .AGE_AT_FIRST_OBSERVATION[0]
@@ -92,7 +92,6 @@ import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
@@ -102,6 +101,8 @@ import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionAgeAtFirstObservation from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservation/ageAtFirstObservation";
+import { formatComma, formatPercent } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

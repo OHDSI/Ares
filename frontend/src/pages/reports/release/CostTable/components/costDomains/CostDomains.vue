@@ -38,7 +38,7 @@
               $
               {{
                 slotProps.data.TOTAL_COST
-                  ? helpers.formatComma(slotProps.data.TOTAL_COST)
+                  ? formatComma(slotProps.data.TOTAL_COST)
                   : "No data"
               }}
             </div>
@@ -53,7 +53,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
               )
@@ -72,7 +72,6 @@ import Panel from "primevue/panel";
 import { computed, onMounted } from "vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { ref } from "vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
@@ -80,6 +79,8 @@ import Column from "primevue/column";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionCostDomains from "@/pages/reports/release/CostTable/components/costDomains/costDomains";
 import Dropdown from "primevue/dropdown";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

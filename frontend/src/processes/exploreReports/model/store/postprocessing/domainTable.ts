@@ -14,7 +14,7 @@ import * as d3 from "d3-time-format";
 import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import environment from "@/shared/api/environment";
-import sortByRange from "@/shared/lib/range-sort";
+import { sortByRange } from "@/shared/lib/utils";
 
 function domainTableData(data) {
   const metadataData = data[METADATA];

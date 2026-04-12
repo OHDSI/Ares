@@ -40,7 +40,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.count_person
-                  ? helpers.formatComma(slotProps.data.count_person)
+                  ? formatComma(slotProps.data.count_person)
                   : "No data"
               }}
             </div>
@@ -57,7 +57,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
             )
           "
@@ -74,7 +74,6 @@ import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import Panel from "primevue/panel";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
@@ -83,6 +82,8 @@ import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsPopulationByRelease from "@/pages/reports/source/SourceOverview/charts/populationHistory/populationHistory";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

@@ -32,7 +32,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  ? formatComma(slotProps.data.COUNT_VALUE)
                   : 0
               }}
             </div>
@@ -45,14 +45,14 @@
         <ChartActionIcon
           :icon="mdiHelpCircle"
           tooltip="Learn about Measurement types."
-          @iconClicked="helpers.openNewTab(links.getDocsLink('MEASUREMENT'))"
+          @iconClicked="openNewTab(links.getDocsLink('MEASUREMENT'))"
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .MEASUREMENTS_BY_TYPE[0]
@@ -68,7 +68,6 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
@@ -78,6 +77,8 @@ import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsMeasurementsByType from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/MeasurementsByType/measurementsByType";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();

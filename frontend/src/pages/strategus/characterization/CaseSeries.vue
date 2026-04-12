@@ -637,7 +637,7 @@ import OutcomeSelector from "./shared/OutcomeSelector.vue";
 import ContextBar from "./shared/ContextBar.vue";
 import { useAvailableDatabases } from "./shared/useAvailableDatabases";
 import { useTarWashout } from "./shared/useTarWashout";
-import { formatCensored, formatPct, formatNum } from "./shared/formatters";
+import { formatCensored, formatPct, formatNum } from "@/shared/lib/formatters";
 import { useGroupBanding } from "./shared/useGroupBanding";
 import CensoredCell from "./shared/CensoredCell.vue";
 import { colSelectorPt } from "./shared/colSelectorPt";

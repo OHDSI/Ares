@@ -32,7 +32,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.count_records
-                  ? helpers.formatComma(slotProps.data.count_records)
+                  ? formatComma(slotProps.data.count_records)
                   : "No data"
               }}
             </div>
@@ -52,7 +52,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
               )
@@ -70,7 +70,6 @@ import { specOverview } from "./specOverview";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { RouteLocation, useRouter } from "vue-router";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
@@ -82,6 +81,8 @@ import DataTable from "primevue/datatable";
 import getEChartsDataQualityDelta from "@/pages/reports/source/DataQualityHistory/charts/DataQualityDelta/dataQualityDelta";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import { getEChartsOverview } from "@/pages/reports/source/DomainContinuity/charts/domainRecords/domainContinuity";
+import { formatComma, getPaddedDate } from "@/shared/lib/formatters";
+import { getValuesArray, openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const router = useRouter();
@@ -96,7 +97,7 @@ const navigate = function (route) {
 const eventListener = function (result, route: RouteLocation) {
   return result.view.addEventListener("click", (event, item) => {
     const itemData = item.datum.datum;
-    const releaseKey = helpers.getPaddedDate(
+    const releaseKey = getPaddedDate(
       new Date(itemData.release_date),
       ""
     );
@@ -122,7 +123,7 @@ const data = computed(() => {
   return store.getters.getData.domainRecords;
 });
 
-const domains = helpers.getValuesArray(data.value, "domain", true);
+const domains = getValuesArray(data.value, "domain", true);
 
 const facetCount = domains.length;
 const perFacetHeight = 105;

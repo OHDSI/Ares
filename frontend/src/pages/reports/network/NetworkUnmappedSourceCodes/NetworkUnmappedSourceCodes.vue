@@ -111,7 +111,7 @@
               <span>
                 {{
                   slotProps.data.RECORD_COUNT
-                    ? helpers.formatComma(slotProps.data.RECORD_COUNT)
+                    ? formatComma(slotProps.data.RECORD_COUNT)
                     : "No data"
                 }}</span
               >
@@ -149,9 +149,10 @@ import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
-import { helpers } from "@/shared/lib/mixins";
 import Pivot from "@/widgets/pivot/ui/Pivot.vue";
 import MultiSelect from "primevue/multiselect";
+import { formatComma } from "@/shared/lib/formatters";
+import { getValuesArray } from "@/shared/lib/utils";
 
 const store = useStore();
 
@@ -166,10 +167,10 @@ const newFilters = ref({
 });
 
 const cdmTableOptions = computed(() => {
-  return helpers.getValuesArray(data.value, "CDM_TABLE_NAME", true);
+  return getValuesArray(data.value, "CDM_TABLE_NAME", true);
 });
 const cdmFieldOptions = computed(() => {
-  return helpers.getValuesArray(data.value, "CDM_FIELD_NAME", true);
+  return getValuesArray(data.value, "CDM_FIELD_NAME", true);
 });
 </script>
 

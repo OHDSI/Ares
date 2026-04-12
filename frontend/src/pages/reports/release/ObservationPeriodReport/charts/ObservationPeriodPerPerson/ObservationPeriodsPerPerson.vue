@@ -18,7 +18,7 @@
       ></Column>
       <Column sortable field="COUNT_VALUE" header="Number of People">
         <template #body="slotProps">
-          {{ helpers.formatComma(slotProps.data.COUNT_VALUE) }}
+          {{ formatComma(slotProps.data.COUNT_VALUE) }}
         </template>
       </Column>
       <Column sortable field="PERCENT_PEOPLE" header="% of People">
@@ -35,7 +35,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
                   .PERSON_PERIODS_DATA[0]
@@ -50,13 +50,14 @@
 
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
-import { helpers } from "@/shared/lib/mixins";
 import { useStore } from "vuex";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 </script>

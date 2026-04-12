@@ -279,7 +279,7 @@
     <!--        tooltip="The Data Quality Overview provides a summary-->
     <!--              of the results of the Data Quality assessment performed by the-->
     <!--              Data Quality Dashboard package."-->
-    <!--        @iconClicked="helpers.openNewTab(links.getDataQualityDashboardLink())"-->
+    <!--        @iconClicked="openNewTab(links.getDataQualityDashboardLink())"-->
     <!--      />-->
     <!--    </v-toolbar>-->
   </div>
@@ -288,9 +288,9 @@
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import Message from "primevue/message";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

@@ -33,7 +33,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.MIN_VALUE
-                  ? helpers.formatComma(slotProps.data.MIN_VALUE)
+                  ? formatComma(slotProps.data.MIN_VALUE)
                   : 0
               }}
             </div>
@@ -49,7 +49,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.P10_VALUE
-                  ? helpers.formatComma(slotProps.data.P10_VALUE)
+                  ? formatComma(slotProps.data.P10_VALUE)
                   : 0
               }}
             </div>
@@ -65,7 +65,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.P25_VALUE
-                  ? helpers.formatComma(slotProps.data.P25_VALUE)
+                  ? formatComma(slotProps.data.P25_VALUE)
                   : 0
               }}
             </div>
@@ -81,7 +81,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.MEDIAN_VALUE
-                  ? helpers.formatComma(slotProps.data.MEDIAN_VALUE)
+                  ? formatComma(slotProps.data.MEDIAN_VALUE)
                   : 0
               }}
             </div>
@@ -97,7 +97,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.P75_VALUE
-                  ? helpers.formatComma(slotProps.data.P75_VALUE)
+                  ? formatComma(slotProps.data.P75_VALUE)
                   : 0
               }}
             </div>
@@ -113,7 +113,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.P90_VALUE
-                  ? helpers.formatComma(slotProps.data.P90_VALUE)
+                  ? formatComma(slotProps.data.P90_VALUE)
                   : 0
               }}
             </div>
@@ -129,7 +129,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.MAX_VALUE
-                  ? helpers.formatComma(slotProps.data.MAX_VALUE)
+                  ? formatComma(slotProps.data.MAX_VALUE)
                   : 0
               }}
             </div>
@@ -145,7 +145,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .VISIT_DURATION_BY_TYPE[0]
@@ -162,7 +162,6 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import { mdiCodeBraces } from "@mdi/js";
@@ -173,6 +172,8 @@ import Column from "primevue/column";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionVisitDurationByTypeFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/visitDurationByType/visitDurationByType";
+import { formatComma } from "@/shared/lib/formatters";
+import { getValuesArray, openNewTab } from "@/shared/lib/utils";
 
 interface Props {
   data: DistributionType[];
@@ -193,7 +194,7 @@ const data = computed(() => {
   return props.data;
 });
 
-const sources = helpers.getValuesArray(data.value, "SOURCE", true);
+const sources = getValuesArray(data.value, "SOURCE", true);
 
 const facetCount = sources.length;
 const perFacetHeight = 130;

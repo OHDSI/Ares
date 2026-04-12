@@ -41,12 +41,12 @@
       </Column>
       <Column header="Min population" field="min_population">
         <template #body="slotProps">
-          {{ helpers.formatComma(slotProps.data.min_population) || "No data" }}
+          {{ formatComma(slotProps.data.min_population) || "No data" }}
         </template>
       </Column>
       <Column sortable header="Max population" field="max_population">
         <template #body="slotProps">
-          {{ helpers.formatComma(slotProps.data.max_population) || "No data" }}
+          {{ formatComma(slotProps.data.max_population) || "No data" }}
         </template>
       </Column>
       <Column style="width: 5rem" expander> </Column>
@@ -64,7 +64,7 @@
           <Column sortable header="Domain" field="domain"> </Column>
           <Column sortable header="Population" field="population">
             <template #body="slotProps">
-              {{ helpers.formatComma(slotProps.data.population) }}
+              {{ formatComma(slotProps.data.population) }}
             </template>
           </Column>
           <Column sortable header="%" field="percentage">
@@ -127,7 +127,6 @@
 import { DOMAIN_SUMMARY } from "@/shared/config/files";
 import { useStore } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
-import { helpers } from "@/shared/lib/mixins";
 import { computed, ref, watch, Ref, onBeforeMount } from "vue";
 import { ConceptSearchForm } from "@/widgets/conceptSearchForm";
 import { webApiActions } from "@/shared/api/webAPI";
@@ -138,6 +137,7 @@ import Divider from "primevue/divider";
 import Panel from "primevue/panel";
 import environment from "@/shared/api/environment";
 import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
+import { formatComma } from "@/shared/lib/formatters";
 
 const store = useStore();
 const dialog: Ref<boolean> = ref(false);

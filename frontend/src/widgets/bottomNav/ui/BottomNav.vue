@@ -90,7 +90,7 @@ import {
   mdiServer,
 } from "@mdi/js";
 import { useRouter } from "vue-router";
-import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import { openNewTab } from "@/shared/lib/utils";
 import { links } from "@/shared/config/links";
 const appVersion = "v" + __APP_VERSION__;
 

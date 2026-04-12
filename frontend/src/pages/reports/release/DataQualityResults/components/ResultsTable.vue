@@ -426,7 +426,7 @@
       header="# Records Failed"
     >
       <template #body="slotProps">
-        {{ helpers.formatComma(slotProps.data.numViolatedRows) }}
+        {{ formatComma(slotProps.data.numViolatedRows) }}
       </template>
     </Column>
     <Column
@@ -439,7 +439,7 @@
     >
       <template #body="slotProps">
         <div class="text-right">
-          {{ helpers.formatComma(slotProps.data.numDenominatorRows) }}
+          {{ formatComma(slotProps.data.numDenominatorRows) }}
         </div>
       </template>
     </Column>
@@ -636,7 +636,6 @@
 
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
-import { helpers } from "@/shared/lib/mixins";
 import { useStore } from "vuex";
 import { computed, onBeforeMount, Ref, ref, watch } from "vue";
 import SvgIcon from "@jamescoyle/vue-icon";
@@ -656,6 +655,8 @@ import InputGroupAddon from "primevue/inputgroupaddon";
 import MultiSelect from "primevue/multiselect";
 import { mdiDelta, mdiTable } from "@mdi/js";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { formatComma } from "@/shared/lib/formatters";
+import { getValuesArray } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();
@@ -667,44 +668,44 @@ const extensions = [sql(), oneDark];
 
 //filter field options
 const statusOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "failed", true);
+  return getValuesArray(checks.value, "failed", true);
 });
 
 const cdmTableNamesOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "cdmTableName", true);
+  return getValuesArray(checks.value, "cdmTableName", true);
 });
 
 const cdmFieldNameOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "cdmFieldName", true);
+  return getValuesArray(checks.value, "cdmFieldName", true);
 });
 const checkNameOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "checkName", true);
+  return getValuesArray(checks.value, "checkName", true);
 });
 const categoryOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "category", true);
+  return getValuesArray(checks.value, "category", true);
 });
 const subcategoryOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "subcategory", true);
+  return getValuesArray(checks.value, "subcategory", true);
 });
 const contextsOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "context", true);
+  return getValuesArray(checks.value, "context", true);
 });
 const checkLevelOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "checkLevel", true);
+  return getValuesArray(checks.value, "checkLevel", true);
 });
 const notesValueOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "notesValue", true);
+  return getValuesArray(checks.value, "notesValue", true);
 });
 const isErrorOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "isError", true);
+  return getValuesArray(checks.value, "isError", true);
 });
 
 const notApplicableOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "notApplicable", true);
+  return getValuesArray(checks.value, "notApplicable", true);
 });
 
 const deltaOptions = computed(() => {
-  return helpers.getValuesArray(checks.value, "delta", true);
+  return getValuesArray(checks.value, "delta", true);
 });
 
 const filters = ref({

@@ -31,7 +31,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
                   .PREVALENCE_BY_MONTH[0]
@@ -53,12 +53,12 @@ import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import Panel from "primevue/panel";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 const route = useRoute();

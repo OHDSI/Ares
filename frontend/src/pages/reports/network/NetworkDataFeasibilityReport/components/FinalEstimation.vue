@@ -135,9 +135,9 @@
 </template>
 
 <script setup lang="ts">
-import * as d3Format from "d3-format";
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { formatComma } from "@/shared/lib/formatters";
 import Message from "primevue/message";
 import Divider from "primevue/divider";
 import DataTable from "primevue/datatable";
@@ -150,10 +150,6 @@ interface Props {
   data: object;
 }
 const props = defineProps<Props>();
-
-const formatComma = function (value) {
-  return d3Format.format(",")(value);
-};
 
 const headers = computed(function () {
   return [

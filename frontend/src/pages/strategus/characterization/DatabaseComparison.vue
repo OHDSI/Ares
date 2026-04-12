@@ -269,7 +269,7 @@
                 >
                   <template #body="{ data }">
                     <CensoredCell
-                      :text="formatPercent(data['averageValue_' + ref.id])"
+                      :text="formatPercentStat(data['averageValue_' + ref.id])"
                     />
                   </template>
                   <template #filter="{ filterModel, filterCallback }">
@@ -652,7 +652,7 @@
                   :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
-                    formatNum(data["averageValue_" + ref.id])
+                    formatNumCensored(data["averageValue_" + ref.id])
                   }}</template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
@@ -671,7 +671,7 @@
                   :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
-                    formatNum(data["standardDeviation_" + ref.id])
+                    formatNumCensored(data["standardDeviation_" + ref.id])
                   }}</template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
@@ -690,7 +690,7 @@
                   :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
-                    formatNum(data["medianValue_" + ref.id])
+                    formatNumCensored(data["medianValue_" + ref.id])
                   }}</template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
@@ -709,7 +709,7 @@
                   :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
-                    formatNum(data["minValue_" + ref.id])
+                    formatNumCensored(data["minValue_" + ref.id])
                   }}</template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
@@ -728,7 +728,7 @@
                   :pt="dbBodyPt(ref.id)"
                 >
                   <template #body="{ data }">{{
-                    formatNum(data["maxValue_" + ref.id])
+                    formatNumCensored(data["maxValue_" + ref.id])
                   }}</template>
                   <template #filter="{ filterModel, filterCallback }">
                     <InputText
@@ -795,7 +795,7 @@ import ResultsLoader from "./shared/ResultsLoader.vue";
 import ViewToggle from "./shared/ViewToggle.vue";
 import ContextBar from "./shared/ContextBar.vue";
 import { useAvailableDatabases } from "./shared/useAvailableDatabases";
-import { formatPercent, formatCount } from "./shared/formatters";
+import { formatPercentStat, formatCount, formatNumCensored } from "@/shared/lib/formatters";
 import { classifyDomain, domainColors } from "./shared/domainColors";
 import { useGroupBanding } from "./shared/useGroupBanding";
 import CensoredCell from "./shared/CensoredCell.vue";
@@ -1013,11 +1013,6 @@ watch(
 );
 
 fetchMinThreshold();
-
-function formatNum(val) {
-  if (val == null) return "";
-  return val >= 0 ? val.toFixed(3) : `< ${Math.abs(val).toFixed(3)}`;
-}
 
 async function fetchMinThreshold() {
   try {

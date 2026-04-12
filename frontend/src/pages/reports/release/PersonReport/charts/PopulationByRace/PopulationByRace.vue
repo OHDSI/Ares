@@ -28,7 +28,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.COUNT_VALUE
-                  ? helpers.formatComma(slotProps.data.COUNT_VALUE)
+                  ? formatComma(slotProps.data.COUNT_VALUE)
                   : "No data"
               }}
             </div>
@@ -43,7 +43,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.PERSON.RACE_DATA
               )
@@ -59,7 +59,6 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
-import { helpers } from "@/shared/lib/mixins";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
@@ -68,6 +67,8 @@ import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import specRaceECharts from "@/pages/reports/release/PersonReport/charts/PopulationByRace/populationByRace";
+import { formatComma } from "@/shared/lib/formatters";
+import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
 

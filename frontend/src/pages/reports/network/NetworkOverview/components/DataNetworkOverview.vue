@@ -11,7 +11,7 @@
       <div class="flex flex-col gap-3 items-center content-center">
         <h3>People</h3>
         <div class="flex flex-row items-center gap-3">
-          <h1 class="text-xl">{{ personCountFormatter(countPeople) }}</h1>
+          <h1 class="text-xl">{{ formatSI(countPeople) }}</h1>
           <svg-icon :size="46" type="mdi" :path="mdiAccount"></svg-icon>
         </div>
       </div>
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 import { computed } from "vue";
-import * as d3 from "d3-format";
+import { formatSI } from "@/shared/lib/formatters";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { mdiAccount, mdiDatabase, mdiDatabaseAlert, mdiHistory } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
@@ -78,9 +78,6 @@ const countPeople = computed(function () {
   }
 });
 
-const personCountFormatter = function (count: number) {
-  return d3.format(".3s")(count).replace("G", "B");
-};
 </script>
 
 <style scoped></style>

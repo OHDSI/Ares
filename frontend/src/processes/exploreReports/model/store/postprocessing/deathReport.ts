@@ -1,6 +1,6 @@
 import * as d3 from "d3-time-format";
 import { DEATH } from "@/shared/config/files";
-import sortByRange from "@/shared/lib/range-sort";
+import { sortByRange } from "@/shared/lib/utils";
 import { Death } from "@/processes/exploreReports/model/interfaces/files/Death";
 
 export default function death(data) {

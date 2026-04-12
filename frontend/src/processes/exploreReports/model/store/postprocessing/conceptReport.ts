@@ -1,4 +1,4 @@
-import sortByRange from "@/shared/lib/range-sort";
+import { sortByRange } from "@/shared/lib/utils";
 import * as d3 from "d3-time-format";
 import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";

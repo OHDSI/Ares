@@ -58,7 +58,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.UNIT_COUNT
-                  ? helpers.formatComma(slotProps.data.UNIT_COUNT)
+                  ? formatComma(slotProps.data.UNIT_COUNT)
                   : 0
               }}
             </div>
@@ -74,7 +74,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.MIN_VALUE
-                  ? helpers.formatComma(slotProps.data.MIN_VALUE)
+                  ? formatComma(slotProps.data.MIN_VALUE)
                   : 0
               }}
             </div>
@@ -90,7 +90,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.P10_VALUE
-                  ? helpers.formatComma(slotProps.data.P10_VALUE)
+                  ? formatComma(slotProps.data.P10_VALUE)
                   : 0
               }}
             </div>
@@ -106,7 +106,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.P25_VALUE
-                  ? helpers.formatComma(slotProps.data.P25_VALUE)
+                  ? formatComma(slotProps.data.P25_VALUE)
                   : 0
               }}
             </div>
@@ -122,7 +122,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.MEDIAN_VALUE
-                  ? helpers.formatComma(slotProps.data.MEDIAN_VALUE)
+                  ? formatComma(slotProps.data.MEDIAN_VALUE)
                   : 0
               }}
             </div>
@@ -138,7 +138,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.P75_VALUE
-                  ? helpers.formatComma(slotProps.data.P75_VALUE)
+                  ? formatComma(slotProps.data.P75_VALUE)
                   : 0
               }}
             </div>
@@ -154,7 +154,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.P90_VALUE
-                  ? helpers.formatComma(slotProps.data.P90_VALUE)
+                  ? formatComma(slotProps.data.P90_VALUE)
                   : 0
               }}
             </div>
@@ -170,7 +170,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.MAX_VALUE
-                  ? helpers.formatComma(slotProps.data.MAX_VALUE)
+                  ? formatComma(slotProps.data.MAX_VALUE)
                   : 0
               }}
             </div>
@@ -191,7 +191,7 @@
           :icon="mdiCodeBraces"
           tooltip="View Export Query"
           @iconClicked="
-            helpers.openNewTab(
+            openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.MEASUREMENT
                   .MEASUREMENT_VALUE_DISTRIBUTION[0]
@@ -208,7 +208,6 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref, Ref } from "vue";
-import { helpers } from "@/shared/lib/mixins";
 import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import Panel from "primevue/panel";
@@ -217,9 +216,10 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
-import { openNewTab } from "@/shared/lib/mixins/methods/openNewTab";
+import { getValuesArray, openNewTab } from "@/shared/lib/utils";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionMeasurementDistributionFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/measurementValueDistributionChart/measurementValueDistribution";
+import { formatComma } from "@/shared/lib/formatters";
 
 const store = useStore();
 
@@ -257,7 +257,7 @@ function toggleTable(mode) {
   showTable.value = mode;
 }
 
-const sources = helpers.getValuesArray(props.data.chart, "SOURCE", true);
+const sources = getValuesArray(props.data.chart, "SOURCE", true);
 
 const facetCount = sources.length;
 const perFacetHeight = 130;

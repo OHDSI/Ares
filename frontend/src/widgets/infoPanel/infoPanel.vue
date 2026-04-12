@@ -32,7 +32,7 @@
           type="mdi"
           :path="mdiAccountGroup"
         ></svg-icon>
-        <Badge severity="info" :value="helpers.formatComma(props.population)" />
+        <Badge severity="info" :value="formatComma(props.population)" />
       </div>
       <p class="font-light text-xs dark:text-white">Number of People</p>
     </div>
@@ -45,7 +45,7 @@
         ></svg-icon>
         <Badge
           severity="info"
-          :value="helpers.formatPercent(props.percentPeople)"
+          :value="formatPercent(props.percentPeople)"
         />
       </div>
       <p class="font-light text-xs dark:text-white">% of People</p>
@@ -119,9 +119,9 @@
             severity="info"
             :value="
               'Male: ' +
-              helpers.formatComma(props.proportionSex.male.count) +
+              formatComma(props.proportionSex.male.count) +
               ' (' +
-              helpers.formatPercent(props.proportionSex.male.pct) +
+              formatPercent(props.proportionSex.male.pct) +
               ')'
             "
           />
@@ -129,9 +129,9 @@
             severity="info"
             :value="
               'Female: ' +
-              helpers.formatComma(props.proportionSex.female.count) +
+              formatComma(props.proportionSex.female.count) +
               ' (' +
-              helpers.formatPercent(props.proportionSex.female.pct) +
+              formatPercent(props.proportionSex.female.pct) +
               ')'
             "
           />
@@ -159,7 +159,6 @@
 </template>
 
 <script setup lang="ts">
-import { helpers } from "@/shared/lib/mixins";
 import SvgIcon from "@jamescoyle/vue-icon";
 import {
   mdiAccountGroup,
@@ -172,6 +171,7 @@ import {
   mdiTableRow,
 } from "@mdi/js";
 import Badge from "primevue/badge";
+import { formatComma, formatPercent } from "@/shared/lib/formatters";
 
 interface Props {
   population?: number;

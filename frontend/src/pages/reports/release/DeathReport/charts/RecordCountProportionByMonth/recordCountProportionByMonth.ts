@@ -1,4 +1,4 @@
-import { kmbFormatter } from "@/widgets/echarts/lib/formatters";
+import { kmbFormatter } from "@/shared/lib/formatters";
 
 export default function getEChartsOptionRecordProportionByMonth({
   zeroBaseline = false,
