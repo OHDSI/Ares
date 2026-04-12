@@ -1,6 +1,19 @@
 import pg from 'pg';
+import { AsyncLocalStorage } from 'async_hooks';
 
 const { Pool } = pg;
+
+const queryContext = new AsyncLocalStorage();
+
+/**
+ * Run `fn` with a query-context label that will be attached to every query
+ * logged inside that async call chain.
+ * @param {string} label
+ * @param {Function} fn
+ */
+export function runWithQueryContext(label, fn) {
+    return queryContext.run(label, fn);
+}
 
 let pool = null;
 
@@ -60,6 +73,14 @@ function camelCaseRow(row) {
     return out;
 }
 
+const HISTORY_MAX = 200;
+const queryHistory = [];
+let historyOffset = 0;
+
+export function getQueryHistory() { return queryHistory; }
+export function getHistoryOffset() { return historyOffset; }
+export function clearQueryHistory() { queryHistory.splice(0); historyOffset = 0; }
+
 /**
  * @param {string} sql - SQL with @namedParam placeholders
  * @param {object} [params] - { paramName: value }
@@ -68,8 +89,30 @@ function camelCaseRow(row) {
 export async function queryDb(sql, params = {}) {
     if (!pool) throw new Error('Database not initialized. Call initDb() first.');
     const { text, values } = toPositional(sql, params);
-    const result = await pool.query(text, values);
-    return result.rows.map(camelCaseRow);
+    const context = queryContext.getStore() ?? null;
+    // Annotate the SQL sent to pg so pg_stat_activity carries the context label.
+    const pgText = context ? `/* ${context} */\n${text}` : text;
+    const startedAt = new Date();
+    let error = null;
+    try {
+        const result = await pool.query(pgText, values);
+        return result.rows.map(camelCaseRow);
+    } catch (err) {
+        error = err.message ?? String(err);
+        throw err;
+    } finally {
+        if (!text.toLowerCase().includes('pg_stat_activity')) {
+            const durationMs = Date.now() - startedAt.getTime();
+            queryHistory.push({
+                sql: text,
+                startedAt: startedAt.toISOString(),
+                durationMs,
+                error,
+                context: queryContext.getStore() ?? null,
+            });
+            if (queryHistory.length > HISTORY_MAX) { queryHistory.shift(); historyOffset++; }
+        }
+    }
 }
 
 

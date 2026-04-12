@@ -3,11 +3,11 @@ import dotenv from "dotenv";
 
 
 const {queryDb} = await import('../config/postgresDbConnection.js');
-import {connectionHandler} from '../config/postgresDbConnection.js';
+import {connectionHandler, getQueryHistory, getHistoryOffset, clearQueryHistory, runWithQueryContext} from '../config/postgresDbConnection.js';
 
 dotenv.config();
 
-import logger from "../utils/logger.js";
+import logger, { getLogBuffer, getBufferOffset, clearLogBuffer } from "../utils/logger.js";
 
 
 const router = express.Router();
@@ -38,6 +38,37 @@ import {getDatasources} from "../controllers/strategus/dataSources.js";
 import {getOutcomeDataAvailability} from "../controllers/strategus/characterization/outcomeAvailable.js";
 
 const schemaName = process.env.STRATEGUS_SCHEMA || 'app'
+
+// Maps each URL segment to a human-readable report label so history entries
+const PATH_LABELS = {
+    'binary-risk-factors':          'Risk Factors',
+    'continuous-risk-factors':      'Risk Factors',
+    'case-counts':                  'Risk Factors',
+    'case-target-counts':           'Risk Factors',
+    'binary-case-series':           'Case Series',
+    'continuous-case-series':       'Case Series',
+    'dechallenge-rechallenge':      'Dechallenge / Rechallenge',
+    'dechallenge-rechallenge-fails':'Dechallenge / Rechallenge',
+    'incidence-rates':              'Cohort Incidence',
+    'cohort-binary':                'Cohort Comparison',
+    'cohort-continuous':            'Cohort Comparison',
+    'time-to-event':                'Time to Event',
+    'target-table':                 'Summaries',
+    'outcome-table':                'Summaries',
+    'cohort-unique-people':         'Summaries',
+    'outcome-data-availability':    'Summaries',
+    'datasources':                  'Data Sources',
+};
+
+router.use((req, res, next) => {
+    const segment = req.path.split('/').filter(Boolean).pop() ?? '';
+    const label = PATH_LABELS[segment] ?? null;
+    if (label) {
+        runWithQueryContext(label, next);
+    } else {
+        next();
+    }
+});
 
 router.get('/api/characterization/cohort-binary', async (req, res) => {
     const {targetIds, databaseIds, minThreshold} = req.query;
@@ -402,6 +433,68 @@ router.get('/api/characterization/outcome-data-availability', async (req, res) =
     }
 });
 
+
+router.get('/api/debug/slow-query', (req, res) => {
+    const secs = Math.min(parseInt(req.query.secs ?? '30', 10), 300);
+    // fire-and-forget so the HTTP response returns immediately
+    queryDb(`SELECT pg_sleep(${secs})`).catch(() => {});
+    res.json({ message: `Slow query started (${secs}s)` });
+});
+
+router.get('/api/debug/query-history', (req, res) => {
+    const cursor = parseInt(req.query.cursor ?? '0', 10);
+    const buf = getQueryHistory();
+    const offset = getHistoryOffset();
+    const bufIndex = Math.max(0, cursor - offset);
+    const entries = buf.slice(bufIndex);
+    res.json({ entries, cursor: offset + buf.length });
+});
+
+router.delete('/api/debug/query-history', (req, res) => {
+    clearQueryHistory();
+    res.json({ message: 'History cleared' });
+});
+
+router.get('/api/debug/running-queries', async (req, res) => {
+    try {
+        const rows = await queryDb(`
+            SELECT
+                pid,
+                state,
+                query,
+                EXTRACT(EPOCH FROM (now() - query_start))::int AS duration_seconds,
+                query_start,
+                application_name,
+                wait_event_type,
+                wait_event
+            FROM pg_stat_activity
+            WHERE state = 'active'
+              AND query NOT ILIKE '%pg_stat_activity%'
+              AND pid <> pg_backend_pid()
+            ORDER BY query_start ASC
+        `);
+        res.json(rows);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error(`debug/running-queries: ${message}`);
+        res.status(500).json({ error: message });
+    }
+});
+
+router.get('/api/debug/logs', (req, res) => {
+    const cursor = parseInt(req.query.cursor ?? '0', 10);
+    const buf = getLogBuffer();
+    const offset = getBufferOffset();
+    // cursor is an absolute write count; translate to current buffer index
+    const bufIndex = Math.max(0, cursor - offset);
+    const entries = buf.slice(bufIndex);
+    res.json({ entries, cursor: offset + buf.length });
+});
+
+router.delete('/api/debug/logs', (req, res) => {
+    clearLogBuffer();
+    res.json({ message: 'Log buffer cleared' });
+});
 
 //todo: maybe separate different modules into their own routers but will do for now
 

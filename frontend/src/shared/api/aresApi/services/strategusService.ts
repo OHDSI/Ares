@@ -309,6 +309,77 @@ export const StrategusService = {
       );
     },
   },
+  debug: {
+    getRunningQueries() {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/debug/running-queries`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+        },
+        {}
+      );
+    },
+    triggerSlowQuery(secs = 30) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/debug/slow-query`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: { secs },
+        },
+        {}
+      );
+    },
+    getQueryHistory(cursor = 0) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/debug/query-history`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: { cursor },
+        },
+        {}
+      );
+    },
+    clearQueryHistory() {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/debug/query-history`,
+          baseURL: "./",
+          method: "delete",
+          headers: { "Content-Type": "application/json" },
+        },
+        {}
+      );
+    },
+    getLogs(cursor?: number) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/debug/logs`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: cursor != null ? { cursor } : {},
+        },
+        {}
+      );
+    },
+    clearLogs() {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/debug/logs`,
+          baseURL: "./",
+          method: "delete",
+          headers: { "Content-Type": "application/json" },
+        },
+        {}
+      );
+    },
+  },
   dataSources: {
     getDataSources() {
       return apiService(

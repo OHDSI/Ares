@@ -19,7 +19,9 @@ dotenv.config();
 const app = express();
 
 app.use((req, res, next) => {
-  logger.http(`Request: ${req.method} ${req.url}`);
+  if (!req.url.startsWith('/api/debug/logs')) {
+    logger.http(`Request: ${req.method} ${req.url}`);
+  }
   next();
 });
 app.use(express.json());

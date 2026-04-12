@@ -15,6 +15,7 @@ import {
   UPDATE_DEFAULT_SOURCES,
   CHANGE_DRILLDOWN_VIEW_OPTIONS,
   TOGGLE_PERSIST_COLUMN_SELECTION,
+  TOGGLE_DEV_WIDGET,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -39,6 +40,7 @@ const state = {
       class: "h-5/6",
       position: "bottom",
     },
+    devWidget: false,
   },
   visible: false,
 };
@@ -102,6 +104,9 @@ const actions = {
   },
   [TOGGLE_PERSIST_COLUMN_SELECTION]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "persistColumnSelection" });
+  },
+  [TOGGLE_DEV_WIDGET]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "devWidget" });
   },
   [UPDATE_DEFAULT_SOURCES]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "defaultSources" });

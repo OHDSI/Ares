@@ -1,4 +1,4 @@
-import winston from 'winston'
+import winston from 'winston';
 import * as fs from "fs";
 import path from 'path';
 import dotenv from "dotenv";
@@ -20,6 +20,29 @@ const getDateString = () => {
 
 const logLevel = process.env.NODE_ENV === 'production' ? 'info' : 'debug';
 
+// In-memory log buffer
+const MAX_BUFFER = 500;
+const logBuffer = [];
+let bufferOffset = 0;
+
+class MemoryTransport extends winston.Transport {
+    log(info, callback) {
+        logBuffer.push({
+            timestamp: info.timestamp ?? new Date().toISOString(),
+            level: info.level,
+            message: String(info.message),
+        });
+        if (logBuffer.length > MAX_BUFFER) {
+            logBuffer.shift();
+            bufferOffset++;
+        }
+        callback();
+    }
+}
+
+export function getLogBuffer() { return logBuffer; }
+export function getBufferOffset() { return bufferOffset; }
+export function clearLogBuffer() { logBuffer.splice(0); bufferOffset = 0; }
 
 const loggerOptions = {
     level: logLevel,
@@ -38,7 +61,10 @@ const loggerOptions = {
                     return `${timestamp} [${level}]: ${message}`;
                 })
             )
-        })
+        }),
+        new MemoryTransport({
+            format: winston.format.timestamp(),
+        }),
     ]
 }
 

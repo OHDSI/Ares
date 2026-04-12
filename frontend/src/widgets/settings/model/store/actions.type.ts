@@ -13,3 +13,4 @@ export const TOGGLE_STRIPPED_ROWS = "toggleStrippedRows";
 export const UPDATE_DEFAULT_SOURCES = "updateDefaultSources";
 export const CHANGE_DRILLDOWN_VIEW_OPTIONS = "changeDrilldownViewOptions";
 export const TOGGLE_PERSIST_COLUMN_SELECTION = "togglePersistColumnSelection";
+export const TOGGLE_DEV_WIDGET = "toggleDevWidget";

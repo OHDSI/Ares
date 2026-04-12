@@ -1,6 +1,8 @@
 <template>
   <Explorer class="min-w-[1250px] px-28" v-if="showExplorer" />
 
+  <SqlDebugWidget v-if="devWidget" />
+
   <div
     :class="{
       'px-3': true,
@@ -20,7 +22,7 @@ import { webApiActions } from "@/shared/api/webAPI";
 
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { computed, watch, onBeforeMount, onMounted } from "vue";
+import { computed, watch, onBeforeMount } from "vue";
 import {
   GET_USER,
   LOG_OUT,
@@ -29,6 +31,7 @@ import LocalStorageService from "@/shared/api/localStorageService";
 const store = useStore();
 const route = useRoute();
 import { Explorer } from "@/widgets/explorer";
+import SqlDebugWidget from "@/widgets/debugWidget/DebugWidget.vue";
 
 const favicon = document.getElementById("faviconTag");
 
@@ -39,6 +42,8 @@ const darkMode = computed(function (): boolean {
 const isSticky = computed(() => {
   return store.getters.getSettings.stickyNavBar;
 });
+
+const devWidget = computed(() => store.getters.getSettings.devWidget);
 
 const path = computed(function () {
   return route.path;

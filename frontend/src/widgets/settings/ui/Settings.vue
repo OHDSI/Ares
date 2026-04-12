@@ -39,6 +39,12 @@
           <ToggleDefaultNotesMode />
         </div>
         <Divider></Divider>
+
+        <div class="flex flex-col gap-5">
+          <h3 class="text-left font-normal text-md">Developer</h3>
+          <ToggleDevWidget />
+        </div>
+        <Divider></Divider>
         <div class="relative bottom-0 mt-4">
           <ExportNotes></ExportNotes>
         </div>
@@ -72,6 +78,7 @@ import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccoun
 import Sidebar from "primevue/sidebar";
 import FavoriteSources from "@/widgets/settings/ui/components/favoriteSources/FavoriteSources.vue";
 import DrillDownViewOptions from "@/widgets/settings/ui/components/DrillDownViewOptions";
+import ToggleDevWidget from "@/widgets/settings/ui/components/toggleDevWidget";
 
 const store = useStore();
 
