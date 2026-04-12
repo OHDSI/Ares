@@ -157,7 +157,14 @@ export function useDrag(
     );
   }
 
-  onMounted(() => window.addEventListener("resize", onResize));
+  onMounted(() => {
+    window.addEventListener("resize", onResize);
+    const [w, h] = sizeOf(state.value);
+    pos.value = {
+      x: Math.max(0, (window.innerWidth - w) / 2),
+      y: Math.max(0, (window.innerHeight - h) / 2),
+    };
+  });
   onUnmounted(() => {
     window.removeEventListener("resize", onResize);
     window.removeEventListener("mousemove", onDrag);
