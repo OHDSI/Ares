@@ -87,7 +87,7 @@ import Panel from "primevue/panel";
 import { computed, onMounted } from "vue";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import { ref } from "vue";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces, mdiCog } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";

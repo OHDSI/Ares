@@ -50,7 +50,7 @@ import MainTable from "@/pages/reports/release/DomainTable/components/MainTable.
 import DataStratificationByVisit from "@/pages/reports/release/DomainTable/components/DataStratificationByVisit/DataStratificationByVisit.vue";
 import DataStratificationByDrug from "@/pages/reports/release/DomainTable/components/DataStratificationByDrug/DataStratificationByDrug.vue";
 import DomainMetadataTable from "@/pages/reports/release/DomainTable/components/DomainMetadataTable.vue";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 import Sidebar from "primevue/sidebar";
 import ConceptReport from "@/pages/reports/release/DomainTable/components/ConceptReport/ConceptReport.vue";
 import { ref, computed, watch } from "vue";

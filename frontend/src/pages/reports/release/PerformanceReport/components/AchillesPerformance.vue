@@ -85,7 +85,7 @@
 import { links } from "@/shared/config/links";
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";

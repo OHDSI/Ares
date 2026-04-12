@@ -156,7 +156,7 @@ import Column from "primevue/column";
 import { FilterMatchMode } from "primevue/api";
 import { mdiHelpCircle } from "@mdi/js";
 import { links } from "@/shared/config/links";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Pivot from "@/widgets/pivot/ui/Pivot.vue";
 import MultiSelect from "primevue/multiselect";
 import { formatComma } from "@/shared/lib/formatters";

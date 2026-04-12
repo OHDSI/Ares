@@ -25,7 +25,7 @@ import { computed, watch, onMounted } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import { TopLevelSpec } from "vega-lite";
 import { Handler } from "vega-tooltip";
-import ContextMenu from "@/entities/contextMenu/contextMenu.vue";
+import ContextMenu from "@/widgets/contextMenu/contextMenu.vue";
 import {
   CREATE_SELECTION,
   DELETE_SELECTION,
@@ -33,7 +33,7 @@ import {
   SHOW_DIALOG,
 } from "@/widgets/notesPanel/model/store/actions.type";
 import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
-import { OPEN_MENU } from "@/entities/contextMenu/model/store/actions.type";
+import { OPEN_MENU } from "@/widgets/contextMenu/model/store/actions.type";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
 import { Annotation } from "@/shared/interfaces/Annotations";
 import { ref } from "vue";

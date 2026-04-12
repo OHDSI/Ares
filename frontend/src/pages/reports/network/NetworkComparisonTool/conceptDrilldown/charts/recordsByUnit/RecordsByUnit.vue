@@ -70,7 +70,7 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { RecordsCountType } from "@/processes/exploreReports/model/interfaces/reportTypes/RecordsCountType";
 import { mdiCodeBraces } from "@mdi/js";
 import Panel from "primevue/panel";

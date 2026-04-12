@@ -80,7 +80,7 @@ import AgeAtFirstOccurrence from "./charts/ageAtFirstOccurrence/AgeAtFirstOccurr
 import InfoPanel from "@/widgets/infoPanel";
 import { mdiCheckNetwork } from "@mdi/js";
 import Button from "primevue/button";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 
 const store = useStore();
 

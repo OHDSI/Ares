@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import CohortCharacterizationReport from "./reports/CohortCharacterizationTable.vue";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 import { computed } from "vue";
 import IndexEventBreakdownTable from "./reports/IndexEventBreakdownTable.vue";
 import TimeDistributionChart from "./reports/timeDistribution/TimeDistributionChart.vue";

@@ -17,7 +17,7 @@
 import ReturnButton from "@/features/returnToPreviousPage";
 import { useStore } from "vuex";
 import RecordProportionByMonth from "@/pages/reports/source/SourceConceptReport/charts/recordProportionByMonth/RecordProportionByMonth.vue";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 import InfoPanel from "@/widgets/infoPanel";
 const store = useStore();
 </script>

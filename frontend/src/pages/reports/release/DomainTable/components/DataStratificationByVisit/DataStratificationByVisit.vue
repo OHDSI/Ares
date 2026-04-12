@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiHelpCircle } from "@mdi/js";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";

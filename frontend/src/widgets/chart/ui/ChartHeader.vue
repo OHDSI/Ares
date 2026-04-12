@@ -39,7 +39,7 @@
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { useStore } from "vuex";
-import ToggleIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ToggleIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 
 const annotationMode = ref(false);
 const noteMode = ref(false);

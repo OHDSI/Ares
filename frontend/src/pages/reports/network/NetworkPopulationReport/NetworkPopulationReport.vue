@@ -13,7 +13,7 @@ import { useStore } from "vuex";
 
 import AgeAtFirstObservation from "@/pages/reports/network/NetworkPopulationReport/charts/ageAtFirstObservation/AgeAtFirstObservation.vue";
 import CumulativeObservation from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation/CumulativeObservation.vue";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 
 const store = useStore();
 </script>

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import ContextMenu from "@/entities/contextMenu/contextMenu.vue";
+import ContextMenu from "@/widgets/contextMenu/contextMenu.vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import { Annotation } from "@/shared/interfaces/Annotations";
 import * as transform from "echarts-simple-transform";
@@ -31,7 +31,7 @@ import { useStore } from "vuex";
 
 import * as echarts from "echarts";
 import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
-import { OPEN_MENU } from "@/entities/contextMenu/model/store/actions.type";
+import { OPEN_MENU } from "@/widgets/contextMenu/model/store/actions.type";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
 
 echarts.registerTransform(transform.aggregate);

@@ -22,7 +22,7 @@ import YearsOfObservationBySex from "@/pages/reports/release/ObservationPeriodRe
 import AgeAtFirstObservation from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservation/AgeAtFirstObservation.vue";
 import AgeAtFirstObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservationBySex/AgeAtFirstObservationBySex.vue";
 import { useStore } from "vuex";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 
 const store = useStore();
 </script>

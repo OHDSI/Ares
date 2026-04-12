@@ -74,7 +74,7 @@ import QuantityDistribution from "./charts/QuantityDistribution/QuantityDistribu
 import VisitDurationByType from "./charts/VisitDurationByType/VisitDurationByType.vue";
 import RecordCountProportionByAgeSexYear from "./charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
 import InfoPanel from "@/widgets/infoPanel";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 import { mdiCheckNetwork } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 import Button from "primevue/button";

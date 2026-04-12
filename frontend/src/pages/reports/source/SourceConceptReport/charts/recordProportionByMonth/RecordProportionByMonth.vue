@@ -53,7 +53,7 @@ import { specRecordProportionByMonth } from "./specRecordProportionByMonth";
 import { specRecordProportionByMonthAnnotation } from "./specRecordProportionByMonthAnnotation";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import Panel from "primevue/panel";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";

@@ -55,7 +55,7 @@ import {
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
 import SelectionEditDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
-import ProgressCircle from "@/entities/ProgressCircle.vue";
+import ProgressCircle from "@/shared/ui/ProgressCircle.vue";
 import environment from "@/shared/api/environment";
 import { pageCharts } from "@/processes/exploreReports/config/pageCharts";
 import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";

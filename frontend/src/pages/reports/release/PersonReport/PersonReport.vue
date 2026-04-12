@@ -32,7 +32,7 @@ import PopulationByRace from "@/pages/reports/release/PersonReport/charts/Popula
 import PopulationByYearBirth from "@/pages/reports/release/PersonReport/charts/PopulationByYearBirth/PopulationByYearBirth.vue";
 import PopulationByEthnicity from "@/pages/reports/release/PersonReport/charts/PopulationByEthnicity/PopulationByEthnicity.vue";
 import InfoPanel from "@/widgets/infoPanel";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 import { onMounted } from "vue";
 
 const store = useStore();

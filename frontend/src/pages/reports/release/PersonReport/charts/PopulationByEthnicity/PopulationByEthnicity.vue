@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";

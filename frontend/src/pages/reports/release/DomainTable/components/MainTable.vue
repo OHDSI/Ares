@@ -320,7 +320,7 @@ import { debounce } from "lodash";
 import { DomainIssues } from "@/processes/exploreReports/model/interfaces/files/DomainIssues";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";

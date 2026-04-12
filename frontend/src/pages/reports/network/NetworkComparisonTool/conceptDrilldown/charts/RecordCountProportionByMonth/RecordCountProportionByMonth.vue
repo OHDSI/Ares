@@ -81,7 +81,7 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Panel from "primevue/panel";
 import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";

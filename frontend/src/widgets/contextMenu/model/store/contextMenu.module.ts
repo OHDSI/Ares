@@ -1,6 +1,6 @@
-import { SET_LOCATION } from "@/entities/contextMenu/model/store/mutations.type";
-import { SET_CONTEXT_MENU_VISIBILITY } from "@/entities/contextMenu/model/store/mutations.type";
-import { OPEN_MENU } from "@/entities/contextMenu/model/store/actions.type";
+import { SET_LOCATION } from "@/widgets/contextMenu/model/store/mutations.type";
+import { SET_CONTEXT_MENU_VISIBILITY } from "@/widgets/contextMenu/model/store/mutations.type";
+import { OPEN_MENU } from "@/widgets/contextMenu/model/store/actions.type";
 
 const state = {
   visible: false,

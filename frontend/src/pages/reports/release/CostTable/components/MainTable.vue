@@ -112,7 +112,7 @@ import { FilterMatchMode } from "primevue/api";
 import { formatComma } from "@/shared/lib/formatters";
 import Dropdown from "primevue/dropdown";
 import { mdiCompareHorizontal } from "@mdi/js";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { getValuesArray } from "@/shared/lib/utils";
 
 const store = useStore();

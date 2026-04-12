@@ -208,7 +208,7 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref, Ref } from "vue";
-import ChartActionIcon from "@/entities/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import Panel from "primevue/panel";
 import MultiSelect from "primevue/multiselect";

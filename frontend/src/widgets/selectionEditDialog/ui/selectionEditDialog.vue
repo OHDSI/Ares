@@ -88,7 +88,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from "vue";
-import MetadataCard from "@/entities/chartMetadataCard/metadataCard.vue";
+import MetadataCard from "@/widgets/chartMetadataCard/metadataCard.vue";
 import { useStore } from "vuex";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
 import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";

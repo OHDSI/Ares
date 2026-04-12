@@ -21,7 +21,7 @@ import RecordCountProportionByAgeSexYear from "@/pages/reports/release/DeathRepo
 import RecordCountProportionByMonth from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
 import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
-import PageHeader from "@/entities/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
 
 const route = useRoute();
 const store = useStore();
