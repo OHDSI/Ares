@@ -83,7 +83,7 @@ export function useDrag(
     }
     recentSamples = [];
 
-    const MAX_V = 35;
+    const MAX_V = 60;
     const speed = Math.sqrt(vx * vx + vy * vy);
     if (speed > MAX_V) {
       vx = (vx / speed) * MAX_V;

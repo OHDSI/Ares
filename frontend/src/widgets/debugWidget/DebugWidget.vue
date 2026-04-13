@@ -48,7 +48,6 @@
             <i class="pi pi-table tool-icon" />
             <span class="tool-name">Vacant spot</span>
             <span class="tool-desc">tbd</span>
-            <span class="tool-soon">soon</span>
           </button>
           <!-- Logs -->
           <button class="menu-tool-card" @click.stop="openTool('logs')">
