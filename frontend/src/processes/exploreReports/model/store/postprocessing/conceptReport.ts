@@ -1,5 +1,5 @@
 import { sortByRange } from "@/shared/lib/utils";
-import * as d3 from "d3-time-format";
+import { parseYearMonth } from "@/shared/lib/formatters";
 import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import { DomainSummary } from "@/processes/exploreReports/model/interfaces/files/DomainSummary";
@@ -7,7 +7,6 @@ import environment from "@/shared/api/environment";
 import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 
 export default function concept(data) {
-  const dateParse = d3.timeParse("%Y%m");
   const metadata = data[CONCEPT_METADATA]?.[0];
   let conceptData: ConceptType;
   let conceptName: string | string[];
@@ -74,7 +73,7 @@ export default function concept(data) {
     conceptData.PREVALENCE_BY_MONTH.length
   ) {
     conceptData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-      conceptData.PREVALENCE_BY_MONTH[i].date = dateParse(
+      conceptData.PREVALENCE_BY_MONTH[i].date = parseYearMonth(
         v.X_CALENDAR_MONTH.toString()
       );
     });

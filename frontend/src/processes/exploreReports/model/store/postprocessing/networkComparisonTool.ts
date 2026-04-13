@@ -2,9 +2,9 @@ import { CONCEPT } from "@/shared/config/files";
 import _ from "lodash";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/interfaces/MultipleFilesRawInterface";
-import * as d3 from "d3-time-format";
 import environment from "@/shared/api/environment";
 import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
+import { parseYearMonth } from "@/shared/lib/formatters";
 
 function augmentReport(concept, dataField) {
   return concept.filter((value) => value.data[dataField]?.length).length
@@ -52,7 +52,6 @@ export default function networkComparisonTool(data) {
     return data;
   }
   if (data.CONCEPT_METADATA || data[CONCEPT]) {
-    const dateParse = d3.timeParse("%Y%m");
     let concept: MultipleFilesRawInterface<ConceptType>[],
       conceptName,
       conceptId,
@@ -140,7 +139,7 @@ export default function networkComparisonTool(data) {
                     ...current.data.PREVALENCE_BY_MONTH.map((value) => ({
                       ...value,
                       SOURCE: current.source.cdm_source_key,
-                      date: dateParse(value.X_CALENDAR_MONTH.toString()),
+                      date: parseYearMonth(value.X_CALENDAR_MONTH.toString()),
                     })),
                   ],
                   []

@@ -1,9 +1,8 @@
-import * as d3 from "d3-time-format";
 import { PERSON } from "@/shared/config/files";
 import { PersonData } from "@/processes/exploreReports/model/interfaces/files/Person";
 
 export default function person(data) {
-  const dateParse = d3.timeParse("%Y");
+  const dateParse = (s) => new Date(+s, 0);
   const personData: PersonData = data[PERSON];
   let genderMaleCount = 0;
   let genderFemaleCount = 0;

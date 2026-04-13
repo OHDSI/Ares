@@ -150,9 +150,8 @@
 </template>
 
 <script setup lang="ts">
-import { timeParse } from "d3-time-format";
 import { computed, ref, watch, Ref, onMounted } from "vue";
-import { formatComma } from "@/shared/lib/formatters";
+import { formatComma, parseYearMonth } from "@/shared/lib/formatters";
 import { DataTableHeader } from "@/shared/interfaces/DataTableHeader";
 import { ObservationPeriodType } from "@/processes/exploreReports/model/interfaces/files/ObservationPeriodType";
 import { PersonData } from "@/processes/exploreReports/model/interfaces/files/Person";
@@ -182,7 +181,7 @@ const continuousObservation: Ref<number[]> = ref([]);
 
 const getRangeData = computed(function () {
   const person = props.person;
-  const timeparse = timeParse("%Y%m");
+  const timeparse = parseYearMonth;
   const observationData = props.observationPeriod
     .map((value) => ({
       cdm_name: value.source.cdm_source_abbreviation,
@@ -259,7 +258,7 @@ const getAgeMinMax = computed(function () {
   return [Math.ceil(Math.min(...data)), Math.ceil(Math.max(...data))];
 });
 const getYearsMinMax = computed(function () {
-  const timeparse = timeParse("%Y%m");
+  const timeparse = parseYearMonth;
   const data = props.observationPeriod.reduce(
     (prevValue, current) => [
       ...prevValue,

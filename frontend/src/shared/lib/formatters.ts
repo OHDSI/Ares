@@ -1,14 +1,12 @@
-import * as d3Format from "d3-format";
-
 // Number formatters
 
 export function formatComma(value: number): string {
-  return isNaN(parseFloat(`${value}`)) ? "N/A" : d3Format.format(",")(value);
+  return isNaN(parseFloat(`${value}`)) ? "N/A" : value.toLocaleString("en-US");
 }
 
 /** General-purpose percentage. Expects a fraction (0.5 -> "50.0%"). */
 export function formatPercent(value: number): string {
-  return isNaN(value) ? "N/A" : d3Format.format("0.0%")(value);
+  return isNaN(value) ? "N/A" : `${(value * 100).toFixed(1)}%`;
 }
 
 /** Generic decimal, 2 places. Null/NaN -> "N/A". */
@@ -103,6 +101,12 @@ export function kmbFormatter(v: number): string {
 
 // Date / time formatters
 
+/** Parses a "YYYYMM" string (e.g. "202001") into a Date (Jan 2020). */
+export function parseYearMonth(s: string | number): Date {
+  const str = String(s);
+  return new Date(+str.slice(0, 4), +str.slice(4, 6) - 1);
+}
+
 export function padTo2Digits(num: number): string {
   return num.toString().padStart(2, "0");
 }
@@ -152,10 +156,29 @@ export function formatTimestamp(ms: number): string {
 
 /**
  * SI-prefix number formatter with 3 significant figures (e.g. 1234 -> "1.23k",
- * 1_500_000_000 -> "1.50B"). Uses d3 ".3s" format; replaces "G" with "B" for billions.
+ * 1_500_000_000 -> "1.50B").
  */
 export function formatSI(count: number): string {
-  return d3Format.format(".3s")(count).replace("G", "B");
+  const abs = Math.abs(count);
+  const tiers = [
+    { threshold: 1e12, suffix: "T" },
+    { threshold: 1e9, suffix: "B" },
+    { threshold: 1e6, suffix: "M" },
+    { threshold: 1e3, suffix: "k" },
+  ];
+  for (const { threshold, suffix } of tiers) {
+    if (abs >= threshold) {
+      const scaled = count / threshold;
+      const fixed =
+        Math.abs(scaled) >= 100
+          ? scaled.toFixed(0)
+          : Math.abs(scaled) >= 10
+          ? scaled.toFixed(1)
+          : scaled.toFixed(2);
+      return `${fixed}${suffix}`;
+    }
+  }
+  return String(count);
 }
 
 // Duration formatters

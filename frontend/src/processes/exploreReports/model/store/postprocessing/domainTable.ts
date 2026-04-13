@@ -10,11 +10,11 @@ import { DomainSummary } from "@/processes/exploreReports/model/interfaces/files
 import { DomainIssues } from "@/processes/exploreReports/model/interfaces/files/DomainIssues";
 import { DomainDrugStratificationType } from "@/processes/exploreReports/model/interfaces/files/DomainDrugStratificationType";
 import { DomainVisitStratificationType } from "@/processes/exploreReports/model/interfaces/files/DomainVisitStratificationType";
-import * as d3 from "d3-time-format";
 import { CONCEPT_METADATA } from "@/shared/api/duckdb/files";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import environment from "@/shared/api/environment";
 import { sortByRange } from "@/shared/lib/utils";
+import { parseYearMonth } from "@/shared/lib/formatters";
 
 function domainTableData(data) {
   const metadataData = data[METADATA];
@@ -35,7 +35,6 @@ function domainTableData(data) {
 }
 
 function conceptData(data) {
-  const dateParse = d3.timeParse("%Y%m");
   const metadata = data[CONCEPT_METADATA]?.[0];
   let conceptData: ConceptType;
   let conceptName: string | string[];
@@ -102,7 +101,7 @@ function conceptData(data) {
     conceptData.PREVALENCE_BY_MONTH.length
   ) {
     conceptData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-      conceptData.PREVALENCE_BY_MONTH[i].date = dateParse(
+      conceptData.PREVALENCE_BY_MONTH[i].date = parseYearMonth(
         v.X_CALENDAR_MONTH.toString()
       );
     });

@@ -1,11 +1,10 @@
-import * as d3 from "d3-time-format";
 import { OBSERVATION_PERIOD } from "@/shared/config/files";
 import { getPercentage } from "@/shared/lib/utils";
 import { sortByRange } from "@/shared/lib/utils";
+import { parseYearMonth } from "@/shared/lib/formatters";
 import { ObservationPeriodType } from "@/processes/exploreReports/model/interfaces/files/ObservationPeriodType";
 
 export default function observationPeriod(data) {
-  const dateParse = d3.timeParse("%Y%m");
   const observationPeriodData: ObservationPeriodType = data[OBSERVATION_PERIOD];
   let personPeriods;
   if (observationPeriodData.PERSON_PERIODS_DATA) {
@@ -28,7 +27,7 @@ export default function observationPeriod(data) {
 
   if (observationPeriodData.OBSERVED_BY_MONTH) {
     observationPeriodData.OBSERVED_BY_MONTH.forEach((v) => {
-      v.DATE = dateParse(v.MONTH_YEAR.toString());
+      v.DATE = parseYearMonth(v.MONTH_YEAR.toString());
     });
   }
 

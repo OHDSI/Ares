@@ -1,6 +1,6 @@
 import { SOURCE_CONCEPT } from "@/shared/config/files";
-import * as d3 from "d3-time-format";
 import { flatten, sumBy } from "lodash";
+import { parseYearMonth } from "@/shared/lib/formatters";
 import { MultipleFilesRawInterface } from "@/processes/exploreReports/model/interfaces/MultipleFilesRawInterface";
 import { ConceptType } from "@/processes/exploreReports/model/interfaces/files/ConceptType";
 import environment from "@/shared/api/environment";
@@ -46,13 +46,12 @@ export default function sourceConceptOverlay(data) {
     conceptId = parsedResponses[0].data.CONCEPT_ID[0];
     numPersons = sumBy(parsedResponses, (item) => item.data.NUM_PERSONS[0]);
   }
-  const dateParse = d3.timeParse("%Y%m");
   if (!parsedResponses.length) return;
   const prevalence = parsedResponses.map((response) =>
     response.data.PREVALENCE_BY_MONTH.map((prevalence) => {
       return {
         ...prevalence,
-        date: dateParse(String(prevalence.X_CALENDAR_MONTH)),
+        date: parseYearMonth(String(prevalence.X_CALENDAR_MONTH)),
         release: response.release,
       };
     })

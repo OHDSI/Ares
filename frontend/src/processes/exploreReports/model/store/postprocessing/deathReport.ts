@@ -1,10 +1,9 @@
-import * as d3 from "d3-time-format";
 import { DEATH } from "@/shared/config/files";
 import { sortByRange } from "@/shared/lib/utils";
+import { parseYearMonth } from "@/shared/lib/formatters";
 import { Death } from "@/processes/exploreReports/model/interfaces/files/Death";
 
 export default function death(data) {
-  const dateParse = d3.timeParse("%Y%m");
   const deathData: Death = data[DEATH];
   if (
     deathData.PREVALENCE_BY_GENDER_AGE_YEAR &&
@@ -19,7 +18,7 @@ export default function death(data) {
   }
   if (deathData.PREVALENCE_BY_MONTH && deathData.PREVALENCE_BY_MONTH.length) {
     deathData.PREVALENCE_BY_MONTH.forEach((v, i) => {
-      deathData.PREVALENCE_BY_MONTH[i].date = dateParse(
+      deathData.PREVALENCE_BY_MONTH[i].date = parseYearMonth(
         v.X_CALENDAR_MONTH.toString()
       );
     });
