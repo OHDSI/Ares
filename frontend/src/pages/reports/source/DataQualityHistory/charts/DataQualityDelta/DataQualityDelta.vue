@@ -39,7 +39,7 @@ import { QUALITY_DELTA } from "@/shared/config/files";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";

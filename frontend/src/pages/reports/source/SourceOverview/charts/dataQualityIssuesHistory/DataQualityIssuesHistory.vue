@@ -40,9 +40,7 @@
             <div class="flex justify-end">
               {{
                 slotProps.data.count_data_quality_issues
-                  ? formatComma(
-                      slotProps.data.count_data_quality_issues
-                    )
+                  ? formatComma(slotProps.data.count_data_quality_issues)
                   : "No data"
               }}
             </div>
@@ -74,7 +72,7 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";

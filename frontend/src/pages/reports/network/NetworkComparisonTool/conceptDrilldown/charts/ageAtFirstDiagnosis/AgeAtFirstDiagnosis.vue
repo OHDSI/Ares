@@ -179,7 +179,7 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import { getValuesArray, openNewTab } from "@/shared/lib/utils";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionAgeAtFirstDiagnosisFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/ageAtFirstDiagnosis/ageAtFirstDiagnosis";

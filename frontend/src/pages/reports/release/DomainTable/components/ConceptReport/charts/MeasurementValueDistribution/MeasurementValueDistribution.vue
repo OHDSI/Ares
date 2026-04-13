@@ -211,7 +211,7 @@ import Panel from "primevue/panel";
 import { mdiCheckNetwork, mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import MultiSelect from "primevue/multiselect";
 import { openNewTab } from "@/shared/lib/utils";
 import Echarts from "@/widgets/echarts/Echarts.vue";

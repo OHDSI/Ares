@@ -73,7 +73,7 @@ import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import Panel from "primevue/panel";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";

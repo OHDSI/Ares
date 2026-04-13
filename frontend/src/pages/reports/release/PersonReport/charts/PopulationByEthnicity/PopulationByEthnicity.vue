@@ -74,7 +74,7 @@ import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import { computed, ref } from "vue";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import specEthnicityECharts from "@/pages/reports/release/PersonReport/charts/PopulationByEthnicity/populationByEthnicity";

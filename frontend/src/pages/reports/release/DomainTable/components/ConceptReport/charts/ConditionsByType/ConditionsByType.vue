@@ -45,9 +45,7 @@
         <ChartActionIcon
           :icon="mdiHelpCircle"
           tooltip="Learn about Condition types."
-          @iconClicked="
-            openNewTab(links.getDocsLink('CONDITION_OCCURRENCE'))
-          "
+          @iconClicked="openNewTab(links.getDocsLink('CONDITION_OCCURRENCE'))"
         />
         <ChartActionIcon
           v-if="store.getters.getQueryIndex"
@@ -71,7 +69,7 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";

@@ -75,7 +75,7 @@ import { useStore } from "vuex";
 import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import Echarts from "@/widgets/echarts/Echarts.vue";

@@ -172,7 +172,7 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import DataTable from "primevue/datatable";
 import Panel from "primevue/panel";
 import Column from "primevue/column";

@@ -65,20 +65,16 @@
 </template>
 
 <script setup lang="ts">
-import { Chart } from "@/widgets/chart";
-import { specOverview } from "./specOverview";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { RouteLocation, useRouter } from "vue-router";
 import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import { computed, ref } from "vue";
-import { QUALITY_INDEX } from "@/shared/config/files";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import getEChartsDataQualityDelta from "@/pages/reports/source/DataQualityHistory/charts/DataQualityDelta/dataQualityDelta";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import { getEChartsOverview } from "@/pages/reports/source/DomainContinuity/charts/domainRecords/domainContinuity";
 import { formatComma, getPaddedDate } from "@/shared/lib/formatters";
@@ -97,10 +93,7 @@ const navigate = function (route) {
 const eventListener = function (result, route: RouteLocation) {
   return result.view.addEventListener("click", (event, item) => {
     const itemData = item.datum.datum;
-    const releaseKey = getPaddedDate(
-      new Date(itemData.release_date),
-      ""
-    );
+    const releaseKey = getPaddedDate(new Date(itemData.release_date), "");
     const routeUrl = {
       name: "domainTable",
       params: {

@@ -215,7 +215,7 @@ import MultiSelect from "primevue/multiselect";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import { getValuesArray, openNewTab } from "@/shared/lib/utils";
 import Echarts from "@/widgets/echarts/Echarts.vue";
 import getEChartsOptionMeasurementDistributionFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/measurementValueDistributionChart/measurementValueDistribution";

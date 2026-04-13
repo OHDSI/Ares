@@ -75,7 +75,7 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
 import { computed } from "vue";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import { ref } from "vue";
 import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import { mdiCodeBraces } from "@mdi/js";

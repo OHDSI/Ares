@@ -37,7 +37,7 @@
 import { useStore } from "vuex";
 import { computed } from "vue";
 import { formatSI } from "@/shared/lib/formatters";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import { mdiAccount, mdiDatabase, mdiDatabaseAlert, mdiHistory } from "@mdi/js";
 import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import Panel from "primevue/panel";
@@ -77,7 +77,6 @@ const countPeople = computed(function () {
     return [];
   }
 });
-
 </script>
 
 <style scoped></style>

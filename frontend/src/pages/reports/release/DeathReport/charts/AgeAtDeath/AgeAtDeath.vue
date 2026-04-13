@@ -104,7 +104,7 @@ import { links } from "@/shared/config/links";
 
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartHeader from "@/widgets/chart/ui/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
 import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
