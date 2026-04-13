@@ -11,10 +11,7 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
 
         chart = chart.getRowObjects()?.[0];
 
-
         if (!chart) {
-            logger.debug(`Chart ${chart_id} not found. Creating new entry.`);
-
             const chartId = uuidv4();
 
             await connection.run(
@@ -22,14 +19,12 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
                 [chartId, chart_id, chart_name, report_name, domain_name || 'NULL', concept_id || 'NULL']
             );
             chart = { id: chartId, chart_id, chart_name, report_name, domain_name };
-
-            logger.debug(`Chart created: ${chartId}`);
         }
 
         const annotationId = uuidv4();
 
         await connection.run(
-            `INSERT INTO annotations (id, viz_id, created_by, created_at, updated_at, deleted_at) 
+            `INSERT INTO annotations (id, viz_id, created_by, created_at, updated_at, deleted_at)
         VALUES (?, ?, ?, ?, ?, NULL)`,
             [
                 annotationId,
@@ -40,11 +35,9 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
             ]
         );
 
-
         if (annotationData.coordinates) {
-            logger.debug(`Inserting coordinates for annotation: ${annotationId}`);
             await connection.run(
-                `INSERT INTO annotations_coordinates (annotation_id, xMin, xMax, yMin, yMax) 
+                `INSERT INTO annotations_coordinates (annotation_id, xMin, xMax, yMin, yMax)
             VALUES (?, ?, ?, ?, ?)`,
                 [
                     annotationId,
@@ -56,11 +49,9 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
             );
         }
 
-
         if (annotationData.metadata.scope) {
-            logger.debug(`Inserting scope for annotation: ${annotationId}`);
             await connection.run(
-                `INSERT INTO annotations_metadata (annotation_id, scope_type, scope_value) 
+                `INSERT INTO annotations_metadata (annotation_id, scope_type, scope_value)
             VALUES (?, ?, ?)`,
                 [
                     annotationId,
@@ -71,9 +62,8 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
         }
 
         if (annotationData.body) {
-            logger.debug(`Inserting body for annotation: ${annotationId}`);
             await connection.run(
-                `INSERT INTO annotations_body (annotation_id, title, description) 
+                `INSERT INTO annotations_body (annotation_id, title, description)
             VALUES (?, ?, ?)`,
                 [
                     annotationId,
@@ -84,7 +74,6 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
         }
 
         if (annotationData.body.notes && annotationData.body.notes.length > 0) {
-            logger.debug(`Inserting notes for annotation: ${annotationId}`);
             for (const note of annotationData.body.notes) {
                 await connection.run(
                     `INSERT INTO annotations_notes (note_id, annotation_id, title, description, created_at, updated_at, created_by, last_updated) 
@@ -104,6 +93,7 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
         }
 
         logger.debug(`Annotation ${annotationId} successfully created`);
+;
 
         return {
             id: annotationId,
@@ -114,9 +104,8 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
     }
     catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`createAnnotation: ${message}`);
         return new Error('Error occurred while creating annotation');
-
     }
 };
 
@@ -198,7 +187,7 @@ const getAnnotationsByVizName = async (connection, chart_ids) => {
         return result;
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`getAnnotationsByVizName: ${message}`);
         throw new Error('Unable to fetch annotations');
     }
 };
@@ -325,7 +314,7 @@ const getPaginatedAnnotations = async (connection, first, step, filter) => {
             totalCount
         };
     } catch (error) {
-        logger.error(error instanceof Error ? error.message : String(error));
+        logger.error(`getPaginatedAnnotations: ${error instanceof Error ? error.message : String(error)}`);
         throw new Error('Unable to fetch paginated annotations');
     }
 };
@@ -342,7 +331,7 @@ const getAnnotation = async (connection, annotationId) => {
 
 
         if (!annotation) {
-            logger.error(`Annotation with id ${annotationId} not found`);
+            logger.warn(`getAnnotation: annotation ${annotationId} not found`);
         }
 
         let coordinates = await connection.runAndReadAll(
@@ -403,9 +392,8 @@ const getAnnotation = async (connection, annotationId) => {
         }
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`getAnnotation: ${message}`);
         throw new Error('Unable to fetch annotations');
-
     }
 };
 
@@ -424,7 +412,7 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
         annotation = annotation.getRowObjects()[0];
 
         if (!annotation) {
-            logger.error(`Annotation with id ${annotationId} not found`);
+            logger.warn(`updateAnnotation: annotation ${annotationId} not found`);
         }
 
         await connection.run(
@@ -432,9 +420,7 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
             [updatedAt, annotationId]
         );
 
-
         if (coordinates) {
-            logger.debug(`Updating coordinates for annotation ${annotationId}`)
             const { xMin, xMax, yMin, yMax} = coordinates;
             await connection.run(
                 `UPDATE annotations_coordinates
@@ -446,7 +432,6 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
 
 
         if (metadata) {
-            logger.debug(`Updating metadata for annotation ${annotationId}`)
             const { scope } = metadata;
             await connection.run(
                 `UPDATE annotations_metadata
@@ -458,7 +443,6 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
 
 
         if (body) {
-            logger.debug(`Updating body for annotation ${annotationId}`)
             const { title, description, notes } = body;
             await connection.run(
                 `UPDATE annotations_body SET title = ?, description = ? WHERE annotation_id = ?`,
@@ -482,7 +466,6 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
                 const toCreate = notes.filter(value => !value.id);
                 const toDelete = existingNotes.filter(value => !submittedNotes.includes(value));
 
-                logger.debug(`Updating notes for annotation ${annotationId}: ${toUpdate}`);
                 for (const note of notes.filter(n => toUpdate.includes(n.id))) {
                     await connection.run(
                         `UPDATE annotations_notes
@@ -491,14 +474,12 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
                         [note.title, note.description, new Date(note.updatedAt).toISOString(), new Date(note.lastUpdated).toISOString(), note.id]
                     );
                 }
-                logger.debug(`Deleting notes for annotation ${annotationId}: ${toDelete}`);
                 for (const noteId of toDelete) {
                     await connection.run(
                         `DELETE FROM annotations_notes WHERE note_id = ?`,
                         [noteId]
                     );
                 }
-                logger.debug(`Creating notes for annotation ${annotationId}`)
                 for (const note of toCreate) {
                     await connection.run(
                         `INSERT INTO annotations_notes (note_id, annotation_id, title, description, created_at, updated_at, created_by, last_updated)
@@ -522,9 +503,8 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
     }
     catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`updateAnnotation: ${message}`);
         throw new Error('Error occurred while updating annotation');
-
     }
 };
 
@@ -550,7 +530,7 @@ const deleteAnnotation = async (connection, annotationId) => {
         logger.debug(`Annotation ${annotationId} successfully marked as deleted at ${deletedAt}`);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(message);
+        logger.error(`deleteAnnotation: ${message}`);
         throw new Error('Error occurred while marking annotation as deleted');
     }
 };

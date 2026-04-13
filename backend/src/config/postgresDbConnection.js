@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { AsyncLocalStorage } from 'async_hooks';
+import logger from '../utils/logger.js';
 
 const { Pool } = pg;
 
@@ -36,7 +37,7 @@ export function initDb(config = {}) {
     });
 
     pool.on('error', (err) => {
-        console.error('Unexpected idle client error:', err);
+        logger.error(`Unexpected idle client error: ${err.message ?? err}`);
     });
 }
 

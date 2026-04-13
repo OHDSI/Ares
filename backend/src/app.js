@@ -19,9 +19,8 @@ dotenv.config();
 const app = express();
 
 app.use((req, res, next) => {
-  if (!req.url.startsWith('/api/debug/logs')) {
-    logger.http(`Request: ${req.method} ${req.url}`);
-  }
+  const isDebugRoute = req.url.startsWith('/api/debug/');
+  logger.http(`Request: ${req.method} ${req.url}`, { skipBuffer: isDebugRoute });
   next();
 });
 app.use(express.json());

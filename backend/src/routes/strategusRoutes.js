@@ -86,7 +86,7 @@ router.get('/api/characterization/cohort-binary', async (req, res) => {
         res.json(result);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`cohort-binary: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -107,7 +107,7 @@ router.get('/api/characterization/cohort-continuous', async (req, res) => {
         res.json(result);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`cohort-continuous: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -125,7 +125,7 @@ router.get('/api/characterization/target-table', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`target-table: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -147,7 +147,7 @@ router.get('/api/characterization/outcome-table', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`outcome-table: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -164,7 +164,7 @@ router.get('/api/characterization/dechallenge-rechallenge', async (req, res) => 
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`dechallenge-rechallenge: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -189,7 +189,7 @@ router.get('/api/characterization/dechallenge-rechallenge-fails', async (req, re
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`dechallenge-rechallenge-fails: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -211,7 +211,7 @@ router.get('/api/characterization/cohort-unique-people', async (req, res) => {
         res.json({isUnique});
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`cohort-unique-people: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -236,7 +236,7 @@ router.get('/api/characterization/case-counts', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`case-counts: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -254,7 +254,7 @@ router.get('/api/characterization/case-target-counts', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`case-target-counts: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -279,7 +279,7 @@ router.get('/api/characterization/binary-risk-factors', async (req, res) => {
         res.json(result);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`binary-risk-factors: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -304,7 +304,7 @@ router.get('/api/characterization/continuous-risk-factors', async (req, res) => 
         res.json(result);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`continuous-risk-factors: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -323,7 +323,7 @@ router.get('/api/characterization/time-to-event', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`time-to-event: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -351,7 +351,7 @@ router.get('/api/characterization/binary-case-series', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`binary-case-series: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -376,7 +376,7 @@ router.get('/api/characterization/continuous-case-series', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`continuous-case-series: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -395,7 +395,7 @@ router.get('/api/characterization/incidence-rates', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`incidence-rates: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -408,7 +408,7 @@ router.get('/api/datasources', async (req, res) => {
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`datasources: ${message}`);
         res.status(500).json({error: message});
     }
 });
@@ -428,7 +428,7 @@ router.get('/api/characterization/outcome-data-availability', async (req, res) =
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        logger.error(`${message}`);
+        logger.error(`outcome-data-availability: ${message}`);
         res.status(500).json({ error: message });
     }
 });

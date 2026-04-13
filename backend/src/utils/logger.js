@@ -27,6 +27,10 @@ let bufferOffset = 0;
 
 class MemoryTransport extends winston.Transport {
     log(info, callback) {
+        if (info.skipBuffer) {
+            callback();
+            return;
+        }
         logBuffer.push({
             timestamp: info.timestamp ?? new Date().toISOString(),
             level: info.level,

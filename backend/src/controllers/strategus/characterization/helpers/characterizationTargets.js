@@ -168,12 +168,10 @@ export async function getCharacterizationOutcomes({
                                                       cTablePrefix = 'c_',
                                                       cgTablePrefix = 'cg_',
                                                       targetId = null,
-                                                      printTimes = false,
                                                       useTte = true,
                                                       useDcrc = true,
                                                       useRf = true,
                                                   }) {
-    const totalStart = Date.now();
     let allRows = [];
 
     const params = {};
@@ -188,16 +186,8 @@ export async function getCharacterizationOutcomes({
     const detailTargetClause = addOptionalClause(targetId != null,
         `AND target_cohort_id IN (${buildInClause('dtTargetId', toArray(targetId ?? []), detailParams)})`);
 
-    function timed(label, fn) {
-        const t = Date.now();
-        return fn().then((res) => {
-            logger.debug(`[getCharacterizationOutcomes] ${label}: ${Date.now() - t}ms`);
-            return res;
-        });
-    }
-
     const [tteRows, dcrcRows, rfRows, detailRows] = await Promise.all([
-        useTte ? timed('time_to_event', () => safeQuery(`
+        useTte ? safeQuery(`
       SELECT
         cg.cohort_name,
         tte.outcome_cohort_definition_id AS cohort_definition_id,
@@ -208,8 +198,8 @@ export async function getCharacterizationOutcomes({
         ON tte.outcome_cohort_definition_id = cg.cohort_definition_id
       ${targetClause}
       GROUP BY cg.cohort_name, tte.outcome_cohort_definition_id
-    `, params)) : null,
-        useDcrc ? timed('dechallenge_rechallenge', () => safeQuery(`
+    `, params) : null,
+        useDcrc ? safeQuery(`
       SELECT
         cg.cohort_name,
         dr.outcome_cohort_definition_id AS cohort_definition_id,
@@ -220,8 +210,8 @@ export async function getCharacterizationOutcomes({
         ON dr.outcome_cohort_definition_id = cg.cohort_definition_id
       ${drTargetClause}
       GROUP BY cg.cohort_name, dr.outcome_cohort_definition_id
-    `, params)) : null,
-        useRf ? timed('cohort_details', () => safeQuery(`
+    `, params) : null,
+        useRf ? safeQuery(`
       SELECT
         cg.cohort_name,
         cd.outcome_cohort_id AS cohort_definition_id,
@@ -233,8 +223,8 @@ export async function getCharacterizationOutcomes({
       WHERE cd.cohort_type = 'Cases'
         ${cdTargetClause}
       GROUP BY cg.cohort_name, cd.outcome_cohort_id
-    `, params)) : null,
-        useRf ? timed('cohort_counts', () => safeQuery(`
+    `, params) : null,
+        useRf ? safeQuery(`
       SELECT DISTINCT
         outcome_cohort_id AS cohort_definition_id,
         risk_window_start,
@@ -246,18 +236,14 @@ export async function getCharacterizationOutcomes({
       WHERE outcome_cohort_id IS NOT NULL
         AND outcome_cohort_id != 0
         ${detailTargetClause}
-    `, detailParams)) : null,
+    `, detailParams) : null,
     ]);
-
-    logger.debug(`[getCharacterizationOutcomes] all parallel queries: ${Date.now() - totalStart}ms`);
 
     if (tteRows) allRows.push(...tteRows);
     if (dcrcRows) allRows.push(...dcrcRows);
     if (rfRows) allRows.push(...rfRows);
 
     if (allRows.length === 0) {
-        console.log('No outcomes found');
-        logger.debug(`[getCharacterizationOutcomes] no outcomes found, total: ${Date.now() - totalStart}ms`);
         return null;
     }
 
@@ -298,6 +284,5 @@ export async function getCharacterizationOutcomes({
         }
     }
 
-    logger.debug(`[getCharacterizationOutcomes] total: ${Date.now() - totalStart}ms`);
     return outcomes;
 }

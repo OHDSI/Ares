@@ -257,26 +257,15 @@ export async function getOutcomeTable({
                                           getPredictionInclusion = true,
                                           getCohortMethodInclusion = true,
                                           getSccsInclusion = true,
-                                          printTimes = false,
                                       }) {
-    const totalStart = Date.now();
-
-    function timed(label, fn) {
-        const t = Date.now();
-        return fn().then((res) => {
-            logger.debug(`[getOutcomeTable] ${label}: ${Date.now() - t}ms`);
-            return res;
-        });
-    }
-
     const [rawCohorts, rawCounts, inc, char, pred, cm, sccs] = await Promise.all([
-        timed('cohortDefinitions', () => getCohortDefinitions({ schema })),
-        timed('cohortCounts', () => fetchCohortCountsRaw(schema, cgTablePrefix, databaseTable)),
-        getIncidenceInclusion ? timed('incidenceOutcomes', () => safeCall(() => getIncidenceOutcomes({ schema, cgTablePrefix, ciTablePrefix, targetId }))) : null,
-        getCharacterizationInclusion ? timed('characterizationOutcomes', () => safeCall(() => getCharacterizationOutcomes({ schema, cgTablePrefix, cTablePrefix, targetId, printTimes }))) : null,
-        getPredictionInclusion ? timed('predictionOutcomes', () => safeCall(() => getPredictionOutcomes({ schema, cgTablePrefix, plpTablePrefix, targetId }))) : null,
-        getCohortMethodInclusion ? timed('cmOutcomes', () => safeCall(() => getCmOutcomes({ schema, cgTablePrefix, cmTablePrefix, targetId }))) : null,
-        getSccsInclusion ? timed('sccsOutcomes', () => safeCall(() => getSccsOutcomes({ schema, cgTablePrefix, sccsTablePrefix, targetId }))) : null,
+        getCohortDefinitions({ schema }),
+        fetchCohortCountsRaw(schema, cgTablePrefix, databaseTable),
+        getIncidenceInclusion ? safeCall(() => getIncidenceOutcomes({ schema, cgTablePrefix, ciTablePrefix, targetId })) : null,
+        getCharacterizationInclusion ? safeCall(() => getCharacterizationOutcomes({ schema, cgTablePrefix, cTablePrefix, targetId })) : null,
+        getPredictionInclusion ? safeCall(() => getPredictionOutcomes({ schema, cgTablePrefix, plpTablePrefix, targetId })) : null,
+        getCohortMethodInclusion ? safeCall(() => getCmOutcomes({ schema, cgTablePrefix, cmTablePrefix, targetId })) : null,
+        getSccsInclusion ? safeCall(() => getSccsOutcomes({ schema, cgTablePrefix, sccsTablePrefix, targetId })) : null,
     ]);
 
     let cohorts = rawCohorts.map((r) => ({
@@ -318,6 +307,5 @@ export async function getOutcomeTable({
         || String(a.cohortName ?? '').localeCompare(String(b.cohortName ?? ''))
     );
 
-    logger.debug(`[getOutcomeTable] total: ${Date.now() - totalStart}ms`);
     return cohortCounts;
 }

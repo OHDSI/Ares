@@ -7,7 +7,6 @@ import {
   getAnnotationsByVizName, getPaginatedAnnotations,
   updateAnnotation
 } from "../controllers/annotationsController.js";
-import logger from "../utils/logger.js";
 
 const router = express.Router();
 
@@ -21,7 +20,6 @@ router.post('/api/v1/annotations/search', async (req, res) => {
     res.json(annotations);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`${message}`);
     res.status(500).json({ error: message });
   }
   finally {
@@ -39,7 +37,6 @@ router.post('/api/v1/annotations/', async (req, res) => {
     res.json(annotations);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`${message}`);
     res.status(500).json({ error: message });
   }
   finally {
@@ -63,7 +60,6 @@ router.get('/api/v1/charts/', async (req, res) => {
   }
   catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`${message}`);
     res.status(500).json({ error: message });
   }
   finally {
@@ -79,7 +75,6 @@ router.post('/api/v1/annotations/new', async (req, res) => {
     res.status(201).json({ annotation });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`${message}`);
     res.status(500).json({ error: message });
   }
   finally {
@@ -96,7 +91,6 @@ router.put('/api/v1/annotations/:id', async (req, res) => {
     res.json({ annotation: updatedAnnotation});
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`${message}`);
     res.status(500).json({ error: message });
   }
   finally {
@@ -113,7 +107,6 @@ router.delete('/api/v1/annotations/:id', async (req, res) => {
     res.json({ message: 'Annotation deleted successfully' });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`${message}`);
     res.status(500).json({ error: message });
   }
   finally {
