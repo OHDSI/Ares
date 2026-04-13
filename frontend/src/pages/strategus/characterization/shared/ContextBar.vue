@@ -1,7 +1,7 @@
 <template>
   <div class="context results-ctx">
     <template v-for="(item, i) in items" :key="i">
-      <span class="sep" v-if="i > 0" />
+      <span class="sep" v-if="i > 0">/</span>
       <span>{{ item }}</span>
     </template>
   </div>
@@ -18,8 +18,7 @@ defineProps<{
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 const contextColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
-const contextBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
-const contextBg = computed(() => (darkMode.value ? "#1c1c1c" : "#f8fafc"));
+const sepColor = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
 </script>
 
 <style scoped>
@@ -28,13 +27,17 @@ const contextBg = computed(() => (darkMode.value ? "#1c1c1c" : "#f8fafc"));
 .context {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   font-size: 0.8125rem;
   color: v-bind(contextColor);
-  padding: 0.5rem 0.75rem;
-  background: v-bind(contextBg);
-  border: 1px solid v-bind(contextBorder);
-  border-radius: 8px;
+  padding: 0.25rem 0;
   flex-wrap: wrap;
+}
+
+.sep {
+  color: v-bind(sepColor);
+  font-size: 0.875rem;
+  line-height: 1;
+  user-select: none;
 }
 </style>
