@@ -26,7 +26,7 @@ import apiService from "@/shared/api/axios/apiService";
 import getFilePath from "@/shared/api/axios/files";
 import { NOTES } from "@/shared/config/files";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
+import { downloadBlob } from "@/shared/lib/utils";
 import { AnnotationsService } from "@/shared/api/aresApi/services/annotationsService";
 import environment from "@/shared/api/environment";
 import { chartNameIDMap } from "@/processes/exploreReports/config/chartNameIDMap";
@@ -192,8 +192,7 @@ const actions = {
         },
       })
       .then(function (content) {
-        // see FileSaver.js
-        saveAs(content, "notes.zip");
+        downloadBlob(content, "notes.zip");
       });
   },
 

@@ -77,6 +77,16 @@ export function openNewTab(link: string): void {
   window.open(link, "_blank").focus();
 }
 
+/** Trigger a file download from a Blob */
+export function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // UI utilities
 
 /** Tailwind font-weight class derived from a decile string ("1"–"10"). */
@@ -89,6 +99,72 @@ export const getFontWeight = function (decile: string): string {
 };
 
 // Router utilities
+
+// CSV utilities
+
+/**
+ * Parse a CSV string (with header row) into an array of objects.
+ * Handles quoted fields that contain commas or escaped double-quotes (`""`).
+ */
+export function csvParse(data: string): Record<string, string>[] {
+  if (!data) return undefined;
+
+  const rows: string[][] = [];
+  let field = "";
+  let inQuotes = false;
+  let currentRow: string[] = [];
+
+  for (let i = 0; i < data.length; i++) {
+    const ch = data[i];
+    const next = data[i + 1];
+
+    if (inQuotes) {
+      if (ch === '"' && next === '"') {
+        field += '"';
+        i++;
+      } else if (ch === '"') {
+        inQuotes = false;
+      } else {
+        field += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ",") {
+        currentRow.push(field);
+        field = "";
+      } else if (ch === "\n" || (ch === "\r" && next === "\n")) {
+        if (ch === "\r") i++;
+        currentRow.push(field);
+        field = "";
+        rows.push(currentRow);
+        currentRow = [];
+      } else {
+        field += ch;
+      }
+    }
+  }
+
+  if (field !== "" || currentRow.length > 0) {
+    currentRow.push(field);
+    rows.push(currentRow);
+  }
+
+  const [headers, ...dataRows] = rows.filter((r) =>
+    r.some((f) => f.trim() !== "")
+  );
+  return dataRows.map((row) =>
+    Object.fromEntries(headers.map((h, i) => [h.trim(), row[i]?.trim() ?? ""]))
+  );
+}
+
+// Auth utilities
+
+/** Decode the payload of a JWT without verifying the signature. */
+export function jwtDecode(token: string): Record<string, unknown> {
+  const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+  return JSON.parse(atob(payload));
+}
 
 /** Debounced push of a search query param to the current route (300 ms). */
 export const debouncedSearch = debounce(function (data: string) {

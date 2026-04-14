@@ -101,7 +101,6 @@ import MultiSelect from "primevue/multiselect";
 import { mdiPlusThick } from "@mdi/js";
 import SvgIcon from "@/shared/ui/SvgIcon.vue";
 import { useRoute } from "vue-router";
-import { v4 as uuid } from "uuid";
 
 interface Props {
   action: (a) => void;

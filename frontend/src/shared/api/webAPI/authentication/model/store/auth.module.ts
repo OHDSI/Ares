@@ -3,7 +3,7 @@ import { WEB_API_LOG_IN, GET_USER, LOG_OUT } from "./actions.type";
 import { authService } from "@/shared/api/webAPI/services/authService";
 import { ADD_ALERT } from "@/widgets/snackbar/model/store/actions.type";
 import environment from "@/shared/api/environment";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "@/shared/lib/utils";
 import LocalStorageService from "@/shared/api/localStorageService";
 import cookiesService from "@/shared/api/cookiesService";
 import localStorageService from "@/shared/api/localStorageService";

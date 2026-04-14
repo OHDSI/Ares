@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import logger from "../utils/logger.js";
 
 const createAnnotation = async (connection, chart_id, chart_name, report_name, domain_name, concept_id, annotationData) => {
@@ -12,7 +11,7 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
         chart = chart.getRowObjects()?.[0];
 
         if (!chart) {
-            const chartId = uuidv4();
+            const chartId = crypto.randomUUID();
 
             await connection.run(
                 `INSERT INTO charts (id, chart_id, chart_name, report_name, domain_name, concept_id) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -21,7 +20,7 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
             chart = { id: chartId, chart_id, chart_name, report_name, domain_name };
         }
 
-        const annotationId = uuidv4();
+        const annotationId = crypto.randomUUID();
 
         await connection.run(
             `INSERT INTO annotations (id, viz_id, created_by, created_at, updated_at, deleted_at)
@@ -79,7 +78,7 @@ const createAnnotation = async (connection, chart_id, chart_name, report_name, d
                     `INSERT INTO annotations_notes (note_id, annotation_id, title, description, created_at, updated_at, created_by, last_updated) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
-                        uuidv4(),
+                        crypto.randomUUID(),
                         annotationId,
                         note.title,
                         note.description,
@@ -484,7 +483,7 @@ const updateAnnotation = async (connection, annotationId, updatedAnnotation) => 
                     await connection.run(
                         `INSERT INTO annotations_notes (note_id, annotation_id, title, description, created_at, updated_at, created_by, last_updated)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                        [uuidv4(), annotationId, note.title, note.description, new Date().toISOString(), new Date().toISOString(), note.createdBy, new Date().toISOString()]
+                        [crypto.randomUUID(), annotationId, note.title, note.description, new Date().toISOString(), new Date().toISOString(), note.createdBy, new Date().toISOString()]
                     );
                 }
             }

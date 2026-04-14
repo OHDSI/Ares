@@ -28,7 +28,7 @@ import {
   COST_DOMAIN_SUMMARY,
   NETWORK_COST_INDEX,
 } from "@/shared/config/files";
-import csvParse from "@/processes/exploreReports/model/store/preprocessing/csvParse";
+import { csvParse } from "@/shared/lib/utils";
 
 export default {
   [NETWORK_QUALITY_SUMMARY]: csvParse,

@@ -1,5 +1,3 @@
-import { v4 as uuid } from "uuid";
-
 export function createSelection(coordinates, params) {
   return {
     coordinates,
@@ -17,6 +15,6 @@ export function createSelection(coordinates, params) {
       description: params.body.description,
       notes: params.body.notes,
     },
-    id: params.id || uuid(),
+    id: params.id || crypto.randomUUID(),
   };
 }
