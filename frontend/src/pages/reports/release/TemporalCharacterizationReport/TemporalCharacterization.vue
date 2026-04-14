@@ -123,7 +123,7 @@ function getReportRoute(item: {
   CONCEPT_ID: string | number;
 }) {
   return {
-    name: "concept",
+    name: "domainTable",
     params: {
       domain: item.CDM_TABLE_NAME.toLowerCase(),
       concept: item.CONCEPT_ID,
