@@ -1,10 +1,41 @@
 <template>
   <div class="strategus-layout">
     <aside
-      class="strategus-sidebar"
+      :class="['strategus-sidebar', { 'sidebar-open': sidebarExpanded }]"
       @mouseenter="sidebarOpen = true"
       @mouseleave="sidebarOpen = false"
     >
+      <div v-if="dbList.length > 1" class="schema-nav-wrap">
+        <div class="nav-item schema-item">
+          <i class="pi pi-server" />
+          <Dropdown
+            v-model="selectedSchema"
+            :options="dbList"
+            optionLabel="dbName"
+            optionValue="schemaName"
+            class="nav-label schema-dropdown"
+            :pt="{
+              root: {
+                class:
+                  '!border-0 !bg-transparent !shadow-none !ring-0 hover:!border-0',
+              },
+              input: {
+                class:
+                  '!p-0 !text-inherit !font-medium !text-sm !border-b !border-dashed !border-current/50',
+              },
+              trigger: { class: '!hidden' },
+              panel: {
+                onMouseenter: () => (schemaDropdownOpen = true),
+                onMouseleave: () => (schemaDropdownOpen = false),
+              },
+            }"
+            @show="schemaDropdownOpen = true"
+            @hide="onSchemaHide"
+          />
+        </div>
+        <div class="nav-separator" />
+      </div>
+
       <nav class="sidebar-nav">
         <button
           v-for="(section, idx) in sections"
@@ -28,29 +59,76 @@
     </aside>
 
     <main class="strategus-content">
-      <Transition name="section-fade" mode="out-in">
-        <component
-          :is="sections[currentSection].component"
-          :key="currentSection"
-        />
-      </Transition>
+      <template v-if="schemaReady">
+        <Transition name="section-fade" mode="out-in">
+          <component
+            :is="sections[currentSection].component"
+            :key="`${currentSection}-${selectedSchema ?? ''}`"
+          />
+        </Transition>
+      </template>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, markRaw } from "vue";
+import { computed, ref, markRaw, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
+import Dropdown from "primevue/dropdown";
 
 import DataSources from "@/pages/strategus/DataSources.vue";
 import Characterization from "@/pages/strategus/characterization/Characterization.vue";
 import Documents from "@/pages/strategus/Documents.vue";
+import {
+  StrategusService,
+  setStrategusSchema,
+} from "@/shared/api/aresApi/services/strategusService";
 
 const router = useRouter();
 const route = useRoute();
 const store = useStore();
 const sidebarOpen = ref(false);
+const schemaDropdownOpen = ref(false);
+const sidebarExpanded = computed(
+  () => sidebarOpen.value || schemaDropdownOpen.value
+);
+
+function onSchemaHide() {
+  setTimeout(() => {
+    schemaDropdownOpen.value = false;
+  }, 100);
+}
+
+const dbList = ref<
+  { dbName: string; schemaName: string; releaseDate: string }[]
+>([]);
+const selectedSchema = ref<string | undefined>(undefined);
+const schemaReady = ref(false);
+
+onMounted(async () => {
+  try {
+    const res = await StrategusService.dbList.getDbList();
+
+    dbList.value = res.data ?? [];
+    if (dbList.value.length > 0) {
+      const urlSchema = route.query.schema as string | undefined;
+      const valid =
+        urlSchema && dbList.value.some((d) => d.schemaName === urlSchema);
+      selectedSchema.value = valid ? urlSchema : dbList.value[0].schemaName;
+    }
+  } catch {
+    // db-list unavailable — proceed with server default schema
+  } finally {
+    schemaReady.value = true;
+  }
+});
+
+watch(selectedSchema, (schema) => {
+  if (!schema) return;
+  setStrategusSchema(schema);
+  router.replace({ query: { ...route.query, schema } });
+});
 
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 const sidebarBorder = computed(() => (darkMode.value ? "#2a2a2a" : "#e5e7eb"));
@@ -88,11 +166,28 @@ const currentSection = computed(() => {
 });
 
 const setCurrentTab = function (val: number) {
-  router.push({ query: { report: val } });
+  const query: Record<string, any> = { report: val };
+  if (route.query.schema) query.schema = route.query.schema;
+  router.push({ query });
 };
 </script>
 
 <style scoped>
+.nav-item.schema-item:hover {
+  color: v-bind(navItemColor);
+  border-left-color: transparent;
+}
+
+.schema-dropdown {
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-separator {
+  margin: 0.375rem 0.875rem 0.25rem;
+  border-top: 1.5px solid v-bind(navItemHoverBorder);
+}
+
 .strategus-layout {
   display: flex;
 }
@@ -105,7 +200,7 @@ const setCurrentTab = function (val: number) {
   overflow: hidden;
 }
 
-.strategus-sidebar:hover {
+.strategus-sidebar.sidebar-open {
   width: 210px;
 }
 
@@ -128,7 +223,8 @@ const setCurrentTab = function (val: number) {
   color: v-bind(navItemColor);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  user-select: none;
+  transition: color 0.15s ease, border-left-color 0.15s ease;
   text-align: left;
   width: 100%;
   white-space: nowrap;
@@ -157,7 +253,7 @@ const setCurrentTab = function (val: number) {
   transition: opacity 0.15s ease 0.05s;
 }
 
-.strategus-sidebar:hover .nav-label {
+.strategus-sidebar.sidebar-open .nav-label {
   opacity: 1;
 }
 
@@ -185,3 +281,4 @@ const setCurrentTab = function (val: number) {
   transform: translateY(5px);
 }
 </style>
+

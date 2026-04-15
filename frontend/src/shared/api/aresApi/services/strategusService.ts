@@ -1,6 +1,12 @@
 import environment from "@/shared/api/environment";
 import apiService from "@/shared/api/axios/apiService";
 
+let _currentSchema: string | undefined;
+
+export function setStrategusSchema(schema: string | undefined): void {
+  _currentSchema = schema;
+}
+
 export const StrategusService = {
   characterization: {
     getTargetTable() {
@@ -12,6 +18,7 @@ export const StrategusService = {
           headers: {
             "Content-Type": "application/json",
           },
+          params: { schema: _currentSchema },
         },
         {}
       );
@@ -27,6 +34,7 @@ export const StrategusService = {
           },
           params: {
             targetId,
+            schema: _currentSchema,
           },
         },
         {}
@@ -49,6 +57,7 @@ export const StrategusService = {
             targetIds: targetIds.join(","),
             databaseIds: databaseIds ? databaseIds.join(",") : undefined,
             minThreshold,
+            schema: _currentSchema,
           },
         },
         {}
@@ -71,6 +80,7 @@ export const StrategusService = {
             targetIds: targetIds.join(","),
             databaseIds: databaseIds ? databaseIds.join(",") : undefined,
             minThreshold,
+            schema: _currentSchema,
           },
         },
         {}
@@ -88,6 +98,7 @@ export const StrategusService = {
           params: {
             targetIds: targetIds ? targetIds.join(",") : undefined,
             outcomeIds: outcomeIds ? outcomeIds.join(",") : undefined,
+            schema: _currentSchema,
           },
         },
         {}
@@ -114,6 +125,7 @@ export const StrategusService = {
             databaseId,
             dechallengeStopInterval,
             dechallengeEvaluationWindow,
+            schema: _currentSchema,
           },
         },
         {}
@@ -130,6 +142,7 @@ export const StrategusService = {
           },
           params: {
             cohortId,
+            schema: _currentSchema,
           },
         },
         {}
@@ -158,6 +171,7 @@ export const StrategusService = {
             riskWindowEnd: params.riskWindowEnd,
             startAnchor: params.startAnchor,
             endAnchor: params.endAnchor,
+            schema: _currentSchema,
           },
         },
         {}
@@ -178,6 +192,7 @@ export const StrategusService = {
             targetIds: params.targetIds?.join(","),
             outcomeIds: params.outcomeIds?.join(","),
             databaseIds: params.databaseIds?.join(","),
+            schema: _currentSchema,
           },
         },
         {}
@@ -198,7 +213,7 @@ export const StrategusService = {
           baseURL: "./",
           method: "get",
           headers: { "Content-Type": "application/json" },
-          params,
+          params: { ...params, schema: _currentSchema },
         },
         {}
       );
@@ -218,7 +233,7 @@ export const StrategusService = {
           baseURL: "./",
           method: "get",
           headers: { "Content-Type": "application/json" },
-          params,
+          params: { ...params, schema: _currentSchema },
         },
         {}
       );
@@ -233,6 +248,7 @@ export const StrategusService = {
           params: {
             targetIds: targetIds ? targetIds.join(",") : undefined,
             outcomeIds: outcomeIds ? outcomeIds.join(",") : undefined,
+            schema: _currentSchema,
           },
         },
         {}
@@ -253,7 +269,7 @@ export const StrategusService = {
           baseURL: "./",
           method: "get",
           headers: { "Content-Type": "application/json" },
-          params,
+          params: { ...params, schema: _currentSchema },
         },
         {}
       );
@@ -273,7 +289,7 @@ export const StrategusService = {
           baseURL: "./",
           method: "get",
           headers: { "Content-Type": "application/json" },
-          params,
+          params: { ...params, schema: _currentSchema },
         },
         {}
       );
@@ -288,6 +304,7 @@ export const StrategusService = {
           params: {
             targetIds: targetIds ? targetIds.join(",") : undefined,
             outcomeIds: outcomeIds ? outcomeIds.join(",") : undefined,
+            schema: _currentSchema,
           },
         },
         {}
@@ -303,6 +320,7 @@ export const StrategusService = {
           params: {
             targetId,
             outcomeIds: outcomeIds.join(","),
+            schema: _currentSchema,
           },
         },
         {}
@@ -385,6 +403,20 @@ export const StrategusService = {
       return apiService(
         {
           url: `${environment.ARES_API_URL}/api/datasources`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: { schema: _currentSchema },
+        },
+        {}
+      );
+    },
+  },
+  dbList: {
+    getDbList() {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/db-list`,
           baseURL: "./",
           method: "get",
           headers: { "Content-Type": "application/json" },

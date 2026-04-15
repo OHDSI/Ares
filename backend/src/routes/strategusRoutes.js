@@ -37,7 +37,26 @@ import {getIncidenceRates} from "../controllers/strategus/characterization/incid
 import {getDatasources} from "../controllers/strategus/dataSources.js";
 import {getOutcomeDataAvailability} from "../controllers/strategus/characterization/outcomeAvailable.js";
 
-const schemaName = process.env.STRATEGUS_SCHEMA || 'app'
+const DB_LIST_SCHEMA = process.env.DB_LIST_SCHEMA || null;
+const DEFAULT_SCHEMA = process.env.STRATEGUS_SCHEMA || 'app';
+
+let _validSchemas = null;
+
+async function getValidSchemas() {
+    if (_validSchemas !== null) return _validSchemas;
+    if (!DB_LIST_SCHEMA) {
+        _validSchemas = new Set();
+        return _validSchemas;
+    }
+    try {
+        const rows = await queryDb(`SELECT schema_name FROM ${DB_LIST_SCHEMA}.db_list`);
+        _validSchemas = new Set(rows.map(r => r.schemaName));
+    } catch (e) {
+        logger.error(`db-list schema load failed: ${e instanceof Error ? e.message : String(e)}`);
+        _validSchemas = new Set();
+    }
+    return _validSchemas;
+}
 
 // Maps each URL segment to a human-readable report label so history entries
 const PATH_LABELS = {
@@ -70,6 +89,17 @@ router.use((req, res, next) => {
     }
 });
 
+router.use(async (req, res, next) => {
+    const requested = req.query.schema;
+    if (!requested) {
+        req.resolvedSchema = DEFAULT_SCHEMA;
+        return next();
+    }
+    const valid = await getValidSchemas();
+    req.resolvedSchema = valid.has(requested) ? requested : DEFAULT_SCHEMA;
+    next();
+});
+
 router.get('/api/characterization/cohort-binary', async (req, res) => {
     const {targetIds, databaseIds, minThreshold} = req.query;
     if (!targetIds) {
@@ -78,7 +108,7 @@ router.get('/api/characterization/cohort-binary', async (req, res) => {
 
     try {
         const result = await getCharacterizationCohortBinary({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetIds: targetIds.split(',').map(Number),
             databaseIds: databaseIds ? databaseIds.split(',') : null,
             minThreshold: minThreshold != null ? parseFloat(minThreshold) : 0,
@@ -99,7 +129,7 @@ router.get('/api/characterization/cohort-continuous', async (req, res) => {
 
     try {
         const result = await getCharacterizationCohortContinuous({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetIds: targetIds.split(',').map(Number),
             databaseIds: databaseIds ? databaseIds.split(',') : null,
             minThreshold: minThreshold != null ? parseFloat(minThreshold) : 0,
@@ -117,7 +147,7 @@ router.get('/api/characterization/cohort-continuous', async (req, res) => {
 router.get('/api/characterization/target-table', async (req, res) => {
     try {
         const rows = await getTargetTable({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             getPredictionInclusion: false,
             getCohortMethodInclusion: false,
             getSccsInclusion: false,
@@ -138,7 +168,7 @@ router.get('/api/characterization/outcome-table', async (req, res) => {
 
     try {
         const rows = await getOutcomeTable({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             getPredictionInclusion: false,
             getCohortMethodInclusion: false,
@@ -157,7 +187,7 @@ router.get('/api/characterization/dechallenge-rechallenge', async (req, res) => 
 
     try {
         const rows = await getDechallengeRechallenge({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetIds: targetIds ? targetIds.split(',').map(Number) : null,
             outcomeIds: outcomeIds ? outcomeIds.split(',').map(Number) : null,
         });
@@ -179,7 +209,7 @@ router.get('/api/characterization/dechallenge-rechallenge-fails', async (req, re
 
     try {
         const rows = await getDechallengeRechallengeFails({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             outcomeId: parseInt(outcomeId, 10),
             databaseId,
@@ -203,7 +233,7 @@ router.get('/api/characterization/cohort-unique-people', async (req, res) => {
     try {
         const sql = `
             SELECT cc.database_id, cc.cohort_id, cc.cohort_entries, cc.cohort_subjects
-            FROM ${schemaName}.cg_cohort_count cc
+            FROM ${req.resolvedSchema}.cg_cohort_count cc
             WHERE cc.cohort_id = ${parseInt(cohortId, 10)}
         `;
         const rows = await queryDb(sql);
@@ -224,7 +254,7 @@ router.get('/api/characterization/case-counts', async (req, res) => {
 
     try {
         const rows = await getCaseCounts({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetIds: targetIds ? targetIds.split(',').map(Number) : null,
             outcomeIds: outcomeIds ? outcomeIds.split(',').map(Number) : null,
             databaseIds: databaseIds ? databaseIds.split(',') : null,
@@ -246,7 +276,7 @@ router.get('/api/characterization/case-target-counts', async (req, res) => {
 
     try {
         const rows = await getCaseTargetCounts({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetIds: targetIds ? targetIds.split(',').map(Number) : null,
             outcomeIds: outcomeIds ? outcomeIds.split(',').map(Number) : null,
             databaseIds: databaseIds ? databaseIds.split(',') : null,
@@ -267,7 +297,7 @@ router.get('/api/characterization/binary-risk-factors', async (req, res) => {
 
     try {
         const result = await getBinaryRiskFactors({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             outcomeId: parseInt(outcomeId, 10),
             databaseId: databaseId || null,
@@ -292,7 +322,7 @@ router.get('/api/characterization/continuous-risk-factors', async (req, res) => 
 
     try {
         const result = await getContinuousRiskFactors({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             outcomeId: parseInt(outcomeId, 10),
             databaseIds: databaseId ? [databaseId] : null,
@@ -316,7 +346,7 @@ router.get('/api/characterization/time-to-event', async (req, res) => {
 
     try {
         const rows = await getTimeToEvent({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetIds: targetIds ? targetIds.split(',').map(Number) : null,
             outcomeIds: outcomeIds ? outcomeIds.split(',').map(Number) : null,
         });
@@ -339,7 +369,7 @@ router.get('/api/characterization/binary-case-series', async (req, res) => {
 
     try {
         const rows = await getBinaryCaseSeries(connectionHandler, {
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             outcomeId: parseInt(outcomeId, 10),
             databaseIds: databaseId ? [databaseId] : null,
@@ -364,7 +394,7 @@ router.get('/api/characterization/continuous-case-series', async (req, res) => {
 
     try {
         const rows = await getContinuousCaseSeries(connectionHandler, {
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             outcomeId: parseInt(outcomeId, 10),
             databaseIds: databaseId ? [databaseId] : null,
@@ -388,7 +418,7 @@ router.get('/api/characterization/incidence-rates', async (req, res) => {
 
     try {
         const rows = await getIncidenceRates({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetIds: targetIds ? targetIds.split(',').map(Number) : null,
             outcomeIds: outcomeIds ? outcomeIds.split(',').map(Number) : null,
         });
@@ -404,7 +434,7 @@ router.get('/api/characterization/incidence-rates', async (req, res) => {
 
 router.get('/api/datasources', async (req, res) => {
     try {
-        const rows = await getDatasources({schema: schemaName});
+        const rows = await getDatasources({schema: req.resolvedSchema});
         res.json(rows);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -421,7 +451,7 @@ router.get('/api/characterization/outcome-data-availability', async (req, res) =
 
     try {
         const rows = await getOutcomeDataAvailability({
-            schema: schemaName,
+            schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             outcomeIds: outcomeIds.split(',').map(Number),
         });
@@ -433,6 +463,22 @@ router.get('/api/characterization/outcome-data-availability', async (req, res) =
     }
 });
 
+
+router.get('/api/db-list', async (req, res) => {
+    if (!DB_LIST_SCHEMA) {
+        return res.json([]);
+    }
+    try {
+        const rows = await queryDb(
+            `SELECT db_name, schema_name, release_date FROM ${DB_LIST_SCHEMA}.db_list ORDER BY release_date DESC`
+        );
+        res.json(rows);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error(`db-list: ${message}`);
+        res.status(500).json({ error: message });
+    }
+});
 
 router.get('/api/debug/slow-query', (req, res) => {
     const secs = Math.min(parseInt(req.query.secs ?? '30', 10), 300);

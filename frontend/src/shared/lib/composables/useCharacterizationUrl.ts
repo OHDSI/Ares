@@ -23,11 +23,24 @@ export function useCharacterizationUrl() {
   }
 
   function writeUrl(params) {
-    const query = {};
+    const query: Record<string, any> = { ...route.query };
+
+    const managed = [
+      "targetId",
+      "tab",
+      "outcomeId",
+      "outcomeIds",
+      "databaseId",
+      "databaseIds",
+      "comparatorId",
+      "tar",
+      "washout",
+    ];
+    managed.forEach((k) => delete query[k]);
+
     if (params.targetId != null) query.targetId = String(params.targetId);
     if (params.tab != null) query.tab = params.tab;
     if (params.report != null) query.report = params.report;
-
     if (params.outcomeId != null) query.outcomeId = String(params.outcomeId);
     if (params.outcomeIds?.length)
       query.outcomeIds = params.outcomeIds.join(",");
