@@ -45,6 +45,7 @@ import { useStore } from "vuex";
 
 import DataSources from "@/pages/strategus/DataSources.vue";
 import Characterization from "@/pages/strategus/characterization/Characterization.vue";
+import Documents from "@/pages/strategus/Documents.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -73,6 +74,12 @@ const sections = [
     label: "Characterization",
     icon: "pi pi-chart-bar",
     component: markRaw(Characterization),
+  },
+  {
+    key: "documents",
+    label: "Study Protocol",
+    icon: "pi pi-file",
+    component: markRaw(Documents),
   },
 ];
 
