@@ -195,7 +195,7 @@ const setCurrentTab = function (val: number) {
 .strategus-sidebar {
   width: 52px;
   flex-shrink: 0;
-  padding: 1rem 0;
+  padding: 0 0 1rem;
   transition: width 0.2s ease;
   overflow: hidden;
 }
@@ -260,7 +260,7 @@ const setCurrentTab = function (val: number) {
 .strategus-content {
   flex: 1;
   min-width: 0;
-  padding: 1.25rem 1.5rem;
+  padding: 0 1.5rem 1.25rem;
   overflow-x: auto;
 }
 
