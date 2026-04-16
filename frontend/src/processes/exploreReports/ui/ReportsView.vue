@@ -140,16 +140,16 @@ onMounted(() => {
 
 <style scoped>
 .page-fade-leave-active {
-  transition: opacity 0.1s ease;
+  transition: opacity 0.12s ease;
 }
 .page-fade-enter-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
 }
 .page-fade-enter-from,
 .page-fade-leave-to {
   opacity: 0;
 }
 .page-fade-enter-from {
-  transform: translateY(6px);
+  transform: scale(0.97);
 }
 </style>

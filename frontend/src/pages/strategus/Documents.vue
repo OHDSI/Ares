@@ -341,6 +341,10 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   background: v-bind(tocActiveBg);
 }
 
+.fullscreen-btn:focus-visible {
+  outline: none;
+}
+
 .section {
   background: v-bind(sectionBg);
   border: 1.5px solid v-bind(sectionBorder);
@@ -366,7 +370,7 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 
 .toc-inner {
   width: 220px;
-  padding: 1rem;
+  padding: 0 1rem 1rem;
   box-sizing: border-box;
 }
 
@@ -434,13 +438,13 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   align-items: center;
   justify-content: space-between;
   position: sticky;
-  top: -1rem;
+  top: -0.375rem;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: v-bind(mutedColor);
-  padding: 1rem 0 0.5rem;
+  padding: 0.75rem 0 0.5rem;
   background: v-bind(sectionBg);
 }
 
@@ -534,6 +538,25 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .doc-toc::-webkit-scrollbar-thumb:hover {
+  background: v-bind(mutedColor);
+}
+
+.doc-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.doc-body::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.doc-body::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: v-bind(sectionBorder);
+}
+
+.doc-body::-webkit-scrollbar-thumb:hover {
   background: v-bind(mutedColor);
 }
 
