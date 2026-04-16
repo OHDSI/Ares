@@ -1,5 +1,13 @@
 <template>
-  <div :class="['documents', { 'documents--fullscreen': fullscreen, 'documents--leaving': fullscreenLeaving }]">
+  <div
+    :class="[
+      'documents',
+      {
+        'documents--fullscreen': fullscreen,
+        'documents--leaving': fullscreenLeaving,
+      },
+    ]"
+  >
     <div class="section-header">
       <h3>Study Protocol</h3>
       <button
@@ -7,7 +15,10 @@
         @click="toggleFullscreen"
         :title="fullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen'"
       >
-        <svg-icon :path="fullscreen ? mdiFullscreenExit : mdiFullscreen" :size="18" />
+        <svg-icon
+          :path="fullscreen ? mdiFullscreenExit : mdiFullscreen"
+          :size="18"
+        />
       </button>
     </div>
     <div class="doc-layout">
@@ -75,7 +86,12 @@ import { useStore } from "vuex";
 import { Marked } from "marked";
 import raw from "./documents.md?raw";
 import SvgIcon from "@/shared/ui/SvgIcon.vue";
-import { mdiChevronLeft, mdiChevronRight, mdiFullscreen, mdiFullscreenExit } from "@mdi/js";
+import {
+  mdiChevronLeft,
+  mdiChevronRight,
+  mdiFullscreen,
+  mdiFullscreenExit,
+} from "@mdi/js";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
@@ -96,7 +112,7 @@ function exitFullscreen() {
   setTimeout(() => {
     fullscreen.value = false;
     fullscreenLeaving.value = false;
-  }, 180);
+  }, 230);
 }
 
 function toggleFullscreen() {
@@ -107,7 +123,6 @@ function toggleFullscreen() {
 function onKeydown(e: KeyboardEvent) {
   if (e.key === "Escape" && fullscreen.value) exitFullscreen();
 }
-
 
 function slugify(text: string): string {
   return text
@@ -231,7 +246,7 @@ watch(activeId, async (id) => {
 });
 
 const layoutHeight = computed(() =>
-  fullscreen.value ? "calc(100vh - 4.5rem)" : "calc(100vh - 16rem)"
+  fullscreen.value ? "calc(100vh - 4.5rem)" : "calc(100vh - 16.2rem)"
 );
 const pageBg = computed(() => (darkMode.value ? "#141414" : "#f8fafc"));
 
@@ -266,21 +281,33 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   max-width: none;
   padding: 1.25rem 1.75rem;
   background: v-bind(pageBg);
-  animation: fs-enter 0.18s ease forwards;
+  animation: fs-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .documents--fullscreen.documents--leaving {
-  animation: fs-leave 0.18s ease forwards;
+  animation: fs-leave 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 @keyframes fs-enter {
-  from { opacity: 0; transform: scale(0.98); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes fs-leave {
-  from { opacity: 1; transform: scale(1); }
-  to   { opacity: 0; transform: scale(0.98); }
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
 }
 
 .section-header {
@@ -389,10 +416,9 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 
 /* ---- TOC enter (showing) ---------------------------------------- */
 .toc-merge-enter-active {
-  transition:
-    width                      0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
-    margin-right               0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
-    border-top-right-radius    0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
+  transition: width 0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
+    margin-right 0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
+    border-top-right-radius 0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
     border-bottom-right-radius 0.5s cubic-bezier(0.34, 1.25, 0.64, 1);
 }
 
