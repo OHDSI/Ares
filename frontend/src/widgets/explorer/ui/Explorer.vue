@@ -1,9 +1,10 @@
 <template>
   <div
     v-if="store.getters.explorerLoaded"
+    ref="el"
     id="explorer"
-    class="container flex flex-row gap-16 p-2 pb-3 pt-6 items-end content-center"
-    :class="{ sticky: isSticky }"
+    class="flex flex-row gap-16 p-2 pb-3 pt-6 items-end"
+    :class="{ sticky: isSticky, 'is-stuck': isSticky && isStuck }"
   >
     <Button class="logo-button" text @click="router.push('/')">
       <img
@@ -103,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import Button from "primevue/button";
@@ -136,6 +137,23 @@ interface ReportOption {
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
+
+const el = ref<HTMLElement | null>(null);
+const isStuck = ref(false);
+
+watch(
+  el,
+  (newEl, _, onCleanup) => {
+    if (!newEl) return;
+    const update = () => {
+      isStuck.value = window.scrollY > 0;
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    onCleanup(() => window.removeEventListener("scroll", update));
+  },
+  { immediate: true }
+);
 
 const isDarkMode = computed(() => store.getters.getSettings?.darkMode ?? false);
 const isSticky = computed(
@@ -243,18 +261,24 @@ function changeReport(report: ReportOption): void {
 }
 
 .sticky {
-  position: fixed;
+  position: sticky;
   top: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid transparent;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.sticky.is-stuck {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
 
   .dark & {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
   }
 }
 
 #explorer {
-  width: 100vw;
-  max-width: 100%;
+  width: 100%;
   z-index: 1000;
   box-sizing: border-box;
   @apply dark:bg-surface-900 bg-white;

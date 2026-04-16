@@ -3,13 +3,7 @@
 
   <SqlDebugWidget v-if="devWidget" />
 
-  <div
-    :class="{
-      'px-3': true,
-      'pt-20': isSticky,
-      'min-w-[1250px]': true,
-    }"
-  >
+  <div class="px-3 min-w-[1250px]">
     <div class="flex flex-col justify-center px-14 md:px-20 lg:px-24 mx-1">
       <router-view name="main" />
     </div>
@@ -37,10 +31,6 @@ const favicon = document.getElementById("faviconTag");
 
 const darkMode = computed(function (): boolean {
   return store.getters.getSettings.darkMode;
-});
-
-const isSticky = computed(() => {
-  return store.getters.getSettings.stickyNavBar;
 });
 
 const devWidget = computed(() => store.getters.getSettings.devWidget);
