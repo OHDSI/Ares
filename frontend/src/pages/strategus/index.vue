@@ -174,7 +174,7 @@ const setCurrentTab = function (val: number) {
 
 <style scoped>
 .nav-item.schema-item:hover {
-  color: v-bind(navItemColor);
+  color: v-bind(navItemHoverColor);
   border-left-color: transparent;
 }
 
@@ -281,4 +281,3 @@ const setCurrentTab = function (val: number) {
   transform: translateY(5px);
 }
 </style>
-
