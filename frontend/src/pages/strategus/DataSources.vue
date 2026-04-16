@@ -17,6 +17,8 @@
         :loading="loading"
         filterDisplay="row"
         v-model:filters="filters"
+        scrollable
+        scrollHeight="flex"
       >
         <Column
           sortable
@@ -191,6 +193,10 @@ onMounted(async () => {
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  height: calc(100vh - 16rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .table-link {

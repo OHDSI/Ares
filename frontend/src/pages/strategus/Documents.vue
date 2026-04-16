@@ -1,28 +1,63 @@
 <template>
-  <div class="documents">
+  <div :class="['documents', { 'documents--fullscreen': fullscreen, 'documents--leaving': fullscreenLeaving }]">
     <div class="section-header">
       <h3>Study Protocol</h3>
+      <button
+        class="fullscreen-btn"
+        @click="toggleFullscreen"
+        :title="fullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen'"
+      >
+        <svg-icon :path="fullscreen ? mdiFullscreenExit : mdiFullscreen" :size="18" />
+      </button>
     </div>
     <div class="doc-layout">
-      <nav v-if="toc.length" class="section doc-toc" ref="tocRef">
-        <span class="toc-title">Contents</span>
-        <ul>
-          <li
-            v-for="entry in toc"
-            :key="entry.id"
-            :class="[
-              'toc-item',
-              `toc-depth-${entry.depth}`,
-              { active: activeId === entry.id },
-            ]"
-          >
-            <a :href="`#${entry.id}`" @click.prevent="scrollTo(entry.id)">
-              {{ entry.text }}
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <div class="section doc-body" ref="bodyRef" v-html="rendered" />
+      <Transition name="toc-merge">
+        <nav
+          v-if="toc.length && tocVisible"
+          class="section doc-toc"
+          ref="tocRef"
+        >
+          <div class="toc-inner">
+            <span class="toc-title">
+              Contents
+              <button
+                class="toc-toggle-btn"
+                @click="tocVisible = false"
+                title="Hide table of contents"
+              >
+                <svg-icon :path="mdiChevronLeft" :size="16" />
+              </button>
+            </span>
+            <ul>
+              <li
+                v-for="entry in toc"
+                :key="entry.id"
+                :class="[
+                  'toc-item',
+                  `toc-depth-${entry.depth}`,
+                  { active: activeId === entry.id },
+                ]"
+              >
+                <a :href="`#${entry.id}`" @click.prevent="scrollTo(entry.id)">
+                  {{ entry.text }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </Transition>
+      <div class="section doc-body" ref="bodyRef">
+        <button
+          v-if="toc.length && !tocVisible"
+          class="toc-show-btn"
+          @click="tocVisible = true"
+          title="Show table of contents"
+        >
+          <svg-icon :path="mdiChevronRight" :size="16" />
+          Contents
+        </button>
+        <div v-html="rendered" />
+      </div>
     </div>
   </div>
 </template>
@@ -39,6 +74,8 @@ import {
 import { useStore } from "vuex";
 import { Marked } from "marked";
 import raw from "./documents.md?raw";
+import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import { mdiChevronLeft, mdiChevronRight, mdiFullscreen, mdiFullscreenExit } from "@mdi/js";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
@@ -46,6 +83,31 @@ const darkMode = computed(() => store.getters.getSettings.darkMode);
 const bodyRef = ref<HTMLElement | null>(null);
 const tocRef = ref<HTMLElement | null>(null);
 const activeId = ref<string>("");
+const tocVisible = ref(true);
+const fullscreen = ref(false);
+const fullscreenLeaving = ref(false);
+
+function enterFullscreen() {
+  fullscreen.value = true;
+}
+
+function exitFullscreen() {
+  fullscreenLeaving.value = true;
+  setTimeout(() => {
+    fullscreen.value = false;
+    fullscreenLeaving.value = false;
+  }, 180);
+}
+
+function toggleFullscreen() {
+  if (fullscreen.value) exitFullscreen();
+  else enterFullscreen();
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape" && fullscreen.value) exitFullscreen();
+}
+
 
 function slugify(text: string): string {
   return text
@@ -127,6 +189,7 @@ function setupObserver() {
 }
 
 onMounted(async () => {
+  window.addEventListener("keydown", onKeydown);
   await nextTick();
   setupObserver();
   if (toc.value.length) activeId.value = toc.value[0].id;
@@ -134,6 +197,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   observer?.disconnect();
+  window.removeEventListener("keydown", onKeydown);
 });
 
 watch(rendered, async () => {
@@ -166,10 +230,10 @@ watch(activeId, async (id) => {
   }
 });
 
-const stickyNav = computed(() => store.getters.getSettings.stickyNavBar);
 const layoutHeight = computed(() =>
-  stickyNav.value ? "calc(100vh - 15rem)" : "calc(100vh - 10rem)"
+  fullscreen.value ? "calc(100vh - 4.5rem)" : "calc(100vh - 16rem)"
 );
+const pageBg = computed(() => (darkMode.value ? "#141414" : "#f8fafc"));
 
 const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
 const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
@@ -183,15 +247,11 @@ const bodyText = computed(() => (darkMode.value ? "#e2e8f0" : "#1e293b"));
 const tocActiveBg = computed(() =>
   darkMode.value ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)"
 );
-const tocActiveColor = computed(() =>
-  darkMode.value ? "#e2e8f0" : "#334155"
-);
+const tocActiveColor = computed(() => (darkMode.value ? "#e2e8f0" : "#334155"));
 const tocInactiveColor = computed(() =>
   darkMode.value ? "#64748b" : "#94a3b8"
 );
-const tocHoverColor = computed(() =>
-  darkMode.value ? "#cbd5e1" : "#475569"
-);
+const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 </script>
 
 <style scoped>
@@ -199,7 +259,34 @@ const tocHoverColor = computed(() =>
   max-width: 1400px;
 }
 
+.documents--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  max-width: none;
+  padding: 1.25rem 1.75rem;
+  background: v-bind(pageBg);
+  animation: fs-enter 0.18s ease forwards;
+}
+
+.documents--fullscreen.documents--leaving {
+  animation: fs-leave 0.18s ease forwards;
+}
+
+@keyframes fs-enter {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fs-leave {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.98); }
+}
+
 .section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 1rem;
 }
 
@@ -207,6 +294,24 @@ const tocHoverColor = computed(() =>
   font-weight: 700;
   margin: 0;
   color: v-bind(headerColor);
+}
+
+.fullscreen-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: v-bind(mutedColor);
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.fullscreen-btn:hover {
+  color: v-bind(tocHoverColor);
+  background: v-bind(tocActiveBg);
 }
 
 .section {
@@ -228,10 +333,80 @@ const tocHoverColor = computed(() =>
   width: 220px;
   flex-shrink: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+}
+
+.toc-inner {
+  width: 220px;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.doc-body {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  line-height: 1.7;
+  color: v-bind(bodyText);
+  font-size: 0.9375rem;
+  /* Spring restore when sibling transition class is removed */
+  transition: border-top-left-radius 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+    border-bottom-left-radius 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/*
+ * Sibling-selector approach: while the TOC is mid-transition (either entering
+ * or leaving), the body's left corners flatten in sync — no JS timers needed.
+ * When the transition class is removed the body springs back via the rule above.
+ */
+.toc-merge-leave-active ~ .doc-body,
+.toc-merge-enter-active ~ .doc-body {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  transition: border-top-left-radius 0.1s ease,
+    border-bottom-left-radius 0.1s ease;
+}
+
+/* ---- TOC leave (hiding) ----------------------------------------- */
+.toc-merge-leave-active,
+.toc-merge-enter-active {
+  overflow-y: hidden;
+}
+
+.toc-merge-leave-active {
+  transition: width 0.38s cubic-bezier(0.4, 0, 0.85, 1) 0.12s,
+    margin-right 0.18s ease, border-top-right-radius 0.16s ease,
+    border-bottom-right-radius 0.16s ease;
+}
+
+.doc-toc.toc-merge-leave-to {
+  width: 0;
+  margin-right: -1rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* ---- TOC enter (showing) ---------------------------------------- */
+.toc-merge-enter-active {
+  transition:
+    width                      0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
+    margin-right               0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
+    border-top-right-radius    0.5s cubic-bezier(0.34, 1.25, 0.64, 1),
+    border-bottom-right-radius 0.5s cubic-bezier(0.34, 1.25, 0.64, 1);
+}
+
+.doc-toc.toc-merge-enter-from {
+  width: 0;
+  margin-right: -1rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .toc-title {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: sticky;
   top: -1rem;
   font-size: 0.7rem;
@@ -241,6 +416,48 @@ const tocHoverColor = computed(() =>
   color: v-bind(mutedColor);
   padding: 1rem 0 0.5rem;
   background: v-bind(sectionBg);
+}
+
+.toc-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: v-bind(mutedColor);
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.toc-toggle-btn:hover {
+  color: v-bind(tocHoverColor);
+  background: v-bind(tocActiveBg);
+}
+
+.toc-show-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: v-bind(mutedColor);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.toc-show-btn:hover {
+  color: v-bind(tocHoverColor);
+  background: v-bind(tocActiveBg);
 }
 
 .doc-toc ul {
@@ -281,6 +498,8 @@ const tocHoverColor = computed(() =>
 
 .doc-toc::-webkit-scrollbar-track {
   background: transparent;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .doc-toc::-webkit-scrollbar-thumb {
@@ -305,15 +524,6 @@ const tocHoverColor = computed(() =>
 .toc-depth-4 a {
   padding-left: 2rem;
   font-size: 0.75rem;
-}
-
-.doc-body {
-  flex: 1;
-  min-width: 0;
-  overflow-y: auto;
-  line-height: 1.7;
-  color: v-bind(bodyText);
-  font-size: 0.9375rem;
 }
 
 .doc-body :deep(h1),
