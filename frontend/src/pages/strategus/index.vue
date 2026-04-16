@@ -1,5 +1,11 @@
 <template>
-  <div class="strategus-layout">
+  <div
+    class="strategus-layout"
+    :style="{
+      '--doc-scrollbar-color': sectionBorder,
+      '--doc-scrollbar-hover': mutedColor,
+    }"
+  >
     <aside
       :class="['strategus-sidebar', { 'sidebar-open': sidebarExpanded }]"
       @mouseenter="sidebarOpen = true"
@@ -131,6 +137,8 @@ watch(selectedSchema, (schema) => {
 });
 
 const darkMode = computed(() => store.getters.getSettings.darkMode);
+const sectionBorder = computed(() => (darkMode.value ? "#5a5a5a" : "#94a3b8"));
+const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
 const sidebarBorder = computed(() => (darkMode.value ? "#2a2a2a" : "#e5e7eb"));
 const navItemColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
 const navItemHoverColor = computed(() =>
@@ -279,5 +287,48 @@ const setCurrentTab = function (val: number) {
 
 .section-fade-enter-from {
   transform: translateY(5px);
+}
+</style>
+
+<style>
+html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-thumb:vertical {
+  border-radius: 0;
+  background:
+    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-color) 51%) 0 0 / 100% 6px no-repeat,
+    linear-gradient(var(--doc-scrollbar-color), var(--doc-scrollbar-color)) 0 6px / 100% calc(100% - 12px) no-repeat,
+    linear-gradient(to top left, transparent 49%, var(--doc-scrollbar-color) 51%) 0 100% / 100% 6px no-repeat;
+}
+
+html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-thumb:vertical:hover {
+  background:
+    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 0 / 100% 6px no-repeat,
+    linear-gradient(var(--doc-scrollbar-hover), var(--doc-scrollbar-hover)) 0 6px / 100% calc(100% - 12px) no-repeat,
+    linear-gradient(to top left, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 100% / 100% 6px no-repeat;
+}
+
+html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-thumb:horizontal {
+  border-radius: 0;
+  background:
+    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-color) 51%) 0 0 / 6px 100% no-repeat,
+    linear-gradient(var(--doc-scrollbar-color), var(--doc-scrollbar-color)) 6px 0 / calc(100% - 12px) 100% no-repeat,
+    linear-gradient(to bottom left, transparent 49%, var(--doc-scrollbar-color) 51%) 100% 0 / 6px 100% no-repeat;
+}
+
+html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-thumb:horizontal:hover {
+  background:
+    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 0 / 6px 100% no-repeat,
+    linear-gradient(var(--doc-scrollbar-hover), var(--doc-scrollbar-hover)) 6px 0 / calc(100% - 12px) 100% no-repeat,
+    linear-gradient(to bottom left, transparent 49%, var(--doc-scrollbar-hover) 51%) 100% 0 / 6px 100% no-repeat;
 }
 </style>

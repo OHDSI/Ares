@@ -57,6 +57,7 @@
           </div>
         </nav>
       </Transition>
+
       <div class="section doc-body" ref="bodyRef">
         <button
           v-if="toc.length && !tocVisible"
@@ -533,7 +534,6 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .doc-toc::-webkit-scrollbar-thumb {
-  border-radius: 99px;
   background: v-bind(sectionBorder);
 }
 
@@ -552,7 +552,6 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .doc-body::-webkit-scrollbar-thumb {
-  border-radius: 99px;
   background: v-bind(sectionBorder);
 }
 

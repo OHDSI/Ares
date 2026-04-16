@@ -98,6 +98,7 @@ html {
 ::-webkit-scrollbar-thumb {
   border-radius: 25px;
 }
+
 html:not(.dark) ::-webkit-scrollbar-thumb {
   @apply bg-surface-400;
   border-radius: 25px;
