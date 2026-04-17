@@ -27,15 +27,17 @@
           :class="drillDownViewOption?.class"
         >
           <div class="px-14 md:px-20 lg:px-24 mx-1 h-[90%]">
-            <ConceptReport v-if="conceptData" :data="conceptData" />
-            <div class="flex justify-center items-center h-full" v-else>
-              <!--              <AnimatedLogo />-->
-              <BlackHoleLoading
-                text="Fetching..."
-                size="lg"
-                :state="drilldownLoaderState"
-              />
-            </div>
+            <Transition name="concept-fade" mode="out-in">
+              <ConceptReport v-if="conceptData" :data="conceptData" />
+              <div class="flex justify-center items-center h-full" v-else>
+                <!--              <AnimatedLogo />-->
+                <BlackHoleLoading
+                  text="Fetching..."
+                  size="lg"
+                  :state="drilldownLoaderState"
+                />
+              </div>
+            </Transition>
           </div>
         </Sidebar>
       </div>
@@ -144,6 +146,20 @@ async function openDrilldownView(concept) {
 </script>
 
 <style scoped>
+.concept-fade-leave-active {
+  transition: opacity 0.12s ease;
+}
+.concept-fade-enter-active {
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+.concept-fade-enter-from,
+.concept-fade-leave-to {
+  opacity: 0;
+}
+.concept-fade-enter-from {
+  transform: scale(0.97);
+}
+
 td {
   max-width: 400px;
   white-space: nowrap;

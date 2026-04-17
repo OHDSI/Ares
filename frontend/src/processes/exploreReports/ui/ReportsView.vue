@@ -1,12 +1,14 @@
 <template>
-  <Transition name="page-fade">
-    <div
-      v-if="!store.getters.getErrors && loaderState === 'idle'"
-      class="mt-10 mb-16"
-    >
-      <router-view name="reportsView" />
-    </div>
-  </Transition>
+  <router-view name="reportsView" v-slot="{ Component }">
+    <Transition name="page-fade">
+      <div
+        v-if="!store.getters.getErrors && loaderState === 'idle'"
+        class="mt-10 mb-16"
+      >
+        <component :is="Component" />
+      </div>
+    </Transition>
+  </router-view>
   <div
     v-if="loaderState !== 'idle' && !store.getters.getErrors"
     class="flex flex-col gap-2 justify-center items-center content-center h-[70vh]"
