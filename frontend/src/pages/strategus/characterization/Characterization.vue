@@ -318,38 +318,12 @@
           <div ref="pillNavAnchor" />
 
           <div class="pill-nav-row">
-            <div class="pill-nav">
-              <button
-                v-for="(analysis, index) in availableAnalyses"
-                :key="analysis.key"
-                :class="['pill', { active: activeTab === index }]"
-                @click="activeTab = index"
-                v-tooltip.bottom="{
-                  value: analysis.description,
-                  pt: {
-                    root: 'absolute',
-                    text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-normal p-2 max-w-xs',
-                  },
-                }"
-              >
-                {{ analysis.label }}
-              </button>
-              <span v-if="unavailableAnalyses.length" class="pill-divider" />
-              <span
-                v-for="analysis in unavailableAnalyses"
-                :key="analysis.key"
-                class="pill pill-unavailable"
-                v-tooltip.bottom="{
-                  value: 'No data available for this target',
-                  pt: {
-                    root: 'absolute',
-                    text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-normal p-2 max-w-xs',
-                  },
-                }"
-              >
-                {{ analysis.label }}
-              </span>
-            </div>
+            <PillNav
+              :tabs="availableAnalyses"
+              :modelValue="activeTab"
+              :unavailableTabs="unavailableAnalyses"
+              @update:modelValue="activeTab = $event"
+            />
           </div>
 
           <Transition name="sticky-fade">
@@ -450,6 +424,7 @@ import TimeToEvent from "@/pages/strategus/characterization/TimeToEvent.vue";
 import CaseSeries from "@/pages/strategus/characterization/CaseSeries.vue";
 import CohortIncidence from "@/pages/strategus/characterization/CohortIncidence.vue";
 import ResultsLoader from "@/pages/strategus/characterization/shared/ResultsLoader.vue";
+import PillNav from "@/shared/ui/PillNav.vue";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
@@ -462,8 +437,6 @@ const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
 const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
 const headerColor = computed(() => (darkMode.value ? "#f1f5f9" : "#1e293b"));
 const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
-const pillTextColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
-const pillHoverColor = computed(() => (darkMode.value ? "#e2e8f0" : "#334155"));
 const activeTargetBorder = computed(() =>
   darkMode.value ? "#3a3a3a" : "#e5e7eb"
 );
@@ -488,15 +461,6 @@ const stickyPillHoverColor = computed(() =>
   darkMode.value ? "#e2e8f0" : "#334155"
 );
 const tagTextColor = computed(() => (darkMode.value ? "#94a3b8" : "#475569"));
-
-const pillActiveBg = computed(() =>
-  darkMode.value ? "rgba(255,255,255,0.1)" : "transparent"
-);
-const pillActiveShadow = computed(() =>
-  darkMode.value
-    ? "0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)"
-    : "0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06)"
-);
 
 const { readUrl, updateUrl, clearChildParams, isSelfWrite } =
   useCharacterizationUrl();
@@ -996,54 +960,6 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
-}
-
-.pill-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  padding: 0.3125rem;
-  border-radius: 8px;
-}
-
-.pill {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: v-bind(pillTextColor);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-}
-
-.pill:hover {
-  color: v-bind(pillHoverColor);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.pill.active {
-  color: v-bind(pillHoverColor);
-  font-weight: 600;
-  background: v-bind(pillActiveBg);
-  box-shadow: v-bind(pillActiveShadow);
-}
-
-.pill-divider {
-  display: inline-block;
-  width: 1px;
-  height: 1.25rem;
-  background: v-bind(dividerBg);
-  margin: 0 0.125rem;
-  align-self: center;
-  opacity: 0.5;
-}
-
-.pill-unavailable {
-  opacity: 0.35;
-  cursor: not-allowed;
-  pointer-events: auto;
 }
 
 .sticky-bar {
