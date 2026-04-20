@@ -6,48 +6,46 @@
       </div>
     </template>
     <div class="flex flex-col">
-      <div>
-        <UserAccount />
-        <Divider />
+      <UserAccount />
+      <Divider />
+
+      <div class="flex flex-col gap-3">
+        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Data settings</h3>
+        <FavoriteSources class="w-full" />
       </div>
-      <div class="flex flex-col">
-        <div class="flex flex-col gap-5">
-          <h3 class="text-left font-normal text-md">Data settings</h3>
-          <FavoriteSources class="w-full" />
-        </div>
-        <Divider></Divider>
-        <div class="flex flex-col gap-5">
-          <h3 class="text-left font-normal text-md">Charts</h3>
-          <ToggleBaseLine />
-          <ToggleMinMax />
-        </div>
-        <Divider></Divider>
+      <Divider />
 
-        <div class="flex flex-col gap-5">
-          <h3 class="text-left font-normal text-md">Appearance</h3>
-          <ToggleDarkMode />
-          <StickyNavBar />
-          <TableStrippedRowsToggle />
-          <PersistColumnSelection />
-          <DrillDownViewOptions />
-        </div>
-        <Divider></Divider>
+      <div class="flex flex-col gap-3">
+        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Charts</h3>
+        <ToggleBaseLine />
+        <ToggleMinMax />
+      </div>
+      <Divider />
 
-        <div class="flex flex-col gap-5">
-          <h3 class="text-left font-normal text-md">Annotations</h3>
-          <ToggleDefaultAnnotatonsMode />
-          <ToggleDefaultNotesMode />
-        </div>
-        <Divider></Divider>
+      <div class="flex flex-col gap-3">
+        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Appearance</h3>
+        <ToggleDarkMode />
+        <StickyNavBar />
+        <TableStrippedRowsToggle />
+        <PersistColumnSelection />
+        <DrillDownViewOptions />
+      </div>
+      <Divider />
 
-        <div class="flex flex-col gap-5">
-          <h3 class="text-left font-normal text-md">Developer</h3>
-          <ToggleDevWidget />
-        </div>
-        <Divider></Divider>
-        <div class="relative bottom-0 mt-4">
-          <ExportNotes></ExportNotes>
-        </div>
+      <div class="flex flex-col gap-3">
+        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Annotations</h3>
+        <ToggleDefaultAnnotatonsMode />
+        <ToggleDefaultNotesMode />
+      </div>
+      <Divider />
+
+      <div class="flex flex-col gap-3">
+        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Developer</h3>
+        <ToggleDevWidget />
+      </div>
+
+      <div class="mt-6">
+        <ExportNotes />
       </div>
     </div>
   </Sidebar>

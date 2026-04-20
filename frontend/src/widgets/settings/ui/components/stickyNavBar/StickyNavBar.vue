@@ -1,12 +1,10 @@
 <template>
-  <div class="flex flex-row gap-5">
-    <InputSwitch v-model="stickyNavBar" />
+  <div class="flex flex-row items-center justify-between">
     <div>
-      <h3 class="text-lg leading-none">Sticky navigation bar</h3>
-      <p class="font-light">
-        Keep the navigation bar fixed at the top while scrolling
-      </p>
+      <p class="text-sm font-medium leading-none">Sticky navigation bar</p>
+      <p class="text-xs opacity-60 mt-1">Keep the navigation bar fixed at the top while scrolling</p>
     </div>
+    <InputSwitch v-model="stickyNavBar" />
   </div>
 </template>
 

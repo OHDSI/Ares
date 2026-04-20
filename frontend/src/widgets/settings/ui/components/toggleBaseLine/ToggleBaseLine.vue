@@ -1,15 +1,10 @@
 <template>
-  <div class="flex flex-row gap-5">
-    <InputSwitch v-model="zeroBaseLine" />
+  <div class="flex flex-row items-center justify-between">
     <div>
-      <h3 class="text-lg leading-none">
-        {{ zeroBaseLine ? "Zero Baseline" : "Non-zero baseline" }}
-      </h3>
-      <p class="font-light">
-        Determines whether the axis starts from the 0 or the lowest value in the
-        set
-      </p>
+      <p class="text-sm font-medium leading-none">{{ zeroBaseLine ? "Zero baseline" : "Non-zero baseline" }}</p>
+      <p class="text-xs opacity-60 mt-1">Whether the axis starts from 0 or the lowest value</p>
     </div>
+    <InputSwitch v-model="zeroBaseLine" />
   </div>
 </template>
 

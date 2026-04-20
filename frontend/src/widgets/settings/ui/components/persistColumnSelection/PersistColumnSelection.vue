@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-row gap-5">
-    <InputSwitch v-model="persistColumnSelection" />
+  <div class="flex flex-row items-center justify-between">
     <div>
-      <h3 class="text-lg leading-none">Remember column selections</h3>
-      <p class="font-light">Save column visibility choices between sessions</p>
+      <p class="text-sm font-medium leading-none">Remember column selections</p>
+      <p class="text-xs opacity-60 mt-1">Save column visibility choices between sessions</p>
     </div>
+    <InputSwitch v-model="persistColumnSelection" />
   </div>
 </template>
 

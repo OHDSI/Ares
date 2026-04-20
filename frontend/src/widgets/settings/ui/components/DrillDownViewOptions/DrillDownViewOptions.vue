@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-2">
-    <p class="font-light">Drilldown view options</p>
+    <p class="text-sm font-medium">Drilldown view size</p>
     <Dropdown
       v-model="selectedOption"
       :options="options"

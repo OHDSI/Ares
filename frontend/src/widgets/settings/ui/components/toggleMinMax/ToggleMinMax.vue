@@ -1,12 +1,10 @@
 <template>
-  <div class="flex flex-row gap-5">
-    <InputSwitch v-model="minMax" />
+  <div class="flex flex-row items-center justify-between">
     <div>
-      <h3 class="text-lg leading-none">{{ minMax ? "MIN/MAX" : "P10/P90" }}</h3>
-      <p class="font-light">
-        Applicable to some reports. Determines whether to use Min/Max or P10/P90
-      </p>
+      <p class="text-sm font-medium leading-none">{{ minMax ? "MIN/MAX" : "P10/P90" }}</p>
+      <p class="text-xs opacity-60 mt-1">Use Min/Max or P10/P90 range in applicable reports</p>
     </div>
+    <InputSwitch v-model="minMax" />
   </div>
 </template>
 

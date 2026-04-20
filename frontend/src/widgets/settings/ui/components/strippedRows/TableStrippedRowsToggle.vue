@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-row gap-5">
-    <InputSwitch v-model="strippedRows" />
+  <div class="flex flex-row items-center justify-between">
     <div>
-      <h3 class="text-lg leading-none">Stripped rows</h3>
-      <p class="font-light">Render alternating table rows in different color</p>
+      <p class="text-sm font-medium leading-none">Striped rows</p>
+      <p class="text-xs opacity-60 mt-1">Render alternating table rows in different color</p>
     </div>
+    <InputSwitch v-model="strippedRows" />
   </div>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-row gap-5">
-    <InputSwitch v-model="annotationsMode" />
+  <div class="flex flex-row items-center justify-between">
     <div>
-      <h3 class="text-lg leading-none">{{ annotationsMode ? "On" : "Off" }}</h3>
-      <p class="font-light">Switch default annotations mode</p>
+      <p class="text-sm font-medium leading-none">Default annotations mode</p>
+      <p class="text-xs opacity-60 mt-1">Open annotation panel by default</p>
     </div>
+    <InputSwitch v-model="annotationsMode" />
   </div>
 </template>
 
