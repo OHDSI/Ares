@@ -2,7 +2,7 @@
   <Sidebar class="w-2/6" v-model:visible="showMenu" position="right">
     <template #header>
       <div>
-        <h2 class="font-bold">Settings</h2>
+        <h2 class="text-xs font-semibold uppercase tracking-widest opacity-50">Settings</h2>
       </div>
     </template>
     <div class="flex flex-col">
