@@ -9,8 +9,8 @@
           ]
         : ''
     "
-    @mouseenter="isHovered = true"
-    @mouseleave="isHovered = false"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
   >
     <div
       v-if="compact"
@@ -63,6 +63,23 @@ defineEmits<{ (e: "update:modelValue", value: (string | number)[]): void }>();
 const isHovered = ref(false);
 const isOpen = ref(false);
 const isExpanded = computed(() => isHovered.value || isOpen.value);
+
+let collapseTimer: ReturnType<typeof setTimeout> | null = null;
+
+function onMouseEnter() {
+  if (collapseTimer) {
+    clearTimeout(collapseTimer);
+    collapseTimer = null;
+  }
+  isHovered.value = true;
+}
+
+function onMouseLeave() {
+  collapseTimer = setTimeout(() => {
+    isHovered.value = false;
+    collapseTimer = null;
+  }, 400);
+}
 
 const pt = computed(() => ({
   root: {
