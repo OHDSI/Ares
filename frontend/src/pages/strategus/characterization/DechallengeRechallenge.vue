@@ -33,17 +33,7 @@
       <div class="table-controls">
         <div class="col-selector">
           <label class="field-label">Columns</label>
-          <MultiSelect
-            v-model="selectedColumns"
-            :options="drColumnOptions"
-            option-label="label"
-            option-value="key"
-            placeholder="Select columns"
-            display="chip"
-            :filter="true"
-            :pt="colSelectorPt"
-            class="w-full"
-          />
+          <ColumnSelector v-model="selectedColumns" :options="drColumnOptions" placeholder="Select columns" />
         </div>
         <Button
           :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
@@ -506,8 +496,7 @@ import Button from "primevue/button";
 import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import Message from "primevue/message";
-import MultiSelect from "primevue/multiselect";
-import { colSelectorPt } from "./shared/colSelectorPt";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 import CensoredCell from "./shared/CensoredCell.vue";
 import { FilterMatchMode } from "primevue/api";
 

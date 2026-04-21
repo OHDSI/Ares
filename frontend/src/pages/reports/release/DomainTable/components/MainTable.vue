@@ -52,6 +52,7 @@
               />
             </InputGroup>
             <ColumnSelector
+              compact
               v-model="selectedHeaders"
               :options="getHeaders"
               @update:modelValue="updateSettings"
@@ -345,7 +346,7 @@ const newFilters = computed(() => ({
 
 const headers = ref({
   CONCEPT_ID: {
-    title: "Concept Id",
+    label: "Concept Id",
     sortable: true,
     key: "CONCEPT_ID",
     align: "start",
@@ -353,7 +354,7 @@ const headers = ref({
     domain: ["ALL"],
   },
   CONCEPT_NAME: {
-    title: "Concept Name",
+    label: "Concept Name",
     sortable: true,
     key: "CONCEPT_NAME",
     align: "start",
@@ -361,7 +362,7 @@ const headers = ref({
     domain: ["ALL"],
   },
   NUM_PERSONS: {
-    title: "# People",
+    label: "# People",
     sortable: true,
     key: "NUM_PERSONS",
     align: "end",
@@ -369,7 +370,7 @@ const headers = ref({
     domain: ["ALL"],
   },
   DIFF_NUM_PERSONS: {
-    title: "Delta # Person",
+    label: "Delta # Person",
     sortable: true,
     key: "DIFF_NUM_PERSONS",
     align: "end",
@@ -377,7 +378,7 @@ const headers = ref({
     domain: ["ALL"],
   },
   PERCENT_PERSONS: {
-    title: "% People",
+    label: "% People",
     sortable: true,
     key: "PERCENT_PERSONS",
     align: "end",
@@ -385,7 +386,7 @@ const headers = ref({
     domain: ["ALL"],
   },
   DIFF_PERCENT_PERSONS: {
-    title: "Delta % People",
+    label: "Delta % People",
     sortable: true,
     key: "DIFF_PERCENT_PERSONS",
     align: "end",
@@ -393,7 +394,7 @@ const headers = ref({
     domain: ["ALL"],
   },
   RECORDS_PER_PERSON: {
-    title: "Records per Person",
+    label: "Records per Person",
     sortable: true,
     key: "RECORDS_PER_PERSON",
     align: "end",
@@ -401,7 +402,7 @@ const headers = ref({
     domain: ["ALL"],
   },
   DIFF_RECORDS_PER_PERSON: {
-    title: "Delta Records per Person",
+    label: "Delta Records per Person",
     sortable: true,
     key: "DIFF_RECORDS_PER_PERSON",
     align: "end",
@@ -409,7 +410,7 @@ const headers = ref({
     domain: ["ALL"],
   },
   AVERAGE_DURATION: {
-    title: "Avg Duration",
+    label: "Avg Duration",
     sortable: true,
     key: "AVERAGE_DURATION",
     align: "end",
@@ -417,7 +418,7 @@ const headers = ref({
     show: true,
   },
   PERCENT_MISSING_VALUES: {
-    title: "% with Values",
+    label: "% with Values",
     sortable: true,
     key: "PERCENT_MISSING_VALUES",
     align: "end",
@@ -425,7 +426,7 @@ const headers = ref({
     show: true,
   },
   MEDIAN_VALUE: {
-    title: "Median Era Length (Days)",
+    label: "Median Era Length (Days)",
     sortable: true,
     key: "MEDIAN_VALUE",
     align: "end",
@@ -433,7 +434,7 @@ const headers = ref({
     show: true,
   },
   P25_VALUE: {
-    title: "25th % Era Length (Days)",
+    label: "25th % Era Length (Days)",
     sortable: true,
     align: "end",
     key: "P25_VALUE",
@@ -441,7 +442,7 @@ const headers = ref({
     show: false,
   },
   P75_VALUE: {
-    title: "75th % Era Length (Days)",
+    label: "75th % Era Length (Days)",
     sortable: true,
     align: "end",
     key: "P75_VALUE",

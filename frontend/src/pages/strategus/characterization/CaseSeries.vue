@@ -61,17 +61,7 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedColumns"
-                  :options="csColumnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="All columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedColumns" :options="csColumnOptions" />
               </div>
               <Button
                 :icon="
@@ -330,17 +320,7 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedColumns"
-                  :options="csColumnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="All columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedColumns" :options="csColumnOptions" />
               </div>
 
               <Button
@@ -640,14 +620,13 @@ import { useTarWashout } from "./shared/useTarWashout";
 import { formatCensored, formatPct, formatNum } from "@/shared/lib/formatters";
 import { useGroupBanding } from "./shared/useGroupBanding";
 import CensoredCell from "./shared/CensoredCell.vue";
-import { colSelectorPt } from "./shared/colSelectorPt";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
-import MultiSelect from "primevue/multiselect";
 import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";

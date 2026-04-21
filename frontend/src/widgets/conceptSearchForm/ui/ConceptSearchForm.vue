@@ -40,6 +40,7 @@
             >
             </MultiSelect>
             <ColumnSelector
+              compact
               v-model="selectedHeaders"
               :options="getHeaders"
             />
@@ -474,58 +475,58 @@ const domain_options = computed(() => {
 
 const headers = ref({
   CONCEPT_ID: {
-    title: "Concept Id",
+    label: "Concept Id",
     key: "CONCEPT_ID",
     show: true,
   },
   CONCEPT_NAME: {
-    title: "Concept Name",
+    label: "Concept Name",
     key: "CONCEPT_NAME",
     show: true,
   },
   CONCEPT_CLASS_ID: {
-    title: "Class",
+    label: "Class",
     key: "CONCEPT_CLASS_ID",
     show: false,
   },
   STANDARD_CONCEPT_CAPTION: {
-    title: "Standard Concept",
+    label: "Standard Concept",
     key: "STANDARD_CONCEPT_CAPTION",
     show: true,
   },
   VOCABULARY_ID: {
-    title: "Vocabulary",
+    label: "Vocabulary",
     key: "VOCABULARY_ID",
     show: false,
   },
   INVALID_REASON_CAPTION: {
-    title: "Invalid Reason",
+    label: "Invalid Reason",
     key: "INVALID_REASON_CAPTION",
     show: false,
   },
   DOMAIN_ID: {
-    title: "Domain",
+    label: "Domain",
     key: "DOMAIN_ID",
     show: false,
   },
 
   record_count: {
-    title: "Record count",
+    label: "Record count",
     key: "record_count",
     show: true,
   },
   desc_record_count: {
-    title: "Descendant record count",
+    label: "Descendant record count",
     key: "desc_record_count",
     show: true,
   },
   person_count: {
-    title: "Person count",
+    label: "Person count",
     key: "person_count",
     show: true,
   },
   desc_person_count: {
-    title: "Descendant person count",
+    label: "Descendant person count",
     key: "desc_person_count",
     show: true,
   },

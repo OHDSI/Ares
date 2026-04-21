@@ -47,17 +47,7 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedBinaryColumns"
-                  :options="ccBinaryColumnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="All columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedBinaryColumns" :options="ccBinaryColumnOptions" />
               </div>
               <Button
                 :icon="
@@ -368,17 +358,7 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedContinuousColumns"
-                  :options="ccContinuousColumnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="All columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedContinuousColumns" :options="ccContinuousColumnOptions" />
               </div>
               <Button
                 :icon="
@@ -871,8 +851,7 @@ import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
-import MultiSelect from "primevue/multiselect";
-import { colSelectorPt } from "./shared/colSelectorPt";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 import Slider from "primevue/slider";
 import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";

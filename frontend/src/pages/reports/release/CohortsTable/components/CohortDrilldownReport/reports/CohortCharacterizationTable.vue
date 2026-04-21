@@ -36,6 +36,7 @@
               />
             </InputGroup>
             <ColumnSelector
+              compact
               v-model="selectedHeaders"
               :options="getHeaders"
               @update:modelValue="updateSettings"
@@ -212,49 +213,49 @@ interface Props {
 
 const headers = ref({
   domain_id: {
-    title: "Domain",
+    label: "Domain",
     sortable: true,
     key: "domain_id",
     align: "start",
     show: true,
   },
   covariate_name: {
-    title: "Covariate Name",
+    label: "Covariate Name",
     sortable: true,
     key: "covariate_name",
     align: "start",
     show: true,
   },
   analysis_name: {
-    title: "Analysis Name",
+    label: "Analysis Name",
     sortable: true,
     key: "analysis_name",
     align: "end",
     show: false,
   },
   temporal_choice: {
-    title: "Temporal Choices",
+    label: "Temporal Choices",
     sortable: true,
     key: "temporal_choice",
     align: "end",
     show: true,
   },
   concept_id: {
-    title: "Concept ID",
+    label: "Concept ID",
     sortable: true,
     key: "concept_id",
     align: "end",
     show: true,
   },
   mean: {
-    title: "Mean",
+    label: "Mean",
     sortable: true,
     key: "mean",
     align: "end",
     show: true,
   },
   sd: {
-    title: "Sd",
+    label: "Sd",
     sortable: true,
     key: "sd",
     align: "end",

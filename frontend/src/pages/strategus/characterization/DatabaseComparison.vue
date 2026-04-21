@@ -54,17 +54,7 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedBinaryColumns"
-                  :options="dbBinaryColumnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="All columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedBinaryColumns" :options="dbBinaryColumnOptions" />
               </div>
               <Button
                 :icon="
@@ -356,17 +346,7 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedContinuousColumns"
-                  :options="dbContinuousColumnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="All columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedContinuousColumns" :options="dbContinuousColumnOptions" />
               </div>
               <Button
                 :icon="
@@ -781,6 +761,7 @@ import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import MultiSelect from "primevue/multiselect";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 import { colSelectorPt } from "./shared/colSelectorPt";
 import Dropdown from "primevue/dropdown";
 import Slider from "primevue/slider";

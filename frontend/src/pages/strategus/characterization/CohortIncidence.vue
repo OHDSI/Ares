@@ -37,17 +37,7 @@
               </div>
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedColumns"
-                  :options="columnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="All columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedColumns" :options="columnOptions" />
               </div>
               <div class="strat-checks">
                 <div>
@@ -404,6 +394,7 @@ import ContextBar from "./shared/ContextBar.vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import MultiSelect from "primevue/multiselect";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 import { colSelectorPt } from "./shared/colSelectorPt";
 import Dropdown from "primevue/dropdown";
 import Checkbox from "primevue/checkbox";

@@ -37,6 +37,7 @@
               />
             </InputGroup>
             <ColumnSelector
+              compact
               v-model="selectedHeaders"
               :options="getHeaders"
               @update:modelValue="updateSettings"
@@ -199,42 +200,42 @@ interface Props {
 
 const headers = ref({
   domain_field: {
-    title: "Domain Field",
+    label: "Domain Field",
     sortable: true,
     key: "domain_field",
     align: "start",
     show: true,
   },
   concept_name: {
-    title: "Concept Name",
+    label: "Concept Name",
     sortable: true,
     key: "concept_name",
     align: "start",
     show: true,
   },
   vocabulary_id: {
-    title: "Vocabulary Id",
+    label: "Vocabulary Id",
     sortable: true,
     key: "vocabulary_id",
     align: "end",
     show: false,
   },
   concept_id: {
-    title: "Concept ID",
+    label: "Concept ID",
     sortable: true,
     key: "concept_id",
     align: "end",
     show: true,
   },
   concept_count: {
-    title: "Records",
+    label: "Records",
     sortable: true,
     key: "concept_count",
     align: "end",
     show: true,
   },
   subject_count: {
-    title: "Persons",
+    label: "Persons",
     sortable: true,
     key: "subject_count",
     align: "end",

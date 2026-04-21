@@ -63,17 +63,7 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedColumns"
-                  :options="rfColumnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="Select columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedColumns" :options="rfColumnOptions" placeholder="Select columns" />
               </div>
               <Button
                 :icon="
@@ -397,17 +387,7 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <MultiSelect
-                  v-model="selectedContinuousColumns"
-                  :options="rfContinuousColumnOptions"
-                  option-label="label"
-                  option-value="key"
-                  placeholder="Select columns"
-                  display="chip"
-                  :filter="true"
-                  :pt="colSelectorPt"
-                  class="w-full"
-                />
+                <ColumnSelector v-model="selectedContinuousColumns" :options="rfContinuousColumnOptions" placeholder="Select columns" />
               </div>
               <Button
                 :icon="
@@ -1062,14 +1042,13 @@ import { useTarWashout } from "./shared/useTarWashout";
 import { formatCensored, formatPct, formatNum } from "@/shared/lib/formatters";
 import { useGroupBanding } from "./shared/useGroupBanding";
 import CensoredCell from "./shared/CensoredCell.vue";
-import { colSelectorPt } from "./shared/colSelectorPt";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
-import MultiSelect from "primevue/multiselect";
 import Slider from "primevue/slider";
 import GenerateButton from "@/pages/strategus/characterization/shared/GenerateButton.vue";
 import InputText from "primevue/inputtext";
