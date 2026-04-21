@@ -34,6 +34,7 @@ const router = useRouter();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
 const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
+const bodyColor = computed(() => (darkMode.value ? "#f1f5f9" : "#334155"));
 
 const tabs = [
   { key: "overview", label: "Overview", component: markRaw(OverviewTable) },
@@ -72,6 +73,7 @@ function setTab(index: number) {
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  color: v-bind(bodyColor);
 }
 
 .tab-fade-leave-active {

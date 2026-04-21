@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="overflow-visible">
     <Button
       v-tooltip.top="{
         value: props.tooltip,
@@ -29,10 +29,10 @@
         v-if="!isUndefined(props.count)"
         :class="`${
           activated
-            ? 'dark:bg-primary-50 dark:text-black bg-black text-white '
-            : 'bg-primary-500 dark:bg-primary-400 text-white'
-        } px-2 py-1 rounded-full z-10 top-0 right-0 absolute indent-0 text-xs`"
-        :style="{ right: '-5px', top: '-5px' }"
+            ? 'dark:bg-primary-50 dark:text-black bg-black text-white'
+            : 'bg-surface-400 dark:bg-surface-500 text-white'
+        } w-5 h-5 rounded-full z-10 absolute flex items-center justify-center text-[10px] leading-none ring-2 ring-white dark:ring-surface-900`"
+        :style="{ top: '1px', right: '1px' }"
       >
         {{ props.count }}
       </span>

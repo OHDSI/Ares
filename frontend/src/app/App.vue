@@ -86,26 +86,55 @@ html {
   font-size: 14px;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+html:not(.dark) {
+  --doc-scrollbar-color: #94a3b8;
+  --doc-scrollbar-hover: #94a3b8;
+}
+
+html.dark {
+  --doc-scrollbar-color: #3a3a3a;
+  --doc-scrollbar-hover: #9ca3af;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  border-radius: 25px;
+  background: transparent;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
-::-webkit-scrollbar-thumb {
-  border-radius: 25px;
+::-webkit-scrollbar-thumb:vertical {
+  border-radius: 0;
+  background:
+    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-color) 51%) 0 0 / 100% 6px no-repeat,
+    linear-gradient(var(--doc-scrollbar-color), var(--doc-scrollbar-color)) 0 6px / 100% calc(100% - 12px) no-repeat,
+    linear-gradient(to top left, transparent 49%, var(--doc-scrollbar-color) 51%) 0 100% / 100% 6px no-repeat;
 }
 
-html:not(.dark) ::-webkit-scrollbar-thumb {
-  @apply bg-surface-400;
-  border-radius: 25px;
+::-webkit-scrollbar-thumb:vertical:hover {
+  background:
+    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 0 / 100% 6px no-repeat,
+    linear-gradient(var(--doc-scrollbar-hover), var(--doc-scrollbar-hover)) 0 6px / 100% calc(100% - 12px) no-repeat,
+    linear-gradient(to top left, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 100% / 100% 6px no-repeat;
 }
 
-html.dark ::-webkit-scrollbar-thumb {
-  @apply bg-surface-200;
+::-webkit-scrollbar-thumb:horizontal {
+  border-radius: 0;
+  background:
+    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-color) 51%) 0 0 / 6px 100% no-repeat,
+    linear-gradient(var(--doc-scrollbar-color), var(--doc-scrollbar-color)) 6px 0 / calc(100% - 12px) 100% no-repeat,
+    linear-gradient(to bottom left, transparent 49%, var(--doc-scrollbar-color) 51%) 100% 0 / 6px 100% no-repeat;
+}
+
+::-webkit-scrollbar-thumb:horizontal:hover {
+  background:
+    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 0 / 6px 100% no-repeat,
+    linear-gradient(var(--doc-scrollbar-hover), var(--doc-scrollbar-hover)) 6px 0 / calc(100% - 12px) 100% no-repeat,
+    linear-gradient(to bottom left, transparent 49%, var(--doc-scrollbar-hover) 51%) 100% 0 / 6px 100% no-repeat;
 }
 
 a {
