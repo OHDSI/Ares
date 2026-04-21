@@ -12,13 +12,23 @@
           <h3 class="text-xl">Something went wrong</h3>
           <div class="flex flex-col gap-5">
             <div>
-              <span style="color: white">{{ errors[0].userMessage }}</span>
+              <span class="text-red-700">{{ errors[0].userMessage }}</span>
             </div>
           </div>
         </div>
       </div>
+
       <div class="px-8 mb-5">
-        <Accordion>
+        <Accordion
+          :pt="{
+            accordiontab: {
+              headerAction: {
+                class:
+                  'bg-transparent border-surface-200 text-red-600 font-medium hover:bg-red-50',
+              },
+            },
+          }"
+        >
           <AccordionTab header="See error details">
             <p v-for="row in callStackRows" :key="row">{{ row }}</p>
           </AccordionTab>
@@ -52,12 +62,21 @@
             <h3 class="text-xl">Something went wrong</h3>
             <ul class="flex flex-col gap-1">
               <li v-for="(error, index) in errors" :key="index">
-                <span style="color: white">{{ error.userMessage }}</span>
+                <span class="text-red-700">{{ error.userMessage }}</span>
               </li>
             </ul>
           </div>
         </div>
-        <Accordion>
+        <Accordion
+          :pt="{
+            accordiontab: {
+              headerAction: {
+                class:
+                  'bg-transparent border-surface-200 text-red-600 font-medium hover:bg-red-50',
+              },
+            },
+          }"
+        >
           <AccordionTab header="See technical details">
             <div v-if="errorDetails.technicalMessage.errorDetails[0].url">
               <div
