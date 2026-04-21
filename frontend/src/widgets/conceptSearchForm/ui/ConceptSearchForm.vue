@@ -39,32 +39,10 @@
               placeholder="Vocabularies"
             >
             </MultiSelect>
-            <MultiSelect
-              :pt="{
-                root: 'dark:bg-primary-400 bg-primary-500 text-white rounded',
-                labelContainer:
-                  'dark:bg-primary-400 bg-primary-500 text-white rounded',
-                trigger: [
-                  'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-400 w-12',
-                ],
-              }"
+            <ColumnSelector
               v-model="selectedHeaders"
-              data-key="title"
-              option-label="title"
-              option-value="key"
               :options="getHeaders"
-              placeholder="Select Columns"
-            >
-              <template #value>
-                <span class="flex flex-row w-full text-white items-center">
-                  <svg-icon type="mdi" :path="mdiTable"></svg-icon>
-                  <span class="uppercase text-base">Columns to display</span>
-                </span>
-              </template>
-              <template #dropdownicon>
-                <span></span>
-              </template>
-            </MultiSelect>
+            />
 
             <Button color="primary" class="search-btn" @click="searchApi"
               ><span class="uppercase font-light text-white px-2"
@@ -424,7 +402,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { toRaw } from "vue";
 import MultiSelect from "primevue/multiselect";
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 
 import { ref, onBeforeMount, watch, Ref, nextTick } from "vue";
 import { computed } from "vue";
@@ -438,7 +416,7 @@ import {
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import webApiKeyMap from "@/shared/config/webApiKeyMap";
 import { CONCEPT } from "@/shared/config/files";
-import { mdiAlertCircleOutline, mdiTable } from "@mdi/js";
+import { mdiAlertCircleOutline } from "@mdi/js";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
 import {
   FETCH_CONCEPTS_RECORD_COUNT,

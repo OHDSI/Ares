@@ -35,33 +35,11 @@
             placeholder="Search in Table"
           />
         </InputGroup>
-        <MultiSelect
-          :pt="{
-            root: 'dark:bg-primary-400 bg-primary-500 text-white rounded',
-            labelContainer:
-              'dark:bg-primary-400 bg-primary-500 text-white rounded',
-            trigger: [
-              'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-400 w-12',
-            ],
-          }"
+        <ColumnSelector
           :model-value="columnsToDisplay"
-          data-key="title"
-          option-label="title"
-          option-value="key"
           :options="availableHeaders"
-          placeholder="Select Columns"
           @update:modelValue="updateSelectedHeaders"
-        >
-          <template #value>
-            <span class="flex flex-row w-full text-white items-center">
-              <svg-icon type="mdi" :path="mdiTable"></svg-icon>
-              <span class="uppercase text-base">Columns to display</span>
-            </span>
-          </template>
-          <template #dropdownicon>
-            <span></span>
-          </template>
-        </MultiSelect>
+        />
       </div>
     </template>
     <template #empty> No matching rows </template>
@@ -653,7 +631,8 @@ import Dropdown from "primevue/dropdown";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import MultiSelect from "primevue/multiselect";
-import { mdiDelta, mdiTable } from "@mdi/js";
+import { mdiDelta } from "@mdi/js";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 import { formatComma } from "@/shared/lib/formatters";
 import { getValuesArray } from "@/shared/lib/utils";

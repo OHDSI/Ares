@@ -35,31 +35,11 @@
                 placeholder="Search in Table"
               />
             </InputGroup>
-            <MultiSelect
-              :pt="{
-                root: 'dark:bg-primary-400 bg-primary-500 text-white rounded',
-                labelContainer:
-                  'dark:bg-primary-400 bg-primary-500 text-white rounded',
-                trigger: [
-                  'flex items-center justify-center shrink-0 rounded-tr-md rounded-br-md dark:bg-primary-400 w-12',
-                ],
-              }"
+            <ColumnSelector
               v-model="selectedHeaders"
-              data-key="title"
-              option-label="title"
-              option-value="key"
               :options="getHeaders"
-              placeholder="Select Columns"
               @update:modelValue="updateSettings"
-            >
-              <template #dropdownicon><span></span></template>
-              <template #value>
-                <span class="flex flex-row w-full text-white items-center">
-                  <svg-icon type="mdi" :path="mdiTable"></svg-icon>
-                  <span class="uppercase text-base">Columns to display</span>
-                </span>
-              </template>
-            </MultiSelect>
+            />
           </div>
         </template>
         <Column
@@ -206,13 +186,12 @@ import { useStore } from "vuex";
 import { computed, ref, onMounted } from "vue";
 import MultiSelect from "primevue/multiselect";
 import { FilterMatchMode } from "primevue/api";
-import { mdiTable } from "@mdi/js";
 import InputGroup from "primevue/inputgroup";
 import InputText from "primevue/inputtext";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import { debounce } from "lodash";
 import { useRoute, useRouter } from "vue-router";
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 import { getValuesArray } from "@/shared/lib/utils";
 
