@@ -1,10 +1,10 @@
 <template>
   <div
-    class="transition-[max-width] duration-300 ease-out"
+    class="transition-[max-width] duration-300 ease-in-out will-change-[max-width]"
     :class="
       compact
         ? [
-            'group relative flex-1 h-[42px]',
+            'group relative flex-1 h-[42px] overflow-hidden',
             isExpanded ? 'max-w-[600px]' : 'max-w-[42px]',
           ]
         : ''
@@ -79,6 +79,9 @@ const pt = computed(() => ({
     class: props.compact
       ? "overflow-x-auto flex flex-auto cursor-pointer"
       : "overflow-hidden flex flex-auto cursor-pointer",
+    style: props.compact
+      ? "scrollbar-width: none; -ms-overflow-style: none;"
+      : "",
   },
   label: {
     class: [
