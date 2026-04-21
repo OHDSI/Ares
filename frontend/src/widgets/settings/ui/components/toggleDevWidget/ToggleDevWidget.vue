@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-sm font-medium leading-none">Dev tools</p>
-      <p class="text-xs opacity-60 mt-1">Show the developer tools widget</p>
+      <p class="text-base font-medium leading-none">Dev tools</p>
+      <p class="text-sm opacity-60 mt-1">Show the developer tools widget</p>
     </div>
     <InputSwitch v-model="devWidget" />
   </div>

@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-sm font-medium leading-none">Default notes mode</p>
-      <p class="text-xs opacity-60 mt-1">Open notes panel by default</p>
+      <p class="text-base font-medium leading-none">Default notes mode</p>
+      <p class="text-sm opacity-60 mt-1">Open notes panel by default</p>
     </div>
     <InputSwitch v-model="notesMode" />
   </div>

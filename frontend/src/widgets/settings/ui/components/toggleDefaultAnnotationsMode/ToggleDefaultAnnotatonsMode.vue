@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-sm font-medium leading-none">Default annotations mode</p>
-      <p class="text-xs opacity-60 mt-1">Open annotation panel by default</p>
+      <p class="text-base font-medium leading-none">Default annotations mode</p>
+      <p class="text-sm opacity-60 mt-1">Open annotation panel by default</p>
     </div>
     <InputSwitch v-model="annotationsMode" />
   </div>

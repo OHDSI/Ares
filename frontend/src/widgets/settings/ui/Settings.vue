@@ -10,20 +10,26 @@
       <Divider />
 
       <div class="flex flex-col gap-3">
-        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Data settings</h3>
+        <h3 class="text-sm font-semibold uppercase tracking-widest opacity-50">
+          Data settings
+        </h3>
         <FavoriteSources class="w-full" />
       </div>
       <Divider />
 
       <div class="flex flex-col gap-3">
-        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Charts</h3>
+        <h3 class="text-sm font-semibold uppercase tracking-widest opacity-50">
+          Charts
+        </h3>
         <ToggleBaseLine />
         <ToggleMinMax />
       </div>
       <Divider />
 
       <div class="flex flex-col gap-3">
-        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Appearance</h3>
+        <h3 class="text-sm font-semibold uppercase tracking-widest opacity-50">
+          Appearance
+        </h3>
         <ToggleDarkMode />
         <StickyNavBar />
         <TableStrippedRowsToggle />
@@ -33,20 +39,24 @@
       <Divider />
 
       <div class="flex flex-col gap-3">
-        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Annotations</h3>
+        <h3 class="text-sm font-semibold uppercase tracking-widest opacity-50">
+          Annotations
+        </h3>
         <ToggleDefaultAnnotatonsMode />
         <ToggleDefaultNotesMode />
       </div>
       <Divider />
 
       <div class="flex flex-col gap-3">
-        <h3 class="text-xs font-semibold uppercase tracking-widest opacity-50">Developer</h3>
+        <h3 class="text-sm font-semibold uppercase tracking-widest opacity-50">
+          Developer
+        </h3>
         <ToggleDevWidget />
       </div>
 
-      <div class="mt-6">
-        <ExportNotes />
-      </div>
+      <!--      <div class="mt-6">-->
+      <!--        <ExportNotes />-->
+      <!--      </div>-->
     </div>
   </Sidebar>
 </template>

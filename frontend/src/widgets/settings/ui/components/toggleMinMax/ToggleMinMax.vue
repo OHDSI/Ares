@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-sm font-medium leading-none">{{ minMax ? "MIN/MAX" : "P10/P90" }}</p>
-      <p class="text-xs opacity-60 mt-1">Use Min/Max or P10/P90 range in applicable reports</p>
+      <p class="text-base font-medium leading-none">{{ minMax ? "MIN/MAX" : "P10/P90" }}</p>
+      <p class="text-sm opacity-60 mt-1">Use Min/Max or P10/P90 range in applicable reports</p>
     </div>
     <InputSwitch v-model="minMax" />
   </div>

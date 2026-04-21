@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-sm font-medium leading-none">{{ darkMode ? "Dark mode" : "Light mode" }}</p>
-      <p class="text-xs opacity-60 mt-1">Select the color mode</p>
+      <p class="text-base font-medium leading-none">{{ darkMode ? "Dark mode" : "Light mode" }}</p>
+      <p class="text-sm opacity-60 mt-1">Select the color mode</p>
     </div>
     <InputSwitch v-model="darkMode" />
   </div>

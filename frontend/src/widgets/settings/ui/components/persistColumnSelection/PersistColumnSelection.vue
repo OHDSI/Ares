@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-sm font-medium leading-none">Remember column selections</p>
-      <p class="text-xs opacity-60 mt-1">Save column visibility choices between sessions</p>
+      <p class="text-base font-medium leading-none">Remember column selections</p>
+      <p class="text-sm opacity-60 mt-1">Save column visibility choices between sessions</p>
     </div>
     <InputSwitch v-model="persistColumnSelection" />
   </div>

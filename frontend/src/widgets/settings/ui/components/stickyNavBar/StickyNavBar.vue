@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-sm font-medium leading-none">Sticky navigation bar</p>
-      <p class="text-xs opacity-60 mt-1">Keep the navigation bar fixed at the top while scrolling</p>
+      <p class="text-base font-medium leading-none">Sticky navigation bar</p>
+      <p class="text-sm opacity-60 mt-1">Keep the navigation bar fixed at the top while scrolling</p>
     </div>
     <InputSwitch v-model="stickyNavBar" />
   </div>
