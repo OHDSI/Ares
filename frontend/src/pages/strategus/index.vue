@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="layoutRef"
     class="strategus-layout"
     :style="{
       '--doc-scrollbar-color': sectionBorder,
@@ -8,8 +9,6 @@
   >
     <aside
       :class="['strategus-sidebar', { 'sidebar-open': sidebarExpanded }]"
-      @mouseenter="sidebarOpen = true"
-      @mouseleave="sidebarOpen = false"
     >
       <div v-if="dbList.length > 1" class="schema-nav-wrap">
         <div class="nav-item schema-item">
@@ -78,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, markRaw, watch, onMounted } from "vue";
+import { computed, ref, markRaw, watch, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import Dropdown from "primevue/dropdown";
@@ -96,6 +95,38 @@ const route = useRoute();
 const store = useStore();
 const sidebarOpen = ref(false);
 const schemaDropdownOpen = ref(false);
+let sidebarCloseTimer: ReturnType<typeof setTimeout> | null = null;
+
+function onSidebarEnter() {
+  if (sidebarCloseTimer) {
+    clearTimeout(sidebarCloseTimer);
+    sidebarCloseTimer = null;
+  }
+  sidebarOpen.value = true;
+}
+
+function onSidebarLeave() {
+  if (sidebarCloseTimer) {
+    clearTimeout(sidebarCloseTimer);
+    sidebarCloseTimer = null;
+  }
+  sidebarOpen.value = false;
+}
+
+const layoutRef = ref<HTMLElement | null>(null);
+
+function onDocMouseMove(e: MouseEvent) {
+  if (!layoutRef.value) return;
+  const rect = layoutRef.value.getBoundingClientRect();
+  const relX = e.clientX - rect.left;
+  const inVerticalBounds = e.clientY >= rect.top && e.clientY <= rect.bottom;
+  if (!inVerticalBounds) return;
+  if (relX >= -100 && relX < 60) {
+    onSidebarEnter();
+  } else if (relX > 230) {
+    onSidebarLeave();
+  }
+}
 const sidebarExpanded = computed(
   () => sidebarOpen.value || schemaDropdownOpen.value
 );
@@ -111,6 +142,14 @@ const dbList = ref<
 >([]);
 const selectedSchema = ref<string | undefined>(undefined);
 const schemaReady = ref(false);
+
+onMounted(() => {
+  document.addEventListener("mousemove", onDocMouseMove);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("mousemove", onDocMouseMove);
+});
 
 onMounted(async () => {
   try {
@@ -302,33 +341,81 @@ html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-track {
   margin-bottom: 8px;
 }
 
-html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-thumb:vertical {
+html:is(.dark, :not(.dark))
+  .strategus-content
+  *::-webkit-scrollbar-thumb:vertical {
   border-radius: 0;
-  background:
-    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-color) 51%) 0 0 / 100% 6px no-repeat,
-    linear-gradient(var(--doc-scrollbar-color), var(--doc-scrollbar-color)) 0 6px / 100% calc(100% - 12px) no-repeat,
-    linear-gradient(to top left, transparent 49%, var(--doc-scrollbar-color) 51%) 0 100% / 100% 6px no-repeat;
+  background: linear-gradient(
+        to bottom right,
+        transparent 49%,
+        var(--doc-scrollbar-color) 51%
+      )
+      0 0 / 100% 6px no-repeat,
+    linear-gradient(var(--doc-scrollbar-color), var(--doc-scrollbar-color)) 0
+      6px / 100% calc(100% - 12px) no-repeat,
+    linear-gradient(
+        to top left,
+        transparent 49%,
+        var(--doc-scrollbar-color) 51%
+      )
+      0 100% / 100% 6px no-repeat;
 }
 
-html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-thumb:vertical:hover {
-  background:
-    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 0 / 100% 6px no-repeat,
-    linear-gradient(var(--doc-scrollbar-hover), var(--doc-scrollbar-hover)) 0 6px / 100% calc(100% - 12px) no-repeat,
-    linear-gradient(to top left, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 100% / 100% 6px no-repeat;
+html:is(.dark, :not(.dark))
+  .strategus-content
+  *::-webkit-scrollbar-thumb:vertical:hover {
+  background: linear-gradient(
+        to bottom right,
+        transparent 49%,
+        var(--doc-scrollbar-hover) 51%
+      )
+      0 0 / 100% 6px no-repeat,
+    linear-gradient(var(--doc-scrollbar-hover), var(--doc-scrollbar-hover)) 0
+      6px / 100% calc(100% - 12px) no-repeat,
+    linear-gradient(
+        to top left,
+        transparent 49%,
+        var(--doc-scrollbar-hover) 51%
+      )
+      0 100% / 100% 6px no-repeat;
 }
 
-html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-thumb:horizontal {
+html:is(.dark, :not(.dark))
+  .strategus-content
+  *::-webkit-scrollbar-thumb:horizontal {
   border-radius: 0;
-  background:
-    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-color) 51%) 0 0 / 6px 100% no-repeat,
-    linear-gradient(var(--doc-scrollbar-color), var(--doc-scrollbar-color)) 6px 0 / calc(100% - 12px) 100% no-repeat,
-    linear-gradient(to bottom left, transparent 49%, var(--doc-scrollbar-color) 51%) 100% 0 / 6px 100% no-repeat;
+  background: linear-gradient(
+        to bottom right,
+        transparent 49%,
+        var(--doc-scrollbar-color) 51%
+      )
+      0 0 / 6px 100% no-repeat,
+    linear-gradient(var(--doc-scrollbar-color), var(--doc-scrollbar-color)) 6px
+      0 / calc(100% - 12px) 100% no-repeat,
+    linear-gradient(
+        to bottom left,
+        transparent 49%,
+        var(--doc-scrollbar-color) 51%
+      )
+      100% 0 / 6px 100% no-repeat;
 }
 
-html:is(.dark, :not(.dark)) .strategus-content *::-webkit-scrollbar-thumb:horizontal:hover {
-  background:
-    linear-gradient(to bottom right, transparent 49%, var(--doc-scrollbar-hover) 51%) 0 0 / 6px 100% no-repeat,
-    linear-gradient(var(--doc-scrollbar-hover), var(--doc-scrollbar-hover)) 6px 0 / calc(100% - 12px) 100% no-repeat,
-    linear-gradient(to bottom left, transparent 49%, var(--doc-scrollbar-hover) 51%) 100% 0 / 6px 100% no-repeat;
+html:is(.dark, :not(.dark))
+  .strategus-content
+  *::-webkit-scrollbar-thumb:horizontal:hover {
+  background: linear-gradient(
+        to bottom right,
+        transparent 49%,
+        var(--doc-scrollbar-hover) 51%
+      )
+      0 0 / 6px 100% no-repeat,
+    linear-gradient(var(--doc-scrollbar-hover), var(--doc-scrollbar-hover)) 6px
+      0 / calc(100% - 12px) 100% no-repeat,
+    linear-gradient(
+        to bottom left,
+        transparent 49%,
+        var(--doc-scrollbar-hover) 51%
+      )
+      100% 0 / 6px 100% no-repeat;
 }
 </style>
