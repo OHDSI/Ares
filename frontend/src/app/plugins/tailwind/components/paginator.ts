@@ -9,7 +9,7 @@ export default {
   firstpagebutton: ({ context }) => ({
     class: [
       "relative inline-flex items-center justify-center user-none overflow-hidden leading-none",
-      "border-0 text-surface-500  min-w-[3rem] h-12 m-[0.143rem] rounded-md",
+      "border-0 text-surface-500  min-w-[3rem] h-9 m-[0.143rem] rounded-md",
       "transition duration-200",
       "dark:text-white", //Dark Mode
       {
@@ -61,7 +61,7 @@ export default {
   pagebutton: ({ context }) => ({
     class: [
       "relative inline-flex items-center justify-center user-none overflow-hidden leading-none",
-      "border-0 text-surface-500 min-w-[3rem] h-12 m-[0.143rem] rounded-md",
+      "border-0 text-surface-500 min-w-[3rem] h-9 m-[0.143rem] rounded-md",
       "transition duration-200",
       "dark:border-primary-300 dark:text-white", // Dark Mode
       "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-400/50 dark:focus:ring-primary-300/50", // Focus
@@ -77,7 +77,7 @@ export default {
         "inline-flex relative cursor-pointer user-none",
         "bg-surface-0 border rounded-md",
         "transition duration-200",
-        "h-12 mx-2",
+        "h-9 mx-2",
         "dark:bg-surface-800 dark:border-surface-700", //DarkMode
         {
           "outline-none outline-offset-0 shadow-[0_0_0_0.2rem_rgba(191,219,254,1)] border-primary-500":
@@ -89,7 +89,7 @@ export default {
     }),
     input: {
       class: [
-        "font-sans text-base text-surface-600 p-3 m-0 rounded-md apperance-none",
+        "font-sans text-base text-surface-600 py-1.5 px-3 m-0 rounded-md apperance-none",
         "block whitespace-nowrap overflow-hidden flex-auto w-[1%] cursor-pointer text-ellipsis border-0 pr-0",
         "focus:outline-none focus:outline-offset-0",
         "dark:text-white", //Dark Mode
@@ -98,7 +98,7 @@ export default {
     trigger: {
       class: [
         "flex items-center justify-center shrink-0",
-        "text-surface-500 dark:text-white w-12 rounded-r-md",
+        "text-surface-500 dark:text-white w-9 rounded-r-md",
       ],
     },
     panel: {
@@ -149,7 +149,7 @@ export default {
         "inline-flex relative cursor-pointer user-none",
         "bg-surface-0 border rounded-md",
         "transition duration-200",
-        "h-12 mx-2",
+        "h-9 mx-2",
         "dark:bg-surface-800 dark:border-surface-700", //DarkMode
         {
           "outline-none outline-offset-0 shadow-[0_0_0_0.2rem_rgba(191,219,254,1)] border-primary-500":
@@ -161,7 +161,7 @@ export default {
     }),
     input: {
       class: [
-        "font-sans text-base text-surface-600 p-3 m-0 rounded-md apperance-none",
+        "font-sans text-base text-surface-600 py-1.5 px-3 m-0 rounded-md apperance-none",
         "block whitespace-nowrap overflow-hidden flex-auto w-[1%] cursor-pointer text-ellipsis border-0 pr-0",
         "focus:outline-none focus:outline-offset-0",
         "dark:text-white", //Dark Mode
@@ -170,7 +170,7 @@ export default {
     trigger: {
       class: [
         "flex items-center justify-center shrink-0",
-        "text-surface-500 dark:text-white w-12 rounded-r-md",
+        "text-surface-500 dark:text-white w-9 rounded-r-md",
       ],
     },
     panel: {
