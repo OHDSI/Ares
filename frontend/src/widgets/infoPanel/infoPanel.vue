@@ -1,157 +1,138 @@
 <template>
-  <div class="flex flex-row gap-36 px-5">
+  <div class="flex flex-row gap-12 px-5">
     <div v-if="props.concept" class="flex flex-col items-center">
-      <div class="flex flex-row items-center content-center">
-        <svg-icon
-          class="text-primary-500"
-          type="mdi"
-          :path="mdiIdentifier"
-        ></svg-icon>
-        <Badge severity="info" :value="props.concept" />
+      <div class="flex flex-col items-center gap-0.5">
+        <svg-icon class="text-primary-500" type="mdi" :path="mdiIdentifier" />
+        <span class="text-lg font-semibold text-primary-500">{{
+          props.concept
+        }}</span>
       </div>
-      <p class="font-light text-xs dark:text-white">Concept Identifier</p>
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+        Concept Identifier
+      </p>
     </div>
+
     <div v-if="props.domain" class="flex flex-col items-center">
-      <div class="flex flex-row items-center content-center">
-        <svg-icon
-          class="text-primary-500"
-          type="mdi"
-          :path="mdiTableRow"
-        ></svg-icon>
-        <Badge
-          severity="info"
-          :value="props.domain.split('_').join(' ').toUpperCase()"
-        />
+      <div class="flex flex-col items-center gap-0.5">
+        <svg-icon class="text-primary-500" type="mdi" :path="mdiTableRow" />
+        <span class="text-lg font-semibold text-primary-500">
+          {{ props.domain.split("_").join(" ").toUpperCase() }}
+        </span>
       </div>
-      <p class="font-light text-xs dark:text-white">Domain ID</p>
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+        Domain ID
+      </p>
     </div>
+
     <div v-if="props.population" class="flex flex-col items-center">
-      <div class="flex flex-row items-center content-center">
-        <svg-icon
-          class="text-primary-500"
-          type="mdi"
-          :path="mdiAccountGroup"
-        ></svg-icon>
-        <Badge severity="info" :value="formatComma(props.population)" />
+      <div class="flex flex-col items-center gap-0.5">
+        <svg-icon class="text-primary-500" type="mdi" :path="mdiAccountGroup" />
+        <span class="text-lg font-semibold text-primary-500">{{
+          formatComma(props.population)
+        }}</span>
       </div>
-      <p class="font-light text-xs dark:text-white">Number of People</p>
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+        Number of People
+      </p>
     </div>
+
     <div v-if="props.percentPeople" class="flex flex-col items-center">
-      <div class="flex flex-row items-center content-center">
-        <svg-icon
-          class="text-primary-500"
-          type="mdi"
-          :path="mdiPercent"
-        ></svg-icon>
-        <Badge
-          severity="info"
-          :value="formatPercent(props.percentPeople)"
-        />
+      <div class="flex flex-col items-center gap-0.5">
+        <svg-icon class="text-primary-500" type="mdi" :path="mdiPercent" />
+        <span class="text-lg font-semibold text-primary-500">{{
+          formatPercent(props.percentPeople)
+        }}</span>
       </div>
-      <p class="font-light text-xs dark:text-white">% of People</p>
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+        % of People
+      </p>
     </div>
+
     <div v-if="props.recordsPerPerson" class="flex flex-col items-center">
-      <div class="flex flex-row items-center content-center">
-        <svg-icon
-          class="text-primary-500"
-          type="mdi"
-          :path="mdiTableRow"
-        ></svg-icon>
-        <Badge severity="info" :value="props.recordsPerPerson" />
+      <div class="flex flex-col items-center gap-0.5">
+        <svg-icon class="text-primary-500" type="mdi" :path="mdiTableRow" />
+        <span class="text-lg font-semibold text-primary-500">{{
+          props.recordsPerPerson
+        }}</span>
       </div>
-      <p class="font-light text-xs dark:text-white">Records per Person</p>
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+        Records per Person
+      </p>
     </div>
-    <div
-      v-if="props.percentValues"
-      class="flex flex-col items-center content-center"
-    >
-      <div class="flex flex-row">
+
+    <div v-if="props.percentValues" class="flex flex-col items-center">
+      <div class="flex flex-col items-center gap-0.5">
         <svg-icon
           class="text-primary-500"
           type="mdi"
           :path="mdiDatabaseCheckOutline"
-        ></svg-icon>
-        <Badge severity="info" :value="props.percentValues" />
+        />
+        <span class="text-lg font-semibold text-primary-500">{{
+          props.percentValues
+        }}</span>
       </div>
-      <p class="font-light text-xs dark:text-white">% with Values</p>
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+        % with Values
+      </p>
     </div>
+
     <div
       v-if="props.countFailed"
-      class="flex flex-col items-center content-center"
+      class="flex flex-col items-center"
+      @click="props.countFailed.action"
     >
-      <div @click="props.countFailed.action" class="flex flex-row">
-        <svg-icon
-          class="text-primary-500"
-          type="mdi"
-          :path="mdiDatabaseAlert"
-        ></svg-icon>
-        <Badge severity="danger" :value="props.countFailed.value" />
+      <div class="flex flex-col items-center gap-0.5">
+        <svg-icon class="text-red-500" type="mdi" :path="mdiDatabaseAlert" />
+        <span class="text-lg font-semibold text-red-500">{{
+          props.countFailed.value
+        }}</span>
       </div>
-      <p class="font-light text-xs dark:text-white">Records Per Person</p>
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+        Records Per Person
+      </p>
     </div>
-    <div
-      v-if="props.notStationary"
-      class="flex flex-col items-center content-center"
-    >
-      <div class="flex flex-row">
-        <svg-icon
-          class="text-red-500"
-          type="mdi"
-          :path="mdiClockAlert"
-        ></svg-icon>
+
+    <div v-if="props.notStationary" class="flex flex-col items-center">
+      <div class="flex flex-col items-center gap-0.5">
+        <svg-icon class="text-red-500" type="mdi" :path="mdiClockAlert" />
       </div>
-      <p class="font-light text-xs dark:text-white">
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
         Non-Stationary Time Series
       </p>
     </div>
-    <div
-      v-if="props.proportionSex"
-      class="flex flex-col items-center content-center"
-    >
-      <div class="flex flex-row">
+
+    <div v-if="props.proportionSex" class="flex flex-col items-center">
+      <div class="flex flex-col items-center gap-0.5">
         <svg-icon
           class="text-primary-500"
           type="mdi"
           :path="mdiHumanMaleFemale"
-        ></svg-icon>
-        <div class="flex flex-row gap-2">
-          <Badge
-            severity="info"
-            :value="
-              'Male: ' +
-              formatComma(props.proportionSex.male.count) +
-              ' (' +
-              formatPercent(props.proportionSex.male.pct) +
-              ')'
-            "
-          />
-          <Badge
-            severity="info"
-            :value="
-              'Female: ' +
-              formatComma(props.proportionSex.female.count) +
-              ' (' +
-              formatPercent(props.proportionSex.female.pct) +
-              ')'
-            "
-          />
-        </div>
+        />
+        <span class="text-lg font-semibold text-primary-500">
+          {{ formatComma(props.proportionSex.male.count) }} M
+          <span class="text-sm font-normal" :style="{ color: mutedColor }">{{
+            formatPercent(props.proportionSex.male.pct)
+          }}</span>
+          &nbsp;·&nbsp;
+          {{ formatComma(props.proportionSex.female.count) }} F
+          <span class="text-sm font-normal" :style="{ color: mutedColor }">{{
+            formatPercent(props.proportionSex.female.pct)
+          }}</span>
+        </span>
       </div>
-      <p class="font-light text-xs dark:text-white">Proportion by Sex</p>
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+        Proportion by Sex
+      </p>
     </div>
-    <div
-      v-if="props.networkPopulation"
-      class="flex flex-col items-center content-center"
-    >
-      <div class="flex flex-row">
-        <svg-icon
-          class="text-primary-500"
-          type="mdi"
-          :path="mdiAccountGroup"
-        ></svg-icon>
-        <Badge severity="info" :value="props.networkPopulation" />
+
+    <div v-if="props.networkPopulation" class="flex flex-col items-center">
+      <div class="flex flex-col items-center gap-0.5">
+        <svg-icon class="text-primary-500" type="mdi" :path="mdiAccountGroup" />
+        <span class="text-lg font-semibold text-primary-500">{{
+          props.networkPopulation
+        }}</span>
       </div>
-      <p class="font-light text-xs dark:text-white">
+      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
         Number of People in Network
       </p>
     </div>
@@ -159,6 +140,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vuex";
 import SvgIcon from "@/shared/ui/svgIcon";
 import {
   mdiAccountGroup,
@@ -170,7 +153,6 @@ import {
   mdiPercent,
   mdiTableRow,
 } from "@mdi/js";
-import Badge from "primevue/badge";
 import { formatComma, formatPercent } from "@/shared/lib/formatters";
 
 interface Props {
@@ -181,14 +163,8 @@ interface Props {
   recordsPerPerson?: string;
   percentValues?: string;
   proportionSex?: {
-    male: {
-      count: number;
-      pct: number;
-    };
-    female: {
-      count: number;
-      pct: number;
-    };
+    male: { count: number; pct: number };
+    female: { count: number; pct: number };
   };
   countFailed?: { value: string; action: () => void };
   notStationary?: boolean;
@@ -197,16 +173,10 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
 </script>
 
-<style scoped>
-.btn:hover {
-  opacity: 1;
-  transition-duration: 0.5s;
-}
-
-.btn {
-  opacity: 0.7;
-  transition-duration: 0.5s;
-}
-</style>
+<style scoped></style>
