@@ -109,15 +109,15 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import { openNewTab } from "@/shared/lib/utils";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsOptionQuantityDistribution from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/QuantityDistribution/quantityDistribution";
 
 const store = useStore();

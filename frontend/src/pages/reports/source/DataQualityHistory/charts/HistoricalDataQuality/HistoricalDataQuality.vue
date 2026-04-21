@@ -111,13 +111,13 @@ import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import _ from "lodash";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import Panel from "primevue/panel";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsDataQualityResults from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQuality/historicalDataQuality";
 
 const store = useStore();

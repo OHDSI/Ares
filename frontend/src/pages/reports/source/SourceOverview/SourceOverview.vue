@@ -21,10 +21,10 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import PopulationHistory from "@/pages/reports/source/SourceOverview/charts/populationHistory/PopulationHistory.vue";
-import DataQualityIssuesHistory from "@/pages/reports/source/SourceOverview/charts/dataQualityIssuesHistory/DataQualityIssuesHistory.vue";
-import ReleaseListing from "@/pages/reports/source/SourceOverview/charts/releaseListing/ReleaseListing.vue";
-import SourceDataStrand from "@/pages/reports/source/SourceOverview/charts/sourceDataStrand/SourceDataStrand.vue";
+import PopulationHistory from "@/pages/reports/source/SourceOverview/charts/populationHistory";
+import DataQualityIssuesHistory from "@/pages/reports/source/SourceOverview/charts/dataQualityIssuesHistory";
+import ReleaseListing from "@/pages/reports/source/SourceOverview/charts/releaseListing";
+import SourceDataStrand from "@/pages/reports/source/SourceOverview/charts/sourceDataStrand";
 
 const store = useStore();
 </script>

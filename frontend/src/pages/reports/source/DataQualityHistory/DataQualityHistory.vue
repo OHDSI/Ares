@@ -8,10 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import HistoricalDataQuality from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQuality/HistoricalDataQuality.vue";
-import HistoricalDataQualityByCategory from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByCategory/HistoricalDataQualityByCategory.vue";
-import HistoricalDataQualityByDomain from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByDomain/HistoricalDataQualityByDomain.vue";
-import DataQualityDelta from "@/pages/reports/source/DataQualityHistory/charts/DataQualityDelta/DataQualityDelta.vue";
+import HistoricalDataQuality from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQuality";
+import HistoricalDataQualityByCategory from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByCategory";
+import HistoricalDataQualityByDomain from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByDomain";
+import DataQualityDelta from "@/pages/reports/source/DataQualityHistory/charts/DataQualityDelta";
 </script>
 
 <style scoped></style>

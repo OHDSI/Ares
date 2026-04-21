@@ -12,8 +12,8 @@ import { useStore } from "vuex";
 
 const store = useStore();
 
-import AchillesPerformance from "@/pages/reports/release/PerformanceReport/components/AchillesPerformance.vue";
-import CohortDiagnosticsPerformance from "@/pages/reports/release/PerformanceReport/components/CohortDiagnosticsPerformance.vue";
+import AchillesPerformance from "@/pages/reports/release/PerformanceReport/components/achillesPerformance";
+import CohortDiagnosticsPerformance from "@/pages/reports/release/PerformanceReport/components/cohortDiagnosticsPerformance";
 </script>
 
 <style scoped>

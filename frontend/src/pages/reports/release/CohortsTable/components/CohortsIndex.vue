@@ -90,7 +90,7 @@ import { FilterMatchMode } from "primevue/api";
 import { COHORT_INDEX } from "@/shared/config/files";
 import { formatComma } from "@/shared/lib/formatters";
 import { mdiCompareHorizontal } from "@mdi/js";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 
 const store = useStore();
 const route = useRoute();

@@ -62,25 +62,25 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
-import MeasurementValueDistributionChart from "./charts/measurementValueDistributionChart/MeasurementValueDistributionChart.vue";
+import SvgIcon from "@/shared/ui/svgIcon";
+import MeasurementValueDistributionChart from "./charts/measurementValueDistributionChart";
 import { computed } from "vue";
-import RecordCountProportionByMonth from "./charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";
-import AgeAtFirstExposure from "./charts/ageAtFirstExposure/AgeAtFirstExposure.vue";
-import DrugsByType from "./charts/drugsByType/DrugsByType.vue";
-import DaysSupply from "./charts/daysSupply/DaysSupply.vue";
-import QuantityDistribution from "./charts/quantityDistribution/QuantityDistribution.vue";
-import AgeAtFirstDiagnosis from "./charts/ageAtFirstDiagnosis/AgeAtFirstDiagnosis.vue";
-import ConditionsByType from "./charts/conditionsByType/ConditionsByType.vue";
-import VisitDurationByType from "./charts/visitDurationByType/VisitDurationByType.vue";
-import RecordsByUnit from "./charts/recordsByUnit/RecordsByUnit.vue";
-import MeasurementsByType from "./charts/measurementsByType/MeasurementsByType.vue";
-import LengthOfEra from "./charts/lengthOfEra/LengthOfEra.vue";
-import AgeAtFirstOccurrence from "./charts/ageAtFirstOccurrence/AgeAtFirstOccurrence.vue";
+import RecordCountProportionByMonth from "./charts/RecordCountProportionByMonth";
+import AgeAtFirstExposure from "./charts/ageAtFirstExposure";
+import DrugsByType from "./charts/drugsByType";
+import DaysSupply from "./charts/daysSupply";
+import QuantityDistribution from "./charts/quantityDistribution";
+import AgeAtFirstDiagnosis from "./charts/ageAtFirstDiagnosis";
+import ConditionsByType from "./charts/conditionsByType";
+import VisitDurationByType from "./charts/visitDurationByType";
+import RecordsByUnit from "./charts/recordsByUnit";
+import MeasurementsByType from "./charts/measurementsByType";
+import LengthOfEra from "./charts/lengthOfEra";
+import AgeAtFirstOccurrence from "./charts/ageAtFirstOccurrence";
 import InfoPanel from "@/widgets/infoPanel";
 import { mdiCheckNetwork } from "@mdi/js";
 import Button from "primevue/button";
-import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader";
 
 const store = useStore();
 

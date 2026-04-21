@@ -11,9 +11,9 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 
-import AgeAtFirstObservation from "@/pages/reports/network/NetworkPopulationReport/charts/ageAtFirstObservation/AgeAtFirstObservation.vue";
-import CumulativeObservation from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation/CumulativeObservation.vue";
-import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
+import AgeAtFirstObservation from "@/pages/reports/network/NetworkPopulationReport/charts/ageAtFirstObservation";
+import CumulativeObservation from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation";
+import PageHeader from "@/shared/ui/pageHeader";
 
 const store = useStore();
 </script>

@@ -24,7 +24,7 @@
           <CohortDrilldownReport v-if="conceptData" :data="conceptData" />
           <div class="flex justify-center items-center h-full" v-else>
             <!--            <AnimatedLogo />-->
-            <BlackHoleLoading
+            <BlackHoleLoader
               text="Fetching..."
               size="lg"
               :state="drilldownLoaderState"
@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 
-import MainTable from "./components/CohortsIndex.vue";
+import MainTable from "./components";
 import Sidebar from "primevue/sidebar";
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
 import { computed, onMounted, ref, watch } from "vue";
@@ -50,8 +50,8 @@ import {
 } from "@/shared/config/files";
 import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
 import { useRoute, useRouter } from "vue-router";
-import CohortDrilldownReport from "@/pages/reports/release/CohortsTable/components/CohortDrilldownReport/CohortDrilldownReport.vue";
-import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
+import CohortDrilldownReport from "@/pages/reports/release/CohortsTable/components/CohortDrilldownReport";
+import BlackHoleLoader from "@/shared/ui/blackHoleLoader";
 
 const store = useStore();
 const router = useRouter();

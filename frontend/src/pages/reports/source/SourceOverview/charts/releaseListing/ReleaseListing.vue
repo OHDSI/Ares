@@ -71,7 +71,7 @@ import { useStore } from "vuex";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { mdiClockOutline } from "@mdi/js";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import { formatComma } from "@/shared/lib/formatters";
 
 const store = useStore();

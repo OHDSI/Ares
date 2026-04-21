@@ -84,9 +84,9 @@
 
 <script setup lang="ts">
 import { ref, provide, nextTick } from "vue";
-import SqlTool from "./tools/SqlTool.vue";
-import LogsTool from "./tools/LogsTool.vue";
-import DuckdbTool from "./tools/DuckdbTool.vue";
+import SqlTool from "./tools/sqlTool";
+import LogsTool from "./tools/logsTool";
+import DuckdbTool from "./tools/duckdbTool";
 import { useDrag } from "./composables/useDrag";
 
 type WidgetState = "collapsed" | "menu" | "tool";

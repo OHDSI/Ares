@@ -1,0 +1,3 @@
+import NetworkDataQualityIssuesByCdmTable from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCdmTable/NetworkDataQualityIssuesByCdmTable.vue";
+
+export default NetworkDataQualityIssuesByCdmTable;

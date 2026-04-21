@@ -17,7 +17,7 @@
 import Button from "primevue/button";
 import { useRouter } from "vue-router";
 import { mdiArrowLeft } from "@mdi/js";
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import SvgIcon from "@/shared/ui/svgIcon";
 
 const props = defineProps<Props>();
 

@@ -7,10 +7,10 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import DomainRecordsPerPerson from "@/pages/reports/release/DomainDensity/charts/DomainRecordsPerPerson/DomainRecordsPerPerson.vue";
-import DomainDensity from "@/pages/reports/release/DomainDensity/charts/DomainDensity/DomainDensity.vue";
+import DomainRecordsPerPerson from "@/pages/reports/release/DomainDensity/charts/DomainRecordsPerPerson";
+import DomainDensity from "@/pages/reports/release/DomainDensity/charts/DomainDensity";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
+import FormDialog from "@/widgets/selectionEditDialog";
 const store = useStore();
 </script>
 

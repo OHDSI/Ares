@@ -9,12 +9,12 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 
-import MainTable from "./components/MainTable.vue";
-import CostTimeSeries from "@/pages/reports/release/CostTable/components/costTimeSeries/CostTimeSeries.vue";
+import MainTable from "./components";
+import CostTimeSeries from "@/pages/reports/release/CostTable/components/costTimeSeries";
 import { ref, watch } from "vue";
 
 import { useRoute, useRouter } from "vue-router";
-import CostDomains from "@/pages/reports/release/CostTable/components/costDomains/CostDomains.vue";
+import CostDomains from "@/pages/reports/release/CostTable/components/costDomains";
 
 const store = useStore();
 

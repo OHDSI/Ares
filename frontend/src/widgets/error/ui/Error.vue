@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 import Message from "primevue/message";
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import SvgIcon from "@/shared/ui/svgIcon";
 import { mdiAlertCircleOutline, mdiCloudAlert, mdiGithub } from "@mdi/js";
 import { links } from "@/shared/config/links";
 import Button from "primevue/button";

@@ -170,15 +170,15 @@ import { links } from "@/shared/config/links";
 
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import DataTable from "primevue/datatable";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
 import { getValuesArray, openNewTab } from "@/shared/lib/utils";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsOptionAgeAtFirstExposureFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/ageAtFirstExposure/ageAtFirstExposure";
 import { formatComma } from "@/shared/lib/formatters";
 

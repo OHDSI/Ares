@@ -88,7 +88,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from "vue";
-import MetadataCard from "@/widgets/chartMetadataCard/metadataCard.vue";
+import MetadataCard from "@/widgets/chartMetadataCard";
 import { useStore } from "vuex";
 import { createSelection } from "@/widgets/selectionEditDialog/lib/lib";
 import { SET_SELECTED_RECTANGLE } from "@/widgets/notesPanel/model/store/mutations.type";
@@ -99,7 +99,7 @@ import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import MultiSelect from "primevue/multiselect";
 import { mdiPlusThick } from "@mdi/js";
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import SvgIcon from "@/shared/ui/svgIcon";
 import { useRoute } from "vue-router";
 
 interface Props {

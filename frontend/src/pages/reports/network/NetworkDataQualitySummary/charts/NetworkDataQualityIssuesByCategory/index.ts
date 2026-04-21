@@ -1,0 +1,3 @@
+import NetworkDataQualityIssuesByCategory from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCategory/NetworkDataQualityIssuesByCategory.vue";
+
+export default NetworkDataQualityIssuesByCategory;

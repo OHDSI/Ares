@@ -72,15 +72,15 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import { RecordsCountType } from "@/processes/exploreReports/model/interfaces/reportTypes/RecordsCountType";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Panel from "primevue/panel";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { computed, ref } from "vue";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsMeasurementsByTypeFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/measurementsByType/measurementsByType";
 import { formatComma } from "@/shared/lib/formatters";
 import { openNewTab } from "@/shared/lib/utils";

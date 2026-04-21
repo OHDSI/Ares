@@ -403,7 +403,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import { toRaw } from "vue";
 import MultiSelect from "primevue/multiselect";
-import ColumnSelector from "@/shared/ui/ColumnSelector.vue";
+import ColumnSelector from "@/shared/ui/columnSelector";
 
 import { ref, onBeforeMount, watch, Ref, nextTick } from "vue";
 import { computed } from "vue";

@@ -1,0 +1,3 @@
+import RecordCountProportionByMonth from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";
+
+export default RecordCountProportionByMonth;

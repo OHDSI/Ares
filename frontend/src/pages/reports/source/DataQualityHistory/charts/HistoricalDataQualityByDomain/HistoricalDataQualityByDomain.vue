@@ -77,14 +77,14 @@ import { QUALITY_INDEX } from "@/shared/config/files";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
 import { useRoute } from "vue-router";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsDataQualityResultsByDomain from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByDomain/dataQualityByDomain";
 import { formatComma } from "@/shared/lib/formatters";
 

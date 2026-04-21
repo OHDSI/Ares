@@ -27,12 +27,12 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import PopulationByAgeSex from "@/pages/reports/release/PersonReport/charts/PopulationByAgeSex/PopulationByAgeSex.vue";
-import PopulationByRace from "@/pages/reports/release/PersonReport/charts/PopulationByRace/PopulationByRace.vue";
-import PopulationByYearBirth from "@/pages/reports/release/PersonReport/charts/PopulationByYearBirth/PopulationByYearBirth.vue";
-import PopulationByEthnicity from "@/pages/reports/release/PersonReport/charts/PopulationByEthnicity/PopulationByEthnicity.vue";
+import PopulationByAgeSex from "@/pages/reports/release/PersonReport/charts/PopulationByAgeSex";
+import PopulationByRace from "@/pages/reports/release/PersonReport/charts/PopulationByRace";
+import PopulationByYearBirth from "@/pages/reports/release/PersonReport/charts/PopulationByYearBirth";
+import PopulationByEthnicity from "@/pages/reports/release/PersonReport/charts/PopulationByEthnicity";
 import InfoPanel from "@/widgets/infoPanel";
-import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader";
 import { onMounted } from "vue";
 
 const store = useStore();

@@ -66,15 +66,15 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import Panel from "primevue/panel";
 import { mdiCodeBraces } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsRecordProportionByMonth from "./echartsRecordProportionByMonth";
 import { openNewTab } from "@/shared/lib/utils";
 

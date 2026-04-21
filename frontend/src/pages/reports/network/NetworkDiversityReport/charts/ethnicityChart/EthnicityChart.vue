@@ -13,7 +13,7 @@
 import Panel from "primevue/panel";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsEthnicity from "@/pages/reports/network/NetworkDiversityReport/charts/ethnicityChart/ethnicity";
 import { getValuesArray } from "@/shared/lib/utils";
 

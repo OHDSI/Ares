@@ -72,7 +72,7 @@ import { Codemirror } from "vue-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { mdiInformationOutline } from "@mdi/js";
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import SvgIcon from "@/shared/ui/svgIcon";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import ConfirmDialog from "primevue/confirmdialog";

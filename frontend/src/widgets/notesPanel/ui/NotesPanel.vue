@@ -10,7 +10,7 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 
-import MetadataCard from "@/widgets/chartMetadataCard/metadataCard.vue";
+import MetadataCard from "@/widgets/chartMetadataCard";
 import Carousel from "primevue/carousel";
 import { Note } from "@/shared/interfaces/Annotations";
 

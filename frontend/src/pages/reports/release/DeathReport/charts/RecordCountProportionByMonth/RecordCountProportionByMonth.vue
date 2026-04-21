@@ -75,15 +75,15 @@ import * as listeners from "@/pages/model/lib/listeners";
 import { computed, ref } from "vue";
 import NotesPanel from "@/widgets/notesPanel/ui/NotesPanel.vue";
 import _ from "lodash";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import useAnnotations from "@/shared/lib/composables/useAnnotations";
 import useAnnotationControls from "@/shared/lib/composables/useAnnotationControls";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsOptionProportionByMonth from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByMonth/recordCountProportionByMonth";
 import { openNewTab } from "@/shared/lib/utils";
 

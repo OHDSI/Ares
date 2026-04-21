@@ -1,0 +1,3 @@
+import MeasurementValueDistributionChart from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/measurementValueDistributionChart/MeasurementValueDistributionChart.vue";
+
+export default MeasurementValueDistributionChart;

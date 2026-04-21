@@ -62,19 +62,19 @@ import ToggleDarkMode from "./components/toggleDarkMode";
 import ToggleBaseLine from "./components/toggleBaseLine";
 import ToggleMinMax from "./components/toggleMinMax";
 import Divider from "primevue/divider";
-import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode/ToggleDefaultAnnotatonsMode.vue";
+import ToggleDefaultAnnotatonsMode from "./components/toggleDefaultAnnotationsMode";
 import StickyNavBar from "@/widgets/settings/ui/components/stickyNavBar";
 import TableStrippedRowsToggle from "@/widgets/settings/ui/components/strippedRows";
 import PersistColumnSelection from "@/widgets/settings/ui/components/persistColumnSelection";
 
 import { computed } from "vue";
 import { useStore } from "vuex";
-import ExportNotes from "@/widgets/settings/ui/components/exportNotes/ExportNotes.vue";
+import ExportNotes from "@/widgets/settings/ui/components/exportNotes";
 import { TOGGLE_UI_VISIBILITY } from "@/widgets/settings/model/store/actions.type";
-import ToggleDefaultNotesMode from "@/widgets/settings/ui/components/toggleDefaultNotesMode/ToggleDefaultNotesMode.vue";
-import UserAccount from "@/widgets/settings/ui/components/userAccount/UserAccount.vue";
+import ToggleDefaultNotesMode from "@/widgets/settings/ui/components/toggleDefaultNotesMode";
+import UserAccount from "@/widgets/settings/ui/components/userAccount";
 import Sidebar from "primevue/sidebar";
-import FavoriteSources from "@/widgets/settings/ui/components/favoriteSources/FavoriteSources.vue";
+import FavoriteSources from "@/widgets/settings/ui/components/favoriteSources";
 import DrillDownViewOptions from "@/widgets/settings/ui/components/DrillDownViewOptions";
 import ToggleDevWidget from "@/widgets/settings/ui/components/toggleDevWidget";
 

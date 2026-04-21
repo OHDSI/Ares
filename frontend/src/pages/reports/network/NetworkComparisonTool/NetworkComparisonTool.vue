@@ -216,7 +216,7 @@
           <NetworkConceptReport v-if="conceptData" :data="conceptData" />
           <div class="flex justify-center items-center h-full" v-else>
             <!--            <AnimatedLogo />-->
-            <BlackHoleLoading
+            <BlackHoleLoader
               :escalate="true"
               text="Fetching..."
               size="lg"
@@ -252,12 +252,12 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import { useRoute, useRouter } from "vue-router";
 import TreeSelect from "primevue/treeselect";
-import NetworkConceptReport from "./conceptDrilldown/NetworkConceptReport.vue";
+import NetworkConceptReport from "./conceptDrilldown";
 import environment from "@/shared/api/environment";
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
 import concept from "@/processes/exploreReports/model/store/postprocessing/conceptReport";
-import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
+import BlackHoleLoader from "@/shared/ui/blackHoleLoader";
 import { formatComma, formatPercent } from "@/shared/lib/formatters";
 const route = useRoute();
 const store = useStore();

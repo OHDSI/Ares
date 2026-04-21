@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import NetworkDataQualityIssuesByCategory from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCategory/NetworkDataQualityIssuesByCategory.vue";
-import NetworkDataQualityIssuesByCdmTable from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCdmTable/NetworkDataQualityIssuesByCdmTable.vue";
+import NetworkDataQualityIssuesByCategory from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCategory";
+import NetworkDataQualityIssuesByCdmTable from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCdmTable";
 
 const store = useStore();
 </script>

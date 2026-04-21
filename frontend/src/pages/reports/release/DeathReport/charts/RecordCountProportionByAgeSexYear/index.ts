@@ -1,0 +1,3 @@
+import RecordCountProportionByAgeSexYear from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
+
+export default RecordCountProportionByAgeSexYear;

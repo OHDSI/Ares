@@ -72,13 +72,13 @@
 import { computed, ref } from "vue";
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import Panel from "primevue/panel";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsNetworkDatastrand from "@/pages/reports/network/NetworkDatastrandReport/networkDataStrand";
 import { formatComma } from "@/shared/lib/formatters";
 import { getValuesArray, openNewTab } from "@/shared/lib/utils";

@@ -21,11 +21,11 @@ import { ref, computed, watch, markRaw } from "vue";
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 
-import PillNav from "@/shared/ui/PillNav.vue";
-import OverviewTable from "@/pages/reports/release/DataQualityResults/components/OverviewTable.vue";
-import ResultsTable from "@/pages/reports/release/DataQualityResults/components/ResultsTable.vue";
-import PivotDataTable from "@/pages/reports/release/DataQualityResults/components/PivotDataTable.vue";
-import MetadataTable from "@/pages/reports/release/DataQualityResults/components/MetadataTable.vue";
+import PillNav from "@/shared/ui/pillNav";
+import OverviewTable from "@/pages/reports/release/DataQualityResults/components/overviewTable";
+import ResultsTable from "@/pages/reports/release/DataQualityResults/components/resultsTable";
+import PivotDataTable from "@/pages/reports/release/DataQualityResults/components/pivotDataTable";
+import MetadataTable from "@/pages/reports/release/DataQualityResults/components/metadataTable";
 
 const store = useStore();
 const route = useRoute();

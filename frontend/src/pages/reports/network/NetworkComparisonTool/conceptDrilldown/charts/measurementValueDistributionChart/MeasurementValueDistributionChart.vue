@@ -208,16 +208,16 @@
 import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { computed, ref, Ref } from "vue";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import { DistributionType } from "@/processes/exploreReports/model/interfaces/reportTypes/DistributionType";
 import Panel from "primevue/panel";
 import MultiSelect from "primevue/multiselect";
 import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import { getValuesArray, openNewTab } from "@/shared/lib/utils";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsOptionMeasurementDistributionFaceted from "@/pages/reports/network/NetworkComparisonTool/conceptDrilldown/charts/measurementValueDistributionChart/measurementValueDistribution";
 import { formatComma } from "@/shared/lib/formatters";
 

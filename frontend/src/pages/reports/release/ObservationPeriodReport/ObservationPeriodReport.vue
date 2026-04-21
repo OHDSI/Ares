@@ -14,15 +14,15 @@
 </template>
 
 <script setup lang="ts">
-import CumulativeObservation from "@/pages/reports/release/ObservationPeriodReport/charts/CumulativeObservation/CumulativeObservation.vue";
-import ObservationPeriodsPerPerson from "@/pages/reports/release/ObservationPeriodReport/charts/ObservationPeriodPerPerson/ObservationPeriodsPerPerson.vue";
-import ObservationOverTime from "@/pages/reports/release/ObservationPeriodReport/charts/ObservationOverTime/ObservationOverTime.vue";
-import YearsOfObservationByAge from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationByAge/YearsOfObservationByAge.vue";
-import YearsOfObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationBySex/YearsOfObservationBySex.vue";
-import AgeAtFirstObservation from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservation/AgeAtFirstObservation.vue";
-import AgeAtFirstObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservationBySex/AgeAtFirstObservationBySex.vue";
+import CumulativeObservation from "@/pages/reports/release/ObservationPeriodReport/charts/CumulativeObservation";
+import ObservationPeriodsPerPerson from "@/pages/reports/release/ObservationPeriodReport/charts/ObservationPeriodPerPerson";
+import ObservationOverTime from "@/pages/reports/release/ObservationPeriodReport/charts/ObservationOverTime";
+import YearsOfObservationByAge from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationByAge";
+import YearsOfObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationBySex";
+import AgeAtFirstObservation from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservation";
+import AgeAtFirstObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservationBySex";
 import { useStore } from "vuex";
-import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
+import PageHeader from "@/shared/ui/pageHeader";
 
 const store = useStore();
 </script>

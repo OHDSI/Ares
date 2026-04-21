@@ -206,15 +206,15 @@ import { links } from "@/shared/config/links";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ref, Ref } from "vue";
-import ChartActionIcon from "@/shared/ui/toggleIcon/ToggleIcon.vue";
+import ChartActionIcon from "@/shared/ui/toggleIcon";
 import Panel from "primevue/panel";
 import { mdiCheckNetwork, mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import MultiSelect from "primevue/multiselect";
 import { openNewTab } from "@/shared/lib/utils";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsOptionMeasurementDistribution from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/MeasurementValueDistribution/measurementValueDistribution";
 import { formatComma } from "@/shared/lib/formatters";
 

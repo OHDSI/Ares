@@ -12,7 +12,7 @@
 import { NETWORK_QUALITY_SUMMARY } from "@/shared/config/files";
 import { useStore } from "vuex";
 import Panel from "primevue/panel";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 import getEChartsIssueStratificationByCategory from "@/pages/reports/network/NetworkDataQualitySummary/charts/NetworkDataQualityIssuesByCategory/issuesStratification";
 import { computed } from "vue";
 

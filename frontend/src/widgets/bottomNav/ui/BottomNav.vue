@@ -81,7 +81,7 @@ import logo from "@/shared/assets/icon.png";
 import { useStore } from "vuex";
 import { computed } from "vue";
 import environment from "@/shared/api/environment";
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import SvgIcon from "@/shared/ui/svgIcon";
 import {
   mdiCog,
   mdiDatabase,

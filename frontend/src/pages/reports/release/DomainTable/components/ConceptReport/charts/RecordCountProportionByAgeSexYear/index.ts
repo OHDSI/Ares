@@ -1,0 +1,3 @@
+import RecordCountProportionByAgeSexYear from "@/pages/reports/release/DomainTable/components/ConceptReport/charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
+
+export default RecordCountProportionByAgeSexYear;

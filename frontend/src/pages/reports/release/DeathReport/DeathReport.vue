@@ -15,13 +15,13 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
-import AgeAtDeath from "@/pages/reports/release/DeathReport/charts/AgeAtDeath/AgeAtDeath.vue";
-import DeathByType from "@/pages/reports/release/DeathReport/charts/DeathByType/DeathByType.vue";
-import RecordCountProportionByAgeSexYear from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByAgeSexYear/RecordCountProportionByAgeSexYear.vue";
-import RecordCountProportionByMonth from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByMonth/RecordCountProportionByMonth.vue";
+import AgeAtDeath from "@/pages/reports/release/DeathReport/charts/AgeAtDeath";
+import DeathByType from "@/pages/reports/release/DeathReport/charts/DeathByType";
+import RecordCountProportionByAgeSexYear from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByAgeSexYear";
+import RecordCountProportionByMonth from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByMonth";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import FormDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
-import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
+import FormDialog from "@/widgets/selectionEditDialog";
+import PageHeader from "@/shared/ui/pageHeader";
 
 const route = useRoute();
 const store = useStore();

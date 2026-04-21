@@ -25,7 +25,7 @@ import LocalStorageService from "@/shared/api/localStorageService";
 const store = useStore();
 const route = useRoute();
 import { Explorer } from "@/widgets/explorer";
-import SqlDebugWidget from "@/widgets/debugWidget/DebugWidget.vue";
+import SqlDebugWidget from "@/widgets/debugWidget";
 
 const favicon = document.getElementById("faviconTag");
 

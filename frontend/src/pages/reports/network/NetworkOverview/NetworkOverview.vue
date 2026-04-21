@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import DataNetworkOverview from "@/pages/reports/network/NetworkOverview/components/DataNetworkOverview.vue";
-import DataSourcesList from "@/pages/reports/network/NetworkOverview/components/DataSourcesList.vue";
+import DataNetworkOverview from "@/pages/reports/network/NetworkOverview/components/dataNetworkOverview";
+import DataSourcesList from "@/pages/reports/network/NetworkOverview/components/dataSourcesList";
 const store = useStore();
 </script>
 

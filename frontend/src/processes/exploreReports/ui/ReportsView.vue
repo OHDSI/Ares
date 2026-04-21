@@ -13,7 +13,7 @@
     v-if="loaderState !== 'idle' && !store.getters.getErrors"
     class="flex flex-col gap-2 justify-center items-center content-center h-[70vh]"
   >
-    <BlackHoleLoading
+    <BlackHoleLoader
       :escalate="true"
       text="Fetching..."
       size="lg"
@@ -56,11 +56,10 @@ import {
 } from "@/widgets/notesPanel/model/store/actions.type";
 import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import { SET_DIALOG } from "@/widgets/notesPanel/model/store/mutations.type";
-import SelectionEditDialog from "@/widgets/selectionEditDialog/ui/selectionEditDialog.vue";
-import ProgressCircle from "@/shared/ui/ProgressCircle.vue";
+import SelectionEditDialog from "@/widgets/selectionEditDialog";
 import environment from "@/shared/api/environment";
 import { pageCharts } from "@/processes/exploreReports/config/pageCharts";
-import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
+import BlackHoleLoader from "@/shared/ui/blackHoleLoader";
 
 const route = useRoute();
 const store = useStore();

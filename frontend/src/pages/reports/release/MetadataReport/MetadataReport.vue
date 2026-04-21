@@ -7,8 +7,8 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import SourceDetails from "@/pages/reports/release/MetadataReport/tables/SourceDetails.vue";
-import Metadata from "@/pages/reports/release/MetadataReport/tables/Metadata.vue";
+import SourceDetails from "@/pages/reports/release/MetadataReport/tables/sourceDetails";
+import Metadata from "@/pages/reports/release/MetadataReport/tables/metadata";
 
 const store = useStore();
 </script>

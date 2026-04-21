@@ -31,7 +31,7 @@
               <ConceptReport v-if="conceptData" :data="conceptData" />
               <div class="flex justify-center items-center h-full" v-else>
                 <!--              <AnimatedLogo />-->
-                <BlackHoleLoading
+                <BlackHoleLoader
                   text="Fetching..."
                   size="lg"
                   :state="drilldownLoaderState"
@@ -48,13 +48,13 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 
-import MainTable from "@/pages/reports/release/DomainTable/components/MainTable.vue";
-import DataStratificationByVisit from "@/pages/reports/release/DomainTable/components/DataStratificationByVisit/DataStratificationByVisit.vue";
-import DataStratificationByDrug from "@/pages/reports/release/DomainTable/components/DataStratificationByDrug/DataStratificationByDrug.vue";
-import DomainMetadataTable from "@/pages/reports/release/DomainTable/components/DomainMetadataTable.vue";
-import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
+import MainTable from "@/pages/reports/release/DomainTable/components/mainTable";
+import DataStratificationByVisit from "@/pages/reports/release/DomainTable/components/DataStratificationByVisit";
+import DataStratificationByDrug from "@/pages/reports/release/DomainTable/components/DataStratificationByDrug";
+import DomainMetadataTable from "@/pages/reports/release/DomainTable/components/domainMetadataTable";
+import PageHeader from "@/shared/ui/pageHeader";
 import Sidebar from "primevue/sidebar";
-import ConceptReport from "@/pages/reports/release/DomainTable/components/ConceptReport/ConceptReport.vue";
+import ConceptReport from "@/pages/reports/release/DomainTable/components/ConceptReport";
 import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import environment from "@/shared/api/environment";
@@ -62,7 +62,7 @@ import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import { CONCEPT, DOMAIN_SUMMARY } from "@/shared/config/files";
 import { FETCH_FILES } from "@/processes/exploreReports/model/store/actions.type";
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
-import BlackHoleLoading from "@/shared/assets/BlackHoleLoading.vue";
+import BlackHoleLoader from "@/shared/ui/blackHoleLoader";
 
 const store = useStore();
 const route = useRoute();

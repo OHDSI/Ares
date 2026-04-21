@@ -133,13 +133,13 @@
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import ChartHeader from "@/widgets/echarts/ChartHeader.vue";
+import ChartHeader from "@/widgets/echarts/chartHeader";
 import Panel from "primevue/panel";
 import Column from "primevue/column";
 import DataTable from "primevue/datatable";
 import { computed, ref } from "vue";
 import getEChartsCohortTimeDistribution from "@/pages/reports/release/CohortsTable/components/CohortDrilldownReport/reports/timeDistribution/timeDistribution";
-import Echarts from "@/widgets/echarts/Echarts.vue";
+import Echarts from "@/widgets/echarts/echarts";
 
 interface Props {
   data: [];

@@ -9,9 +9,9 @@
 </template>
 
 <script setup lang="ts">
-import EthnicityChart from "@/pages/reports/network/NetworkDiversityReport/charts/ethnicityChart/EthnicityChart.vue";
-import RaceChart from "@/pages/reports/network/NetworkDiversityReport/charts/raceChart/RaceChart.vue";
-import PageHeader from "@/shared/ui/pageHeader/PageHeader.vue";
+import EthnicityChart from "@/pages/reports/network/NetworkDiversityReport/charts/ethnicityChart";
+import RaceChart from "@/pages/reports/network/NetworkDiversityReport/charts/raceChart";
+import PageHeader from "@/shared/ui/pageHeader";
 </script>
 
 <style scoped></style>

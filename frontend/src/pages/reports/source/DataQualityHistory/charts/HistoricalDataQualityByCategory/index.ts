@@ -1,0 +1,3 @@
+import HistoricalDataQualityByCategory from "@/pages/reports/source/DataQualityHistory/charts/HistoricalDataQualityByCategory/HistoricalDataQualityByCategory.vue";
+
+export default HistoricalDataQualityByCategory;

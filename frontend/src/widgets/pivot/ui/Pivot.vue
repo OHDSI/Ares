@@ -229,7 +229,7 @@ import "./vue-pivottable.scss";
 import { computed, Ref, ref, onBeforeMount } from "vue";
 import draggable from "vuedraggable";
 
-import SvgIcon from "@/shared/ui/SvgIcon.vue";
+import SvgIcon from "@/shared/ui/svgIcon";
 import { mdiClose, mdiDatabaseCog, mdiPlusBox, mdiTable } from "@mdi/js";
 
 import Card from "primevue/card";
