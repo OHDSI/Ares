@@ -77,7 +77,7 @@ export default {
         "transition duration-200",
         context?.size === "small" ? "p-2" : "py-2", // Size
         context.sorted
-          ? "bg-surface-50 text-primary-700"
+          ? "bg-primary-50 text-primary-700"
           : "bg-transparent text-slate-700", // Sort
         context.sorted
           ? "dark:text-white/80 dark:bg-surface-700"
