@@ -247,7 +247,7 @@ watch(activeId, async (id) => {
 });
 
 const layoutHeight = computed(() =>
-  fullscreen.value ? "calc(100vh - 4.5rem)" : "calc(100vh - 16.2rem)"
+  fullscreen.value ? "calc(100vh - 4.5rem)" : "calc(100vh - 16.4rem)"
 );
 const pageBg = computed(() => (darkMode.value ? "#141414" : "#f8fafc"));
 
