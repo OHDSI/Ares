@@ -120,6 +120,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  progress: {
+    type: Number,
+    default: null,
+  },
 });
 
 const R_S = 13; // Schwarzschild radius
@@ -262,6 +266,36 @@ const svgMarginBottom = computed(() => {
 const svgRef = ref(null);
 const labelRef = ref(null);
 let bhAnims = [];
+let consumedSlices = new Set();
+
+function collapseRing(i) {
+  const el = svgRef.value;
+  if (!el) return;
+  const target = el.querySelector(`[data-bh-idx="${i}"]`);
+  if (!target) return;
+  anime({
+    targets: target,
+    r: 0,
+    opacity: 0,
+    duration: 700,
+    easing: "easeInQuart",
+  });
+}
+
+function syncProgress(val) {
+  if (val === null || val === undefined) return;
+  const n = RING_COUNT[props.size];
+  let stagger = 0;
+  for (let i = 0; i < n; i++) {
+    const threshold = (i + 1) * (100 / n);
+    if (val >= threshold && !consumedSlices.has(i)) {
+      consumedSlices.add(i);
+      const idx = i;
+      setTimeout(() => collapseRing(idx), stagger);
+      stagger += 60;
+    }
+  }
+}
 
 function startBHAnim() {
   stopBHAnim();
@@ -270,7 +304,8 @@ function startBHAnim() {
   const el = svgRef.value;
   if (!el) return;
 
-  if (props.escalate) escalationTimer = setTimeout(startEscalation, 10_000);
+  if (props.escalate && props.progress === null)
+    escalationTimer = setTimeout(startEscalation, 10_000);
 
   activeRings.value.forEach(({ r, period }, i) => {
     const target = el.querySelector(`[data-bh-idx="${i}"]`);
@@ -566,6 +601,7 @@ function clearEscalatedCircles() {
 function stopBHAnim() {
   bhAnims.forEach((a) => a.pause());
   bhAnims = [];
+  consumedSlices = new Set();
   stopEscalation();
   clearEscalatedCircles();
 }
@@ -580,9 +616,17 @@ watch(
   }
 );
 
+watch(
+  () => props.progress,
+  (newVal) => {
+    nextTick(() => syncProgress(newVal));
+  }
+);
+
 onMounted(async () => {
   await nextTick();
   if (props.state === "loading") startBHAnim();
+  syncProgress(props.progress);
 });
 onUnmounted(() => stopBHAnim());
 </script>
