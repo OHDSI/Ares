@@ -18,6 +18,21 @@
     @tailwind utilities;
 }
 
+@keyframes cascade-sublist-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cascade-sublist {
+  animation: cascade-sublist-enter 0.15s cubic-bezier(0, 0, 0.2, 1);
+}
+
 /* Initial Values */
 :root {
 

@@ -20,7 +20,8 @@ export default {
       // Shape
       {
         "border-0 dark:border dark:border-surface-700": props.modal,
-        "shadow-2xl": props.modal,
+        "shadow-[-4px_0_20px_rgba(0,0,0,0.10)] dark:shadow-[-4px_0_20px_rgba(0,0,0,0.4)]":
+          props.modal,
       },
 
       // Colors
@@ -28,9 +29,7 @@ export default {
       "text-surface-700 dark:text-white/80",
       "dark:border-surface-700",
 
-      // Transitions
-      "transition-transform",
-      "duration-300",
+      // Transitions handled via passthrough transition key
 
       // Misc
       "pointer-events-auto",
@@ -38,20 +37,15 @@ export default {
   }),
   header: {
     class: [
-      // Flexbox and Alignment
       "flex items-center justify-between",
       "shrink-0",
-
-      // Spacing
-      "p-5",
-
-      // Colors
+      "px-5 py-4",
       "bg-surface-0 dark:bg-surface-900",
       "text-surface-700 dark:text-surface-0/80",
     ],
   },
   title: {
-    class: ["font-bold text-lg"],
+    class: ["text-xs font-semibold uppercase tracking-widest opacity-50"],
   },
   icons: {
     class: ["flex items-center"],
@@ -115,13 +109,14 @@ export default {
   mask: ({ props }) => ({
     class: [
       // Transitions
-      "transition",
-      "duration-200",
+      "transition-all",
+      "duration-300",
+      "[transition-timing-function:cubic-bezier(0.16,1,0.3,1)]",
       { "p-5": !props.position == "full" },
 
       // Background and Effects
       {
-        "bg-white/80 dark:bg-black/80": props.modal,
+        "bg-surface-200/75 dark:bg-black/80": props.modal,
         "border-none": props.modal,
       },
       // For Dark Mode
@@ -129,39 +124,48 @@ export default {
     ],
   }),
   transition: ({ props }) => {
+    const enter =
+      "transition-all duration-[450ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]";
+    const leave = "transition-all duration-200 ease-in";
     return props.position === "top"
       ? {
-          enterFromClass: "translate-x-0 -translate-y-full translate-z-0",
-          leaveToClass: "translate-x-0 -translate-y-full translate-z-0",
+          enterFromClass: "-translate-y-full opacity-0",
+          enterActiveClass: enter,
+          leaveActiveClass: leave,
+          leaveToClass: "-translate-y-full opacity-0",
         }
       : props.position === "bottom"
       ? {
-          enterFromClass: "translate-x-0 translate-y-full translate-z-0",
-          leaveToClass: "translate-x-0 translate-y-full translate-z-0",
+          enterFromClass: "translate-y-full opacity-0",
+          enterActiveClass: enter,
+          leaveActiveClass: leave,
+          leaveToClass: "translate-y-full opacity-0",
         }
       : props.position === "left"
       ? {
-          enterFromClass: "-translate-x-full translate-y-0 translate-z-0",
-          leaveToClass: "-translate-x-full translate-y-0 translate-z-0",
+          enterFromClass: "-translate-x-full opacity-0",
+          enterActiveClass: enter,
+          leaveActiveClass: leave,
+          leaveToClass: "-translate-x-full opacity-0",
         }
       : props.position === "right"
       ? {
-          enterFromClass: "translate-x-full translate-y-0 translate-z-0",
-          leaveToClass: "translate-x-full translate-y-0 translate-z-0",
+          enterFromClass: "translate-x-full opacity-0",
+          enterActiveClass: enter,
+          leaveActiveClass: leave,
+          leaveToClass: "translate-x-full opacity-0",
         }
       : props.position === "full"
       ? {
           enterFromClass: "scale-95 opacity-0",
-          enterToClass: "scale-100 opacity-100",
-          enterActiveClass: "transition-all duration-500 ease-out",
-          leaveFromClass: "scale-100 opacity-100",
-          leaveToClass: "scale-90 opacity-0",
-          leaveActiveClass: "transition-all duration-500 ease-in",
+          enterActiveClass: enter,
+          leaveActiveClass: leave,
+          leaveToClass: "scale-95 opacity-0",
         }
       : {
           enterFromClass: "opacity-0",
-          enterActiveClass: "transition-opacity duration-400 ease-in",
-          leaveActiveClass: "transition-opacity duration-400 ease-in",
+          enterActiveClass: enter,
+          leaveActiveClass: leave,
           leaveToClass: "opacity-0",
         };
   },

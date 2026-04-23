@@ -227,6 +227,9 @@ export default {
 
       // Color
       "bg-surface-0 dark:bg-surface-800",
+
+      // Animation
+      "cascade-sublist",
     ],
   },
   separator: {
