@@ -20,7 +20,6 @@
       :state="loaderState"
     />
   </div>
-  <BottomNav />
 
   <!-- Conditional components />-->
   <Snackbar />
@@ -41,7 +40,6 @@ import { Error } from "@/widgets/error";
 import { Explorer, explorerActions } from "@/widgets/explorer";
 import { Settings } from "@/widgets/settings";
 import { Snackbar } from "@/widgets/snackbar";
-import BottomNav from "@/widgets/bottomNav";
 
 import { RESET_DATA_STORAGE } from "../model/store/actions.type";
 import getFilesByView from "../config/dataLoadConfig";
