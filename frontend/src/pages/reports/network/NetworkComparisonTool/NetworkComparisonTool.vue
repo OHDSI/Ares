@@ -236,10 +236,12 @@ import Dropdown from "primevue/dropdown";
 import Sidebar from "primevue/sidebar";
 
 import { useStore } from "vuex";
-import {
-  FETCH_FILES,
-  FETCH_MULTIPLE_FILES_BY_SOURCE,
-} from "@/processes/exploreReports/model/store/actions.type";
+import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
+import apiService from "@/shared/api/axios/apiService";
+import getFilePath from "@/shared/api/axios/files";
+import getDuckDBFilePath from "@/shared/api/duckdb/files";
+import db from "@/shared/api/duckdb/instance";
+import { csvParse } from "@/shared/lib/utils";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import {
   COHORT_INDEX,
@@ -343,12 +345,23 @@ watch(getParsedSelectedSources, async () => {
     }
   });
 
+  const toLoad: { source: string; release: string }[] = [];
   Object.keys(getParsedSelectedSources.value).forEach((source) => {
     getParsedSelectedSources.value[source].forEach((release) => {
       if (!dataSources.value[`${source}-${release}`]) {
-        loadData(source, release, selectedDomain.value);
+        toLoad.push({ source, release });
       }
     });
+  });
+
+  const results = await Promise.all(
+    toLoad.map(({ source, release }) =>
+      loadData(source, release, selectedDomain.value)
+    )
+  );
+
+  results.forEach(([key, data]) => {
+    dataSources.value[key] = data;
   });
 });
 
@@ -678,24 +691,54 @@ const reportColumnNames = {
   },
 };
 
-const loadData = async function (cdm, release, domain) {
-  await store.dispatch(FETCH_FILES, {
-    files: [{ name: selectedReport.value }],
-    params: { cdm, release, domain },
-    duckdb_supported: selectedReport.value === COHORT_INDEX,
-  });
-  dataSources.value = {
-    ...dataSources.value,
-    [`${cdm}-${release}`]: [...store.getters.getData[selectedReport.value]],
-  };
+const loadData = async function (
+  cdm: string,
+  release: string,
+  domain: string
+): Promise<[string, unknown[]]> {
+  const isDuckDb =
+    environment.DUCKDB_ENABLED && selectedReport.value === COHORT_INDEX;
+  let data: unknown[];
+
+  if (isDuckDb) {
+    const c = await db.connect();
+    const result = await c.query(
+      `SELECT * FROM read_parquet('${
+        getDuckDBFilePath({ cdm, release })[selectedReport.value]
+      }')`
+    );
+    data = [];
+    for (const row of result) {
+      const rowData: Record<string, unknown> = {};
+      for (const colName in row) {
+        if (Object.prototype.hasOwnProperty.call(row, colName)) {
+          rowData[colName] = row[colName];
+        }
+      }
+      data.push(rowData);
+    }
+  } else {
+    const response = await apiService(
+      {
+        url: getFilePath({ cdm, release, domain })[selectedReport.value],
+        method: "get",
+      },
+      {}
+    );
+    data = csvParse(response.data);
+  }
+
+  return [`${cdm}-${release}`, data];
 };
 
 const fetchMultiple = async function (sources) {
-  dataSources.value = {};
   newSourceForm.value = false;
-  sources.forEach((source) =>
-    loadData(source.source, source.release, selectedDomain.value)
+  const results = await Promise.all(
+    sources.map((source) =>
+      loadData(source.source, source.release, selectedDomain.value)
+    )
   );
+  dataSources.value = Object.fromEntries(results);
 };
 
 function reloadData() {
