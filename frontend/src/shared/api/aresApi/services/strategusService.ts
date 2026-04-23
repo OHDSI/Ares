@@ -201,7 +201,7 @@ export const StrategusService = {
     getBinaryRiskFactors(params: {
       targetId: number;
       outcomeId: number;
-      databaseId?: string;
+      databaseIds?: string[];
       riskWindowStart?: number;
       riskWindowEnd?: number;
       startAnchor?: string;
@@ -213,7 +213,16 @@ export const StrategusService = {
           baseURL: "./",
           method: "get",
           headers: { "Content-Type": "application/json" },
-          params: { ...params, schema: _currentSchema },
+          params: {
+            targetId: params.targetId,
+            outcomeId: params.outcomeId,
+            databaseId: params.databaseIds?.join(","),
+            riskWindowStart: params.riskWindowStart,
+            riskWindowEnd: params.riskWindowEnd,
+            startAnchor: params.startAnchor,
+            endAnchor: params.endAnchor,
+            schema: _currentSchema,
+          },
         },
         {}
       );
@@ -221,7 +230,7 @@ export const StrategusService = {
     getContinuousRiskFactors(params: {
       targetId: number;
       outcomeId: number;
-      databaseId?: string;
+      databaseIds?: string[];
       riskWindowStart?: number;
       riskWindowEnd?: number;
       startAnchor?: string;
@@ -233,7 +242,16 @@ export const StrategusService = {
           baseURL: "./",
           method: "get",
           headers: { "Content-Type": "application/json" },
-          params: { ...params, schema: _currentSchema },
+          params: {
+            targetId: params.targetId,
+            outcomeId: params.outcomeId,
+            databaseId: params.databaseIds?.join(","),
+            riskWindowStart: params.riskWindowStart,
+            riskWindowEnd: params.riskWindowEnd,
+            startAnchor: params.startAnchor,
+            endAnchor: params.endAnchor,
+            schema: _currentSchema,
+          },
         },
         {}
       );

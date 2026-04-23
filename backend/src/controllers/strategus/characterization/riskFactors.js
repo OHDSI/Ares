@@ -225,7 +225,7 @@ export async function getCaseTargetCounts({
  * @param {string} [options.databaseTable='database_meta_data']
  * @param {number} options.targetId - must be exactly one
  * @param {number} options.outcomeId - must be exactly one
- * @param {string} [options.databaseId]
+ * @param {string[]} [options.databaseIds]
  * @param {number[]} [options.analysisIds=[3]]
  * @param {number} [options.riskWindowStart]
  * @param {number} [options.riskWindowEnd]
@@ -240,7 +240,7 @@ export async function getBinaryRiskFactors({
                                                databaseTable = 'database_meta_data',
                                                targetId,
                                                outcomeId,
-                                               databaseId = null,
+                                               databaseIds = null,
                                                analysisIds = null,
                                                riskWindowStart = null,
                                                riskWindowEnd = null,
@@ -252,54 +252,25 @@ export async function getBinaryRiskFactors({
     if (Array.isArray(targetId)) throw new Error('Must be single targetId');
     if (Array.isArray(outcomeId)) throw new Error('Must be single outcomeId');
 
+    // Fan out one query per database to keep the fast single-DB query plan
+    if (databaseIds && databaseIds.length > 1) {
+        const perDb = await Promise.all(
+            databaseIds.map((id) => getBinaryRiskFactors({ schema, cTablePrefix, cgTablePrefix, databaseTable, targetId, outcomeId, databaseIds: [id], analysisIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }))
+        );
+        return perDb.flatMap((r) => r ?? []);
+    }
+
     const shared = { schema, cTablePrefix, cgTablePrefix, databaseTable };
+    const dbIds = databaseIds?.length ? databaseIds : null;
 
-    const caseCounts = await getCaseCounts({
-        ...shared,
-        targetIds: targetId,
-        outcomeIds: outcomeId,
-        databaseIds: databaseId ? [databaseId] : null,
-        riskWindowStart,
-        riskWindowEnd,
-        startAnchor,
-        endAnchor,
-    });
+    const [caseCounts, targetCounts, caseFeatures, targetFeatures] = await Promise.all([
+        getCaseCounts({ ...shared, targetIds: targetId, outcomeIds: outcomeId, databaseIds: dbIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }),
+        getCaseTargetCounts({ ...shared, targetIds: targetId, outcomeIds: outcomeId, databaseIds: dbIds }),
+        getCaseBinaryFeatures({ ...shared, targetIds: targetId, outcomeIds: outcomeId, databaseIds: dbIds, analysisIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }),
+        getCaseTargetBinaryFeatures({ ...shared, targetIds: targetId, outcomeIds: outcomeId, databaseIds: dbIds, analysisIds }),
+    ]);
 
-    const targetCounts = await getCaseTargetCounts({
-        ...shared,
-        targetIds: targetId,
-        outcomeIds: outcomeId,
-        databaseIds: databaseId ? [databaseId] : null,
-    });
-
-    const caseFeatures = await getCaseBinaryFeatures({
-        ...shared,
-        targetIds: targetId,
-        outcomeIds: outcomeId,
-        databaseIds: databaseId ? [databaseId] : null,
-        analysisIds,
-        riskWindowStart,
-        riskWindowEnd,
-        startAnchor,
-        endAnchor,
-    });
-
-    const targetFeatures = await getCaseTargetBinaryFeatures({
-        ...shared,
-        targetIds: targetId,
-        outcomeIds: outcomeId,
-        databaseIds: databaseId ? [databaseId] : null,
-        analysisIds,
-    });
-
-    const result = processBinaryRiskFactorFeatures({
-        caseCounts,
-        targetCounts,
-        caseFeatures,
-        targetFeatures,
-    });
-
-    return result;
+    return processBinaryRiskFactorFeatures({ caseCounts, targetCounts, caseFeatures, targetFeatures });
 }
 
 /**
@@ -337,31 +308,20 @@ export async function getContinuousRiskFactors({
     if (Array.isArray(targetId)) throw new Error('Must be single targetId');
     if (Array.isArray(outcomeId)) throw new Error('Must be single outcomeId');
 
+    // Fan out one query per database to keep the fast single-DB query plan
+    if (databaseIds && databaseIds.length > 1) {
+        const perDb = await Promise.all(
+            databaseIds.map((id) => getContinuousRiskFactors({ schema, cTablePrefix, cgTablePrefix, databaseTable, targetId, outcomeId, databaseIds: [id], analysisIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }))
+        );
+        return perDb.flatMap((r) => r ?? []);
+    }
+
     const shared = { schema, cTablePrefix, cgTablePrefix, databaseTable };
 
-    const caseFeatures = await getCaseContinuousFeatures({
-        ...shared,
-        targetIds: targetId,
-        outcomeIds: outcomeId,
-        analysisIds,
-        databaseIds,
-        riskWindowStart,
-        riskWindowEnd,
-        startAnchor,
-        endAnchor,
-    });
+    const [caseFeatures, targetFeatures] = await Promise.all([
+        getCaseContinuousFeatures({ ...shared, targetIds: targetId, outcomeIds: outcomeId, analysisIds, databaseIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }),
+        getTargetContinuousFeatures({ ...shared, targetIds: targetId, analysisIds, databaseIds }),
+    ]);
 
-    const targetFeatures = await getTargetContinuousFeatures({
-        ...shared,
-        targetIds: targetId,
-        analysisIds,
-        databaseIds,
-    });
-
-    const result = processContinuousRiskFactorFeatures({
-        caseFeatures,
-        targetFeatures,
-    });
-
-    return result;
+    return processContinuousRiskFactorFeatures({ caseFeatures, targetFeatures });
 }

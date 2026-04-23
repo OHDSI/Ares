@@ -7,12 +7,15 @@
       <div class="controls-row">
         <div>
           <label class="field-label">Database</label>
-          <Dropdown
-            v-model="selectedDatabase"
+          <MultiSelect
+            v-model="selectedDatabases"
             :options="availableDatabases"
             optionLabel="name"
             optionValue="id"
             class="w-full"
+            :maxSelectedLabels="1"
+            selectedItemsLabel="{0} databases"
+            display="chip"
           />
         </div>
         <div>
@@ -44,7 +47,7 @@
       :items="[
         targetName,
         lastGeneratedConfig.outcomeName,
-        lastGeneratedConfig.selectedDatabaseName,
+        ...lastGeneratedConfig.selectedDatabaseNames,
         `TAR: ${lastGeneratedConfig.selectedTar}`,
         `Washout: ${lastGeneratedConfig.selectedWashout}d`,
       ]"
@@ -55,6 +58,7 @@
 
       <Transition name="tab-fade" mode="out-in"
         ><div :key="activeResultTab">
+          <!-- Binary Features -->
           <div v-if="activeResultTab === 0">
             <p class="table-note" v-if="helpTextObs">
               Fraction of patients ({{ helpTextObs }}d prior obs.) stratified by
@@ -63,7 +67,24 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <ColumnSelector v-model="selectedColumns" :options="rfColumnOptions" placeholder="Select columns" />
+                <ColumnSelector
+                  v-model="selectedColumns"
+                  :options="rfColumnOptions"
+                  placeholder="Select columns"
+                />
+              </div>
+              <div class="smd-threshold">
+                <span class="smd-label">|SMD| ≥</span>
+                <div class="smd-filter">
+                  <Slider
+                    v-model="binaryAbsSmdMin"
+                    :min="0"
+                    :max="smdMax"
+                    :step="0.01"
+                    class="smd-slider"
+                  />
+                  <span class="smd-val">{{ binaryAbsSmdMin.toFixed(2) }}</span>
+                </div>
               </div>
               <Button
                 :icon="
@@ -109,133 +130,180 @@
                     </template>
                   </Column>
                   <Column
-                    :header="`Case (N=${caseN})`"
-                    :colspan="2"
-                    :pt="headerPt(0)"
+                    v-for="ref in binaryRfRef"
+                    :key="'bhdr-' + ref.id"
+                    :header="`${ref.databaseName} (Cases: ${formatCensored(
+                      ref.caseN
+                    )} · Non-cases: ${formatCensored(ref.nonCaseN)})`"
+                    :hidden="binaryDbGroupHidden"
+                    :colspan="binaryDbColspan"
+                    :pt="binaryHeaderPt(ref.id)"
                   />
-                  <Column
-                    :header="`Non-Case (N=${nonCaseN})`"
-                    :colspan="2"
-                    :pt="headerPt(1)"
-                  />
-                  <Column
-                    :hidden="!selectedColumns.includes('SMD')"
-                    :pt="{ headerContent: 'justify-end' }"
-                    :rowspan="showBinaryFilters ? 3 : 2"
-                    sortField="SMD"
-                    sortable
-                  >
-                    <template #header>
-                      <div class="col-header-with-filter">
-                        <span>SMD</span>
-                        <FilterInput
-                          v-if="showBinaryFilters"
-                          :filterObj="binaryTableFilters.SMD"
-                        />
-                      </div>
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedColumns.includes('absSMD')"
-                    :pt="{ headerContent: 'justify-end' }"
-                    :rowspan="showBinaryFilters ? 3 : 2"
-                    sortField="absSMD"
-                    sortable
-                  >
-                    <template #header>
-                      <div class="col-header-with-filter">
-                        <span>|SMD|</span>
-                        <div class="smd-filter">
-                          <Slider
-                            v-model="binaryAbsSmdMin"
-                            :min="0"
-                            :max="smdMax"
-                            :step="0.01"
-                            class="smd-slider"
-                          />
-                          <span class="smd-val"
-                            >≥ {{ binaryAbsSmdMin.toFixed(2) }}</span
-                          >
-                        </div>
-                      </div>
-                    </template>
-                  </Column>
                 </Row>
                 <Row>
-                  <Column
-                    :hidden="!selectedColumns.includes('caseCount')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                    header="Count"
-                    sortField="caseCount"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedColumns.includes('caseAverage')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                    header="%"
-                    sortField="caseAverage"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedColumns.includes('nonCaseCount')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                    header="Count"
-                    sortField="nonCaseCount"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedColumns.includes('nonCaseAverage')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                    header="%"
-                    sortField="nonCaseAverage"
-                    sortable
-                  />
+                  <template v-for="ref in binaryRfRef" :key="'bsub-' + ref.id">
+                    <Column
+                      :hidden="!selectedColumns.includes('caseCount')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Case Count"
+                      :sortField="'caseCount_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedColumns.includes('casePct')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Case %"
+                      :sortField="'caseAverage_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedColumns.includes('nonCaseCount')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Non-case Count"
+                      :sortField="'nonCaseCount_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedColumns.includes('nonCasePct')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Non-case %"
+                      :sortField="'nonCaseAverage_' + ref.id"
+                      sortable
+                    />
+
+                    <Column
+                      :hidden="!selectedColumns.includes('SMD')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="SMD"
+                      :sortField="'SMD_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedColumns.includes('absSMD')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="|SMD|"
+                      :sortField="'absSMD_' + ref.id"
+                      sortable
+                    />
+                  </template>
                 </Row>
                 <Row v-if="showBinaryFilters">
-                  <Column
-                    :hidden="!selectedColumns.includes('caseCount')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="binaryTableFilters.caseCount"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedColumns.includes('caseAverage')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="binaryTableFilters.caseAverage"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedColumns.includes('nonCaseCount')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="binaryTableFilters.nonCaseCount"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedColumns.includes('nonCaseAverage')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="binaryTableFilters.nonCaseAverage"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
+                  <template v-for="ref in binaryRfRef" :key="'bflt-' + ref.id">
+                    <Column
+                      :hidden="!selectedColumns.includes('caseCount')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                    >
+                      <template #header>
+                        <FilterInput
+                          v-if="binaryTableFilters['caseCount_' + ref.id]"
+                          :filterObj="binaryTableFilters['caseCount_' + ref.id]"
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedColumns.includes('casePct')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                    >
+                      <template #header>
+                        <FilterInput
+                          v-if="binaryTableFilters['caseAverage_' + ref.id]"
+                          :filterObj="
+                            binaryTableFilters['caseAverage_' + ref.id]
+                          "
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedColumns.includes('nonCaseCount')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                    >
+                      <template #header>
+                        <FilterInput
+                          v-if="binaryTableFilters['nonCaseCount_' + ref.id]"
+                          :filterObj="
+                            binaryTableFilters['nonCaseCount_' + ref.id]
+                          "
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedColumns.includes('nonCasePct')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                    >
+                      <template #header>
+                        <FilterInput
+                          v-if="binaryTableFilters['nonCaseAverage_' + ref.id]"
+                          :filterObj="
+                            binaryTableFilters['nonCaseAverage_' + ref.id]
+                          "
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedColumns.includes('SMD')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                    >
+                      <template #header>
+                        <FilterInput
+                          v-if="binaryTableFilters['SMD_' + ref.id]"
+                          :filterObj="binaryTableFilters['SMD_' + ref.id]"
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedColumns.includes('absSMD')"
+                      :pt="{
+                        ...binarySubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                    >
+                      <template #header>
+                        <FilterInput
+                          v-if="binaryTableFilters['absSMD_' + ref.id]"
+                          :filterObj="binaryTableFilters['absSMD_' + ref.id]"
+                          input-style="width:100%"
+                        />
+                      </template>
+                    </Column>
+                  </template>
                 </Row>
               </ColumnGroup>
 
@@ -254,131 +322,136 @@
                   />
                 </template>
               </Column>
-              <Column
-                :hidden="!selectedColumns.includes('caseCount')"
-                style="text-align: end"
-                field="caseCount"
-                :pt="bodyPt(0)"
-                sortable
-                :showFilterMenu="false"
-              >
-                <template #body="{ data }">
-                  <CensoredCell :text="formatCensored(data.caseCount)" />
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedColumns.includes('caseAverage')"
-                style="text-align: end"
-                field="caseAverage"
-                :pt="bodyPt(0)"
-                sortable
-                :showFilterMenu="false"
-              >
-                <template #body="{ data }">{{
-                  formatPct(data.caseAverage)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedColumns.includes('nonCaseCount')"
-                style="text-align: end"
-                field="nonCaseCount"
-                :pt="bodyPt(1)"
-                sortable
-                :showFilterMenu="false"
-              >
-                <template #body="{ data }">
-                  <CensoredCell :text="formatCensored(data.nonCaseCount)" />
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedColumns.includes('nonCaseAverage')"
-                style="text-align: end"
-                field="nonCaseAverage"
-                :pt="bodyPt(1)"
-                sortable
-                :showFilterMenu="false"
-              >
-                <template #body="{ data }">{{
-                  formatPct(data.nonCaseAverage)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedColumns.includes('SMD')"
-                style="text-align: end"
-                field="SMD"
-                sortable
-                :showFilterMenu="false"
-              >
-                <template #body="{ data }">{{ formatNum(data.SMD) }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedColumns.includes('absSMD')"
-                style="text-align: end"
-                field="absSMD"
-                sortable
-                :showFilterMenu="false"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.absSMD)
-                }}</template>
-                <template #filter="{}">
-                  <div class="smd-filter">
-                    <Slider
-                      v-model="binaryAbsSmdMin"
-                      :min="0"
-                      :max="smdMax"
-                      :step="0.01"
-                      class="smd-slider"
+              <template v-for="ref in binaryRfRef" :key="'bcol-' + ref.id">
+                <Column
+                  :hidden="!selectedColumns.includes('caseCount')"
+                  style="text-align: end"
+                  :field="'caseCount_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="binaryBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">
+                    <CensoredCell
+                      :text="formatCensored(data['caseCount_' + ref.id])"
                     />
-                    <span class="smd-val"
-                      >≥ {{ binaryAbsSmdMin.toFixed(2) }}</span
-                    >
-                  </div>
-                </template>
-              </Column>
+                  </template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  :hidden="!selectedColumns.includes('casePct')"
+                  style="text-align: end"
+                  :field="'caseAverage_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="binaryBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatPct(data["caseAverage_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  :hidden="!selectedColumns.includes('nonCaseCount')"
+                  style="text-align: end"
+                  :field="'nonCaseCount_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="binaryBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">
+                    <CensoredCell
+                      :text="formatCensored(data['nonCaseCount_' + ref.id])"
+                    />
+                  </template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  :hidden="!selectedColumns.includes('nonCasePct')"
+                  style="text-align: end"
+                  :field="'nonCaseAverage_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="binaryBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatPct(data["nonCaseAverage_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  :hidden="!selectedColumns.includes('SMD')"
+                  style="text-align: end"
+                  :field="'SMD_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="binaryBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["SMD_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+                <Column
+                  :hidden="!selectedColumns.includes('absSMD')"
+                  style="text-align: end"
+                  :field="'absSMD_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="binaryBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["absSMD_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }">
+                    <InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                    />
+                  </template>
+                </Column>
+              </template>
             </DataTable>
           </div>
 
+          <!-- Continuous Features -->
           <div v-else-if="activeResultTab === 1">
             <p class="table-note" v-if="helpTextObs">
               Continuous feature distributions ({{ helpTextObs }}d prior obs.)
@@ -387,7 +460,26 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <ColumnSelector v-model="selectedContinuousColumns" :options="rfContinuousColumnOptions" placeholder="Select columns" />
+                <ColumnSelector
+                  v-model="selectedContinuousColumns"
+                  :options="rfContinuousColumnOptions"
+                  placeholder="Select columns"
+                />
+              </div>
+              <div class="smd-threshold">
+                <span class="smd-label">|SMD| ≥</span>
+                <div class="smd-filter">
+                  <Slider
+                    v-model="continuousAbsSmdMin"
+                    :min="0"
+                    :max="smdMax"
+                    :step="0.01"
+                    class="smd-slider"
+                  />
+                  <span class="smd-val">{{
+                    continuousAbsSmdMin.toFixed(2)
+                  }}</span>
+                </div>
               </div>
               <Button
                 :icon="
@@ -419,7 +511,7 @@
                       !selectedContinuousColumns.includes('covariateName')
                     "
                     :pt="{ headerContent: 'justify-start' }"
-                    :rowspan="showContinuousFilters ? 3 : 2"
+                    :rowspan="showContinuousFilters ? 4 : 3"
                     sortField="covariateName"
                     sortable
                   >
@@ -435,287 +527,406 @@
                     </template>
                   </Column>
                   <Column
-                    :header="`Case (N=${caseN})`"
-                    :hidden="rfCaseGroupHidden"
-                    :colspan="rfCaseGroupColspan"
-                    :pt="headerPt(0)"
+                    v-for="ref in continuousRfRef"
+                    :key="'chdr-' + ref.id"
+                    :header="`${ref.databaseName} (Cases: ${formatCensored(
+                      ref.caseN
+                    )} · Target: ${formatCensored(ref.targetN)})`"
+                    :hidden="contDbGroupHidden"
+                    :colspan="contDbColspan"
+                    :pt="contHeaderPt(ref.id)"
                   />
-                  <Column
-                    :header="`Target (N=${targetN})`"
-                    :hidden="rfTargetGroupHidden"
-                    :colspan="rfTargetGroupColspan"
-                    :pt="headerPt(1)"
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('SMD')"
-                    :pt="{ headerContent: 'justify-end' }"
-                    :rowspan="showContinuousFilters ? 3 : 2"
-                    sortField="SMD"
-                    sortable
-                  >
-                    <template #header>
-                      <div class="col-header-with-filter">
-                        <span>SMD</span>
-                        <FilterInput
-                          v-if="showContinuousFilters"
-                          :filterObj="continuousTableFilters.SMD"
-                        />
-                      </div>
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('absSMD')"
-                    :pt="{ headerContent: 'justify-end' }"
-                    :rowspan="showContinuousFilters ? 3 : 2"
-                    sortField="absSMD"
-                    sortable
-                  >
-                    <template #header>
-                      <div class="col-header-with-filter">
-                        <span>|SMD|</span>
-                        <div class="smd-filter">
-                          <Slider
-                            v-model="continuousAbsSmdMin"
-                            :min="0"
-                            :max="smdMax"
-                            :step="0.01"
-                            class="smd-slider"
-                          />
-                          <span class="smd-val"
-                            >≥ {{ continuousAbsSmdMin.toFixed(2) }}</span
-                          >
-                        </div>
-                      </div>
-                    </template>
-                  </Column>
                 </Row>
                 <Row>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseCount')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                    header="Count"
-                    sortField="caseCountValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseMin')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                    header="Min"
-                    sortField="caseMinValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseMax')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                    header="Max"
-                    sortField="caseMaxValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseMean')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                    header="Mean"
-                    sortField="caseAverageValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseStdev')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                    header="StDev"
-                    sortField="caseStandardDeviation"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseMedian')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                    header="Median"
-                    sortField="caseMedianValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetCount')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                    header="Count"
-                    sortField="targetCountValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetMin')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                    header="Min"
-                    sortField="targetMinValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetMax')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                    header="Max"
-                    sortField="targetMaxValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetMean')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                    header="Mean"
-                    sortField="targetAverageValue"
-                    sortable
-                  />
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetStdev')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                    header="StDev"
-                    sortField="targetStandardDeviation"
-                    sortable
-                  />
-                  <Column
-                    :hidden="
-                      !selectedContinuousColumns.includes('targetMedian')
-                    "
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                    header="Median"
-                    sortField="targetMedianValue"
-                    sortable
-                  />
+                  <template
+                    v-for="ref in continuousRfRef"
+                    :key="'csub2-' + ref.id"
+                  >
+                    <Column
+                      header="Case"
+                      :hidden="contCaseGroupHidden"
+                      :colspan="contCaseGroupColspan"
+                      :pt="contHeaderPt(ref.id)"
+                    />
+                    <Column
+                      header="Target"
+                      :hidden="contTargetGroupHidden"
+                      :colspan="contTargetGroupColspan"
+                      :pt="contHeaderPt(ref.id)"
+                    />
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('SMD')"
+                      header="SMD"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      :rowspan="showContinuousFilters ? 3 : 2"
+                      :sortField="'SMD_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('absSMD')"
+                      header="|SMD|"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      :rowspan="showContinuousFilters ? 3 : 2"
+                      :sortField="'absSMD_' + ref.id"
+                      sortable
+                    />
+                  </template>
+                </Row>
+                <Row>
+                  <template
+                    v-for="ref in continuousRfRef"
+                    :key="'csub3-' + ref.id"
+                  >
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseCount')"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Count"
+                      :sortField="'caseCountValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseMean')"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Mean"
+                      :sortField="'caseAverageValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseStdev')"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="StDev"
+                      :sortField="'caseStandardDeviation_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('caseMedian')
+                      "
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Median"
+                      :sortField="'caseMedianValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseMin')"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Min"
+                      :sortField="'caseMinValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseMax')"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Max"
+                      :sortField="'caseMaxValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('targetCount')
+                      "
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Count"
+                      :sortField="'targetCountValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('targetMean')
+                      "
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Mean"
+                      :sortField="'targetAverageValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('targetStdev')
+                      "
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="StDev"
+                      :sortField="'targetStandardDeviation_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('targetMedian')
+                      "
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Median"
+                      :sortField="'targetMedianValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('targetMin')"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Min"
+                      :sortField="'targetMinValue_' + ref.id"
+                      sortable
+                    />
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('targetMax')"
+                      :pt="{
+                        ...contSubPt(ref.id),
+                        headerContent: 'justify-end',
+                      }"
+                      header="Max"
+                      :sortField="'targetMaxValue_' + ref.id"
+                      sortable
+                    />
+                  </template>
                 </Row>
                 <Row v-if="showContinuousFilters">
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseCount')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
+                  <template
+                    v-for="ref in continuousRfRef"
+                    :key="'cflt-' + ref.id"
                   >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.caseCountValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseMin')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.caseMinValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseMax')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.caseMaxValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseMean')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.caseAverageValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseStdev')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="
-                          continuousTableFilters.caseStandardDeviation
-                        "
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('caseMedian')"
-                    :pt="{ ...subPt(0), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.caseMedianValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetCount')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.targetCountValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetMin')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.targetMinValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetMax')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.targetMaxValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetMean')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.targetAverageValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="!selectedContinuousColumns.includes('targetStdev')"
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="
-                          continuousTableFilters.targetStandardDeviation
-                        "
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
-                  <Column
-                    :hidden="
-                      !selectedContinuousColumns.includes('targetMedian')
-                    "
-                    :pt="{ ...subPt(1), headerContent: 'justify-end' }"
-                  >
-                    <template #header>
-                      <FilterInput
-                        :filterObj="continuousTableFilters.targetMedianValue"
-                        input-style="width:100%"
-                      />
-                    </template>
-                  </Column>
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseCount')"
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters['caseCountValue_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousTableFilters['caseCountValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseMean')"
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters['caseAverageValue_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousTableFilters['caseAverageValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseStdev')"
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters[
+                              'caseStandardDeviation_' + ref.id
+                            ]
+                          "
+                          :filterObj="
+                            continuousTableFilters[
+                              'caseStandardDeviation_' + ref.id
+                            ]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('caseMedian')
+                      "
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters['caseMedianValue_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousTableFilters['caseMedianValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseMin')"
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters['caseMinValue_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousTableFilters['caseMinValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('caseMax')"
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters['caseMaxValue_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousTableFilters['caseMaxValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('targetCount')
+                      "
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters['targetCountValue_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousTableFilters['targetCountValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('targetMean')
+                      "
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters[
+                              'targetAverageValue_' + ref.id
+                            ]
+                          "
+                          :filterObj="
+                            continuousTableFilters[
+                              'targetAverageValue_' + ref.id
+                            ]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('targetStdev')
+                      "
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters[
+                              'targetStandardDeviation_' + ref.id
+                            ]
+                          "
+                          :filterObj="
+                            continuousTableFilters[
+                              'targetStandardDeviation_' + ref.id
+                            ]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="
+                        !selectedContinuousColumns.includes('targetMedian')
+                      "
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters[
+                              'targetMedianValue_' + ref.id
+                            ]
+                          "
+                          :filterObj="
+                            continuousTableFilters[
+                              'targetMedianValue_' + ref.id
+                            ]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('targetMin')"
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters['targetMinValue_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousTableFilters['targetMinValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                    <Column
+                      :hidden="!selectedContinuousColumns.includes('targetMax')"
+                      :pt="contSubPt(ref.id)"
+                    >
+                      <template #header
+                        ><FilterInput
+                          v-if="
+                            continuousTableFilters['targetMaxValue_' + ref.id]
+                          "
+                          :filterObj="
+                            continuousTableFilters['targetMaxValue_' + ref.id]
+                          "
+                          input-style="width:100%"
+                      /></template>
+                    </Column>
+                  </template>
                 </Row>
               </ColumnGroup>
 
@@ -734,296 +945,286 @@
                   />
                 </template>
               </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('caseCount')"
-                style="text-align: end"
-                field="caseCountValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(0)"
-              >
-                <template #body="{ data }">
-                  <CensoredCell :text="formatCensored(data.caseCountValue)" />
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('caseMin')"
-                style="text-align: end"
-                field="caseMinValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(0)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.caseMinValue)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('caseMax')"
-                style="text-align: end"
-                field="caseMaxValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(0)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.caseMaxValue)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('caseMean')"
-                style="text-align: end"
-                field="caseAverageValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(0)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.caseAverageValue)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('caseStdev')"
-                style="text-align: end"
-                field="caseStandardDeviation"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(0)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.caseStandardDeviation)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('caseMedian')"
-                style="text-align: end"
-                field="caseMedianValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(0)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.caseMedianValue)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('targetCount')"
-                style="text-align: end"
-                field="targetCountValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(1)"
-              >
-                <template #body="{ data }">
-                  <CensoredCell :text="formatCensored(data.targetCountValue)" />
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('targetMin')"
-                style="text-align: end"
-                field="targetMinValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(1)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.targetMinValue)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('targetMax')"
-                style="text-align: end"
-                field="targetMaxValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(1)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.targetMaxValue)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('targetMean')"
-                style="text-align: end"
-                field="targetAverageValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(1)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.targetAverageValue)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('targetStdev')"
-                style="text-align: end"
-                field="targetStandardDeviation"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(1)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.targetStandardDeviation)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('targetMedian')"
-                style="text-align: end"
-                field="targetMedianValue"
-                sortable
-                :showFilterMenu="false"
-                :pt="bodyPt(1)"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.targetMedianValue)
-                }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('SMD')"
-                style="text-align: end"
-                field="SMD"
-                sortable
-                :showFilterMenu="false"
-              >
-                <template #body="{ data }">{{ formatNum(data.SMD) }}</template>
-                <template #filter="{ filterModel, filterCallback }">
-                  <InputText
-                    v-model="filterModel.value"
-                    @input="filterCallback()"
-                    placeholder="Filter..."
-                    size="small"
-                  />
-                </template>
-              </Column>
-              <Column
-                :hidden="!selectedContinuousColumns.includes('absSMD')"
-                style="text-align: end"
-                field="absSMD"
-                sortable
-                :showFilterMenu="false"
-              >
-                <template #body="{ data }">{{
-                  formatNum(data.absSMD)
-                }}</template>
-                <template #filter="{}">
-                  <div class="smd-filter">
-                    <Slider
-                      v-model="continuousAbsSmdMin"
-                      :min="0"
-                      :max="smdMax"
-                      :step="0.01"
-                      class="smd-slider"
-                    />
-                    <span class="smd-val"
-                      >≥ {{ continuousAbsSmdMin.toFixed(2) }}</span
-                    >
-                  </div>
-                </template>
-              </Column>
+              <template v-for="ref in continuousRfRef" :key="'ccol-' + ref.id">
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('caseCount')"
+                  style="text-align: end"
+                  :field="'caseCountValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }"
+                    ><CensoredCell
+                      :text="formatCensored(data['caseCountValue_' + ref.id])"
+                  /></template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('caseMean')"
+                  style="text-align: end"
+                  :field="'caseAverageValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["caseAverageValue_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('caseStdev')"
+                  style="text-align: end"
+                  :field="'caseStandardDeviation_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["caseStandardDeviation_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('caseMedian')"
+                  style="text-align: end"
+                  :field="'caseMedianValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["caseMedianValue_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('caseMin')"
+                  style="text-align: end"
+                  :field="'caseMinValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["caseMinValue_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('caseMax')"
+                  style="text-align: end"
+                  :field="'caseMaxValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["caseMaxValue_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('targetCount')"
+                  style="text-align: end"
+                  :field="'targetCountValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }"
+                    ><CensoredCell
+                      :text="
+                        formatCensored(data['targetCountValue_' + ref.id])
+                      "
+                  /></template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('targetMean')"
+                  style="text-align: end"
+                  :field="'targetAverageValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["targetAverageValue_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('targetStdev')"
+                  style="text-align: end"
+                  :field="'targetStandardDeviation_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["targetStandardDeviation_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('targetMedian')"
+                  style="text-align: end"
+                  :field="'targetMedianValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["targetMedianValue_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('targetMin')"
+                  style="text-align: end"
+                  :field="'targetMinValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["targetMinValue_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('targetMax')"
+                  style="text-align: end"
+                  :field="'targetMaxValue_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["targetMaxValue_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('SMD')"
+                  style="text-align: end"
+                  :field="'SMD_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["SMD_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+                <Column
+                  :hidden="!selectedContinuousColumns.includes('absSMD')"
+                  style="text-align: end"
+                  :field="'absSMD_' + ref.id"
+                  sortable
+                  :showFilterMenu="false"
+                  :pt="contBodyPt(ref.id)"
+                >
+                  <template #body="{ data }">{{
+                    formatNum(data["absSMD_" + ref.id])
+                  }}</template>
+                  <template #filter="{ filterModel, filterCallback }"
+                    ><InputText
+                      v-model="filterModel.value"
+                      @input="filterCallback()"
+                      placeholder="Filter..."
+                      size="small"
+                  /></template>
+                </Column>
+              </template>
             </DataTable>
-          </div>
-        </div></Transition
-      >
+          </div></div
+      ></Transition>
     </div>
 
     <div v-else-if="!loading" class="section empty-state">
-      Select an outcome, database, TAR, and washout, then click Generate.
+      Select an outcome, one or more databases, TAR, and washout, then click
+      Generate.
     </div>
 
     <ResultsLoader :loader-state="loaderState" />
@@ -1049,6 +1250,7 @@ import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
+import MultiSelect from "primevue/multiselect";
 import Slider from "primevue/slider";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
@@ -1069,21 +1271,21 @@ const STORAGE_KEY_CONT = "char:riskFactors:continuous";
 const rfColumnOptions = [
   { label: "Covariate", key: "covariateName" },
   { label: "Case Count", key: "caseCount" },
-  { label: "Case %", key: "caseAverage" },
-  { label: "Non-Case Count", key: "nonCaseCount" },
-  { label: "Non-Case %", key: "nonCaseAverage" },
+  { label: "Case %", key: "casePct" },
+  { label: "Non-case Count", key: "nonCaseCount" },
+  { label: "Non-case %", key: "nonCasePct" },
   { label: "SMD", key: "SMD" },
   { label: "|SMD|", key: "absSMD" },
 ];
 const RF_DEFAULT_BINARY = [
   "covariateName",
   "caseCount",
-  "caseAverage",
+  "casePct",
   "nonCaseCount",
-  "nonCaseAverage",
+  "nonCasePct",
   "absSMD",
 ];
-const selectedColumns = ref(
+const selectedColumns = ref<string[]>(
   store.getters.getSettings.columnSelection?.[STORAGE_KEY_BINARY]?.length
     ? store.getters.getSettings.columnSelection[STORAGE_KEY_BINARY]
     : RF_DEFAULT_BINARY
@@ -1095,37 +1297,31 @@ watch(selectedColumns, (val) => {
 const rfContinuousColumnOptions = [
   { label: "Covariate", key: "covariateName" },
   { label: "Case Count", key: "caseCount" },
-  { label: "Case Min", key: "caseMin" },
-  { label: "Case Max", key: "caseMax" },
   { label: "Case Mean", key: "caseMean" },
   { label: "Case StDev", key: "caseStdev" },
   { label: "Case Median", key: "caseMedian" },
+  { label: "Case Min", key: "caseMin" },
+  { label: "Case Max", key: "caseMax" },
   { label: "Target Count", key: "targetCount" },
-  { label: "Target Min", key: "targetMin" },
-  { label: "Target Max", key: "targetMax" },
   { label: "Target Mean", key: "targetMean" },
   { label: "Target StDev", key: "targetStdev" },
   { label: "Target Median", key: "targetMedian" },
+  { label: "Target Min", key: "targetMin" },
+  { label: "Target Max", key: "targetMax" },
   { label: "SMD", key: "SMD" },
   { label: "|SMD|", key: "absSMD" },
 ];
 const RF_DEFAULT_CONT = [
   "covariateName",
-  "caseCount",
-  "caseMin",
-  "caseMax",
   "caseMean",
   "caseStdev",
   "caseMedian",
-  "targetCount",
-  "targetMin",
-  "targetMax",
   "targetMean",
   "targetStdev",
   "targetMedian",
   "absSMD",
 ];
-const selectedContinuousColumns = ref(
+const selectedContinuousColumns = ref<string[]>(
   store.getters.getSettings.columnSelection?.[STORAGE_KEY_CONT]?.length
     ? store.getters.getSettings.columnSelection[STORAGE_KEY_CONT]
     : RF_DEFAULT_CONT
@@ -1134,38 +1330,96 @@ watch(selectedContinuousColumns, (val) => {
   store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY_CONT]: val });
 });
 
-const rfCaseCols = [
+// Binary group banding helpers
+const binaryRfRef = ref<
+  { id: string; databaseName: string; caseN: number; nonCaseN: number }[]
+>([]);
+const binaryDbIndexMap = computed(() => {
+  const map: Record<string, number> = {};
+  binaryRfRef.value.forEach((ref, i) => {
+    map[ref.id] = i;
+  });
+  return map;
+});
+const binaryHeaderPt = (id: string) =>
+  headerPt(binaryDbIndexMap.value[id] ?? 0);
+const binarySubPt = (id: string) => subPt(binaryDbIndexMap.value[id] ?? 0);
+const binaryBodyPt = (id: string) => bodyPt(binaryDbIndexMap.value[id] ?? 0);
+
+const binaryDbColsCounted = computed(
+  () =>
+    [
+      "caseCount",
+      "casePct",
+      "nonCaseCount",
+      "nonCasePct",
+      "SMD",
+      "absSMD",
+    ].filter((k) => selectedColumns.value.includes(k)).length
+);
+const binaryDbColspan = computed(() => binaryDbColsCounted.value || 1);
+const binaryDbGroupHidden = computed(() => binaryDbColsCounted.value === 0);
+
+// Continuous group banding helpers
+const continuousRfRef = ref<
+  { id: string; databaseName: string; caseN: number; targetN: number }[]
+>([]);
+const contDbIndexMap = computed(() => {
+  const map: Record<string, number> = {};
+  continuousRfRef.value.forEach((ref, i) => {
+    map[ref.id] = i;
+  });
+  return map;
+});
+const contHeaderPt = (id: string) => headerPt(contDbIndexMap.value[id] ?? 0);
+const contSubPt = (id: string) => subPt(contDbIndexMap.value[id] ?? 0);
+const contBodyPt = (id: string) => bodyPt(contDbIndexMap.value[id] ?? 0);
+
+const contCaseKeys = [
   "caseCount",
-  "caseMin",
-  "caseMax",
   "caseMean",
   "caseStdev",
   "caseMedian",
+  "caseMin",
+  "caseMax",
 ];
-const rfTargetCols = [
+const contTargetKeys = [
   "targetCount",
-  "targetMin",
-  "targetMax",
   "targetMean",
   "targetStdev",
   "targetMedian",
+  "targetMin",
+  "targetMax",
 ];
-const rfCaseGroupColspan = computed(
+const contCaseGroupColspan = computed(
   () =>
-    rfCaseCols.filter((k) => selectedContinuousColumns.value.includes(k))
+    contCaseKeys.filter((k) => selectedContinuousColumns.value.includes(k))
       .length || 1
 );
-const rfCaseGroupHidden = computed(
-  () => !rfCaseCols.some((k) => selectedContinuousColumns.value.includes(k))
+const contCaseGroupHidden = computed(
+  () => !contCaseKeys.some((k) => selectedContinuousColumns.value.includes(k))
 );
-const rfTargetGroupColspan = computed(
+const contTargetGroupColspan = computed(
   () =>
-    rfTargetCols.filter((k) => selectedContinuousColumns.value.includes(k))
+    contTargetKeys.filter((k) => selectedContinuousColumns.value.includes(k))
       .length || 1
 );
-const rfTargetGroupHidden = computed(
-  () => !rfTargetCols.some((k) => selectedContinuousColumns.value.includes(k))
+const contTargetGroupHidden = computed(
+  () => !contTargetKeys.some((k) => selectedContinuousColumns.value.includes(k))
 );
+const contDbColspan = computed(() => {
+  const c = contCaseKeys.filter((k) =>
+    selectedContinuousColumns.value.includes(k)
+  ).length;
+  const t = contTargetKeys.filter((k) =>
+    selectedContinuousColumns.value.includes(k)
+  ).length;
+  const s =
+    (selectedContinuousColumns.value.includes("SMD") ? 1 : 0) +
+    (selectedContinuousColumns.value.includes("absSMD") ? 1 : 0);
+  return c + t + s || 1;
+});
+const contDbGroupHidden = computed(() => contDbColspan.value === 0);
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -1189,56 +1443,85 @@ const resultTabs = [
 ];
 
 const selectedOutcome = ref(null);
-const selectedDatabase = ref(null);
+const selectedDatabases = ref<string[]>([]);
 const selectedTar = ref(null);
 const selectedWashout = ref(null);
 
 const binaryRows = ref([]);
 const continuousRows = ref([]);
-const caseN = ref(0);
-const nonCaseN = ref(0);
-const targetN = ref(0);
 const helpTextObs = ref(null);
 
 const binaryAbsSmdMin = ref(0);
 const continuousAbsSmdMin = ref(0);
 const smdMax = ref(2);
 
-const binaryTableFilters = ref({
+const binaryTableFilters = ref<Record<string, any>>({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  caseCount: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  caseAverage: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  nonCaseCount: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  nonCaseAverage: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  SMD: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
-const continuousTableFilters = ref({
+const continuousTableFilters = ref<Record<string, any>>({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  caseCountValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  caseMinValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  caseMaxValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  caseAverageValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  caseStandardDeviation: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  caseMedianValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  targetCountValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  targetMinValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  targetMaxValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  targetAverageValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  targetStandardDeviation: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  targetMedianValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  SMD: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+watch(binaryRfRef, (newRefs) => {
+  const f: Record<string, any> = {
+    covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  };
+  for (const ref of newRefs) {
+    for (const key of [
+      "caseCount",
+      "caseAverage",
+      "nonCaseCount",
+      "nonCaseAverage",
+      "SMD",
+      "absSMD",
+    ]) {
+      f[`${key}_${ref.id}`] = {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+      };
+    }
+  }
+  binaryTableFilters.value = f;
+});
+
+watch(continuousRfRef, (newRefs) => {
+  const f: Record<string, any> = {
+    covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  };
+  for (const ref of newRefs) {
+    for (const key of [
+      "caseCountValue",
+      "caseAverageValue",
+      "caseStandardDeviation",
+      "caseMedianValue",
+      "caseMinValue",
+      "caseMaxValue",
+      "targetCountValue",
+      "targetAverageValue",
+      "targetStandardDeviation",
+      "targetMedianValue",
+      "targetMinValue",
+      "targetMaxValue",
+      "SMD",
+      "absSMD",
+    ]) {
+      f[`${key}_${ref.id}`] = {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+      };
+    }
+  }
+  continuousTableFilters.value = f;
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);
-
 const availableDatabases = useAvailableDatabases(toRef(props, "targetRow"));
-
 const targetName = computed(() => props.targetRow?.cohortName ?? "");
 const outcomeName = computed(() => selectedOutcome.value?.cohortName ?? "");
-const selectedDatabaseName = computed(
-  () =>
-    availableDatabases.value.find((d) => d.id === selectedDatabase.value)
-      ?.name ?? ""
+const selectedDatabaseNames = computed(() =>
+  availableDatabases.value
+    .filter((d) => selectedDatabases.value.includes(d.id))
+    .map((d) => d.name)
 );
 
 const { tarOptions, tarValues, washoutOptions } =
@@ -1256,8 +1539,13 @@ const filteredBinaryRows = computed(() => {
       );
     }
   }
-  if (binaryAbsSmdMin.value > 0)
-    rows = rows.filter((r) => (r.absSMD ?? 0) >= binaryAbsSmdMin.value);
+  if (binaryAbsSmdMin.value > 0) {
+    rows = rows.filter((r) =>
+      binaryRfRef.value.some(
+        (ref) => (r[`absSMD_${ref.id}`] ?? 0) >= binaryAbsSmdMin.value
+      )
+    );
+  }
   return rows;
 });
 
@@ -1273,18 +1561,22 @@ const filteredContinuousRows = computed(() => {
       );
     }
   }
-  if (continuousAbsSmdMin.value > 0)
-    rows = rows.filter((r) => (r.absSMD ?? 0) >= continuousAbsSmdMin.value);
+  if (continuousAbsSmdMin.value > 0) {
+    rows = rows.filter((r) =>
+      continuousRfRef.value.some(
+        (ref) => (r[`absSMD_${ref.id}`] ?? 0) >= continuousAbsSmdMin.value
+      )
+    );
+  }
   return rows;
 });
 
 watch(selectedOutcome, () => {
   showResults.value = false;
-  if (tarOptions.value.length) selectedTar.value = tarOptions.value[0];
-  else selectedTar.value = null;
-  if (washoutOptions.value.length)
-    selectedWashout.value = washoutOptions.value[0];
-  else selectedWashout.value = null;
+  selectedTar.value = tarOptions.value.length ? tarOptions.value[0] : null;
+  selectedWashout.value = washoutOptions.value.length
+    ? washoutOptions.value[0]
+    : null;
 });
 
 watch(
@@ -1294,11 +1586,93 @@ watch(
   }
 );
 
-async function fetchCaseCounts(targetId, outcomeId, databaseId, tar) {
+function pivotBinary(rows: any[]) {
+  if (!rows.length) return { rfRef: [], pivoted: [] };
+
+  const dbMap = new Map<string, any>();
+  for (const r of rows) {
+    if (!dbMap.has(r.databaseId)) {
+      dbMap.set(r.databaseId, {
+        id: r.databaseId,
+        databaseName: r.databaseName,
+        caseN: r.casePersonCount,
+        nonCaseN: r.nonCasePersonCount,
+      });
+    }
+  }
+  const rfRef = [...dbMap.values()];
+
+  const covMap = new Map<number, any>();
+  for (const r of rows) {
+    if (!covMap.has(r.covariateId)) {
+      covMap.set(r.covariateId, {
+        covariateName: r.covariateName,
+        covariateId: r.covariateId,
+      });
+    }
+    const row = covMap.get(r.covariateId);
+    const id = r.databaseId;
+    row[`caseCount_${id}`] = r.caseCount;
+    row[`caseAverage_${id}`] = r.caseAverage;
+    row[`nonCaseCount_${id}`] = r.nonCaseCount;
+    row[`nonCaseAverage_${id}`] = r.nonCaseAverage;
+    row[`SMD_${id}`] = r.SMD;
+    row[`absSMD_${id}`] = r.absSMD;
+  }
+
+  return { rfRef, pivoted: [...covMap.values()] };
+}
+
+function pivotContinuous(rows: any[]) {
+  if (!rows.length) return { rfRef: [], pivoted: [] };
+
+  const dbMap = new Map<string, any>();
+  for (const r of rows) {
+    if (!dbMap.has(r.databaseId)) {
+      dbMap.set(r.databaseId, {
+        id: r.databaseId,
+        databaseName: r.databaseName,
+        caseN: r.casePersonCount,
+        targetN: r.targetPersonCount,
+      });
+    }
+  }
+  const rfRef = [...dbMap.values()];
+
+  const covMap = new Map<number, any>();
+  for (const r of rows) {
+    if (!covMap.has(r.covariateId)) {
+      covMap.set(r.covariateId, {
+        covariateName: r.covariateName,
+        covariateId: r.covariateId,
+      });
+    }
+    const row = covMap.get(r.covariateId);
+    const id = r.databaseId;
+    row[`caseCountValue_${id}`] = r.caseCountValue;
+    row[`caseAverageValue_${id}`] = r.caseAverageValue;
+    row[`caseStandardDeviation_${id}`] = r.caseStandardDeviation;
+    row[`caseMedianValue_${id}`] = r.caseMedianValue;
+    row[`caseMinValue_${id}`] = r.caseMinValue;
+    row[`caseMaxValue_${id}`] = r.caseMaxValue;
+    row[`targetCountValue_${id}`] = r.targetCountValue;
+    row[`targetAverageValue_${id}`] = r.targetAverageValue;
+    row[`targetStandardDeviation_${id}`] = r.targetStandardDeviation;
+    row[`targetMedianValue_${id}`] = r.targetMedianValue;
+    row[`targetMinValue_${id}`] = r.targetMinValue;
+    row[`targetMaxValue_${id}`] = r.targetMaxValue;
+    row[`SMD_${id}`] = r.SMD;
+    row[`absSMD_${id}`] = r.absSMD;
+  }
+
+  return { rfRef, pivoted: [...covMap.values()] };
+}
+
+async function fetchCaseCounts(targetId, outcomeId, databaseIds, tar) {
   const res = await StrategusService.characterization.getCaseCounts({
     targetIds: [targetId],
     outcomeIds: [outcomeId],
-    databaseIds: databaseId ? [databaseId] : undefined,
+    databaseIds: databaseIds?.length ? databaseIds : undefined,
     riskWindowStart: tar?.riskWindowStart,
     riskWindowEnd: tar?.riskWindowEnd,
     startAnchor: tar?.startAnchor,
@@ -1307,20 +1681,20 @@ async function fetchCaseCounts(targetId, outcomeId, databaseId, tar) {
   return res.data;
 }
 
-async function fetchCaseTargetCounts(targetId, outcomeId, databaseId) {
+async function fetchCaseTargetCounts(targetId, outcomeId, databaseIds) {
   const res = await StrategusService.characterization.getCaseTargetCounts({
     targetIds: [targetId],
     outcomeIds: [outcomeId],
-    databaseIds: databaseId ? [databaseId] : undefined,
+    databaseIds: databaseIds?.length ? databaseIds : undefined,
   });
   return res.data;
 }
 
-async function fetchBinaryRiskFactors(targetId, outcomeId, databaseId, tar) {
+async function fetchBinaryRiskFactors(targetId, outcomeId, databaseIds, tar) {
   const res = await StrategusService.characterization.getBinaryRiskFactors({
     targetId,
     outcomeId,
-    databaseId,
+    databaseIds: databaseIds?.length ? databaseIds : undefined,
     riskWindowStart: tar?.riskWindowStart,
     riskWindowEnd: tar?.riskWindowEnd,
     startAnchor: tar?.startAnchor,
@@ -1332,13 +1706,13 @@ async function fetchBinaryRiskFactors(targetId, outcomeId, databaseId, tar) {
 async function fetchContinuousRiskFactors(
   targetId,
   outcomeId,
-  databaseId,
+  databaseIds,
   tar
 ) {
   const res = await StrategusService.characterization.getContinuousRiskFactors({
     targetId,
     outcomeId,
-    databaseId,
+    databaseIds: databaseIds?.length ? databaseIds : undefined,
     riskWindowStart: tar?.riskWindowStart,
     riskWindowEnd: tar?.riskWindowEnd,
     startAnchor: tar?.startAnchor,
@@ -1350,7 +1724,7 @@ async function fetchContinuousRiskFactors(
 async function generate() {
   if (
     !selectedOutcome.value ||
-    !selectedDatabase.value ||
+    !selectedDatabases.value.length ||
     !selectedTar.value ||
     !selectedWashout.value
   ) {
@@ -1365,7 +1739,7 @@ async function generate() {
   try {
     const targetId = props.targetRow.cohortId;
     const outcomeId = selectedOutcome.value.cohortId;
-    const databaseId = selectedDatabase.value;
+    const databaseIds = selectedDatabases.value;
     const tarIdx = tarOptions.value.indexOf(selectedTar.value);
     const tar = tarValues.value[tarIdx];
 
@@ -1376,31 +1750,52 @@ async function generate() {
     }
 
     const [caseCounts, targetCounts, binary, continuous] = await Promise.all([
-      fetchCaseCounts(targetId, outcomeId, databaseId, tar),
-      fetchCaseTargetCounts(targetId, outcomeId, databaseId),
-      fetchBinaryRiskFactors(targetId, outcomeId, databaseId, tar),
-      fetchContinuousRiskFactors(targetId, outcomeId, databaseId, tar),
+      fetchCaseCounts(targetId, outcomeId, databaseIds, tar),
+      fetchCaseTargetCounts(targetId, outcomeId, databaseIds),
+      fetchBinaryRiskFactors(targetId, outcomeId, databaseIds, tar),
+      fetchContinuousRiskFactors(targetId, outcomeId, databaseIds, tar),
     ]);
 
     const washout = selectedWashout.value;
-    const caseRow = caseCounts.find(
+    const firstCaseRow = caseCounts.find(
       (r) => String(r.outcomeWashoutDays) === String(washout)
     );
-    const targetRow = targetCounts.find(
-      (r) => String(r.outcomeWashoutDays) === String(washout)
-    );
+    helpTextObs.value = firstCaseRow?.minPriorObservation ?? 365;
 
-    caseN.value = caseRow?.personCount ?? 0;
-    nonCaseN.value = targetRow?.personCount ?? 0;
-    targetN.value = targetRow?.withoutExcludedPersonCount ?? 0;
-    helpTextObs.value = caseRow?.minPriorObservation ?? 365;
+    const caseCountByDb = new Map<string, number>();
+    for (const r of caseCounts) {
+      if (String(r.outcomeWashoutDays) === String(washout)) {
+        caseCountByDb.set(r.databaseId, r.personCount ?? 0);
+      }
+    }
+    const targetCountByDb = new Map<string, number>();
+    for (const r of targetCounts) {
+      if (String(r.outcomeWashoutDays) === String(washout)) {
+        targetCountByDb.set(
+          r.databaseId,
+          r.withoutExcludedPersonCount ?? r.personCount ?? 0
+        );
+      }
+    }
 
-    binaryRows.value = (binary ?? []).filter(
+    const filteredBinary = (binary ?? []).filter(
       (r) => String(r.outcomeWashoutDays) === String(washout)
     );
-    continuousRows.value = (continuous ?? []).filter(
-      (r) => String(r.outcomeWashoutDays) === String(washout)
-    );
+    const filteredContinuous = (continuous ?? [])
+      .filter((r) => String(r.outcomeWashoutDays) === String(washout))
+      .map((r) => ({
+        ...r,
+        casePersonCount: caseCountByDb.get(r.databaseId) ?? 0,
+        targetPersonCount: targetCountByDb.get(r.databaseId) ?? 0,
+      }));
+
+    const binPivot = pivotBinary(filteredBinary);
+    const contPivot = pivotContinuous(filteredContinuous);
+
+    binaryRfRef.value = binPivot.rfRef;
+    binaryRows.value = binPivot.pivoted;
+    continuousRfRef.value = contPivot.rfRef;
+    continuousRows.value = contPivot.pivoted;
 
     binaryAbsSmdMin.value = 0;
     continuousAbsSmdMin.value = 0;
@@ -1413,19 +1808,20 @@ async function generate() {
     showResults.value = true;
     lastGeneratedConfig.value = {
       outcomeName: outcomeName.value,
-      selectedDatabaseName: selectedDatabaseName.value,
+      selectedDatabaseNames: selectedDatabaseNames.value,
+      selectedDatabaseIds: [...databaseIds],
       selectedOutcome: selectedOutcome?.value?.cohortId,
       selectedTar: selectedTar.value,
       selectedWashout: selectedWashout.value,
     };
     emit("state-change", {
       outcomeId: selectedOutcome.value.cohortId,
-      databaseId: selectedDatabase.value,
+      databaseIds,
       tar: selectedTar.value,
       washout: selectedWashout.value,
       ctxItems: [
         outcomeName.value,
-        selectedDatabaseName.value,
+        ...selectedDatabaseNames.value,
         `TAR: ${selectedTar.value}`,
         `Washout: ${selectedWashout.value}d`,
       ],
@@ -1440,15 +1836,20 @@ async function generate() {
 const generateDisabled = computed(() => {
   if (
     !selectedTar.value ||
-    !selectedDatabaseName.value ||
+    !selectedDatabases.value.length ||
     !selectedOutcome.value ||
     !selectedWashout.value
   )
     return true;
   if (!lastGeneratedConfig.value) return false;
+  const sameIds =
+    selectedDatabases.value.length ===
+      lastGeneratedConfig.value.selectedDatabaseIds?.length &&
+    selectedDatabases.value.every((id) =>
+      lastGeneratedConfig.value.selectedDatabaseIds.includes(id)
+    );
   return (
-    selectedDatabaseName.value ===
-      lastGeneratedConfig.value.selectedDatabaseName &&
+    sameIds &&
     selectedOutcome.value.cohortId ===
       lastGeneratedConfig.value.selectedOutcome &&
     selectedTar.value === lastGeneratedConfig.value.selectedTar &&
@@ -1466,27 +1867,29 @@ onMounted(async () => {
     if (match) selectedOutcome.value = match;
   }
 
-  if (
+  if (url?.databaseIds?.length) {
+    const valid = url.databaseIds.filter((id) =>
+      availableDatabases.value.some((d) => d.id === id)
+    );
+    if (valid.length) selectedDatabases.value = valid;
+  } else if (
     url?.databaseId &&
     availableDatabases.value.some((d) => d.id === url.databaseId)
   ) {
-    selectedDatabase.value = url.databaseId;
+    selectedDatabases.value = [url.databaseId];
   }
 
   await nextTick();
 
-  if (url?.tar && tarOptions.value.includes(url.tar)) {
+  if (url?.tar && tarOptions.value.includes(url.tar))
     selectedTar.value = url.tar;
-  }
-
-  if (url?.washout && washoutOptions.value.includes(url.washout)) {
+  if (url?.washout && washoutOptions.value.includes(url.washout))
     selectedWashout.value = url.washout;
-  }
 
   await nextTick();
   if (
     selectedOutcome.value &&
-    selectedDatabase.value &&
+    selectedDatabases.value.length &&
     selectedTar.value &&
     selectedWashout.value
   ) {
@@ -1513,6 +1916,21 @@ onMounted(async () => {
 
 .controls-row > div {
   min-width: 160px;
+}
+
+.smd-threshold {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-end;
+  padding-bottom: 2px;
+}
+
+.smd-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: v-bind(smdValColor);
 }
 
 .smd-filter {

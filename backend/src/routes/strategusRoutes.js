@@ -296,11 +296,12 @@ router.get('/api/characterization/binary-risk-factors', async (req, res) => {
     }
 
     try {
+        const databaseIds = databaseId ? databaseId.split(',').filter(Boolean) : null;
         const result = await getBinaryRiskFactors({
             schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             outcomeId: parseInt(outcomeId, 10),
-            databaseId: databaseId || null,
+            databaseIds,
             riskWindowStart: riskWindowStart != null ? parseInt(riskWindowStart, 10) : null,
             riskWindowEnd: riskWindowEnd != null ? parseInt(riskWindowEnd, 10) : null,
             startAnchor: startAnchor || null,
@@ -321,11 +322,12 @@ router.get('/api/characterization/continuous-risk-factors', async (req, res) => 
     }
 
     try {
+        const databaseIds = databaseId ? databaseId.split(',').filter(Boolean) : null;
         const result = await getContinuousRiskFactors({
             schema: req.resolvedSchema,
             targetId: parseInt(targetId, 10),
             outcomeId: parseInt(outcomeId, 10),
-            databaseIds: databaseId ? [databaseId] : null,
+            databaseIds,
             riskWindowStart: riskWindowStart != null ? parseInt(riskWindowStart, 10) : null,
             riskWindowEnd: riskWindowEnd != null ? parseInt(riskWindowEnd, 10) : null,
             startAnchor: startAnchor || null,

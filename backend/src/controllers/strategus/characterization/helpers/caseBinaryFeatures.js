@@ -158,6 +158,8 @@ export async function getCaseTargetBinaryFeatures({
         `AND c.TARGET_COHORT_ID IN (${toArray(targetIds ?? []).map((_, i) => `@targetId${i}`).join(',')})`);
     const exOutcomeClause = addOptionalClause(outcomeIds != null,
         `AND c.OUTCOME_COHORT_ID IN (${toArray(outcomeIds ?? []).map((_, i) => `@outcomeId${i}`).join(',')})`);
+    const exDbClause = addOptionalClause(databaseIds != null,
+        `AND c.database_id IN (${toArray(databaseIds ?? []).map((_, i) => `@databaseId${i}`).join(',')})`);
 
     const sql = `
     SELECT
@@ -249,6 +251,7 @@ export async function getCaseTargetBinaryFeatures({
       WHERE cd.COHORT_TYPE = 'Exclude'
         ${exTargetClause}
         ${exOutcomeClause}
+        ${exDbClause}
     ) e
       ON t.database_id = e.database_id
       AND t.TARGET_COHORT_ID = e.TARGET_COHORT_ID
