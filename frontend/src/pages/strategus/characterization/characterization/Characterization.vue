@@ -326,39 +326,45 @@
             />
           </div>
 
-          <Transition name="sticky-fade">
-            <div v-if="!pillNavVisible" class="sticky-bar">
-              <div class="sticky-left">
-                <span class="sticky-target">{{
-                  selectedTarget.cohortName
-                }}</span>
-                <span class="sticky-sep">·</span>
-                <span class="sticky-tab">{{ currentAnalysis?.label }}</span>
-                <Transition name="ctx-appear">
-                  <span
-                    v-if="stickyCtxItems.length && !ctxBarVisible"
-                    class="sticky-ctx-group"
+          <Teleport :to="EXPLORER_CONTENT_TARGET">
+            <Transition name="sticky-fade">
+              <div
+                v-if="!pillNavVisible"
+                class="sticky-content"
+                :style="stickyContentStyle"
+              >
+                <div class="sticky-left">
+                  <span class="sticky-target">{{
+                    selectedTarget.cohortName
+                  }}</span>
+                  <span class="sticky-sep">·</span>
+                  <span class="sticky-tab">{{ currentAnalysis?.label }}</span>
+                  <Transition name="ctx-appear">
+                    <span
+                      v-if="stickyCtxItems.length && !ctxBarVisible"
+                      class="sticky-ctx-group"
+                    >
+                      <span class="sticky-sep">·</span>
+                      <template v-for="(item, i) in stickyCtxItems" :key="i">
+                        <span v-if="i > 0" class="sticky-dot" />
+                        <span class="sticky-ctx">{{ item }}</span>
+                      </template>
+                    </span>
+                  </Transition>
+                </div>
+                <div class="sticky-pills">
+                  <button
+                    v-for="(analysis, index) in availableAnalyses"
+                    :key="'s-' + analysis.key"
+                    :class="['sticky-pill', { active: activeTab === index }]"
+                    @click="activeTab = index"
                   >
-                    <span class="sticky-vdivider" />
-                    <template v-for="(item, i) in stickyCtxItems" :key="i">
-                      <span v-if="i > 0" class="sticky-dot" />
-                      <span class="sticky-ctx">{{ item }}</span>
-                    </template>
-                  </span>
-                </Transition>
+                    {{ analysis.label }}
+                  </button>
+                </div>
               </div>
-              <div class="sticky-pills">
-                <button
-                  v-for="(analysis, index) in availableAnalyses"
-                  :key="'s-' + analysis.key"
-                  :class="['sticky-pill', { active: activeTab === index }]"
-                  @click="activeTab = index"
-                >
-                  {{ analysis.label }}
-                </button>
-              </div>
-            </div>
-          </Transition>
+            </Transition>
+          </Teleport>
 
           <div class="analysis-content">
             <Transition
@@ -406,6 +412,7 @@ import {
 } from "vue";
 import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
+import { EXPLORER_CONTENT_TARGET } from "@/widgets/explorer";
 
 import Button from "primevue/button";
 import Tag from "primevue/tag";
@@ -444,12 +451,6 @@ const dividerBg = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
 const activeTargetNameColor = computed(() =>
   darkMode.value ? "#f1f5f9" : "#1e293b"
 );
-const stickyBarBg = computed(() =>
-  darkMode.value ? "rgba(33,33,33,0.92)" : "rgba(255,255,255,0.92)"
-);
-const stickyBarBorder = computed(() =>
-  darkMode.value ? "#3a3a3a" : "#e2e8f0"
-);
 const stickyTargetColor = computed(() =>
   darkMode.value ? "#f1f5f9" : "#1e293b"
 );
@@ -460,7 +461,25 @@ const stickyPillColor = computed(() =>
 const stickyPillHoverColor = computed(() =>
   darkMode.value ? "#e2e8f0" : "#334155"
 );
+const stickyPillActiveBg = computed(() =>
+  darkMode.value ? "rgba(255,255,255,0.1)" : "transparent"
+);
+const stickyPillActiveShadow = computed(() =>
+  darkMode.value
+    ? "0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)"
+    : "0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06)"
+);
 const tagTextColor = computed(() => (darkMode.value ? "#94a3b8" : "#475569"));
+
+const stickyContentStyle = computed(() => ({
+  "--sticky-target": stickyTargetColor.value,
+  "--sticky-muted": mutedColor.value,
+  "--sticky-ctx": stickyCtxColor.value,
+  "--sticky-pill": stickyPillColor.value,
+  "--sticky-pill-hover": stickyPillHoverColor.value,
+  "--sticky-pill-active-bg": stickyPillActiveBg.value,
+  "--sticky-pill-active-shadow": stickyPillActiveShadow.value,
+}));
 
 const { readUrl, updateUrl, clearChildParams, isSelfWrite } =
   useCharacterizationUrl();
@@ -962,37 +981,28 @@ onBeforeUnmount(() => {
   margin-bottom: 0.75rem;
 }
 
-.sticky-bar {
-  position: fixed;
-  top: 6px;
-  left: calc(52px + 1.5rem);
-  right: 1.5rem;
-  z-index: 1000;
+.sticky-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0 1.25rem;
-  height: 38px;
-  background: v-bind(stickyBarBg);
-  backdrop-filter: blur(8px);
-  border: 1px solid v-bind(stickyBarBorder);
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  gap: 1.5rem;
+  width: 100%;
+  padding-bottom: 0.75rem;
 }
 
 .sticky-left {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   min-width: 0;
+  flex: 1;
   overflow: hidden;
 }
 
 .sticky-target {
   font-weight: 600;
-  color: v-bind(stickyTargetColor);
+  color: var(--sticky-target);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1000,22 +1010,14 @@ onBeforeUnmount(() => {
 }
 
 .sticky-sep {
-  color: v-bind(mutedColor);
+  color: var(--sticky-muted);
   flex-shrink: 0;
 }
 
 .sticky-tab {
-  color: inherit;
+  color: var(--sticky-target);
   font-weight: 600;
   white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.sticky-vdivider {
-  display: inline-block;
-  width: 1px;
-  height: 1rem;
-  margin: 0 0.3rem;
   flex-shrink: 0;
 }
 
@@ -1025,18 +1027,23 @@ onBeforeUnmount(() => {
   height: 3px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: var(--sticky-muted);
 }
 
 .sticky-ctx {
-  color: v-bind(stickyCtxColor);
+  color: var(--sticky-ctx);
   font-size: 0.75rem;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sticky-ctx-group {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .ctx-appear-enter-active,
@@ -1052,31 +1059,35 @@ onBeforeUnmount(() => {
 
 .sticky-pills {
   display: flex;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.125rem;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .sticky-pill {
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.625rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
-  color: v-bind(stickyPillColor);
+  color: var(--sticky-pill);
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: color 0.12s ease, background 0.12s ease;
   white-space: nowrap;
 }
 
 .sticky-pill:hover {
-  color: v-bind(stickyPillHoverColor);
+  color: var(--sticky-pill-hover);
+  background: rgba(128, 128, 128, 0.08);
 }
 
 .sticky-pill.active {
-  color: v-bind(stickyPillHoverColor);
+  color: var(--sticky-pill-hover);
   font-weight: 600;
-  background: v-bind(pillActiveBg);
+  background: var(--sticky-pill-active-bg);
+  box-shadow: var(--sticky-pill-active-shadow);
 }
 
 .sticky-fade-enter-active,
@@ -1087,7 +1098,7 @@ onBeforeUnmount(() => {
 .sticky-fade-enter-from,
 .sticky-fade-leave-to {
   opacity: 0;
-  transform: translateY(-100%);
+  transform: translateY(100%);
 }
 
 .mt-3 {
