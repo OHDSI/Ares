@@ -3,7 +3,7 @@
     v-if="store.getters.explorerLoaded"
     ref="el"
     id="explorer"
-    class="flex flex-row gap-16 p-2 pb-3 pt-6 items-end"
+    class="flex flex-row gap-8 pt-7 pb-3 items-end"
     :class="{ sticky: isSticky, 'is-stuck': isSticky && isStuck }"
   >
     <Button class="logo-button" text @click="router.push('/')">
@@ -15,8 +15,13 @@
       />
     </Button>
 
-    <div v-if="hasExplorerData" class="flex flex-row gap-5 items-end">
-      <FloatLabel>
+    <TransitionGroup
+      v-if="hasExplorerData"
+      tag="div"
+      name="explorer-dropdown"
+      class="flex flex-row items-end"
+    >
+      <FloatLabel key="folder">
         <Dropdown
           inputId="folder"
           :model-value="store.getters.getSelectedFolder"
@@ -31,75 +36,94 @@
             </div>
           </template>
         </Dropdown>
-        <label class="font-light dark:text-white text-black" for="folder"
+        <label class="font-light text-surface-500" for="folder"
           >Report category</label
         >
       </FloatLabel>
 
-      <FloatLabel v-if="showSourceSelector">
-        <Dropdown
-          inputId="source"
-          :model-value="store.getters.getSelectedSource"
-          @update:modelValue="changeSource"
-          :options="store.getters.getSources"
-          optionLabel="cdm_source_abbreviation"
-        />
-        <label class="left-3 font-light dark:text-white text-black" for="source"
-          >Source</label
-        >
-      </FloatLabel>
+      <div
+        v-if="showSourceSelector"
+        key="source"
+        class="explorer-dropdown-group"
+      >
+        <SvgIcon class="chevron" type="mdi" :path="mdiChevronRight" />
+        <FloatLabel>
+          <Dropdown
+            inputId="source"
+            :model-value="store.getters.getSelectedSource"
+            @update:modelValue="changeSource"
+            :options="store.getters.getSources"
+            optionLabel="cdm_source_abbreviation"
+          />
+          <label class="left-3 font-light text-surface-500" for="source"
+            >Source</label
+          >
+        </FloatLabel>
+      </div>
 
-      <FloatLabel v-if="showReleaseSelector">
-        <Dropdown
-          inputId="release"
-          :model-value="store.getters.getSelectedRelease"
-          @update:modelValue="changeRelease"
-          :options="store.getters.getReleases"
-          optionLabel="release_name"
-        />
-        <label
-          class="relative left-3 top-0 font-light dark:text-white text-black"
-          for="release"
-          >Release</label
-        >
-      </FloatLabel>
+      <div
+        v-if="showReleaseSelector"
+        key="release"
+        class="explorer-dropdown-group"
+      >
+        <SvgIcon class="chevron" type="mdi" :path="mdiChevronRight" />
+        <FloatLabel>
+          <Dropdown
+            inputId="release"
+            :model-value="store.getters.getSelectedRelease"
+            @update:modelValue="changeRelease"
+            :options="store.getters.getReleases"
+            optionLabel="release_name"
+          />
+          <label
+            class="relative left-3 top-0 font-light text-surface-500"
+            for="release"
+            >Release</label
+          >
+        </FloatLabel>
+      </div>
 
-      <FloatLabel>
-        <CascadeSelect
-          inputId="report"
-          :options="store.getters.getFilteredReports"
-          :model-value="store.getters.getSelectedReport"
-          @update:modelValue="changeReport"
-          optionLabel="name"
-          optionGroupLabel="name"
-          :optionGroupChildren="['reports']"
-        >
-          <template #option="{ option }">
-            <div class="flex items-center gap-2">
-              <SvgIcon type="mdi" :path="option.icon" />
-              <span>{{ option.name }}</span>
-            </div>
-          </template>
-        </CascadeSelect>
-        <label class="font-light dark:text-white text-black" for="report"
-          >Report</label
-        >
-      </FloatLabel>
+      <div key="report" class="explorer-dropdown-group">
+        <SvgIcon class="chevron" type="mdi" :path="mdiChevronRight" />
+        <FloatLabel>
+          <CascadeSelect
+            inputId="report"
+            :options="store.getters.getFilteredReports"
+            :model-value="store.getters.getSelectedReport"
+            @update:modelValue="changeReport"
+            optionLabel="name"
+            optionGroupLabel="name"
+            :optionGroupChildren="['reports']"
+          >
+            <template #option="{ option }">
+              <div class="flex items-center gap-2">
+                <SvgIcon type="mdi" :path="option.icon" />
+                <span>{{ option.name }}</span>
+              </div>
+            </template>
+          </CascadeSelect>
+          <label class="font-light text-surface-500" for="report">Report</label>
+        </FloatLabel>
+      </div>
 
-      <FloatLabel v-if="conceptParam">
-        <InputText inputId="concept" :value="String(conceptParam)" readonly />
-        <label class="font-light dark:text-white text-black" for="concept"
-          >Concept ID</label
-        >
-      </FloatLabel>
+      <div v-if="conceptParam" key="concept" class="explorer-dropdown-group">
+        <FloatLabel>
+          <InputText inputId="concept" :value="String(conceptParam)" readonly />
+          <label class="font-light text-surface-500" for="concept"
+            >Concept ID</label
+          >
+        </FloatLabel>
+      </div>
 
-      <FloatLabel v-if="cohortParam">
-        <InputText inputId="cohort" :value="String(cohortParam)" readonly />
-        <label class="font-light dark:text-white text-black" for="cohort"
-          >Cohort ID</label
-        >
-      </FloatLabel>
-    </div>
+      <div v-if="cohortParam" key="cohort" class="explorer-dropdown-group">
+        <FloatLabel>
+          <InputText inputId="cohort" :value="String(cohortParam)" readonly />
+          <label class="font-light text-surface-500" for="cohort"
+            >Cohort ID</label
+          >
+        </FloatLabel>
+      </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -114,6 +138,7 @@ import FloatLabel from "primevue/floatlabel";
 import InputText from "primevue/inputtext";
 import SvgIcon from "@/shared/ui/svgIcon";
 
+import { mdiChevronRight } from "@mdi/js";
 import icon from "@/shared/assets/icon.png";
 import config from "@/widgets/explorer/config";
 import type {
@@ -156,6 +181,7 @@ watch(
 );
 
 const isDarkMode = computed(() => store.getters.getSettings?.darkMode ?? false);
+const chevronColor = computed(() => (isDarkMode.value ? "white" : "black"));
 const isSticky = computed(
   () => store.getters.getSettings?.stickyNavBar ?? false
 );
@@ -251,9 +277,45 @@ function changeReport(report: ReportOption): void {
   filter: invert(1);
 }
 
+.explorer-dropdown-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  padding-left: 1rem;
+  box-sizing: border-box;
+}
+
+.explorer-dropdown-move {
+  transition: transform 0.2s ease;
+}
+
+.explorer-dropdown-enter-active,
+.explorer-dropdown-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease, max-width 0.2s ease;
+  overflow: hidden;
+  max-width: 400px;
+}
+
+.explorer-dropdown-enter-from,
+.explorer-dropdown-leave-to {
+  opacity: 0;
+  transform: translateX(-10px);
+  max-width: 0;
+}
+
+.chevron {
+  opacity: 0.25;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+  transform: scale(0.6);
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  color: v-bind(chevronColor);
+}
+
 .logo-button {
   opacity: 0.5;
-  transition: opacity 0.3s;
+  transition: opacity 0.25s ease !important;
 
   &:hover {
     opacity: 1;
@@ -264,16 +326,27 @@ function changeReport(report: ReportOption): void {
   position: sticky;
   top: 0;
   border-bottom: 1px solid transparent;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease,
+    padding-top 0.2s ease;
+}
+
+.sticky :deep(label) {
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
 
 .sticky.is-stuck {
+  padding-top: 0.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   border-bottom-color: rgba(0, 0, 0, 0.08);
 
   .dark & {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  :deep(label) {
+    opacity: 0;
   }
 }
 
