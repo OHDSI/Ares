@@ -1,3 +1,5 @@
+import { parseCovariateNameString } from './parseCovariateNameString.js';
+
 /**
  * @param {object} options
  * @param {object[]} options.caseCounts
@@ -99,6 +101,7 @@ export function processBinaryRiskFactorFeatures({
                 startAnchor: c?.startAnchor ?? cc.startAnchor,
                 endAnchor: c?.endAnchor ?? cc.endAnchor,
                 covariateName: t.covariateName,
+                covariateNameParsed: parseCovariateNameString(t.covariateName),
                 covariateId: t.covariateId,
                 casePersonCount: caseCount.personCount,
                 nonCasePersonCount: nonCaseCount,
@@ -155,7 +158,7 @@ export function processContinuousRiskFactorFeatures({
     // Pre-rename all targetFeatures once
     const renamedTargets = targetFeatures.map((r) => ({
         databaseName: r.databaseName, databaseId: r.databaseId, targetName: r.targetName, targetCohortId: r.targetCohortId,
-        minPriorObservation: r.minPriorObservation, covariateName: r.covariateName, covariateId: r.covariateId,
+        minPriorObservation: r.minPriorObservation, covariateName: r.covariateName, covariateNameParsed: parseCovariateNameString(r.covariateName), covariateId: r.covariateId,
         targetCountValue: r.countValue, targetMinValue: r.minValue, targetMaxValue: r.maxValue,
         targetAverageValue: r.averageValue, targetStandardDeviation: r.standardDeviation, targetMedianValue: r.medianValue,
         targetP10Value: r.p10Value, targetP25Value: r.p25Value, targetP75Value: r.p75Value, targetP90Value: r.p90Value,

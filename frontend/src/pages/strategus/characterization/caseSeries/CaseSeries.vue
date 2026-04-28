@@ -76,7 +76,7 @@
               />
             </div>
             <DataTable
-              :value="binaryRows"
+              :value="filteredBinaryRows"
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
@@ -94,7 +94,43 @@
                     :hidden="!selectedColumns.includes('covariateName')"
                     :pt="{ headerContent: 'justify-start' }"
                     header="Covariate"
-                    :rowspan="2"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('domain')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Domain"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('concept')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Concept"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('timeWindow')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Time Window"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('windowDays')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Window Days"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('subType')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Sub-type"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('detail')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Detail"
+                    :rowspan="showBinaryFilters ? 3 : 2"
                   />
                   <Column
                     v-if="hasBinaryPhase('Before')"
@@ -170,6 +206,99 @@
               <Column
                 :hidden="!selectedColumns.includes('covariateName')"
                 field="covariateName"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('domain')"
+                field="domain"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter>
+                  <Dropdown
+                    v-model="binaryDropdownFilters.domain"
+                    :options="binaryDomainOptions"
+                    placeholder="All"
+                    showClear
+                    class="filter-dropdown"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('concept')"
+                field="concept"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('timeWindow')"
+                field="timeWindow"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter>
+                  <Dropdown
+                    v-model="binaryDropdownFilters.timeWindow"
+                    :options="timeWindowOptions"
+                    placeholder="All"
+                    showClear
+                    class="filter-dropdown"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('windowDays')"
+                field="windowDays"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('subType')"
+                field="subType"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter>
+                  <Dropdown
+                    v-model="binaryDropdownFilters.subType"
+                    :options="binarySubTypeOptions"
+                    placeholder="All"
+                    showClear
+                    class="filter-dropdown"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('detail')"
+                field="detail"
                 :showFilterMenu="false"
                 style="text-align: start"
               >
@@ -336,7 +465,7 @@
               />
             </div>
             <DataTable
-              :value="continuousRows"
+              :value="filteredContinuousRows"
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
@@ -354,13 +483,49 @@
                     :hidden="!selectedColumns.includes('covariateName')"
                     :pt="{ headerContent: 'justify-start' }"
                     header="Covariate"
-                    :rowspan="2"
+                    :rowspan="showContinuousFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('domain')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Domain"
+                    :rowspan="showContinuousFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('concept')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Concept"
+                    :rowspan="showContinuousFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('timeWindow')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Time Window"
+                    :rowspan="showContinuousFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('windowDays')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Window Days"
+                    :rowspan="showContinuousFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('subType')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Sub-type"
+                    :rowspan="showContinuousFilters ? 3 : 2"
+                  />
+                  <Column
+                    :hidden="!selectedColumns.includes('detail')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    header="Detail"
+                    :rowspan="showContinuousFilters ? 3 : 2"
                   />
                   <Column
                     :hidden="!selectedColumns.includes('covariateId')"
                     :pt="{ headerContent: 'justify-start' }"
                     header="ID"
-                    :rowspan="2"
+                    :rowspan="showContinuousFilters ? 3 : 2"
                   />
                   <Column
                     v-if="hasContinuousPhase('Before')"
@@ -440,6 +605,99 @@
               <Column
                 :hidden="!selectedColumns.includes('covariateName')"
                 field="covariateName"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('domain')"
+                field="domain"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter>
+                  <Dropdown
+                    v-model="continuousDropdownFilters.domain"
+                    :options="continuousDomainOptions"
+                    placeholder="All"
+                    showClear
+                    class="filter-dropdown"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('concept')"
+                field="concept"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('timeWindow')"
+                field="timeWindow"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter>
+                  <Dropdown
+                    v-model="continuousDropdownFilters.timeWindow"
+                    :options="timeWindowOptions"
+                    placeholder="All"
+                    showClear
+                    class="filter-dropdown"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('windowDays')"
+                field="windowDays"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter="{ filterModel, filterCallback }">
+                  <InputText
+                    v-model="filterModel.value"
+                    @input="filterCallback()"
+                    placeholder="Search..."
+                    size="small"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('subType')"
+                field="subType"
+                :showFilterMenu="false"
+                style="text-align: start"
+              >
+                <template #filter>
+                  <Dropdown
+                    v-model="continuousDropdownFilters.subType"
+                    :options="continuousSubTypeOptions"
+                    placeholder="All"
+                    showClear
+                    class="filter-dropdown"
+                  />
+                </template>
+              </Column>
+              <Column
+                :hidden="!selectedColumns.includes('detail')"
+                field="detail"
                 :showFilterMenu="false"
                 style="text-align: start"
               >
@@ -643,6 +901,12 @@ const helpNoteColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
 
 const csColumnOptions = [
   { label: "Covariate", key: "covariateName" },
+  { label: "Domain", key: "domain" },
+  { label: "Concept", key: "concept" },
+  { label: "Time Window", key: "timeWindow" },
+  { label: "Window Days", key: "windowDays" },
+  { label: "Sub-type", key: "subType" },
+  { label: "Detail", key: "detail" },
   { label: "ID", key: "covariateId" },
   { label: "No.", key: "counts" },
   { label: "%", key: "pct" },
@@ -724,8 +988,35 @@ const helpText = ref(null);
 const binaryPhases = ref([]);
 const continuousPhases = ref([]);
 
+const binaryDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
+const continuousDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
+
+const binaryDomainOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
+const binarySubTypeOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
+const continuousDomainOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
+const continuousSubTypeOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
+const timeWindowOptions = ['temporal', 'any_time_prior', 'window'];
+
+const filteredBinaryRows = computed(() => {
+  let rows = binaryRows.value;
+  if (binaryDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === binaryDropdownFilters.value.domain);
+  if (binaryDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === binaryDropdownFilters.value.subType);
+  if (binaryDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === binaryDropdownFilters.value.timeWindow);
+  return rows;
+});
+const filteredContinuousRows = computed(() => {
+  let rows = continuousRows.value;
+  if (continuousDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === continuousDropdownFilters.value.domain);
+  if (continuousDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === continuousDropdownFilters.value.subType);
+  if (continuousDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow);
+  return rows;
+});
+
 const binaryTableFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  detail: { value: null, matchMode: FilterMatchMode.CONTAINS },
   sumValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
   averageValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
   sumValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -735,6 +1026,9 @@ const binaryTableFilters = ref({
 });
 const continuousTableFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  detail: { value: null, matchMode: FilterMatchMode.CONTAINS },
   covariateId: { value: null, matchMode: FilterMatchMode.CONTAINS },
   countValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
   minValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -852,6 +1146,12 @@ function pivotBinary(raw) {
       map.set(key, {
         covariateName: r.covariateName,
         covariateId: r.covariateId,
+        domain: r.covariateNameParsed?.domain ?? null,
+        concept: r.covariateNameParsed?.concept ?? null,
+        timeWindow: r.covariateNameParsed?.timeWindow ?? null,
+        windowDays: r.covariateNameParsed?.windowDays ?? null,
+        subType: r.covariateNameParsed?.subType ?? null,
+        detail: r.covariateNameParsed?.detail ?? null,
         minPriorObservation: r.minPriorObservation,
         outcomeWashoutDays: r.outcomeWashoutDays,
         casePostOutcomeDuration: r.casePostOutcomeDuration,
@@ -873,6 +1173,12 @@ function pivotContinuous(raw) {
       map.set(key, {
         covariateName: r.covariateName,
         covariateId: r.covariateId,
+        domain: r.covariateNameParsed?.domain ?? null,
+        concept: r.covariateNameParsed?.concept ?? null,
+        timeWindow: r.covariateNameParsed?.timeWindow ?? null,
+        windowDays: r.covariateNameParsed?.windowDays ?? null,
+        subType: r.covariateNameParsed?.subType ?? null,
+        detail: r.covariateNameParsed?.detail ?? null,
         minPriorObservation: r.minPriorObservation,
         outcomeWashoutDays: r.outcomeWashoutDays,
         casePostOutcomeDuration: r.casePostOutcomeDuration,
@@ -1107,5 +1413,14 @@ onMounted(async () => {
 :deep(.p-sortable-column:hover .p-sortable-column-icon),
 :deep(.p-highlight .p-sortable-column-icon) {
   opacity: 1;
+}
+
+.filter-dropdown {
+  width: 100%;
+  font-size: 0.75rem;
+}
+:deep(.filter-dropdown .p-dropdown-label) {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
 }
 </style>

@@ -1,7 +1,5 @@
-/**
- * Builds a SQL WHERE clause fragment conditionally.
- * If `value` is non-null/undefined, returns the clause with parameter tracking; otherwise returns empty string.
- */
+import { parseCovariateNameString } from './helpers/parseCovariateNameString.js';
+
 function addOptionalClause(condition, clause) {
     return condition ? clause : '';
 }
@@ -123,7 +121,9 @@ async function getBinaryCaseSeries(connectionHandler, options) {
       ${conceptClause}
   `;
 
-    return connectionHandler.queryDb(sql, params);
+    return connectionHandler.queryDb(sql, params).then((rows) =>
+        rows.map((r) => ({ ...r, covariateNameParsed: parseCovariateNameString(r.covariateName) }))
+    );
 }
 
 /**
@@ -237,7 +237,9 @@ async function getContinuousCaseSeries(connectionHandler, options) {
       AND cov.cohort_type IN ('CasesBetween', 'CasesAfter', 'CasesBefore')
   `;
 
-    return connectionHandler.queryDb(sql, params);
+    return connectionHandler.queryDb(sql, params).then((rows) =>
+        rows.map((r) => ({ ...r, covariateNameParsed: parseCovariateNameString(r.covariateName) }))
+    );
 }
 
 

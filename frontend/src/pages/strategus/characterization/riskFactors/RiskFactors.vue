@@ -130,6 +130,111 @@
                     </template>
                   </Column>
                   <Column
+                    :hidden="!selectedColumns.includes('domain')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                    sortField="domain"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Domain</span>
+                        <Dropdown
+                          v-if="showBinaryFilters"
+                          v-model="binaryDropdownFilters.domain"
+                          :options="binaryDomainOptions"
+                          placeholder="All"
+                          showClear
+                          class="filter-dropdown"
+                        />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedColumns.includes('concept')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                    sortField="concept"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Concept</span>
+                        <FilterInput v-if="showBinaryFilters" :filterObj="binaryTableFilters.concept" placeholder="Search..." />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedColumns.includes('timeWindow')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                    sortField="timeWindow"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Time Window</span>
+                        <Dropdown
+                          v-if="showBinaryFilters"
+                          v-model="binaryDropdownFilters.timeWindow"
+                          :options="timeWindowOptions"
+                          placeholder="All"
+                          showClear
+                          class="filter-dropdown"
+                        />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedColumns.includes('windowDays')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                    sortField="windowDays"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Window Days</span>
+                        <FilterInput v-if="showBinaryFilters" :filterObj="binaryTableFilters.windowDays" placeholder="e.g. -365 to -1" />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedColumns.includes('subType')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                    sortField="subType"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Sub-type</span>
+                        <Dropdown
+                          v-if="showBinaryFilters"
+                          v-model="binaryDropdownFilters.subType"
+                          :options="binarySubTypeOptions"
+                          placeholder="All"
+                          showClear
+                          class="filter-dropdown"
+                        />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedColumns.includes('detail')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showBinaryFilters ? 3 : 2"
+                    sortField="detail"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Detail</span>
+                        <FilterInput v-if="showBinaryFilters" :filterObj="binaryTableFilters.detail" placeholder="Search..." />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
                     v-for="ref in binaryRfRef"
                     :key="'bhdr-' + ref.id"
                     :header="`${ref.databaseName} (Cases: ${formatCensored(
@@ -322,6 +427,12 @@
                   />
                 </template>
               </Column>
+              <Column :hidden="!selectedColumns.includes('domain')" field="domain" style="text-align: start" />
+              <Column :hidden="!selectedColumns.includes('concept')" field="concept" style="text-align: start" />
+              <Column :hidden="!selectedColumns.includes('timeWindow')" field="timeWindow" style="text-align: start" />
+              <Column :hidden="!selectedColumns.includes('windowDays')" field="windowDays" style="text-align: start" />
+              <Column :hidden="!selectedColumns.includes('subType')" field="subType" style="text-align: start" />
+              <Column :hidden="!selectedColumns.includes('detail')" field="detail" style="text-align: start" />
               <template v-for="ref in binaryRfRef" :key="'bcol-' + ref.id">
                 <Column
                   :hidden="!selectedColumns.includes('caseCount')"
@@ -523,6 +634,111 @@
                           :filterObj="continuousTableFilters.covariateName"
                           placeholder="Search..."
                         />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('domain')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showContinuousFilters ? 4 : 3"
+                    sortField="domain"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Domain</span>
+                        <Dropdown
+                          v-if="showContinuousFilters"
+                          v-model="continuousDropdownFilters.domain"
+                          :options="continuousDomainOptions"
+                          placeholder="All"
+                          showClear
+                          class="filter-dropdown"
+                        />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('concept')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showContinuousFilters ? 4 : 3"
+                    sortField="concept"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Concept</span>
+                        <FilterInput v-if="showContinuousFilters" :filterObj="continuousTableFilters.concept" placeholder="Search..." />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('timeWindow')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showContinuousFilters ? 4 : 3"
+                    sortField="timeWindow"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Time Window</span>
+                        <Dropdown
+                          v-if="showContinuousFilters"
+                          v-model="continuousDropdownFilters.timeWindow"
+                          :options="timeWindowOptions"
+                          placeholder="All"
+                          showClear
+                          class="filter-dropdown"
+                        />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('windowDays')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showContinuousFilters ? 4 : 3"
+                    sortField="windowDays"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Window Days</span>
+                        <FilterInput v-if="showContinuousFilters" :filterObj="continuousTableFilters.windowDays" placeholder="e.g. -365 to -1" />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('subType')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showContinuousFilters ? 4 : 3"
+                    sortField="subType"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Sub-type</span>
+                        <Dropdown
+                          v-if="showContinuousFilters"
+                          v-model="continuousDropdownFilters.subType"
+                          :options="continuousSubTypeOptions"
+                          placeholder="All"
+                          showClear
+                          class="filter-dropdown"
+                        />
+                      </div>
+                    </template>
+                  </Column>
+                  <Column
+                    :hidden="!selectedContinuousColumns.includes('detail')"
+                    :pt="{ headerContent: 'justify-start' }"
+                    :rowspan="showContinuousFilters ? 4 : 3"
+                    sortField="detail"
+                    sortable
+                  >
+                    <template #header>
+                      <div class="col-header-with-filter">
+                        <span>Detail</span>
+                        <FilterInput v-if="showContinuousFilters" :filterObj="continuousTableFilters.detail" placeholder="Search..." />
                       </div>
                     </template>
                   </Column>
@@ -945,6 +1161,12 @@
                   />
                 </template>
               </Column>
+              <Column :hidden="!selectedContinuousColumns.includes('domain')" field="domain" style="text-align: start" />
+              <Column :hidden="!selectedContinuousColumns.includes('concept')" field="concept" style="text-align: start" />
+              <Column :hidden="!selectedContinuousColumns.includes('timeWindow')" field="timeWindow" style="text-align: start" />
+              <Column :hidden="!selectedContinuousColumns.includes('windowDays')" field="windowDays" style="text-align: start" />
+              <Column :hidden="!selectedContinuousColumns.includes('subType')" field="subType" style="text-align: start" />
+              <Column :hidden="!selectedContinuousColumns.includes('detail')" field="detail" style="text-align: start" />
               <template v-for="ref in continuousRfRef" :key="'ccol-' + ref.id">
                 <Column
                   :hidden="!selectedContinuousColumns.includes('caseCount')"
@@ -1270,6 +1492,12 @@ const STORAGE_KEY_CONT = "char:riskFactors:continuous";
 
 const rfColumnOptions = [
   { label: "Covariate", key: "covariateName" },
+  { label: "Domain", key: "domain" },
+  { label: "Concept", key: "concept" },
+  { label: "Time Window", key: "timeWindow" },
+  { label: "Window Days", key: "windowDays" },
+  { label: "Sub-type", key: "subType" },
+  { label: "Detail", key: "detail" },
   { label: "Case Count", key: "caseCount" },
   { label: "Case %", key: "casePct" },
   { label: "Non-case Count", key: "nonCaseCount" },
@@ -1296,6 +1524,12 @@ watch(selectedColumns, (val) => {
 
 const rfContinuousColumnOptions = [
   { label: "Covariate", key: "covariateName" },
+  { label: "Domain", key: "domain" },
+  { label: "Concept", key: "concept" },
+  { label: "Time Window", key: "timeWindow" },
+  { label: "Window Days", key: "windowDays" },
+  { label: "Sub-type", key: "subType" },
+  { label: "Detail", key: "detail" },
   { label: "Case Count", key: "caseCount" },
   { label: "Case Mean", key: "caseMean" },
   { label: "Case StDev", key: "caseStdev" },
@@ -1457,14 +1691,32 @@ const smdMax = ref(2);
 
 const binaryTableFilters = ref<Record<string, any>>({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  detail: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const continuousTableFilters = ref<Record<string, any>>({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  detail: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+
+const binaryDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
+const continuousDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
+
+const binaryDomainOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
+const binarySubTypeOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
+const continuousDomainOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
+const continuousSubTypeOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
+const timeWindowOptions = ['temporal', 'any_time_prior', 'window'];
 
 watch(binaryRfRef, (newRefs) => {
   const f: Record<string, any> = {
     covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    detail: { value: null, matchMode: FilterMatchMode.CONTAINS },
   };
   for (const ref of newRefs) {
     for (const key of [
@@ -1482,11 +1734,15 @@ watch(binaryRfRef, (newRefs) => {
     }
   }
   binaryTableFilters.value = f;
+  binaryDropdownFilters.value = { domain: null, subType: null, timeWindow: null };
 });
 
 watch(continuousRfRef, (newRefs) => {
   const f: Record<string, any> = {
     covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    detail: { value: null, matchMode: FilterMatchMode.CONTAINS },
   };
   for (const ref of newRefs) {
     for (const key of [
@@ -1512,6 +1768,7 @@ watch(continuousRfRef, (newRefs) => {
     }
   }
   continuousTableFilters.value = f;
+  continuousDropdownFilters.value = { domain: null, subType: null, timeWindow: null };
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);
@@ -1539,6 +1796,9 @@ const filteredBinaryRows = computed(() => {
       );
     }
   }
+  if (binaryDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === binaryDropdownFilters.value.domain);
+  if (binaryDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === binaryDropdownFilters.value.subType);
+  if (binaryDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === binaryDropdownFilters.value.timeWindow);
   if (binaryAbsSmdMin.value > 0) {
     rows = rows.filter((r) =>
       binaryRfRef.value.some(
@@ -1561,6 +1821,9 @@ const filteredContinuousRows = computed(() => {
       );
     }
   }
+  if (continuousDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === continuousDropdownFilters.value.domain);
+  if (continuousDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === continuousDropdownFilters.value.subType);
+  if (continuousDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow);
   if (continuousAbsSmdMin.value > 0) {
     rows = rows.filter((r) =>
       continuousRfRef.value.some(
@@ -1608,6 +1871,12 @@ function pivotBinary(rows: any[]) {
       covMap.set(r.covariateId, {
         covariateName: r.covariateName,
         covariateId: r.covariateId,
+        domain: r.covariateNameParsed?.domain ?? null,
+        concept: r.covariateNameParsed?.concept ?? null,
+        timeWindow: r.covariateNameParsed?.timeWindow ?? null,
+        windowDays: r.covariateNameParsed?.windowDays ?? null,
+        subType: r.covariateNameParsed?.subType ?? null,
+        detail: r.covariateNameParsed?.detail ?? null,
       });
     }
     const row = covMap.get(r.covariateId);
@@ -1645,6 +1914,12 @@ function pivotContinuous(rows: any[]) {
       covMap.set(r.covariateId, {
         covariateName: r.covariateName,
         covariateId: r.covariateId,
+        domain: r.covariateNameParsed?.domain ?? null,
+        concept: r.covariateNameParsed?.concept ?? null,
+        timeWindow: r.covariateNameParsed?.timeWindow ?? null,
+        windowDays: r.covariateNameParsed?.windowDays ?? null,
+        subType: r.covariateNameParsed?.subType ?? null,
+        detail: r.covariateNameParsed?.detail ?? null,
       });
     }
     const row = covMap.get(r.covariateId);
@@ -1986,5 +2261,16 @@ onMounted(async () => {
 :deep(.p-sortable-column:hover .p-sortable-column-icon),
 :deep(.p-highlight .p-sortable-column-icon) {
   opacity: 1;
+}
+
+.filter-dropdown {
+  width: 100%;
+}
+:deep(.filter-dropdown .p-dropdown-label) {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.75rem;
+}
+:deep(.filter-dropdown .p-dropdown-trigger) {
+  width: 1.5rem;
 }
 </style>

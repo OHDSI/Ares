@@ -1,5 +1,5 @@
 <template>
-  <div
+  <Panel
     class="bg-white dark:bg-surface-800 text-black dark:text-white h-[670px]"
   >
     <Pivot
@@ -13,7 +13,7 @@
       :aggregator-names-list="['time']"
       :aggregators="{ time: aggregateTime() }"
     />
-  </div>
+  </Panel>
 </template>
 
 <script setup lang="ts">
@@ -21,6 +21,7 @@ import Pivot from "@/widgets/pivot";
 import { useStore } from "vuex";
 import { NETWORK_PERFORMANCE } from "@/shared/config/files";
 import { formatTimestamp } from "@/shared/lib/formatters";
+import Panel from "primevue/panel";
 
 const store = useStore();
 

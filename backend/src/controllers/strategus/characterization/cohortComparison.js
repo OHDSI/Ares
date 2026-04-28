@@ -1,4 +1,5 @@
 import { queryDb } from '../../../config/postgresDbConnection.js';
+import { parseCovariateNameString } from './helpers/parseCovariateNameString.js';
 
 function addOptionalClause(condition, clause) {
     return condition ? clause : '';
@@ -144,7 +145,7 @@ export async function getCharacterizationCohortBinary({
     for (const r of merged) {
         const key = pivotKey(r);
         if (!pivotMap.has(key)) {
-            pivotMap.set(key, { covariateName: r.covariateName, covariateId: r.covariateId });
+            pivotMap.set(key, { covariateName: r.covariateName, covariateNameParsed: parseCovariateNameString(r.covariateName), covariateId: r.covariateId });
         }
         const row = pivotMap.get(key);
         row[`sumValue_${r.id}`] = r.sumValue;
@@ -286,6 +287,7 @@ export async function getCharacterizationCohortContinuous({
         if (!pivotMap.has(key)) {
             pivotMap.set(key, {
                 covariateName: r.covariateName,
+                covariateNameParsed: parseCovariateNameString(r.covariateName),
                 covariateId: r.covariateId,
                 minPriorObservation: r.minPriorObservation,
             });
