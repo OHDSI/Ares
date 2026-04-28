@@ -734,6 +734,8 @@ function renderFailsChart(data) {
   const rechalExposure = [];
   const dechalOutcome = [];
   const rechalOutcome = [];
+  const dechalExposureStarts = [];
+  const rechalExposureStarts = [];
 
   for (const r of sorted) {
     const y = pidMap.get(r.personKey);
@@ -742,6 +744,11 @@ function renderFailsChart(data) {
       [r.dechallengeExposureEndDateOffset, y, r.dechallengeExposureNumber],
       [null, null, null]
     );
+    dechalExposureStarts.push([
+      r.dechallengeExposureStartDateOffset,
+      y,
+      r.dechallengeExposureNumber,
+    ]);
     if (r.dechallengeOutcomeStartDateOffset != null) {
       dechalOutcome.push([
         r.dechallengeOutcomeStartDateOffset,
@@ -755,6 +762,11 @@ function renderFailsChart(data) {
         [r.rechallengeExposureEndDateOffset, y, r.rechallengeExposureNumber],
         [null, null, null]
       );
+      rechalExposureStarts.push([
+        r.rechallengeExposureStartDateOffset,
+        y,
+        r.rechallengeExposureNumber,
+      ]);
     }
     if (r.rechallengeOutcomeStartDateOffset != null) {
       rechalOutcome.push([
@@ -774,7 +786,9 @@ function renderFailsChart(data) {
       trigger: "item",
       formatter: (p) => {
         if (!p.data || p.data[0] == null) return "";
-        return `Day: ${p.data[0]}, Person: ${persons.length - p.data[1] + 1}`;
+        const person = persons.length - p.data[1] + 1;
+        const eventNum = p.data[2] != null ? `, Event: ${p.data[2]}` : "";
+        return `Day: ${p.data[0]}, Person: ${person}${eventNum}`;
       },
     },
     xAxis: {
@@ -827,6 +841,13 @@ function renderFailsChart(data) {
         symbol: "diamond",
         symbolSize: 10,
         itemStyle: { color: "#FF8C00" },
+        label: {
+          show: true,
+          formatter: (p) => String(p.data[2]),
+          color: "#FF8C00",
+          position: [6, -10],
+          fontSize: 11,
+        },
       },
       {
         name: "Rechallenge Outcome",
@@ -835,6 +856,49 @@ function renderFailsChart(data) {
         symbol: "diamond",
         symbolSize: 10,
         itemStyle: { color: "#FF4500" },
+        label: {
+          show: true,
+          formatter: (p) => String(p.data[2]),
+          color: "#FF4500",
+          position: [6, -10],
+          fontSize: 11,
+        },
+      },
+      {
+        name: "Dechallenge Exposure",
+        type: "scatter",
+        data: dechalExposureStarts,
+        symbol: "circle",
+        symbolSize: 0,
+        silent: true,
+        legendHoverLink: false,
+        showInLegend: false,
+        label: {
+          show: true,
+          formatter: (p) => String(p.data[2]),
+          color: "#4169E1",
+          position: [-4, -10],
+          fontSize: 11,
+          align: "right",
+        },
+      },
+      {
+        name: "Rechallenge Exposure",
+        type: "scatter",
+        data: rechalExposureStarts,
+        symbol: "circle",
+        symbolSize: 0,
+        silent: true,
+        legendHoverLink: false,
+        showInLegend: false,
+        label: {
+          show: true,
+          formatter: (p) => String(p.data[2]),
+          color: "#7B9CD6",
+          position: [-4, -10],
+          fontSize: 11,
+          align: "right",
+        },
       },
     ],
   });
