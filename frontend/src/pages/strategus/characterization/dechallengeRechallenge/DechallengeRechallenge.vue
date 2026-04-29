@@ -791,6 +791,11 @@ function renderFailsChart(data) {
         return `Day: ${p.data[0]}, Person: ${person}${eventNum}`;
       },
     },
+    grid: { bottom: 80 },
+    dataZoom: [
+      { type: "inside", xAxisIndex: 0, filterMode: "none" },
+      { type: "slider", xAxisIndex: 0, filterMode: "none", bottom: 8 },
+    ],
     xAxis: {
       name: "Time from first exposure",
       nameLocation: "center",
@@ -809,7 +814,7 @@ function renderFailsChart(data) {
       splitLine: { show: false },
     },
     legend: {
-      bottom: 0,
+      top: 0,
       data: [
         "Dechallenge Exposure",
         "Rechallenge Exposure",
@@ -962,8 +967,6 @@ onUnmounted(() => {
 .fails-modal-panel {
   width: 80vw;
   max-width: 1200px;
-  max-height: 85vh;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -991,7 +994,7 @@ onUnmounted(() => {
 
 .fails-chart {
   width: 100%;
-  height: 450px;
+  height: 460px;
 }
 
 .table-controls {
