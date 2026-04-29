@@ -105,7 +105,7 @@ export function processBinaryRiskFactorFeatures({
                 covariateId: t.covariateId,
                 casePersonCount: caseCount.personCount,
                 nonCasePersonCount: nonCaseCount,
-                caseCount: cc_val,
+                caseCount: ca < 0 ? -Math.abs(cc_val) : cc_val,
                 caseAverage: ca,
                 nonCaseCount: nc,
                 nonCaseAverage: nca,

@@ -148,7 +148,7 @@ export async function getCharacterizationCohortBinary({
             pivotMap.set(key, { covariateName: r.covariateName, covariateNameParsed: parseCovariateNameString(r.covariateName), covariateId: r.covariateId });
         }
         const row = pivotMap.get(key);
-        row[`sumValue_${r.id}`] = r.sumValue;
+        row[`sumValue_${r.id}`] = r.averageValue < 0 ? -Math.abs(r.sumValue) : r.sumValue;
         row[`averageValue_${r.id}`] = r.averageValue;
         row[`n_${r.id}`] = r.n;
     }

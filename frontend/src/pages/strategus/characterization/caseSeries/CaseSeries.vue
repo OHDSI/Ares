@@ -61,7 +61,10 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <ColumnSelector v-model="selectedColumns" :options="csColumnOptions" />
+                <ColumnSelector
+                  v-model="selectedColumns"
+                  :options="csColumnOptions"
+                />
               </div>
               <Button
                 :icon="
@@ -449,7 +452,10 @@
             <div class="table-controls">
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <ColumnSelector v-model="selectedColumns" :options="csColumnOptions" />
+                <ColumnSelector
+                  v-model="selectedColumns"
+                  :options="csColumnOptions"
+                />
               </div>
 
               <Button
@@ -988,27 +994,77 @@ const helpText = ref(null);
 const binaryPhases = ref([]);
 const continuousPhases = ref([]);
 
-const binaryDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
-const continuousDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
+const binaryDropdownFilters = ref<{
+  domain: string | null;
+  subType: string | null;
+  timeWindow: string | null;
+}>({ domain: null, subType: null, timeWindow: null });
+const continuousDropdownFilters = ref<{
+  domain: string | null;
+  subType: string | null;
+  timeWindow: string | null;
+}>({ domain: null, subType: null, timeWindow: null });
 
-const binaryDomainOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
-const binarySubTypeOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
-const continuousDomainOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
-const continuousSubTypeOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
-const timeWindowOptions = ['temporal', 'any_time_prior', 'window'];
+const binaryDomainOptions = computed(
+  () =>
+    [
+      ...new Set(binaryRows.value.map((r: any) => r.domain).filter(Boolean)),
+    ].sort() as string[]
+);
+const binarySubTypeOptions = computed(
+  () =>
+    [
+      ...new Set(binaryRows.value.map((r: any) => r.subType).filter(Boolean)),
+    ].sort() as string[]
+);
+const continuousDomainOptions = computed(
+  () =>
+    [
+      ...new Set(
+        continuousRows.value.map((r: any) => r.domain).filter(Boolean)
+      ),
+    ].sort() as string[]
+);
+const continuousSubTypeOptions = computed(
+  () =>
+    [
+      ...new Set(
+        continuousRows.value.map((r: any) => r.subType).filter(Boolean)
+      ),
+    ].sort() as string[]
+);
+const timeWindowOptions = ["temporal", "any_time_prior", "window"];
 
 const filteredBinaryRows = computed(() => {
   let rows = binaryRows.value;
-  if (binaryDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === binaryDropdownFilters.value.domain);
-  if (binaryDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === binaryDropdownFilters.value.subType);
-  if (binaryDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === binaryDropdownFilters.value.timeWindow);
+  if (binaryDropdownFilters.value.domain)
+    rows = rows.filter(
+      (r: any) => r.domain === binaryDropdownFilters.value.domain
+    );
+  if (binaryDropdownFilters.value.subType)
+    rows = rows.filter(
+      (r: any) => r.subType === binaryDropdownFilters.value.subType
+    );
+  if (binaryDropdownFilters.value.timeWindow)
+    rows = rows.filter(
+      (r: any) => r.timeWindow === binaryDropdownFilters.value.timeWindow
+    );
   return rows;
 });
 const filteredContinuousRows = computed(() => {
   let rows = continuousRows.value;
-  if (continuousDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === continuousDropdownFilters.value.domain);
-  if (continuousDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === continuousDropdownFilters.value.subType);
-  if (continuousDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow);
+  if (continuousDropdownFilters.value.domain)
+    rows = rows.filter(
+      (r: any) => r.domain === continuousDropdownFilters.value.domain
+    );
+  if (continuousDropdownFilters.value.subType)
+    rows = rows.filter(
+      (r: any) => r.subType === continuousDropdownFilters.value.subType
+    );
+  if (continuousDropdownFilters.value.timeWindow)
+    rows = rows.filter(
+      (r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow
+    );
   return rows;
 });
 
@@ -1159,8 +1215,10 @@ function pivotBinary(raw) {
       });
     }
     const row = map.get(key);
-    row[`sumValue_${r.type}`] = r.sumValue ?? 0;
-    row[`averageValue_${r.type}`] = r.averageValue ?? 0;
+    const av = r.averageValue ?? 0;
+    row[`sumValue_${r.type}`] =
+      av < 0 ? -Math.abs(r.sumValue ?? 0) : r.sumValue ?? 0;
+    row[`averageValue_${r.type}`] = av;
   }
   return [...map.values()];
 }
