@@ -1,5 +1,5 @@
 <template>
-  <div ref="triggerRef" @mouseenter="onEnter" @mouseleave="onLeave">
+  <span ref="triggerRef" @mouseenter="onEnter" @mouseleave="onLeave">
     <slot />
     <Teleport to="body">
       <Transition name="tooltip">
@@ -7,13 +7,18 @@
           v-if="visible"
           ref="popupRef"
           class="tooltip-popup"
-          :style="{ ...popupStyle, background: bg, color: fg, border: `1px solid ${bd}` }"
+          :style="{
+            ...popupStyle,
+            background: bg,
+            color: fg,
+            border: `1px solid ${bd}`,
+          }"
         >
           {{ text }}
         </div>
       </Transition>
     </Teleport>
-  </div>
+  </span>
 </template>
 
 <script lang="ts">
@@ -53,7 +58,10 @@ async function onEnter() {
   const edge = 8;
 
   const idealLeft = trigger.left + trigger.width / 2 - popup.width / 2;
-  const left = Math.max(edge, Math.min(idealLeft, window.innerWidth - popup.width - edge));
+  const left = Math.max(
+    edge,
+    Math.min(idealLeft, window.innerWidth - popup.width - edge)
+  );
   const top = trigger.top - popup.height - gap;
 
   popupStyle.value = { top: `${top}px`, left: `${left}px` };
@@ -73,7 +81,8 @@ function onLeave() {
   font-size: 0.8125rem;
   font-weight: 300;
   border-radius: 4px;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 260px;
   pointer-events: none;
 }
 

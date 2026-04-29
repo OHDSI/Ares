@@ -35,20 +35,15 @@
             />
           </template>
           <template #body="{ data }">
-            <span>{{ data.cdmSourceName }}</span>
-            <i
-              v-if="data.sourceDescription"
-              v-tooltip.top="{
-                value: data.sourceDescription,
-                pt: {
-                  root: 'absolute',
-                  arrow: { style: {} },
-                  text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-light p-2 break-words text-wrap max-w-[20ch]',
-                },
-              }"
-              class="pi pi-info-circle"
-              style="margin-left: 0.5rem; color: #94a3b8; cursor: help"
-            />
+            <div style="display: flex; align-items: center">
+              <span>{{ data.cdmSourceName }}</span>
+              <Tooltip v-if="data.sourceDescription" :text="data.sourceDescription">
+                <i
+                  class="pi pi-info-circle"
+                  style="margin-left: 0.5rem; color: #94a3b8; cursor: help; flex-shrink: 0"
+                />
+              </Tooltip>
+            </div>
           </template>
         </Column>
         <Column
@@ -144,6 +139,7 @@ import { FilterMatchMode } from "primevue/api";
 import { useStore } from "vuex";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { formatDate } from "@/shared/lib/formatters";
+import Tooltip from "@/shared/ui/tooltip";
 
 const store = useStore();
 const data = ref([]);
