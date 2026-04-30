@@ -1359,10 +1359,8 @@ async function generate() {
     };
     emit("state-change", {
       databaseIds: selectedDatabases.value,
-      ctxItems: [
-        ...lastGeneratedConfig.value.databases,
-        `Threshold ${minThreshold.value}`,
-      ],
+      databases: lastGeneratedConfig.value.databases,
+      ctxItems: [`Threshold ${minThreshold.value}`],
     });
   } catch {
     loaderState.value = "error";

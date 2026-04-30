@@ -2094,9 +2094,9 @@ async function generate() {
       databaseIds,
       tar: selectedTar.value,
       washout: selectedWashout.value,
+      databases: selectedDatabaseNames.value,
       ctxItems: [
         outcomeName.value,
-        ...selectedDatabaseNames.value,
         `TAR: ${selectedTar.value}`,
         `Washout: ${selectedWashout.value}d`,
       ],

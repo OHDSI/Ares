@@ -6,7 +6,7 @@
         <div
           v-if="visible"
           ref="popupRef"
-          class="tooltip-popup"
+          :class="['tooltip-popup', { 'tooltip-popup--below': flipped }]"
           :style="{
             ...popupStyle,
             background: bg,
@@ -46,6 +46,7 @@ const popupStyle = ref<Record<string, string>>({
   top: "-9999px",
   left: "-9999px",
 });
+const flipped = ref(false);
 
 async function onEnter() {
   visible.value = true;
@@ -62,7 +63,9 @@ async function onEnter() {
     edge,
     Math.min(idealLeft, window.innerWidth - popup.width - edge)
   );
-  const top = trigger.top - popup.height - gap;
+  const topAbove = trigger.top - popup.height - gap;
+  flipped.value = topAbove < edge;
+  const top = flipped.value ? trigger.bottom + gap : topAbove;
 
   popupStyle.value = { top: `${top}px`, left: `${left}px` };
 }
@@ -95,6 +98,9 @@ function onLeave() {
 .tooltip-enter-from {
   opacity: 0;
   transform: translateY(4px);
+}
+.tooltip-popup--below.tooltip-enter-from {
+  transform: translateY(-4px);
 }
 .tooltip-leave-to {
   opacity: 0;

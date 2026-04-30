@@ -1416,7 +1416,8 @@ async function generate() {
     emit("state-change", {
       comparatorId: selectedComparator.value.cohortId,
       databaseId: selectedDatabase.value,
-      ctxItems: [`vs ${comparatorName.value}`, selectedDatabaseName.value],
+      databases: [selectedDatabaseName.value],
+      ctxItems: [`vs ${comparatorName.value}`],
     });
 
     binaryAbsSmdMin.value = 0;

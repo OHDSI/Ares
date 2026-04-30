@@ -341,13 +341,26 @@
                   <span class="sticky-tab">{{ currentAnalysis?.label }}</span>
                   <Transition name="ctx-appear">
                     <span
-                      v-if="stickyCtxItems.length && !ctxBarVisible"
+                      v-if="
+                        (stickyCtxItems.length || stickyDatabases.length) &&
+                        !ctxBarVisible
+                      "
                       class="sticky-ctx-group"
                     >
                       <span class="sticky-sep">·</span>
                       <template v-for="(item, i) in stickyCtxItems" :key="i">
                         <span v-if="i > 0" class="sticky-dot" />
                         <span class="sticky-ctx">{{ item }}</span>
+                      </template>
+                      <template v-if="stickyDatabases.length">
+                        <span v-if="stickyCtxItems.length" class="sticky-dot" />
+                        <Tooltip :text="stickyDatabases.join(' · ')">
+                          <span class="sticky-ctx sticky-db">{{
+                            stickyDatabases.length === 1
+                              ? stickyDatabases[0]
+                              : `${stickyDatabases.length} databases`
+                          }}</span>
+                        </Tooltip>
                       </template>
                     </span>
                   </Transition>
@@ -432,6 +445,7 @@ import CaseSeries from "@/pages/strategus/characterization/caseSeries";
 import CohortIncidence from "@/pages/strategus/characterization/cohortIncidence";
 import ResultsLoader from "@/pages/strategus/characterization/shared/resultsLoader";
 import PillNav from "@/shared/ui/pillNav";
+import Tooltip from "@/shared/ui/tooltip";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
@@ -564,6 +578,7 @@ const navKey = ref(0);
 const pillNavAnchor = ref(null);
 const pillNavVisible = ref(true);
 const stickyCtxItems = ref([]);
+const stickyDatabases = ref([]);
 const ctxBarVisible = ref(true);
 let observer = null;
 let ctxObserver = null;
@@ -658,7 +673,8 @@ function onChildStateChange(childState) {
   if (childState.ctxItems) {
     stickyCtxItems.value = childState.ctxItems;
   }
-  const { ctxItems: _, ...urlState } = childState;
+  stickyDatabases.value = childState.databases ?? [];
+  const { ctxItems: _, databases: __, ...urlState } = childState;
   updateUrl({
     report: route.query.report,
     targetId: selectedTarget.value?.cohortId,
@@ -758,6 +774,7 @@ function setupCtxObserver() {
 watch(selectedTarget, async (newTarget, oldTarget) => {
   pillNavVisible.value = true;
   stickyCtxItems.value = [];
+  stickyDatabases.value = [];
   if (!newTarget) {
     outcomeTable.value = [];
     return;
@@ -790,6 +807,7 @@ watch(stickyCtxItems, async (items) => {
 
 watch(activeTab, () => {
   stickyCtxItems.value = [];
+  stickyDatabases.value = [];
 });
 
 onBeforeRouteUpdate((to) => {
