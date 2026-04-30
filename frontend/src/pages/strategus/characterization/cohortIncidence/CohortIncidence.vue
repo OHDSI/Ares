@@ -37,7 +37,10 @@
               </div>
               <div class="col-selector">
                 <label class="field-label">Columns</label>
-                <ColumnSelector v-model="selectedColumns" :options="columnOptions" />
+                <ColumnSelector
+                  v-model="selectedColumns"
+                  :options="columnOptions"
+                />
               </div>
               <div class="strat-checks">
                 <div>
@@ -370,7 +373,12 @@
                 <Button label="View Plot" @click="renderPlot" size="small" />
               </div>
             </div>
-            <div ref="plotEl" class="inc-chart"></div>
+            <Chart
+              :data="plotData"
+              :chartSpec="plotChartSpec"
+              :height="plotChartHeight"
+              id="cohort-incidence"
+            />
           </div></div
       ></Transition>
     </div>
@@ -385,7 +393,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from "vue";
-import * as echarts from "echarts";
+import Chart from "@/widgets/echarts/echarts";
+import {
+  cohortIncidenceChartSpec,
+  cohortIncidenceChartHeight,
+} from "./chartSpec";
 
 import ResultsLoader from "../shared/resultsLoader";
 import ViewToggle from "../shared/viewToggle";
@@ -444,10 +456,6 @@ watch(selectedColumns, (val) => {
   store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY]: val });
 });
 
-watch(darkMode, () => {
-  if (showResults.value && activeResultTab.value === 1) renderPlot();
-});
-
 const props = defineProps({
   targetRow: { type: Object },
   outcomeTable: { type: Array },
@@ -481,8 +489,19 @@ const plotOutcomes = ref([]);
 const plotXAxis = ref("Age");
 const plotSexStratify = ref(false);
 const plotFixedY = ref(true);
-const plotEl = ref(null);
-let chartInstance = null;
+const plotData = ref([]);
+
+const plotChartHeight = computed(() =>
+  cohortIncidenceChartHeight(plotData.value)
+);
+
+const plotChartSpec = ({ data }) =>
+  cohortIncidenceChartSpec({
+    data,
+    plotXAxis: plotXAxis.value,
+    plotSexStratify: plotSexStratify.value,
+    plotFixedY: plotFixedY.value,
+  });
 
 const tableFilters = ref({
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -596,10 +615,8 @@ watch([tableDatabases, includeAge, includeSex, includeYear], () => {
 
 async function renderPlot() {
   await nextTick();
-  if (!plotEl.value) return;
 
   let data = fullData.value;
-  const xField = plotXAxis.value === "Age" ? "ageGroupName" : "startYear";
 
   if (plotXAxis.value === "Age") {
     data = data.filter(
@@ -619,143 +636,7 @@ async function renderPlot() {
   if (plotOutcomes.value.length)
     data = data.filter((r) => plotOutcomes.value.includes(r.outcomeName));
 
-  if (!data.length) {
-    if (chartInstance) {
-      chartInstance.dispose();
-      chartInstance = null;
-    }
-    return;
-  }
-
-  const facetCol = [
-    ...new Set(
-      data.map((r) => `${r.outcomeName} (clean win ${r.cleanWindow}): ${r.tar}`)
-    ),
-  ];
-  const facetRow = [...new Set(data.map((r) => r.databaseName))];
-  const xCategories = [...new Set(data.map((r) => r[xField]))];
-  const colorField = plotSexStratify.value ? "genderName" : "databaseName";
-  const colorValues = [...new Set(data.map((r) => r[colorField]))];
-  const colors = [
-    "#4e79a7",
-    "#f28e2b",
-    "#e15759",
-    "#76b7b2",
-    "#59a14f",
-    "#edc948",
-    "#b07aa1",
-    "#ff9da7",
-  ];
-
-  const cols = facetCol.length;
-  const rows = facetRow.length;
-  const cellW = 100 / Math.max(cols, 1);
-  const cellH = 100 / Math.max(rows, 1);
-
-  const grids = [],
-    xAxes = [],
-    yAxes = [],
-    titles = [],
-    seriesList = [];
-  let gi = 0;
-  const globalMax = Math.max(...data.map((r) => r.incidenceRateP100py), 1);
-
-  for (let ri = 0; ri < rows; ri++) {
-    for (let ci = 0; ci < cols; ci++) {
-      const dbName = facetRow[ri];
-      const facetLabel = facetCol[ci];
-
-      grids.push({
-        left: `${ci * cellW + 8}%`,
-        top: `${ri * cellH + 8}%`,
-        width: `${cellW - 12}%`,
-        height: `${cellH - 18}%`,
-      });
-      xAxes.push({
-        gridIndex: gi,
-        type: "category",
-        data: xCategories,
-        axisLabel: { rotate: 30, fontSize: 10 },
-      });
-      yAxes.push({
-        gridIndex: gi,
-        type: "value",
-        name: ri === 0 && ci === 0 ? "Rate /100py" : "",
-        max: plotFixedY.value ? Math.ceil(globalMax * 1.1) : undefined,
-      });
-
-      titles.push({
-        text: ri === 0 ? facetLabel : "",
-        subtext: ci === 0 ? dbName : "",
-        left: `${ci * cellW + cellW / 2 + 2}%`,
-        top: `${ri * cellH}%`,
-        textAlign: "center",
-        textStyle: { fontSize: 11, fontWeight: "normal" },
-        subtextStyle: { fontSize: 11, fontWeight: "bold" },
-      });
-
-      const facetData = data.filter(
-        (r) =>
-          r.databaseName === dbName &&
-          `${r.outcomeName} (clean win ${r.cleanWindow}): ${r.tar}` ===
-            facetLabel
-      );
-
-      for (let vi = 0; vi < colorValues.length; vi++) {
-        const cv = colorValues[vi];
-        const points = xCategories.map((x) => {
-          const row = facetData.find(
-            (r) => r[xField] === x && r[colorField] === cv
-          );
-          return row?.incidenceRateP100py ?? null;
-        });
-        seriesList.push({
-          name: cv,
-          type: "line",
-          xAxisIndex: gi,
-          yAxisIndex: gi,
-          data: points,
-          symbol: "circle",
-          symbolSize: 6,
-          lineStyle: { color: colors[vi % colors.length] },
-          itemStyle: { color: colors[vi % colors.length] },
-        });
-      }
-      gi++;
-    }
-  }
-
-  if (chartInstance) chartInstance.dispose();
-  chartInstance = echarts.init(plotEl.value, darkMode.value ? "dark" : null);
-
-  const chartHeight = Math.max(400, rows * 280);
-  plotEl.value.style.height = `${chartHeight}px`;
-
-  chartInstance.setOption({
-    backgroundColor: "transparent",
-    title: [
-      {
-        text: "Incidence Rates",
-        left: "center",
-        top: 0,
-        textStyle: { fontSize: 14 },
-      },
-      ...titles,
-    ],
-    tooltip: {
-      trigger: "item",
-      formatter: (p) =>
-        p.data != null ? `${p.seriesName}: ${p.data.toFixed(2)} /100py` : "",
-    },
-    legend: { bottom: 0, data: colorValues },
-    grid: grids,
-    xAxis: xAxes,
-    yAxis: yAxes,
-    series: seriesList,
-  });
-
-  const ro = new ResizeObserver(() => chartInstance?.resize());
-  ro.observe(plotEl.value);
+  plotData.value = data;
 }
 
 const generateDisabled = computed(() => {
@@ -855,11 +736,6 @@ onMounted(async () => {
   align-items: center;
   gap: 0.375rem;
   font-size: 0.8125rem;
-}
-
-.inc-chart {
-  width: 100%;
-  min-height: 400px;
 }
 
 .mt-3 {

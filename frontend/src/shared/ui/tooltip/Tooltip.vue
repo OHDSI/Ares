@@ -29,7 +29,7 @@ export default { name: "Tooltip" };
 import { ref, computed, nextTick } from "vue";
 import { useStore } from "vuex";
 
-defineProps<{ text: string }>();
+const props = defineProps<{ text: string }>();
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
@@ -49,6 +49,7 @@ const popupStyle = ref<Record<string, string>>({
 const flipped = ref(false);
 
 async function onEnter() {
+  if (!props.text) return;
   visible.value = true;
   await nextTick();
   if (!triggerRef.value || !popupRef.value) return;

@@ -437,15 +437,16 @@
           :pt="{ headerContent: 'justify-center' }"
         >
           <template #body="{ data, index }">
-            <Button
-              icon="pi pi-chart-line"
-              size="small"
-              severity="secondary"
-              text
-              rounded
-              v-tooltip.top="'View fail cases'"
-              @click="showFails(data, index)"
-            />
+            <Tooltip text="View fail cases">
+              <Button
+                icon="pi pi-chart-line"
+                size="small"
+                severity="secondary"
+                text
+                rounded
+                @click="showFails(data, index)"
+              />
+            </Tooltip>
           </template>
         </Column>
       </DataTable>
@@ -476,8 +477,13 @@
                 @click="failsDialogVisible = false"
               />
             </div>
-            <div v-if="failPlotData" class="fails-chart-container">
-              <div ref="failsChartEl" class="fails-chart"></div>
+            <div v-if="failPlotData.length" class="fails-chart-container">
+              <Chart
+                :data="failPlotData"
+                :chartSpec="failsChartSpec"
+                id="fails-chart"
+                height="460px"
+              />
             </div>
             <p v-else class="table-note">No fails to display.</p>
           </div>
@@ -489,7 +495,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
-import * as echarts from "echarts";
+import Chart from "@/widgets/echarts/echarts";
+import { failsChartSpec } from "./chartSpec";
 
 import ResultsLoader from "../shared/resultsLoader";
 import OutcomeSelector from "../shared/outcomeSelector";
@@ -502,6 +509,7 @@ import InputText from "primevue/inputtext";
 import Message from "primevue/message";
 import ColumnSelector from "@/shared/ui/columnSelector";
 import CensoredCell from "../shared/censoredCell";
+import Tooltip from "@/shared/ui/tooltip";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
@@ -575,9 +583,7 @@ const outcomeWarning = ref(false);
 const lastGeneratedConfig = ref(null);
 
 const failsDialogVisible = ref(false);
-const failPlotData = ref(null);
-const failsChartEl = ref(null);
-let failsChart = null;
+const failPlotData = ref([]);
 
 const tableFilters = ref({
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -702,214 +708,8 @@ async function showFails(rowData, index) {
     rowData.dechallengeEvaluationWindow
   );
 
-  if (!data || data.length === 0) {
-    failPlotData.value = null;
-    failsDialogVisible.value = true;
-    return;
-  }
-
-  failPlotData.value = data;
+  failPlotData.value = data?.length ? data : [];
   failsDialogVisible.value = true;
-  await nextTick();
-  renderFailsChart(data);
-}
-
-function renderFailsChart(data) {
-  if (!failsChartEl.value) return;
-
-  const sorted = [...data].sort(
-    (a, b) =>
-      a.dechallengeExposureStartDateOffset -
-        b.dechallengeExposureStartDateOffset ||
-      a.dechallengeOutcomeStartDateOffset -
-        b.dechallengeOutcomeStartDateOffset ||
-      (a.rechallengeExposureStartDateOffset ?? 0) -
-        (b.rechallengeExposureStartDateOffset ?? 0)
-  );
-
-  const persons = [...new Set(sorted.map((r) => r.personKey))];
-  const pidMap = new Map(persons.map((pk, i) => [pk, persons.length - i]));
-
-  const dechalExposure = [];
-  const rechalExposure = [];
-  const dechalOutcome = [];
-  const rechalOutcome = [];
-  const dechalExposureStarts = [];
-  const rechalExposureStarts = [];
-
-  for (const r of sorted) {
-    const y = pidMap.get(r.personKey);
-    dechalExposure.push(
-      [r.dechallengeExposureStartDateOffset, y, r.dechallengeExposureNumber],
-      [r.dechallengeExposureEndDateOffset, y, r.dechallengeExposureNumber],
-      [null, null, null]
-    );
-    dechalExposureStarts.push([
-      r.dechallengeExposureStartDateOffset,
-      y,
-      r.dechallengeExposureNumber,
-    ]);
-    if (r.dechallengeOutcomeStartDateOffset != null) {
-      dechalOutcome.push([
-        r.dechallengeOutcomeStartDateOffset,
-        y,
-        r.dechallengeOutcomeNumber,
-      ]);
-    }
-    if (r.rechallengeExposureStartDateOffset != null) {
-      rechalExposure.push(
-        [r.rechallengeExposureStartDateOffset, y, r.rechallengeExposureNumber],
-        [r.rechallengeExposureEndDateOffset, y, r.rechallengeExposureNumber],
-        [null, null, null]
-      );
-      rechalExposureStarts.push([
-        r.rechallengeExposureStartDateOffset,
-        y,
-        r.rechallengeExposureNumber,
-      ]);
-    }
-    if (r.rechallengeOutcomeStartDateOffset != null) {
-      rechalOutcome.push([
-        r.rechallengeOutcomeStartDateOffset,
-        y,
-        r.rechallengeOutcomeNumber,
-      ]);
-    }
-  }
-
-  if (failsChart) failsChart.dispose();
-  failsChart = echarts.init(failsChartEl.value, darkMode.value ? "dark" : null);
-
-  failsChart.setOption({
-    backgroundColor: "transparent",
-    tooltip: {
-      trigger: "item",
-      formatter: (p) => {
-        if (!p.data || p.data[0] == null) return "";
-        const person = persons.length - p.data[1] + 1;
-        const eventNum = p.data[2] != null ? `, Event: ${p.data[2]}` : "";
-        return `Day: ${p.data[0]}, Person: ${person}${eventNum}`;
-      },
-    },
-    grid: { bottom: 80 },
-    dataZoom: [
-      { type: "inside", xAxisIndex: 0, filterMode: "none" },
-      { type: "slider", xAxisIndex: 0, filterMode: "none", bottom: 8 },
-    ],
-    xAxis: {
-      name: "Time from first exposure",
-      nameLocation: "center",
-      nameGap: 30,
-      type: "value",
-    },
-    yAxis: {
-      name: "Each line is one person",
-      nameLocation: "center",
-      nameGap: 40,
-      type: "value",
-      min: 0,
-      max: persons.length + 1,
-      axisLabel: { show: false },
-      axisTick: { show: false },
-      splitLine: { show: false },
-    },
-    legend: {
-      top: 0,
-      data: [
-        "Dechallenge Exposure",
-        "Rechallenge Exposure",
-        "Dechallenge Outcome",
-        "Rechallenge Outcome",
-      ],
-    },
-    series: [
-      {
-        name: "Dechallenge Exposure",
-        type: "line",
-        data: dechalExposure,
-        symbol: "none",
-        lineStyle: { width: 4, color: "#4169E1" },
-        connectNulls: false,
-      },
-      {
-        name: "Rechallenge Exposure",
-        type: "line",
-        data: rechalExposure,
-        symbol: "none",
-        lineStyle: { width: 4, color: "#191970" },
-        connectNulls: false,
-      },
-      {
-        name: "Dechallenge Outcome",
-        type: "scatter",
-        data: dechalOutcome,
-        symbol: "diamond",
-        symbolSize: 10,
-        itemStyle: { color: "#FF8C00" },
-        label: {
-          show: true,
-          formatter: (p) => String(p.data[2]),
-          color: "#FF8C00",
-          position: [6, -10],
-          fontSize: 11,
-        },
-      },
-      {
-        name: "Rechallenge Outcome",
-        type: "scatter",
-        data: rechalOutcome,
-        symbol: "diamond",
-        symbolSize: 10,
-        itemStyle: { color: "#FF4500" },
-        label: {
-          show: true,
-          formatter: (p) => String(p.data[2]),
-          color: "#FF4500",
-          position: [6, -10],
-          fontSize: 11,
-        },
-      },
-      {
-        name: "Dechallenge Exposure",
-        type: "scatter",
-        data: dechalExposureStarts,
-        symbol: "circle",
-        symbolSize: 0,
-        silent: true,
-        legendHoverLink: false,
-        showInLegend: false,
-        label: {
-          show: true,
-          formatter: (p) => String(p.data[2]),
-          color: "#4169E1",
-          position: [-4, -10],
-          fontSize: 11,
-          align: "right",
-        },
-      },
-      {
-        name: "Rechallenge Exposure",
-        type: "scatter",
-        data: rechalExposureStarts,
-        symbol: "circle",
-        symbolSize: 0,
-        silent: true,
-        legendHoverLink: false,
-        showInLegend: false,
-        label: {
-          show: true,
-          formatter: (p) => String(p.data[2]),
-          color: "#7B9CD6",
-          position: [-4, -10],
-          fontSize: 11,
-          align: "right",
-        },
-      },
-    ],
-  });
-
-  const ro = new ResizeObserver(() => failsChart?.resize());
-  ro.observe(failsChartEl.value);
 }
 
 const generateDisabled = computed(() => {
@@ -990,11 +790,6 @@ onUnmounted(() => {
 
 .fails-chart-container {
   width: 100%;
-}
-
-.fails-chart {
-  width: 100%;
-  height: 460px;
 }
 
 .table-controls {

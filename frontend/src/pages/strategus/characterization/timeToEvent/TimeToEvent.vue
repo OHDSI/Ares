@@ -58,7 +58,12 @@
                 />
               </div>
             </div>
-            <div ref="chartEl" class="tte-chart"></div>
+            <Chart
+              :data="filteredPlotData"
+              :chartSpec="tteChartSpec"
+              :height="tteChartHeightComputed"
+              id="time-to-event"
+            />
           </div>
 
           <div v-else-if="activeResultTab === 1">
@@ -255,7 +260,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from "vue";
-import * as echarts from "echarts";
+import Chart from "@/widgets/echarts/echarts";
+import { tteChartSpec, tteChartHeight } from "./chartSpec";
 
 import ResultsLoader from "../shared/resultsLoader";
 import ViewToggle from "../shared/viewToggle";
@@ -308,10 +314,6 @@ watch(tableSelectedColumns, (val) => {
   store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY]: val });
 });
 
-watch(darkMode, () => {
-  if (showResults.value) renderChart();
-});
-
 const props = defineProps({
   targetRow: { type: Object },
   outcomeTable: { type: Array },
@@ -339,8 +341,9 @@ const plotOutcomeTypes = ref([]);
 const plotTargetOutcomeTypes = ref([]);
 const lastGeneratedConfig = ref(null);
 
-const chartEl = ref(null);
-let chartInstance = null;
+const tteChartHeightComputed = computed(() =>
+  tteChartHeight(filteredPlotData.value)
+);
 
 const tableFilters = ref({
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -393,19 +396,6 @@ watch(
   }
 );
 
-watch(
-  [plotDatabases, plotTimeScales, plotOutcomeTypes, plotTargetOutcomeTypes],
-  () => {
-    if (showResults.value) renderChart();
-  }
-);
-
-watch(activeResultTab, async () => {
-  if (activeResultTab.value === 0 && showResults.value) {
-    await renderChart();
-  }
-});
-
 async function fetchTimeToEventData(targetId, outcomeId) {
   const res = await StrategusService.characterization.getTimeToEvent(
     [targetId],
@@ -447,8 +437,6 @@ async function generate() {
       outcomeName: outcomeName.value,
     };
     showResults.value = true;
-    await nextTick();
-    renderChart();
     emit("state-change", {
       outcomeId: selectedOutcome.value.cohortId,
       ctxItems: [outcomeName.value],
@@ -458,130 +446,6 @@ async function generate() {
   } finally {
     loading.value = false;
   }
-}
-
-async function renderChart() {
-  await nextTick();
-  if (!chartEl.value) return;
-
-  const data = filteredPlotData.value;
-  if (!data.length) {
-    if (chartInstance) {
-      chartInstance.dispose();
-      chartInstance = null;
-    }
-    return;
-  }
-
-  const facetKeys = [
-    ...new Set(data.map((r) => `${r.timeScale}|${r.databaseName}`)),
-  ];
-  const fillGroups = [
-    ...new Set(data.map((r) => `${r.outcomeType}-${r.targetOutcomeType}`)),
-  ];
-
-  const colors = [
-    "#4e79a7",
-    "#f28e2b",
-    "#e15759",
-    "#76b7b2",
-    "#59a14f",
-    "#edc948",
-    "#b07aa1",
-    "#ff9da7",
-    "#9c755f",
-    "#bab0ac",
-  ];
-
-  const grids = [],
-    xAxes = [],
-    yAxes = [],
-    seriesList = [],
-    titles = [];
-  const cols = Math.min(facetKeys.length, 3);
-  const rowCount = Math.ceil(facetKeys.length / cols);
-  const cellW = 100 / cols;
-  const cellH = 100 / rowCount;
-
-  for (let fi = 0; fi < facetKeys.length; fi++) {
-    const [ts, dbName] = facetKeys[fi].split("|");
-    const col = fi % cols;
-    const row = Math.floor(fi / cols);
-
-    grids.push({
-      left: `${col * cellW + 6}%`,
-      top: `${row * cellH + 8}%`,
-      width: `${cellW - 10}%`,
-      height: `${cellH - 16}%`,
-    });
-    xAxes.push({
-      gridIndex: fi,
-      type: "value",
-      name: "Days",
-      nameLocation: "center",
-      nameGap: 25,
-    });
-    yAxes.push({
-      gridIndex: fi,
-      type: "value",
-      name: "# Events",
-      nameLocation: "center",
-      nameGap: 35,
-    });
-    titles.push({
-      text: `${dbName} - ${ts}`,
-      left: `${col * cellW + cellW / 2 + 1}%`,
-      top: `${row * cellH + 1}%`,
-      textAlign: "center",
-      textStyle: { fontSize: 13, fontWeight: "normal" },
-    });
-
-    const facetData = data.filter(
-      (r) => r.timeScale === ts && r.databaseName === dbName
-    );
-    for (let gi = 0; gi < fillGroups.length; gi++) {
-      const fg = fillGroups[gi];
-      const points = facetData
-        .filter((r) => `${r.outcomeType}-${r.targetOutcomeType}` === fg)
-        .map((r) => [r.timeToEvent, r.numEvents]);
-      seriesList.push({
-        name: fg,
-        type: "bar",
-        xAxisIndex: fi,
-        yAxisIndex: fi,
-        stack: `stack-${fi}`,
-        barWidth: 15,
-        data: points,
-        itemStyle: { color: colors[gi % colors.length] },
-      });
-    }
-  }
-
-  if (chartInstance) chartInstance.dispose();
-  chartInstance = echarts.init(chartEl.value, darkMode.value ? "dark" : null);
-
-  const chartHeight = Math.max(400, rowCount * 300);
-  chartEl.value.style.height = `${chartHeight}px`;
-
-  chartInstance.setOption({
-    backgroundColor: "transparent",
-    title: titles,
-    tooltip: {
-      trigger: "item",
-      formatter: (p) => {
-        if (!p.data) return "";
-        return `${p.seriesName}<br/>Day ${p.data[0]}: ${p.data[1]} events`;
-      },
-    },
-    legend: { bottom: 0, data: fillGroups },
-    grid: grids,
-    xAxis: xAxes,
-    yAxis: yAxes,
-    series: seriesList,
-  });
-
-  const ro = new ResizeObserver(() => chartInstance?.resize());
-  ro.observe(chartEl.value);
 }
 
 const generateDisabled = computed(() => {
@@ -623,11 +487,6 @@ onMounted(async () => {
 .plot-filters > div {
   min-width: 160px;
   flex: 1;
-}
-
-.tte-chart {
-  width: 100%;
-  min-height: 400px;
 }
 
 .table-controls {

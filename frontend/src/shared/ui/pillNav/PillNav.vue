@@ -1,31 +1,27 @@
 <template>
   <div class="pill-nav">
-    <button
+    <Tooltip
       v-for="(tab, index) in tabs"
       :key="tab.key"
-      :class="['pill', { active: modelValue === index }]"
-      @click="$emit('update:modelValue', index)"
-      v-tooltip.bottom="{
-        value: tab.description,
-        pt: tooltipPt,
-      }"
+      :text="tab.description ?? ''"
     >
-      {{ tab.label }}
-    </button>
+      <button
+        :class="['pill', { active: modelValue === index }]"
+        @click="$emit('update:modelValue', index)"
+      >
+        {{ tab.label }}
+      </button>
+    </Tooltip>
 
     <template v-if="unavailableTabs?.length">
       <span class="pill-divider" />
-      <span
+      <Tooltip
         v-for="tab in unavailableTabs"
         :key="tab.key"
-        class="pill pill-unavailable"
-        v-tooltip.bottom="{
-          value: 'No data available for this target',
-          pt: tooltipPt,
-        }"
+        text="No data available for this target"
       >
-        {{ tab.label }}
-      </span>
+        <span class="pill pill-unavailable">{{ tab.label }}</span>
+      </Tooltip>
     </template>
   </div>
 </template>
@@ -33,6 +29,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "vuex";
+import Tooltip from "@/shared/ui/tooltip";
 
 defineProps<{
   tabs: { key: string; label: string; description?: string }[];
@@ -58,11 +55,6 @@ const pillActiveShadow = computed(() =>
     ? "0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)"
     : "0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06)"
 );
-
-const tooltipPt = {
-  root: "absolute",
-  text: "border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black font-normal p-2 max-w-xs",
-};
 </script>
 
 <style scoped>
