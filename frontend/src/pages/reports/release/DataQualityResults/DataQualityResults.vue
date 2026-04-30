@@ -9,7 +9,7 @@
     </div>
 
     <Transition name="tab-fade" mode="out-in">
-      <div :key="activeTab" class="section">
+      <div :key="activeTab" :class="activeTab !== 3 ? 'section' : ''">
         <component :is="tabs[activeTab].component" />
       </div>
     </Transition>

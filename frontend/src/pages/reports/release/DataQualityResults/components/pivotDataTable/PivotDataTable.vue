@@ -1,24 +1,22 @@
 <template>
-  <div>
-    <Pivot
-      :data="store.getters.getData.rawData.CheckResults"
-      :event-listener="pivotRedirectToResultsTab"
-      :attributes="[
-        'category',
-        'cdmFieldName',
-        'checkLevel',
-        'checkName',
-        'context',
-        'notesExist',
-        'subcategory',
-        'cdmTableName',
-        'failed',
-        'delta',
-      ]"
-      :aggregator-names-list="['Count']"
-    >
-    </Pivot>
-  </div>
+  <Pivot
+    :data="store.getters.getData.rawData.CheckResults"
+    :event-listener="pivotRedirectToResultsTab"
+    :attributes="[
+      'category',
+      'cdmFieldName',
+      'checkLevel',
+      'checkName',
+      'context',
+      'notesExist',
+      'subcategory',
+      'cdmTableName',
+      'failed',
+      'delta',
+    ]"
+    :aggregator-names-list="['Count']"
+  >
+  </Pivot>
 </template>
 
 <script setup lang="ts">

@@ -1,19 +1,15 @@
 <template>
-  <Panel
-    class="bg-white dark:bg-surface-800 text-black dark:text-white h-[670px]"
-  >
-    <Pivot
-      :data="store.getters.getData[NETWORK_PERFORMANCE]"
-      :attributes="['TASK', 'PACKAGE', 'CATEGORY', 'SOURCE', 'TIMING']"
-      :defaults="{
-        rows: ['SOURCE'],
-        columns: ['PACKAGE'],
-      }"
-      :aggregate-attrs="['TIMING']"
-      :aggregator-names-list="['time']"
-      :aggregators="{ time: aggregateTime() }"
-    />
-  </Panel>
+  <Pivot
+    :data="store.getters.getData[NETWORK_PERFORMANCE]"
+    :attributes="['TASK', 'PACKAGE', 'CATEGORY', 'SOURCE', 'TIMING']"
+    :defaults="{
+      rows: ['SOURCE'],
+      columns: ['PACKAGE'],
+    }"
+    :aggregate-attrs="['TIMING']"
+    :aggregator-names-list="['time']"
+    :aggregators="{ time: aggregateTime() }"
+  />
 </template>
 
 <script setup lang="ts">
