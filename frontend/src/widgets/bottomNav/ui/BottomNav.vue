@@ -1,9 +1,14 @@
 <template>
   <div class="bottom-nav">
     <Tooltip text="View release notes">
-      <button class="version-btn" @click="openNewTab(links.aresReleaseInfo(appVersion))">
+      <button
+        class="version-btn"
+        @click="openNewTab(links.aresReleaseInfo(appVersion))"
+      >
         <span class="version-number">{{ versionNumber }}</span>
-        <span v-if="versionLabel" class="version-label">{{ versionLabel }}</span>
+        <span v-if="versionLabel" class="version-label">{{
+          versionLabel
+        }}</span>
       </button>
     </Tooltip>
 
@@ -20,13 +25,23 @@
       </Tooltip>
 
       <Tooltip text="Documentation">
-        <Button severity="secondary" text class="nav-btn" @click="openNewTab(links.getAresDocsLink())">
+        <Button
+          severity="secondary"
+          text
+          class="nav-btn"
+          @click="openNewTab(links.getAresDocsLink())"
+        >
           <svg-icon type="mdi" :path="mdiHelpCircleOutline" />
         </Button>
       </Tooltip>
 
       <Tooltip text="GitHub">
-        <Button severity="secondary" text class="nav-btn" @click="openNewTab(links.aresGithubRepo())">
+        <Button
+          severity="secondary"
+          text
+          class="nav-btn"
+          @click="openNewTab(links.aresGithubRepo())"
+        >
           <svg-icon class="github-icon" type="mdi" :path="mdiGithub" />
         </Button>
       </Tooltip>
@@ -35,7 +50,7 @@
         <Button
           severity="secondary"
           text
-          :class="['nav-btn', { active: isNetworkActive }]"
+          :class="['nav-btn']"
           @click="router.push('/network/overview')"
         >
           <svg-icon type="mdi" :path="mdiDatabase" />
@@ -54,7 +69,12 @@
       </Tooltip>
 
       <Tooltip text="Settings">
-        <Button severity="secondary" text class="nav-btn" @click="toggleSettings">
+        <Button
+          severity="secondary"
+          text
+          class="nav-btn"
+          @click="toggleSettings"
+        >
           <svg-icon type="mdi" :path="mdiCog" />
         </Button>
       </Tooltip>
@@ -101,22 +121,25 @@ const route = useRoute();
 
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 
-const navBg = computed(() => darkMode.value ? "#212121" : "#ffffff");
-const navBorder = computed(() => darkMode.value ? "#3a3a3a" : "#e2e8f0");
-const iconColor = computed(() => darkMode.value ? "rgba(148,163,184,0.8)" : "rgba(100,116,139,0.8)");
-const iconActiveColor = computed(() => darkMode.value ? "#e2e8f0" : "#334155");
-const betaColor = computed(() => darkMode.value ? "#94a3b8" : "#64748b");
-const betaBg = computed(() => darkMode.value ? "rgba(148,163,184,0.08)" : "rgba(100,116,139,0.07)");
-const betaBorder = computed(() => darkMode.value ? "rgba(148,163,184,0.2)" : "rgba(100,116,139,0.2)");
+const navBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
+const navBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#e2e8f0"));
+const iconColor = computed(() =>
+  darkMode.value ? "rgba(148,163,184,0.8)" : "rgba(100,116,139,0.8)"
+);
+const iconActiveColor = computed(() =>
+  darkMode.value ? "#e2e8f0" : "#334155"
+);
+const betaColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
+const betaBg = computed(() =>
+  darkMode.value ? "rgba(148,163,184,0.08)" : "rgba(100,116,139,0.07)"
+);
+const betaBorder = computed(() =>
+  darkMode.value ? "rgba(148,163,184,0.2)" : "rgba(100,116,139,0.2)"
+);
 
 const iconClass = computed((): string =>
   darkMode.value ? "darkmode" : "lightmode"
 );
-
-const isNetworkActive = computed(() =>
-  route.path.includes("network") && !route.path.includes("web_api")
-);
-
 const toggleSettings = function (): void {
   store.commit(SET_VISIBILITY, !store.getters.getVisibility);
 };
