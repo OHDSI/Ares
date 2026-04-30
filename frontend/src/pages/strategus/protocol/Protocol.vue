@@ -95,7 +95,6 @@ import {
 } from "@mdi/js";
 
 const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
 
 const bodyRef = ref<HTMLElement | null>(null);
 const tocRef = ref<HTMLElement | null>(null);
@@ -249,25 +248,6 @@ watch(activeId, async (id) => {
 const layoutHeight = computed(() =>
   fullscreen.value ? "calc(100vh - 4.5rem)" : "calc(100vh - 16.4rem)"
 );
-const pageBg = computed(() => (darkMode.value ? "#141414" : "#f8fafc"));
-
-const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
-const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
-const headerColor = computed(() => (darkMode.value ? "#f1f5f9" : "#1e293b"));
-const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
-const codeBlockBg = computed(() => (darkMode.value ? "#0f172a" : "#f1f5f9"));
-const blockquoteBorder = computed(() =>
-  darkMode.value ? "#475569" : "#cbd5e1"
-);
-const bodyText = computed(() => (darkMode.value ? "#e2e8f0" : "#1e293b"));
-const tocActiveBg = computed(() =>
-  darkMode.value ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)"
-);
-const tocActiveColor = computed(() => (darkMode.value ? "#e2e8f0" : "#334155"));
-const tocInactiveColor = computed(() =>
-  darkMode.value ? "#64748b" : "#94a3b8"
-);
-const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 </script>
 
 <style scoped>
@@ -281,7 +261,7 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   z-index: 1001;
   max-width: none;
   padding: 1.25rem 1.75rem;
-  background: v-bind(pageBg);
+  background: var(--color-bg-page);
   animation: fs-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
@@ -321,7 +301,7 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 .section-header h3 {
   font-weight: 700;
   margin: 0;
-  color: v-bind(headerColor);
+  color: var(--color-text);
 }
 
 .fullscreen-btn {
@@ -331,15 +311,15 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   background: none;
   border: none;
   cursor: pointer;
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
   padding: 4px;
   border-radius: 4px;
   transition: color 0.15s ease, background 0.15s ease;
 }
 
 .fullscreen-btn:hover {
-  color: v-bind(tocHoverColor);
-  background: v-bind(tocActiveBg);
+  color: var(--color-toc-hover);
+  background: var(--color-overlay-subtle);
 }
 
 .fullscreen-btn:focus-visible {
@@ -347,8 +327,8 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .section {
-  background: v-bind(sectionBg);
-  border: 1.5px solid v-bind(sectionBorder);
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
@@ -380,7 +360,7 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   min-width: 0;
   overflow-y: auto;
   line-height: 1.7;
-  color: v-bind(bodyText);
+  color: var(--color-text-body);
   font-size: 0.9375rem;
   /* Spring restore when sibling transition class is removed */
   transition: border-top-left-radius 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
@@ -444,9 +424,9 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
   padding: 0.75rem 0 0.5rem;
-  background: v-bind(sectionBg);
+  background: var(--color-bg-surface);
 }
 
 .toc-toggle-btn {
@@ -456,7 +436,7 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   background: none;
   border: none;
   cursor: pointer;
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
   padding: 2px 4px;
   border-radius: 4px;
   flex-shrink: 0;
@@ -464,8 +444,8 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .toc-toggle-btn:hover {
-  color: v-bind(tocHoverColor);
-  background: v-bind(tocActiveBg);
+  color: var(--color-toc-hover);
+  background: var(--color-overlay-subtle);
 }
 
 .toc-show-btn {
@@ -475,7 +455,7 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   background: none;
   border: none;
   cursor: pointer;
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -487,8 +467,8 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .toc-show-btn:hover {
-  color: v-bind(tocHoverColor);
-  background: v-bind(tocActiveBg);
+  color: var(--color-toc-hover);
+  background: var(--color-overlay-subtle);
 }
 
 .doc-toc ul {
@@ -505,7 +485,7 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
   font-size: 0.8125rem;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  color: v-bind(tocInactiveColor) !important;
+  color: var(--color-text-subtle) !important;
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
@@ -514,12 +494,12 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .toc-item a:hover {
-  color: v-bind(tocHoverColor) !important;
+  color: var(--color-toc-hover) !important;
 }
 
 .toc-item.active a {
-  color: v-bind(tocActiveColor) !important;
-  background: v-bind(tocActiveBg);
+  color: var(--color-text-body) !important;
+  background: var(--color-overlay-subtle);
   font-weight: 500;
 }
 
@@ -534,11 +514,11 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .doc-toc::-webkit-scrollbar-thumb {
-  background: v-bind(sectionBorder);
+  background: var(--color-border);
 }
 
 .doc-toc::-webkit-scrollbar-thumb:hover {
-  background: v-bind(mutedColor);
+  background: var(--color-text-subtle);
 }
 
 .doc-body::-webkit-scrollbar {
@@ -552,11 +532,11 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .doc-body::-webkit-scrollbar-thumb {
-  background: v-bind(sectionBorder);
+  background: var(--color-border);
 }
 
 .doc-body::-webkit-scrollbar-thumb:hover {
-  background: v-bind(mutedColor);
+  background: var(--color-text-subtle);
 }
 
 .toc-depth-1 a {
@@ -581,7 +561,7 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 .doc-body :deep(h5),
 .doc-body :deep(h6) {
   font-weight: 700;
-  color: v-bind(headerColor);
+  color: var(--color-text);
   margin: 1.25em 0 0.5em;
   line-height: 1.3;
   scroll-margin-top: 1rem;
@@ -617,14 +597,14 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 .doc-body :deep(code) {
   font-family: monospace;
   font-size: 0.875em;
-  background: v-bind(codeBlockBg);
+  background: var(--color-bg-code);
   padding: 1px 5px;
   border-radius: 3px;
 }
 
 .doc-body :deep(pre) {
-  background: v-bind(codeBlockBg);
-  border: 1px solid v-bind(sectionBorder);
+  background: var(--color-bg-code);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 1rem;
   overflow-x: auto;
@@ -638,16 +618,16 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 }
 
 .doc-body :deep(blockquote) {
-  border-left: 3px solid v-bind(blockquoteBorder);
+  border-left: 3px solid var(--color-border-strong);
   margin: 0.75em 0;
   padding: 0.25rem 0 0.25rem 1rem;
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
   font-style: italic;
 }
 
 .doc-body :deep(hr) {
   border: none;
-  border-top: 1px solid v-bind(sectionBorder);
+  border-top: 1px solid var(--color-border);
   margin: 1.25em 0;
 }
 
@@ -677,13 +657,13 @@ const tocHoverColor = computed(() => (darkMode.value ? "#cbd5e1" : "#475569"));
 
 .doc-body :deep(th),
 .doc-body :deep(td) {
-  border: 1px solid v-bind(sectionBorder);
+  border: 1px solid var(--color-border);
   padding: 0.4rem 0.75rem;
   text-align: left;
 }
 
 .doc-body :deep(th) {
   font-weight: 600;
-  background: v-bind(codeBlockBg);
+  background: var(--color-bg-code);
 }
 </style>

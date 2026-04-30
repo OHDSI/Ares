@@ -587,15 +587,9 @@ const initChart = function () {
   tooltipElement.style.transition = "opacity 0.15s ease";
   tooltipElement.style.opacity = 0;
 
-  tooltipElement.style.background = darkMode.value
-    ? "rgba(33, 33, 33, 0.9)"
-    : "rgba(255, 255, 255, 0.95)";
-
-  tooltipElement.style.boxShadow = darkMode.value
-    ? "0 4px 12px rgba(0, 0, 0, 0.7)"
-    : "0 4px 12px rgba(0, 0, 0, 0.25)";
-
-  tooltipElement.style.color = darkMode.value ? "#E0E0E0" : "#1A1A1A";
+  tooltipElement.style.background = "var(--color-bg-surface)";
+  tooltipElement.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.45)";
+  tooltipElement.style.color = "var(--color-text)";
 
   document.body.appendChild(tooltipElement);
 

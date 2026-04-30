@@ -173,18 +173,6 @@ watch(selectedSchema, (schema) => {
   router.replace({ query: { ...route.query, schema } });
 });
 
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const sectionBorder = computed(() => (darkMode.value ? "#5a5a5a" : "#94a3b8"));
-const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
-const sidebarBorder = computed(() => (darkMode.value ? "#2a2a2a" : "#e5e7eb"));
-const navItemColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
-const navItemHoverColor = computed(() =>
-  darkMode.value ? "#e2e8f0" : "#334155"
-);
-const navItemHoverBorder = computed(() =>
-  darkMode.value ? "#4b5563" : "#cbd5e1"
-);
-
 const sections = [
   {
     key: "datasources",
@@ -219,7 +207,7 @@ const setCurrentTab = function (val: number) {
 
 <style scoped>
 .nav-item.schema-item:hover {
-  color: v-bind(navItemHoverColor);
+  color: var(--color-interactive-hover);
   border-left-color: transparent;
 }
 
@@ -230,7 +218,7 @@ const setCurrentTab = function (val: number) {
 
 .nav-separator {
   margin: 0.375rem 0.875rem 0.25rem;
-  border-top: 1.5px solid v-bind(navItemHoverBorder);
+  border-top: 1.5px solid var(--color-border-strong);
 }
 
 .strategus-layout {
@@ -265,7 +253,7 @@ const setCurrentTab = function (val: number) {
   border-left: 3px solid transparent;
   border-radius: 0 6px 6px 0;
   background: transparent;
-  color: v-bind(navItemColor);
+  color: var(--color-text-muted);
   font-weight: 500;
   cursor: pointer;
   user-select: none;
@@ -276,12 +264,12 @@ const setCurrentTab = function (val: number) {
 }
 
 .nav-item:hover {
-  color: v-bind(navItemHoverColor);
-  border-left-color: v-bind(navItemHoverBorder);
+  color: var(--color-interactive-hover);
+  border-left-color: var(--color-border-strong);
 }
 
 .nav-item.active {
-  color: v-bind(navItemHoverColor);
+  color: var(--color-interactive-hover);
   font-weight: 600;
   border-left-color: var(--primary-500, #3b82f6);
 }

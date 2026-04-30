@@ -1,21 +1,20 @@
 @import "@/roboto.css";
 
 @layer base {
-    body {
-        @apply min-h-screen bg-surface-0 dark:bg-surface-900;
-    }
+  body {
+    @apply min-h-screen bg-surface-0 dark:bg-surface-900;
+  }
 }
-
 
 @layer tailwind-base, primevue, tailwind-utilities;
 
 @layer tailwind-base {
-    @tailwind base;
+  @tailwind base;
 }
 
 @layer tailwind-utilities {
-    @tailwind components;
-    @tailwind utilities;
+  @tailwind components;
+  @tailwind utilities;
 }
 
 @keyframes cascade-sublist-enter {
@@ -35,32 +34,121 @@
 
 /* Initial Values */
 :root {
+  --primary-50: 233, 242, 252;
+  --primary-100: 212, 228, 248;
+  --primary-200: 191, 215, 244;
+  --primary-300: 169, 201, 240;
+  --primary-400: 33, 150, 243;
+  --primary-500: 25, 118, 210;
+  --primary-600: 7, 56, 104;
+  --primary-700: 4, 41, 80;
+  --primary-800: 2, 28, 57;
+  --primary-900: 0, 5, 16;
 
+  --surface-0: 255 255 255;
+  --surface-50: 240 240 240;
+  --surface-100: 225 225 225;
+  --surface-200: 210 210 210;
+  --surface-300: 195 195 195;
+  --surface-400: 180 180 180;
+  --surface-500: 107 114 128;
+  --surface-600: 75 85 99;
+  --surface-650: 45, 45, 45;
+  --surface-700: 66 66 66;
+  --surface-800: 33 33 33;
+  --surface-900: 18, 18, 18;
+  --surface-950: 8 8 8;
 
+  /* Semantic color tokens — light mode */
+  --color-bg-page: #f8fafc;
+  --color-bg-surface: #ffffff;
+  --color-bg-raised: #f8fafc;
+  --color-bg-code: #f1f5f9;
+  --color-bg-subtle: rgba(0, 0, 0, 0.06);
+  --color-overlay-subtle: rgba(0, 0, 0, 0.05);
 
-    --primary-50: 233, 242, 252; /* Very light tint */
-    --primary-100: 212, 228, 248; /* Light tint */
-    --primary-200: 191, 215, 244; /* Medium-light tint */
-    --primary-300: 169, 201, 240; /* Medium tint */
-    --primary-400: 33, 150, 243; /* Light shade */
-    --primary-500: 25, 118, 210; /* Base color */
-    --primary-600: 7, 56, 104; /* Dark shade */
-    --primary-700: 4, 41, 80; /* Deeper shade */
-    --primary-800: 2, 28, 57; /* Darkest shade */
-    --primary-900: 0, 5, 16; /* Almost black */
+  --color-border: #94a3b8;
+  --color-border-strong: #cbd5e1;
+  --color-border-subtle: #e2e8f0;
+  --color-border-section: #e5e7eb;
 
-    --surface-0: 255 255 255;
-    --surface-50: 240 240 240;
-    --surface-100: 225 225 225;
-    --surface-200: 210 210 210;
-    --surface-300: 195 195 195;
-    --surface-400: 180 180 180;
-    --surface-500: 107 114 128;
-    --surface-600: 75 85 99;
-    --surface-650: 45, 45, 45;
-    --surface-700: 66 66 66;
-    --surface-800: 33 33 33;
-    --surface-900: 18,18,18;
-    --surface-950: 8 8 8;
+  --color-text: #1e293b;
+  --color-text-body: #334155;
+  --color-text-label: #334155;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #94a3b8;
 
+  --color-interactive: rgba(100, 116, 139, 0.8);
+  --color-interactive-hover: #334155;
+  --color-active-bg: transparent;
+  --color-badge-bg: rgba(100, 116, 139, 0.07);
+  --color-badge-border: rgba(100, 116, 139, 0.2);
+
+  --color-tooltip-bg: #1e293b;
+  --color-tooltip-fg: #f1f5f9;
+  --color-tooltip-border: #334155;
+
+  --color-toc-hover: #475569;
+
+  --color-scrollbar: #94a3b8;
+  --color-scrollbar-hover: #94a3b8;
+
+  --color-primary-ghost-border: rgb(var(--primary-400));
+  --color-primary-ghost-text: rgb(var(--primary-600));
+  --color-primary-ghost-bg: rgba(var(--primary-400), 0.05);
+  --color-primary-ghost-border-hover: rgb(var(--primary-500));
+  --color-primary-ghost-text-hover: rgb(var(--primary-700));
+  --color-primary-ghost-bg-hover: rgba(var(--primary-400), 0.1);
+
+  --shadow-active: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-active-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  --color-annotation-self: #e8336d;
+  --color-annotation-other: #0d65eb;
+}
+
+.dark {
+  /* Semantic color tokens — dark mode */
+  --color-bg-page: #141414;
+  --color-bg-surface: #212121;
+  --color-bg-raised: #2a2a2a;
+  --color-bg-code: #0f172a;
+  --color-bg-subtle: rgba(255, 255, 255, 0.07);
+  --color-overlay-subtle: rgba(255, 255, 255, 0.06);
+
+  --color-border: #3a3a3a;
+  --color-border-strong: #4b5563;
+  --color-border-subtle: #3a3a3a;
+  --color-border-section: #2a2a2a;
+
+  --color-text: #f1f5f9;
+  --color-text-body: #e2e8f0;
+  --color-text-label: #94a3b8;
+  --color-text-muted: #9ca3af;
+  --color-text-subtle: #9ca3af;
+
+  --color-interactive: rgba(148, 163, 184, 0.8);
+  --color-interactive-hover: #e2e8f0;
+  --color-active-bg: rgba(255, 255, 255, 0.1);
+  --color-badge-bg: rgba(148, 163, 184, 0.08);
+  --color-badge-border: rgba(148, 163, 184, 0.2);
+
+  --color-tooltip-bg: #f1f5f9;
+  --color-tooltip-fg: #1e293b;
+  --color-tooltip-border: #cbd5e1;
+
+  --color-toc-hover: #cbd5e1;
+
+  --color-scrollbar: #3a3a3a;
+  --color-scrollbar-hover: #9ca3af;
+
+  --color-primary-ghost-border: rgba(var(--primary-400), 0.5);
+  --color-primary-ghost-text: rgb(var(--primary-400));
+  --color-primary-ghost-bg: rgba(var(--primary-400), 0.08);
+  --color-primary-ghost-border-hover: rgba(var(--primary-400), 0.9);
+  --color-primary-ghost-text-hover: rgb(var(--primary-300));
+  --color-primary-ghost-bg-hover: rgba(var(--primary-400), 0.18);
+
+  --shadow-active: 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-active-sm: 0 1px 4px rgba(0, 0, 0, 0.5);
 }

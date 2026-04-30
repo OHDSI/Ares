@@ -137,14 +137,9 @@ html {
   font-size: 14px;
 }
 
-html:not(.dark) {
-  --doc-scrollbar-color: #94a3b8;
-  --doc-scrollbar-hover: #94a3b8;
-}
-
-html.dark {
-  --doc-scrollbar-color: #3a3a3a;
-  --doc-scrollbar-hover: #9ca3af;
+html {
+  --doc-scrollbar-color: var(--color-scrollbar);
+  --doc-scrollbar-hover: var(--color-scrollbar-hover);
 }
 
 *::-webkit-scrollbar {
@@ -248,27 +243,27 @@ a:visited {
 }
 
 .annotation-subject path {
-  fill: #e8336d;
+  fill: var(--color-annotation-self);
 }
 
 .other-user .annotation-subject path {
-  fill: #0d65eb;
+  fill: var(--color-annotation-other);
 }
 
 .annotation path {
-  stroke: #e8336d;
+  stroke: var(--color-annotation-self);
 }
 
 .other-user path {
-  stroke: #0d65eb;
+  stroke: var(--color-annotation-other);
 }
 
 .annotation text {
-  fill: #e8336d;
+  fill: var(--color-annotation-self);
 }
 
 other-user path {
-  stroke: #0d65eb;
+  stroke: var(--color-annotation-other);
 }
 
 .annotation-subject .handle:nth-child(2) {
@@ -279,35 +274,35 @@ other-user path {
 }
 
 .annotation.above path {
-  stroke: #e8336d;
+  stroke: var(--color-annotation-self);
 }
 
 .other-user.above path {
-  stroke: #0d65eb;
+  stroke: var(--color-annotation-other);
 }
 
 .annotation.above text {
-  fill: #e8336d;
+  fill: var(--color-annotation-self);
 }
 
 .other-user.above text {
-  fill: #0d65eb;
+  fill: var(--color-annotation-other);
 }
 
 .annotation.anomaly path {
-  stroke: #e8336d;
+  stroke: var(--color-annotation-self);
   stroke-width: 2px;
 }
 
 .other-user.anomaly path {
-  stroke: #0d65eb;
+  stroke: var(--color-annotation-other);
 }
 .annotation.anomaly text {
-  fill: #e8336d;
+  fill: var(--color-annotation-self);
 }
 
 .other-user.anomaly text {
-  fill: #0d65eb;
+  fill: var(--color-annotation-other);
 }
 
 .tooltip-field-title {

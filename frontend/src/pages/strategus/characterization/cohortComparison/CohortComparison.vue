@@ -1172,8 +1172,6 @@ import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const smdValColor = computed(() => (darkMode.value ? "#9ca3af" : "#6b7280"));
 
 const STORAGE_KEY_BINARY = "char:cohortComparison:binary";
 const STORAGE_KEY_CONT = "char:cohortComparison:continuous";
@@ -1674,7 +1672,7 @@ onMounted(async () => {
 .smd-val {
   font-size: 0.75rem;
   white-space: nowrap;
-  color: v-bind(smdValColor);
+  color: var(--color-text-muted);
 }
 
 .col-header-with-filter {

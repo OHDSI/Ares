@@ -7,12 +7,7 @@
           v-if="visible"
           ref="popupRef"
           :class="['tooltip-popup', { 'tooltip-popup--below': flipped }]"
-          :style="{
-            ...popupStyle,
-            background: bg,
-            color: fg,
-            border: `1px solid ${bd}`,
-          }"
+          :style="popupStyle"
         >
           {{ text }}
         </div>
@@ -26,17 +21,9 @@ export default { name: "Tooltip" };
 </script>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from "vue";
-import { useStore } from "vuex";
+import { ref, nextTick } from "vue";
 
 const props = defineProps<{ text: string }>();
-
-const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-
-const bg = computed(() => (darkMode.value ? "#f1f5f9" : "#1e293b"));
-const fg = computed(() => (darkMode.value ? "#1e293b" : "#f1f5f9"));
-const bd = computed(() => (darkMode.value ? "#cbd5e1" : "#334155"));
 
 const triggerRef = ref<HTMLElement | null>(null);
 const popupRef = ref<HTMLElement | null>(null);
@@ -88,6 +75,9 @@ function onLeave() {
   white-space: normal;
   max-width: 260px;
   pointer-events: none;
+  background: var(--color-tooltip-bg);
+  color: var(--color-tooltip-fg);
+  border: 1px solid var(--color-tooltip-border);
 }
 
 .tooltip-enter-active {

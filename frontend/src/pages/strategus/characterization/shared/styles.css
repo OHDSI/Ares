@@ -1,6 +1,6 @@
 .section {
-  background: #ffffff;
-  border: 1.5px solid #94a3b8;
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
@@ -11,13 +11,12 @@
   font-weight: 600;
   font-size: 0.8125rem;
   margin-bottom: 0.25rem;
-  color: #334155;
+  color: var(--color-text-label);
 }
-
 
 .empty-state {
   text-align: center;
-  color: #94a3b8;
+  color: var(--color-text-subtle);
   padding: 2.5rem 1rem;
 }
 
@@ -39,7 +38,7 @@
 }
 
 .table-note {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.8125rem;
   margin: 0 0 0.5rem 0;
 }
@@ -61,24 +60,6 @@
 
 .results-body {
   animation: bh-reveal 0.4s ease both;
-}
-
-
-.dark .section {
-  background: #212121;
-  border-color: #3a3a3a;
-}
-
-.dark .field-label {
-  color: #94a3b8;
-}
-
-.dark .empty-state {
-  color: #9ca3af;
-}
-
-.dark .table-note {
-  color: #9ca3af;
 }
 
 .tab-fade-leave-active {

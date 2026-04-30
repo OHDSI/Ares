@@ -330,12 +330,36 @@
                   />
                 </template>
               </Column>
-              <Column :hidden="!selectedBinaryColumns.includes('domain')" field="domain" style="text-align: start" />
-              <Column :hidden="!selectedBinaryColumns.includes('concept')" field="concept" style="text-align: start" />
-              <Column :hidden="!selectedBinaryColumns.includes('timeWindow')" field="timeWindow" style="text-align: start" />
-              <Column :hidden="!selectedBinaryColumns.includes('windowDays')" field="windowDays" style="text-align: start" />
-              <Column :hidden="!selectedBinaryColumns.includes('subType')" field="subType" style="text-align: start" />
-              <Column :hidden="!selectedBinaryColumns.includes('detail')" field="detail" style="text-align: start" />
+              <Column
+                :hidden="!selectedBinaryColumns.includes('domain')"
+                field="domain"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedBinaryColumns.includes('concept')"
+                field="concept"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedBinaryColumns.includes('timeWindow')"
+                field="timeWindow"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedBinaryColumns.includes('windowDays')"
+                field="windowDays"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedBinaryColumns.includes('subType')"
+                field="subType"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedBinaryColumns.includes('detail')"
+                field="detail"
+                style="text-align: start"
+              />
               <Column
                 :hidden="!selectedBinaryColumns.includes('covariateId')"
                 style="text-align: start"
@@ -824,12 +848,36 @@
                   />
                 </template>
               </Column>
-              <Column :hidden="!selectedContinuousColumns.includes('domain')" field="domain" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('concept')" field="concept" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('timeWindow')" field="timeWindow" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('windowDays')" field="windowDays" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('subType')" field="subType" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('detail')" field="detail" style="text-align: start" />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('domain')"
+                field="domain"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('concept')"
+                field="concept"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('timeWindow')"
+                field="timeWindow"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('windowDays')"
+                field="windowDays"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('subType')"
+                field="subType"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('detail')"
+                field="detail"
+                style="text-align: start"
+              />
               <Column
                 :hidden="!selectedContinuousColumns.includes('covariateId')"
                 field="covariateId"
@@ -1023,8 +1071,6 @@ import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const labelColor = computed(() => (darkMode.value ? "#94a3b8" : "#334155"));
 
 const STORAGE_KEY_BINARY = "char:dbComparison:binary";
 const STORAGE_KEY_CONT = "char:dbComparison:continuous";
@@ -1158,20 +1204,61 @@ const continuousFilters = ref({
   covariateId: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const binaryDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
-const continuousDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
+const binaryDropdownFilters = ref<{
+  domain: string | null;
+  subType: string | null;
+  timeWindow: string | null;
+}>({ domain: null, subType: null, timeWindow: null });
+const continuousDropdownFilters = ref<{
+  domain: string | null;
+  subType: string | null;
+  timeWindow: string | null;
+}>({ domain: null, subType: null, timeWindow: null });
 
-const binaryDomainOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
-const binarySubTypeOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
-const continuousDomainOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
-const continuousSubTypeOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
-const timeWindowOptions = ['temporal', 'any_time_prior', 'window'];
+const binaryDomainOptions = computed(
+  () =>
+    [
+      ...new Set(binaryRows.value.map((r: any) => r.domain).filter(Boolean)),
+    ].sort() as string[]
+);
+const binarySubTypeOptions = computed(
+  () =>
+    [
+      ...new Set(binaryRows.value.map((r: any) => r.subType).filter(Boolean)),
+    ].sort() as string[]
+);
+const continuousDomainOptions = computed(
+  () =>
+    [
+      ...new Set(
+        continuousRows.value.map((r: any) => r.domain).filter(Boolean)
+      ),
+    ].sort() as string[]
+);
+const continuousSubTypeOptions = computed(
+  () =>
+    [
+      ...new Set(
+        continuousRows.value.map((r: any) => r.subType).filter(Boolean)
+      ),
+    ].sort() as string[]
+);
+const timeWindowOptions = ["temporal", "any_time_prior", "window"];
 
 const filteredBinaryRows = computed(() => {
   let rows = binaryRows.value;
-  if (binaryDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === binaryDropdownFilters.value.domain);
-  if (binaryDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === binaryDropdownFilters.value.subType);
-  if (binaryDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === binaryDropdownFilters.value.timeWindow);
+  if (binaryDropdownFilters.value.domain)
+    rows = rows.filter(
+      (r: any) => r.domain === binaryDropdownFilters.value.domain
+    );
+  if (binaryDropdownFilters.value.subType)
+    rows = rows.filter(
+      (r: any) => r.subType === binaryDropdownFilters.value.subType
+    );
+  if (binaryDropdownFilters.value.timeWindow)
+    rows = rows.filter(
+      (r: any) => r.timeWindow === binaryDropdownFilters.value.timeWindow
+    );
   for (const [key, filter] of Object.entries(binaryFilters.value)) {
     if (filter.value != null && filter.value !== "") {
       const val = String(filter.value).toLowerCase();
@@ -1187,9 +1274,18 @@ const filteredBinaryRows = computed(() => {
 
 const filteredContinuousRows = computed(() => {
   let rows = continuousRows.value;
-  if (continuousDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === continuousDropdownFilters.value.domain);
-  if (continuousDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === continuousDropdownFilters.value.subType);
-  if (continuousDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow);
+  if (continuousDropdownFilters.value.domain)
+    rows = rows.filter(
+      (r: any) => r.domain === continuousDropdownFilters.value.domain
+    );
+  if (continuousDropdownFilters.value.subType)
+    rows = rows.filter(
+      (r: any) => r.subType === continuousDropdownFilters.value.subType
+    );
+  if (continuousDropdownFilters.value.timeWindow)
+    rows = rows.filter(
+      (r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow
+    );
   for (const [key, filter] of Object.entries(continuousFilters.value)) {
     if (filter.value != null && filter.value !== "") {
       const val = String(filter.value).toLowerCase();
@@ -1204,8 +1300,16 @@ const filteredContinuousRows = computed(() => {
 });
 
 watch(covRef, (newRefs) => {
-  binaryDropdownFilters.value = { domain: null, subType: null, timeWindow: null };
-  continuousDropdownFilters.value = { domain: null, subType: null, timeWindow: null };
+  binaryDropdownFilters.value = {
+    domain: null,
+    subType: null,
+    timeWindow: null,
+  };
+  continuousDropdownFilters.value = {
+    domain: null,
+    subType: null,
+    timeWindow: null,
+  };
   const bin = {
     covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
     concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -1327,7 +1431,10 @@ async function generate() {
     }
 
     covRef.value = binaryResult.covRef;
-    binaryRows.value = binaryResult.covariates.map((r) => ({ ...r, ...(r.covariateNameParsed ?? {}) }));
+    binaryRows.value = binaryResult.covariates.map((r) => ({
+      ...r,
+      ...(r.covariateNameParsed ?? {}),
+    }));
 
     if (covRef.value.length >= 2) {
       plotXAxis.value = covRef.value[0].id;
@@ -1339,7 +1446,10 @@ async function generate() {
       dbIds,
       minThreshold.value
     );
-    continuousRows.value = (continuousResult.covariates ?? []).map((r) => ({ ...r, ...(r.covariateNameParsed ?? {}) }));
+    continuousRows.value = (continuousResult.covariates ?? []).map((r) => ({
+      ...r,
+      ...(r.covariateNameParsed ?? {}),
+    }));
 
     if (Date.now() - loadStart >= 600) {
       loaderState.value = "success";
@@ -1509,7 +1619,7 @@ onMounted(async () => {
   display: block;
   font-weight: 600;
   margin-bottom: 0.25rem;
-  color: v-bind(labelColor);
+  color: var(--color-text-label);
 }
 
 .control-databases {
@@ -1520,7 +1630,7 @@ onMounted(async () => {
   font-weight: 600;
   font-size: 0.8125rem;
   margin-bottom: 0.25rem;
-  color: v-bind(labelColor);
+  color: var(--color-text-label);
 }
 
 .control-threshold {
@@ -1547,7 +1657,7 @@ onMounted(async () => {
   display: block;
   font-weight: 600;
   margin-bottom: 0.25rem;
-  color: v-bind(labelColor);
+  color: var(--color-text-label);
 }
 
 .plot-action {

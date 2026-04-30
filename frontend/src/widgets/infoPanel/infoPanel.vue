@@ -7,7 +7,10 @@
           props.concept
         }}</span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         Concept Identifier
       </p>
     </div>
@@ -19,7 +22,10 @@
           {{ props.domain.split("_").join(" ").toUpperCase() }}
         </span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         Domain ID
       </p>
     </div>
@@ -31,7 +37,10 @@
           formatComma(props.population)
         }}</span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         Number of People
       </p>
     </div>
@@ -43,7 +52,10 @@
           formatPercent(props.percentPeople)
         }}</span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         % of People
       </p>
     </div>
@@ -55,7 +67,10 @@
           props.recordsPerPerson
         }}</span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         Records per Person
       </p>
     </div>
@@ -71,7 +86,10 @@
           props.percentValues
         }}</span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         % with Values
       </p>
     </div>
@@ -87,7 +105,10 @@
           props.countFailed.value
         }}</span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         Records Per Person
       </p>
     </div>
@@ -96,7 +117,10 @@
       <div class="flex flex-col items-center gap-0.5">
         <svg-icon class="text-red-500" type="mdi" :path="mdiClockAlert" />
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         Non-Stationary Time Series
       </p>
     </div>
@@ -110,17 +134,24 @@
         />
         <span class="text-lg font-semibold text-primary-500">
           {{ formatComma(props.proportionSex.male.count) }} M
-          <span class="text-sm font-normal" :style="{ color: mutedColor }">{{
-            formatPercent(props.proportionSex.male.pct)
-          }}</span>
+          <span
+            class="text-sm font-normal"
+            style="color: var(--color-text-subtle)"
+            >{{ formatPercent(props.proportionSex.male.pct) }}</span
+          >
           &nbsp;·&nbsp;
           {{ formatComma(props.proportionSex.female.count) }} F
-          <span class="text-sm font-normal" :style="{ color: mutedColor }">{{
-            formatPercent(props.proportionSex.female.pct)
-          }}</span>
+          <span
+            class="text-sm font-normal"
+            style="color: var(--color-text-subtle)"
+            >{{ formatPercent(props.proportionSex.female.pct) }}</span
+          >
         </span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         Proportion by Sex
       </p>
     </div>
@@ -132,7 +163,10 @@
           props.networkPopulation
         }}</span>
       </div>
-      <p class="text-xs mt-0.5 text-center" :style="{ color: mutedColor }">
+      <p
+        class="text-xs mt-0.5 text-center"
+        style="color: var(--color-text-subtle)"
+      >
         Number of People in Network
       </p>
     </div>
@@ -140,8 +174,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useStore } from "vuex";
 import SvgIcon from "@/shared/ui/svgIcon";
 import {
   mdiAccountGroup,
@@ -173,10 +205,6 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
-const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
 </script>
 
 <style scoped></style>

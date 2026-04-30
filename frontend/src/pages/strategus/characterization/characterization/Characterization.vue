@@ -288,7 +288,7 @@
               :pt="{
                 root: {
                   style: {
-                    color: tagTextColor,
+                    color: 'var(--color-text-label)',
                     border: 'none',
                   },
                 },
@@ -328,11 +328,7 @@
 
           <Teleport :to="EXPLORER_CONTENT_TARGET">
             <Transition name="sticky-fade">
-              <div
-                v-if="!pillNavVisible"
-                class="sticky-content"
-                :style="stickyContentStyle"
-              >
+              <div v-if="!pillNavVisible" class="sticky-content">
                 <div class="sticky-left">
                   <span class="sticky-target">{{
                     selectedTarget.cohortName
@@ -452,48 +448,6 @@ import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacteriza
 
 const route = useRoute();
 const store = useStore();
-
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
-const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
-const headerColor = computed(() => (darkMode.value ? "#f1f5f9" : "#1e293b"));
-const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
-const activeTargetBorder = computed(() =>
-  darkMode.value ? "#3a3a3a" : "#e5e7eb"
-);
-const dividerBg = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
-const activeTargetNameColor = computed(() =>
-  darkMode.value ? "#f1f5f9" : "#1e293b"
-);
-const stickyTargetColor = computed(() =>
-  darkMode.value ? "#f1f5f9" : "#1e293b"
-);
-const stickyCtxColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
-const stickyPillColor = computed(() =>
-  darkMode.value ? "#6b7280" : "#94a3b8"
-);
-const stickyPillHoverColor = computed(() =>
-  darkMode.value ? "#e2e8f0" : "#334155"
-);
-const stickyPillActiveBg = computed(() =>
-  darkMode.value ? "rgba(255,255,255,0.1)" : "transparent"
-);
-const stickyPillActiveShadow = computed(() =>
-  darkMode.value
-    ? "0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)"
-    : "0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06)"
-);
-const tagTextColor = computed(() => (darkMode.value ? "#94a3b8" : "#475569"));
-
-const stickyContentStyle = computed(() => ({
-  "--sticky-target": stickyTargetColor.value,
-  "--sticky-muted": mutedColor.value,
-  "--sticky-ctx": stickyCtxColor.value,
-  "--sticky-pill": stickyPillColor.value,
-  "--sticky-pill-hover": stickyPillHoverColor.value,
-  "--sticky-pill-active-bg": stickyPillActiveBg.value,
-  "--sticky-pill-active-shadow": stickyPillActiveShadow.value,
-}));
 
 const { readUrl, updateUrl, clearChildParams, isSelfWrite } =
   useCharacterizationUrl();
@@ -934,16 +888,16 @@ onBeforeUnmount(() => {
 .section-header h3 {
   font-weight: 700;
   margin: 0;
-  color: v-bind(headerColor);
+  color: var(--color-text);
 }
 
 .section-sub {
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
 }
 
 .section {
-  background: v-bind(sectionBg);
-  border: 1.5px solid v-bind(sectionBorder);
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
@@ -961,7 +915,7 @@ onBeforeUnmount(() => {
   display: inline-block;
   width: 1.5px;
   height: 1.125rem;
-  background: v-bind(dividerBg);
+  background: var(--color-border-strong);
   margin: 0 0.25rem;
 }
 
@@ -975,12 +929,12 @@ onBeforeUnmount(() => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
 }
 
 .active-target-name {
   font-weight: 600;
-  color: v-bind(activeTargetNameColor);
+  color: var(--color-text);
 }
 
 .active-target-tag {
@@ -1020,7 +974,7 @@ onBeforeUnmount(() => {
 
 .sticky-target {
   font-weight: 600;
-  color: var(--sticky-target);
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1028,12 +982,12 @@ onBeforeUnmount(() => {
 }
 
 .sticky-sep {
-  color: var(--sticky-muted);
+  color: var(--color-text-subtle);
   flex-shrink: 0;
 }
 
 .sticky-tab {
-  color: var(--sticky-target);
+  color: var(--color-text);
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
@@ -1045,11 +999,11 @@ onBeforeUnmount(() => {
   height: 3px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: var(--sticky-muted);
+  background: var(--color-text-subtle);
 }
 
 .sticky-ctx {
-  color: var(--sticky-ctx);
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   white-space: nowrap;
   overflow: hidden;
@@ -1088,7 +1042,7 @@ onBeforeUnmount(() => {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: var(--sticky-pill);
+  color: var(--color-text-subtle);
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
@@ -1097,15 +1051,15 @@ onBeforeUnmount(() => {
 }
 
 .sticky-pill:hover {
-  color: var(--sticky-pill-hover);
+  color: var(--color-interactive-hover);
   background: rgba(128, 128, 128, 0.08);
 }
 
 .sticky-pill.active {
-  color: var(--sticky-pill-hover);
+  color: var(--color-interactive-hover);
   font-weight: 600;
-  background: var(--sticky-pill-active-bg);
-  box-shadow: var(--sticky-pill-active-shadow);
+  background: var(--color-active-bg);
+  box-shadow: var(--shadow-active);
 }
 
 .sticky-fade-enter-active,

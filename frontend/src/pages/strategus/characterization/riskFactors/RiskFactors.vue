@@ -160,7 +160,11 @@
                     <template #header>
                       <div class="col-header-with-filter">
                         <span>Concept</span>
-                        <FilterInput v-if="showBinaryFilters" :filterObj="binaryTableFilters.concept" placeholder="Search..." />
+                        <FilterInput
+                          v-if="showBinaryFilters"
+                          :filterObj="binaryTableFilters.concept"
+                          placeholder="Search..."
+                        />
                       </div>
                     </template>
                   </Column>
@@ -195,7 +199,11 @@
                     <template #header>
                       <div class="col-header-with-filter">
                         <span>Window Days</span>
-                        <FilterInput v-if="showBinaryFilters" :filterObj="binaryTableFilters.windowDays" placeholder="e.g. -365 to -1" />
+                        <FilterInput
+                          v-if="showBinaryFilters"
+                          :filterObj="binaryTableFilters.windowDays"
+                          placeholder="e.g. -365 to -1"
+                        />
                       </div>
                     </template>
                   </Column>
@@ -230,7 +238,11 @@
                     <template #header>
                       <div class="col-header-with-filter">
                         <span>Detail</span>
-                        <FilterInput v-if="showBinaryFilters" :filterObj="binaryTableFilters.detail" placeholder="Search..." />
+                        <FilterInput
+                          v-if="showBinaryFilters"
+                          :filterObj="binaryTableFilters.detail"
+                          placeholder="Search..."
+                        />
                       </div>
                     </template>
                   </Column>
@@ -427,12 +439,36 @@
                   />
                 </template>
               </Column>
-              <Column :hidden="!selectedColumns.includes('domain')" field="domain" style="text-align: start" />
-              <Column :hidden="!selectedColumns.includes('concept')" field="concept" style="text-align: start" />
-              <Column :hidden="!selectedColumns.includes('timeWindow')" field="timeWindow" style="text-align: start" />
-              <Column :hidden="!selectedColumns.includes('windowDays')" field="windowDays" style="text-align: start" />
-              <Column :hidden="!selectedColumns.includes('subType')" field="subType" style="text-align: start" />
-              <Column :hidden="!selectedColumns.includes('detail')" field="detail" style="text-align: start" />
+              <Column
+                :hidden="!selectedColumns.includes('domain')"
+                field="domain"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedColumns.includes('concept')"
+                field="concept"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedColumns.includes('timeWindow')"
+                field="timeWindow"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedColumns.includes('windowDays')"
+                field="windowDays"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedColumns.includes('subType')"
+                field="subType"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedColumns.includes('detail')"
+                field="detail"
+                style="text-align: start"
+              />
               <template v-for="ref in binaryRfRef" :key="'bcol-' + ref.id">
                 <Column
                   :hidden="!selectedColumns.includes('caseCount')"
@@ -668,7 +704,11 @@
                     <template #header>
                       <div class="col-header-with-filter">
                         <span>Concept</span>
-                        <FilterInput v-if="showContinuousFilters" :filterObj="continuousTableFilters.concept" placeholder="Search..." />
+                        <FilterInput
+                          v-if="showContinuousFilters"
+                          :filterObj="continuousTableFilters.concept"
+                          placeholder="Search..."
+                        />
                       </div>
                     </template>
                   </Column>
@@ -703,7 +743,11 @@
                     <template #header>
                       <div class="col-header-with-filter">
                         <span>Window Days</span>
-                        <FilterInput v-if="showContinuousFilters" :filterObj="continuousTableFilters.windowDays" placeholder="e.g. -365 to -1" />
+                        <FilterInput
+                          v-if="showContinuousFilters"
+                          :filterObj="continuousTableFilters.windowDays"
+                          placeholder="e.g. -365 to -1"
+                        />
                       </div>
                     </template>
                   </Column>
@@ -738,7 +782,11 @@
                     <template #header>
                       <div class="col-header-with-filter">
                         <span>Detail</span>
-                        <FilterInput v-if="showContinuousFilters" :filterObj="continuousTableFilters.detail" placeholder="Search..." />
+                        <FilterInput
+                          v-if="showContinuousFilters"
+                          :filterObj="continuousTableFilters.detail"
+                          placeholder="Search..."
+                        />
                       </div>
                     </template>
                   </Column>
@@ -1161,12 +1209,36 @@
                   />
                 </template>
               </Column>
-              <Column :hidden="!selectedContinuousColumns.includes('domain')" field="domain" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('concept')" field="concept" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('timeWindow')" field="timeWindow" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('windowDays')" field="windowDays" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('subType')" field="subType" style="text-align: start" />
-              <Column :hidden="!selectedContinuousColumns.includes('detail')" field="detail" style="text-align: start" />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('domain')"
+                field="domain"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('concept')"
+                field="concept"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('timeWindow')"
+                field="timeWindow"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('windowDays')"
+                field="windowDays"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('subType')"
+                field="subType"
+                style="text-align: start"
+              />
+              <Column
+                :hidden="!selectedContinuousColumns.includes('detail')"
+                field="detail"
+                style="text-align: start"
+              />
               <template v-for="ref in continuousRfRef" :key="'ccol-' + ref.id">
                 <Column
                   :hidden="!selectedContinuousColumns.includes('caseCount')"
@@ -1483,8 +1555,6 @@ import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const smdValColor = computed(() => (darkMode.value ? "#9ca3af" : "#6b7280"));
 const { headerPt, subPt, bodyPt } = useGroupBanding();
 
 const STORAGE_KEY_BINARY = "char:riskFactors:binary";
@@ -1702,14 +1772,46 @@ const continuousTableFilters = ref<Record<string, any>>({
   detail: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const binaryDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
-const continuousDropdownFilters = ref<{ domain: string | null; subType: string | null; timeWindow: string | null }>({ domain: null, subType: null, timeWindow: null });
+const binaryDropdownFilters = ref<{
+  domain: string | null;
+  subType: string | null;
+  timeWindow: string | null;
+}>({ domain: null, subType: null, timeWindow: null });
+const continuousDropdownFilters = ref<{
+  domain: string | null;
+  subType: string | null;
+  timeWindow: string | null;
+}>({ domain: null, subType: null, timeWindow: null });
 
-const binaryDomainOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
-const binarySubTypeOptions = computed(() => [...new Set(binaryRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
-const continuousDomainOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.domain).filter(Boolean))].sort() as string[]);
-const continuousSubTypeOptions = computed(() => [...new Set(continuousRows.value.map((r: any) => r.subType).filter(Boolean))].sort() as string[]);
-const timeWindowOptions = ['temporal', 'any_time_prior', 'window'];
+const binaryDomainOptions = computed(
+  () =>
+    [
+      ...new Set(binaryRows.value.map((r: any) => r.domain).filter(Boolean)),
+    ].sort() as string[]
+);
+const binarySubTypeOptions = computed(
+  () =>
+    [
+      ...new Set(binaryRows.value.map((r: any) => r.subType).filter(Boolean)),
+    ].sort() as string[]
+);
+const continuousDomainOptions = computed(
+  () =>
+    [
+      ...new Set(
+        continuousRows.value.map((r: any) => r.domain).filter(Boolean)
+      ),
+    ].sort() as string[]
+);
+const continuousSubTypeOptions = computed(
+  () =>
+    [
+      ...new Set(
+        continuousRows.value.map((r: any) => r.subType).filter(Boolean)
+      ),
+    ].sort() as string[]
+);
+const timeWindowOptions = ["temporal", "any_time_prior", "window"];
 
 watch(binaryRfRef, (newRefs) => {
   const f: Record<string, any> = {
@@ -1734,7 +1836,11 @@ watch(binaryRfRef, (newRefs) => {
     }
   }
   binaryTableFilters.value = f;
-  binaryDropdownFilters.value = { domain: null, subType: null, timeWindow: null };
+  binaryDropdownFilters.value = {
+    domain: null,
+    subType: null,
+    timeWindow: null,
+  };
 });
 
 watch(continuousRfRef, (newRefs) => {
@@ -1768,7 +1874,11 @@ watch(continuousRfRef, (newRefs) => {
     }
   }
   continuousTableFilters.value = f;
-  continuousDropdownFilters.value = { domain: null, subType: null, timeWindow: null };
+  continuousDropdownFilters.value = {
+    domain: null,
+    subType: null,
+    timeWindow: null,
+  };
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);
@@ -1796,9 +1906,18 @@ const filteredBinaryRows = computed(() => {
       );
     }
   }
-  if (binaryDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === binaryDropdownFilters.value.domain);
-  if (binaryDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === binaryDropdownFilters.value.subType);
-  if (binaryDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === binaryDropdownFilters.value.timeWindow);
+  if (binaryDropdownFilters.value.domain)
+    rows = rows.filter(
+      (r: any) => r.domain === binaryDropdownFilters.value.domain
+    );
+  if (binaryDropdownFilters.value.subType)
+    rows = rows.filter(
+      (r: any) => r.subType === binaryDropdownFilters.value.subType
+    );
+  if (binaryDropdownFilters.value.timeWindow)
+    rows = rows.filter(
+      (r: any) => r.timeWindow === binaryDropdownFilters.value.timeWindow
+    );
   if (binaryAbsSmdMin.value > 0) {
     rows = rows.filter((r) =>
       binaryRfRef.value.some(
@@ -1821,9 +1940,18 @@ const filteredContinuousRows = computed(() => {
       );
     }
   }
-  if (continuousDropdownFilters.value.domain) rows = rows.filter((r: any) => r.domain === continuousDropdownFilters.value.domain);
-  if (continuousDropdownFilters.value.subType) rows = rows.filter((r: any) => r.subType === continuousDropdownFilters.value.subType);
-  if (continuousDropdownFilters.value.timeWindow) rows = rows.filter((r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow);
+  if (continuousDropdownFilters.value.domain)
+    rows = rows.filter(
+      (r: any) => r.domain === continuousDropdownFilters.value.domain
+    );
+  if (continuousDropdownFilters.value.subType)
+    rows = rows.filter(
+      (r: any) => r.subType === continuousDropdownFilters.value.subType
+    );
+  if (continuousDropdownFilters.value.timeWindow)
+    rows = rows.filter(
+      (r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow
+    );
   if (continuousAbsSmdMin.value > 0) {
     rows = rows.filter((r) =>
       continuousRfRef.value.some(
@@ -2205,7 +2333,7 @@ onMounted(async () => {
   font-size: 0.8125rem;
   font-weight: 600;
   white-space: nowrap;
-  color: v-bind(smdValColor);
+  color: var(--color-text-muted);
 }
 
 .smd-filter {
@@ -2223,7 +2351,7 @@ onMounted(async () => {
 .smd-val {
   font-size: 0.75rem;
   white-space: nowrap;
-  color: v-bind(smdValColor);
+  color: var(--color-text-muted);
 }
 
 .col-header-with-filter {

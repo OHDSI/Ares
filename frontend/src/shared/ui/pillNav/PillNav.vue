@@ -27,8 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useStore } from "vuex";
 import Tooltip from "@/shared/ui/tooltip";
 
 defineProps<{
@@ -40,21 +38,6 @@ defineProps<{
 defineEmits<{
   (e: "update:modelValue", index: number): void;
 }>();
-
-const store = useStore();
-
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const pillTextColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
-const pillHoverColor = computed(() => (darkMode.value ? "#e2e8f0" : "#334155"));
-const dividerBg = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
-const pillActiveBg = computed(() =>
-  darkMode.value ? "rgba(255,255,255,0.1)" : "transparent"
-);
-const pillActiveShadow = computed(() =>
-  darkMode.value
-    ? "0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)"
-    : "0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06)"
-);
 </script>
 
 <style scoped>
@@ -72,7 +55,7 @@ const pillActiveShadow = computed(() =>
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: v-bind(pillTextColor);
+  color: var(--color-text-muted);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -80,15 +63,15 @@ const pillActiveShadow = computed(() =>
 }
 
 .pill:hover {
-  color: v-bind(pillHoverColor);
+  color: var(--color-interactive-hover);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .pill.active {
-  color: v-bind(pillHoverColor);
+  color: var(--color-interactive-hover);
   font-weight: 600;
-  background: v-bind(pillActiveBg);
-  box-shadow: v-bind(pillActiveShadow);
+  background: var(--color-active-bg);
+  box-shadow: var(--shadow-active);
 }
 
 .pill-unavailable {
@@ -101,7 +84,7 @@ const pillActiveShadow = computed(() =>
   display: inline-block;
   width: 1px;
   height: 1.25rem;
-  background: v-bind(dividerBg);
+  background: var(--color-border-strong);
   margin: 0 0.125rem;
   opacity: 0.5;
 }

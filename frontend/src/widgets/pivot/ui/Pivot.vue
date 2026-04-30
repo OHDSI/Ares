@@ -2,8 +2,18 @@
   <div class="pivot-wrapper" v-if="data">
     <div class="pivot-controls section">
       <div class="panel-toggle">
-        <button :class="['panel-btn', { active: activePanel === 0 }]" @click="activePanel = 0">Table</button>
-        <button :class="['panel-btn', { active: activePanel === 1 }]" @click="activePanel = 1">Settings</button>
+        <button
+          :class="['panel-btn', { active: activePanel === 0 }]"
+          @click="activePanel = 0"
+        >
+          Table
+        </button>
+        <button
+          :class="['panel-btn', { active: activePanel === 1 }]"
+          @click="activePanel = 1"
+        >
+          Settings
+        </button>
       </div>
 
       <div v-if="activePanel === 0" class="attr-panels">
@@ -68,7 +78,11 @@
 
       <div v-if="activePanel === 1" class="settings-panel">
         <div class="filter-list">
-          <div v-for="attr in getDisplayedAttributes" :key="attr" class="filter-item">
+          <div
+            v-for="attr in getDisplayedAttributes"
+            :key="attr"
+            class="filter-item"
+          >
             <label class="field-label">{{ attr }}</label>
             <MultiSelect
               v-model="selectedFilters[attr]"
@@ -104,7 +118,10 @@
     </div>
 
     <div class="pivot-output">
-      <div v-if="selectedCols.length || selectedRows.length" class="table-container">
+      <div
+        v-if="selectedCols.length || selectedRows.length"
+        class="table-container"
+      >
         <VuePivottable
           :data="data"
           :rows="selectedRows"
@@ -114,7 +131,11 @@
           :value-filter="getParsedFiltersForPivotTable"
           :aggregator-name="aggregateFunction"
           :vals="aggregateValue"
-          :table-options="eventListener ? eventListener(router, route, getUniqueAttributeValues) : {}"
+          :table-options="
+            eventListener
+              ? eventListener(router, route, getUniqueAttributeValues)
+              : {}
+          "
         />
       </div>
       <div class="empty-state pivot-empty" v-else>
@@ -127,8 +148,7 @@
 <script setup lang="ts">
 import { VuePivottable } from "vue-pivottable";
 import "./vue-pivottable.scss";
-import { computed, Ref, ref, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { Ref, ref, computed, onBeforeMount } from "vue";
 import draggable from "vuedraggable";
 
 import Dropdown from "primevue/dropdown";
@@ -143,27 +163,6 @@ import {
 
 const router = useRouter();
 const route = useRoute();
-const store = useStore();
-
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-
-const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
-const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
-const bodyColor = computed(() => (darkMode.value ? "#f1f5f9" : "#334155"));
-const mutedColor = computed(() => (darkMode.value ? "#9ca3af" : "#94a3b8"));
-const dividerBg = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
-const btnColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
-const btnHoverColor = computed(() => (darkMode.value ? "#e2e8f0" : "#334155"));
-const activeBg = computed(() => (darkMode.value ? "rgba(255,255,255,0.1)" : "#ffffff"));
-const activeShadow = computed(() =>
-  darkMode.value ? "0 1px 4px rgba(0,0,0,0.5)" : "0 1px 3px rgba(0,0,0,0.08)"
-);
-const attrItemBg = computed(() => (darkMode.value ? "rgba(255,255,255,0.06)" : "#f8fafc"));
-const attrItemBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#e2e8f0"));
-const removeColor = computed(() => (darkMode.value ? "#6b7280" : "#94a3b8"));
-const removeHoverColor = computed(() => (darkMode.value ? "#f87171" : "#ef4444"));
-const dragHandleColor = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
-
 const activePanel = ref(0);
 const selectedFilters = ref({});
 
@@ -185,7 +184,12 @@ interface Props {
     b: RouteLocationNormalizedLoaded,
     c: string[]
   ) => {
-    clickCallBack: (e: any, value: any, axisAttributes: any, pivotData: any) => void;
+    clickCallBack: (
+      e: any,
+      value: any,
+      axisAttributes: any,
+      pivotData: any
+    ) => void;
   };
 }
 
@@ -238,8 +242,11 @@ const aggregateValue: Ref<string[]> = ref([""]);
 onBeforeMount(() => {
   selectedRows.value = props.defaults?.rows ?? [];
   selectedCols.value = props.defaults?.columns ?? [];
-  aggregateFunction.value = props.defaults?.aggregateFunction ?? props.aggregatorNamesList?.[0] ?? "";
-  aggregateValue.value = props.defaults?.aggregateValue ?? [getAggregateValues.value?.[0] ?? ""];
+  aggregateFunction.value =
+    props.defaults?.aggregateFunction ?? props.aggregatorNamesList?.[0] ?? "";
+  aggregateValue.value = props.defaults?.aggregateValue ?? [
+    getAggregateValues.value?.[0] ?? "",
+  ];
 });
 </script>
 
@@ -259,9 +266,9 @@ onBeforeMount(() => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  color: v-bind(bodyColor);
-  background: v-bind(sectionBg);
-  border: 1.5px solid v-bind(sectionBorder);
+  color: var(--color-text-body);
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
@@ -279,7 +286,7 @@ onBeforeMount(() => {
   border: none;
   border-radius: 4px;
   background: transparent;
-  color: v-bind(btnColor);
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
@@ -287,14 +294,14 @@ onBeforeMount(() => {
 }
 
 .panel-btn:hover {
-  color: v-bind(btnHoverColor);
+  color: var(--color-interactive-hover);
 }
 
 .panel-btn.active {
-  color: v-bind(btnHoverColor);
+  color: var(--color-interactive-hover);
   font-weight: 600;
-  background: v-bind(activeBg);
-  box-shadow: v-bind(activeShadow);
+  background: var(--color-active-bg);
+  box-shadow: var(--shadow-active-sm);
 }
 
 .attr-panels {
@@ -321,22 +328,22 @@ onBeforeMount(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.5rem;
-  background: v-bind(attrItemBg);
-  border: 1px solid v-bind(attrItemBorder);
+  background: var(--color-overlay-subtle);
+  border: 1px solid var(--color-border-subtle);
   border-radius: 4px;
   cursor: move;
 }
 
 .drag-handle {
   font-size: 0.75rem;
-  color: v-bind(dragHandleColor);
+  color: var(--color-border-strong);
   flex-shrink: 0;
 }
 
 .attr-name {
   flex: 1;
   font-size: 0.8125rem;
-  color: v-bind(bodyColor);
+  color: var(--color-text-body);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -347,7 +354,7 @@ onBeforeMount(() => {
   background: transparent;
   padding: 0;
   cursor: pointer;
-  color: v-bind(removeColor);
+  color: var(--color-text-subtle);
   font-size: 0.6875rem;
   line-height: 1;
   display: flex;
@@ -357,7 +364,7 @@ onBeforeMount(() => {
 }
 
 .remove-btn:hover {
-  color: v-bind(removeHoverColor);
+  color: #ef4444;
 }
 
 .attr-empty {
@@ -389,7 +396,7 @@ onBeforeMount(() => {
 
 .divider {
   height: 1px;
-  background: v-bind(dividerBg);
+  background: var(--color-border-strong);
   margin: 0.25rem 0;
 }
 
@@ -400,8 +407,8 @@ onBeforeMount(() => {
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  background: v-bind(sectionBg);
-  border: 1.5px solid v-bind(sectionBorder);
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
@@ -418,10 +425,10 @@ onBeforeMount(() => {
   padding: 2.5rem 1rem;
   text-align: center;
   font-size: 0.9375rem;
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
 }
 
 .empty-state {
-  color: v-bind(mutedColor);
+  color: var(--color-text-subtle);
 }
 </style>

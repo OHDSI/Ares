@@ -900,10 +900,7 @@ import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
 const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-
 const STORAGE_KEY = "char:caseSeries";
-const helpNoteColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
 
 const csColumnOptions = [
   { label: "Covariate", key: "covariateName" },
@@ -1437,7 +1434,7 @@ onMounted(async () => {
 
 .help-note {
   font-size: 0.8125rem;
-  color: v-bind(helpNoteColor);
+  color: var(--color-text-muted);
   padding: 0 0.25rem;
   margin: 0;
   line-height: 1.4;

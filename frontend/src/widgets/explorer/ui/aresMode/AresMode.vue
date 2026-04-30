@@ -139,9 +139,6 @@ const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
-const isDarkMode = computed(() => store.getters.getSettings?.darkMode ?? false);
-const chevronColor = computed(() => (isDarkMode.value ? "white" : "black"));
-
 const hasData = computed(() => !!store.getters.getSelectedFolder);
 const conceptParam = computed(() => route.params.concept || null);
 const cohortParam = computed(() => route.params.cohort_id || null);
@@ -259,6 +256,6 @@ function changeReport(report: ReportOption): void {
   transform: scale(0.6);
   margin-left: -0.75rem;
   margin-right: -0.75rem;
-  color: v-bind(chevronColor);
+  color: var(--color-text);
 }
 </style>

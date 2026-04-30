@@ -37,10 +37,18 @@
           <template #body="{ data }">
             <div style="display: flex; align-items: center">
               <span>{{ data.cdmSourceName }}</span>
-              <Tooltip v-if="data.sourceDescription" :text="data.sourceDescription">
+              <Tooltip
+                v-if="data.sourceDescription"
+                :text="data.sourceDescription"
+              >
                 <i
                   class="pi pi-info-circle"
-                  style="margin-left: 0.5rem; color: #94a3b8; cursor: help; flex-shrink: 0"
+                  style="
+                    margin-left: 0.5rem;
+                    color: var(--color-text-subtle);
+                    cursor: help;
+                    flex-shrink: 0;
+                  "
                 />
               </Tooltip>
             </div>
@@ -131,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
@@ -143,10 +151,6 @@ import Tooltip from "@/shared/ui/tooltip";
 
 const store = useStore();
 const data = ref([]);
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const sectionBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
-const sectionBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#94a3b8"));
-const headerColor = computed(() => (darkMode.value ? "#f1f5f9" : "#1e293b"));
 const loading = ref(false);
 
 const filters = ref({
@@ -180,12 +184,12 @@ onMounted(async () => {
 .section-header h3 {
   font-weight: 700;
   margin: 0;
-  color: v-bind(headerColor);
+  color: var(--color-text);
 }
 
 .section {
-  background: v-bind(sectionBg);
-  border: 1.5px solid v-bind(sectionBorder);
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);

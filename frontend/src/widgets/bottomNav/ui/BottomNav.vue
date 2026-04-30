@@ -121,22 +121,6 @@ const route = useRoute();
 
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 
-const navBg = computed(() => (darkMode.value ? "#212121" : "#ffffff"));
-const navBorder = computed(() => (darkMode.value ? "#3a3a3a" : "#e2e8f0"));
-const iconColor = computed(() =>
-  darkMode.value ? "rgba(148,163,184,0.8)" : "rgba(100,116,139,0.8)"
-);
-const iconActiveColor = computed(() =>
-  darkMode.value ? "#e2e8f0" : "#334155"
-);
-const betaColor = computed(() => (darkMode.value ? "#94a3b8" : "#64748b"));
-const betaBg = computed(() =>
-  darkMode.value ? "rgba(148,163,184,0.08)" : "rgba(100,116,139,0.07)"
-);
-const betaBorder = computed(() =>
-  darkMode.value ? "rgba(148,163,184,0.2)" : "rgba(100,116,139,0.2)"
-);
-
 const iconClass = computed((): string =>
   darkMode.value ? "darkmode" : "lightmode"
 );
@@ -155,8 +139,8 @@ const toggleSettings = function (): void {
   align-items: center;
   justify-content: space-between;
   height: 40px;
-  background: v-bind(navBg);
-  border-top: 1px solid v-bind(navBorder);
+  background: var(--color-bg-surface);
+  border-top: 1px solid var(--color-border-subtle);
   z-index: 100;
 }
 
@@ -174,7 +158,7 @@ const toggleSettings = function (): void {
   font-family: ui-monospace, monospace;
   font-weight: 400;
   font-size: 0.8125rem;
-  color: v-bind(iconColor);
+  color: var(--color-interactive);
   text-decoration: none;
   transition: text-decoration 0.15s ease;
 }
@@ -188,9 +172,9 @@ const toggleSettings = function (): void {
   font-family: ui-monospace, monospace;
   font-size: 0.6875rem;
   font-weight: 500;
-  color: v-bind(betaColor);
-  background: v-bind(betaBg);
-  border: 1px solid v-bind(betaBorder);
+  color: var(--color-text-muted);
+  background: var(--color-badge-bg);
+  border: 1px solid var(--color-badge-border);
   border-radius: 3px;
   padding: 0 0.3rem;
   line-height: 1.4;
@@ -199,7 +183,7 @@ const toggleSettings = function (): void {
 }
 
 :deep(.nav-btn) {
-  color: v-bind(iconColor);
+  color: var(--color-interactive);
   padding: 0.375rem;
   width: 36px;
   height: 36px;
@@ -208,7 +192,7 @@ const toggleSettings = function (): void {
 
 :deep(.nav-btn:hover),
 :deep(.nav-btn.active) {
-  color: v-bind(iconActiveColor);
+  color: var(--color-interactive-hover);
 }
 
 :deep(.nav-btn svg),

@@ -54,6 +54,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
 import { useStore } from "vuex";
+
 import MeasurementValueDistribution from "./charts/MeasurementValueDistribution";
 import AgeAtFirstDiagnosis from "./charts/AgeAtFirstDiagnosis";
 import AgeAtFirstExposure from "./charts/AgeAtFirstExposure";
@@ -94,25 +95,6 @@ const navigateToDataQuality = function () {
   };
 };
 
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const btnBorder = computed(() =>
-  darkMode.value ? "rgba(33,150,243,0.5)" : "rgb(33,150,243)"
-);
-const btnColor = computed(() =>
-  darkMode.value ? "rgb(33,150,243)" : "rgb(7,56,104)"
-);
-const btnBg = computed(() =>
-  darkMode.value ? "rgba(33,150,243,0.08)" : "rgba(33,150,243,0.05)"
-);
-const btnBorderHover = computed(() =>
-  darkMode.value ? "rgba(33,150,243,0.9)" : "rgb(25,118,210)"
-);
-const btnColorHover = computed(() =>
-  darkMode.value ? "rgb(100,181,246)" : "rgb(4,41,80)"
-);
-const btnBgHover = computed(() =>
-  darkMode.value ? "rgba(33,150,243,0.18)" : "rgba(33,150,243,0.1)"
-);
 const navigateToNetworkConcept = function () {
   const { domain } = route.params;
   router.push({
@@ -131,13 +113,13 @@ const navigateToNetworkConcept = function () {
   width: 90%;
 }
 .network-btn {
-  border: 1px solid v-bind(btnBorder);
-  color: v-bind(btnColor);
-  background: v-bind(btnBg);
+  border: 1px solid var(--color-primary-ghost-border);
+  color: var(--color-primary-ghost-text);
+  background: var(--color-primary-ghost-bg);
 }
 .network-btn:hover {
-  border-color: v-bind(btnBorderHover);
-  color: v-bind(btnColorHover);
-  background: v-bind(btnBgHover);
+  border-color: var(--color-primary-ghost-border-hover);
+  color: var(--color-primary-ghost-text-hover);
+  background: var(--color-primary-ghost-bg-hover);
 }
 </style>

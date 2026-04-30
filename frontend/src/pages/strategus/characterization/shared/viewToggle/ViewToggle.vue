@@ -12,25 +12,11 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useStore } from "vuex";
-
 defineProps({
   tabs: { type: Array, required: true },
   modelValue: { type: Number, default: 0 },
 });
 defineEmits(["update:modelValue"]);
-
-const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const btnColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
-const btnHoverColor = computed(() => (darkMode.value ? "#e2e8f0" : "#334155"));
-const activeBg = computed(() =>
-  darkMode.value ? "rgba(255,255,255,0.1)" : "#ffffff"
-);
-const activeShadow = computed(() =>
-  darkMode.value ? "0 1px 4px rgba(0,0,0,0.5)" : "0 1px 3px rgba(0,0,0,0.08)"
-);
 </script>
 
 <style scoped>
@@ -47,7 +33,7 @@ const activeShadow = computed(() =>
   border: none;
   border-radius: 4px;
   background: transparent;
-  color: v-bind(btnColor);
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
@@ -55,13 +41,13 @@ const activeShadow = computed(() =>
 }
 
 .toggle-btn:hover {
-  color: v-bind(btnHoverColor);
+  color: var(--color-interactive-hover);
 }
 
 .toggle-btn.active {
-  color: v-bind(btnHoverColor);
+  color: var(--color-interactive-hover);
   font-weight: 600;
-  background: v-bind(activeBg);
-  box-shadow: v-bind(activeShadow);
+  background: var(--color-active-bg);
+  box-shadow: var(--shadow-active-sm);
 }
 </style>

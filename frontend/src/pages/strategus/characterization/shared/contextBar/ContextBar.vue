@@ -8,17 +8,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useStore } from "vuex";
-
 defineProps<{
   items: (string | null | undefined)[];
 }>();
-
-const store = useStore();
-const darkMode = computed(() => store.getters.getSettings.darkMode);
-const contextColor = computed(() => (darkMode.value ? "#9ca3af" : "#64748b"));
-const sepColor = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
 </script>
 
 <style scoped>
@@ -29,13 +21,13 @@ const sepColor = computed(() => (darkMode.value ? "#4b5563" : "#cbd5e1"));
   align-items: center;
   gap: 0.375rem;
   font-size: 0.8125rem;
-  color: v-bind(contextColor);
+  color: var(--color-text-muted);
   padding: 0.25rem 0;
   flex-wrap: wrap;
 }
 
 .sep {
-  color: v-bind(sepColor);
+  color: var(--color-border-strong);
   font-size: 0.875rem;
   line-height: 1;
   user-select: none;

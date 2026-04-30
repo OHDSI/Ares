@@ -1,31 +1,16 @@
-
 :root {
-  --pvt-border: #e2e8f0;
-  --pvt-border-strong: #94a3b8;
-  --pvt-header-bg: #f8fafc;
-  --pvt-bg: #ffffff;
-  --pvt-body: #334155;
-  --pvt-muted: #94a3b8;
-  --pvt-cell-hover: #f1f5f9;
-  --pvt-filterbox-bg: #ffffff;
-  --pvt-filterbox-border: #94a3b8;
-  --pvt-attr-border: #cbd5e1;
-  --pvt-attr-bg: #f1f5f9;
-  --pvt-focus: var(--primary-500, #3b82f6);
-}
-
-.dark {
-  --pvt-border: #3a3a3a;
-  --pvt-border-strong: #4b5563;
-  --pvt-header-bg: #2a2a2a;
-  --pvt-bg: #212121;
-  --pvt-body: #f1f5f9;
-  --pvt-muted: #9ca3af;
-  --pvt-cell-hover: #2d2d2d;
-  --pvt-filterbox-bg: #212121;
-  --pvt-filterbox-border: #4b5563;
-  --pvt-attr-border: #4b5563;
-  --pvt-attr-bg: rgba(255, 255, 255, 0.07);
+  --pvt-border: var(--color-border-subtle);
+  --pvt-border-strong: var(--color-border);
+  --pvt-header-bg: var(--color-bg-raised);
+  --pvt-bg: var(--color-bg-surface);
+  --pvt-body: var(--color-text-body);
+  --pvt-muted: var(--color-text-subtle);
+  --pvt-cell-hover: var(--color-bg-raised);
+  --pvt-filterbox-bg: var(--color-bg-surface);
+  --pvt-filterbox-border: var(--color-border);
+  --pvt-attr-border: var(--color-border-strong);
+  --pvt-attr-bg: var(--color-bg-code);
+  --pvt-focus: rgb(var(--primary-500));
 }
 
 .pvtUi {

@@ -7,9 +7,9 @@ export default {
       "flex-col",
       "justify-between",
       "rounded-lg",
-      "border-[1.5px] border-[#94a3b8] dark:border-[#3a3a3a]",
+      "border-[1.5px] border-[var(--color-border)]",
       "shadow-[0_2px_8px_rgba(0,0,0,0.07)]",
-      "bg-white dark:bg-[#212121]",
+      "bg-[var(--color-bg-surface)]",
       "text-surface-700 dark:text-surface-0/80",
     ],
   },
@@ -38,8 +38,6 @@ export default {
     class: "py-6 px-5 md:px-6",
   },
   footer: {
-    class: [
-      "rounded-bl-lg rounded-br-lg p-2 relative bottom-0",
-    ],
+    class: ["rounded-bl-lg rounded-br-lg p-2 relative bottom-0"],
   },
 };
