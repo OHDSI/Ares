@@ -37,6 +37,12 @@
   padding-bottom: 1px;
 }
 
+.table-search {
+  flex: 1 1 200px;
+  min-width: 160px;
+  max-width: 400px;
+}
+
 .table-note {
   color: var(--color-text-muted);
   font-size: 0.8125rem;

@@ -35,6 +35,17 @@
                   class="w-full"
                 />
               </div>
+              <InputGroup unstyled class="table-search">
+                <InputGroupAddon>
+                  <i class="pi pi-search" />
+                </InputGroupAddon>
+                <InputText
+                  v-model="search"
+                  unstyled
+                  placeholder="Search..."
+                  class="rounded-r-lg"
+                />
+              </InputGroup>
               <div class="col-selector">
                 <label class="field-label">Columns</label>
                 <ColumnSelector
@@ -84,6 +95,13 @@
               :rowsPerPageOptions="[10, 25, 50, 100]"
               :filterDisplay="showFilters ? 'row' : undefined"
               v-model:filters="tableFilters"
+              :globalFilterFields="[
+                'databaseName',
+                'outcomeName',
+                'ageGroupName',
+                'genderName',
+                'startYear',
+              ]"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -413,6 +431,8 @@ import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { formatNum } from "@/shared/lib/formatters";
@@ -503,7 +523,10 @@ const plotChartSpec = ({ data }) =>
     plotFixedY: plotFixedY.value,
   });
 
+const search = ref("");
+
 const tableFilters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   outcomeName: { value: null, matchMode: FilterMatchMode.EQUALS },
   tar: { value: null, matchMode: FilterMatchMode.EQUALS },
@@ -519,6 +542,10 @@ const tableFilters = ref({
     matchMode: FilterMatchMode.CONTAINS,
   },
   incidenceRateP100py: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+watch(search, (val) => {
+  tableFilters.value.global.value = val;
 });
 
 const outcomeOptions = computed(() =>

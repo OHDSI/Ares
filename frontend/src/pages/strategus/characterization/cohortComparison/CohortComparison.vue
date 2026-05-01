@@ -45,6 +45,17 @@
               obs.) with each binary feature.
             </p>
             <div class="table-controls">
+              <InputGroup unstyled class="table-search">
+                <InputGroupAddon>
+                  <i class="pi pi-search" />
+                </InputGroupAddon>
+                <InputText
+                  v-model="search"
+                  unstyled
+                  placeholder="Search..."
+                  class="rounded-r-lg"
+                />
+              </InputGroup>
               <div class="col-selector">
                 <label class="field-label">Columns</label>
                 <ColumnSelector
@@ -69,6 +80,16 @@
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
+              v-model:filters="binaryGlobalFilter"
+              :globalFilterFields="[
+                'covariateName',
+                'domain',
+                'concept',
+                'timeWindow',
+                'windowDays',
+                'subType',
+                'detail',
+              ]"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -511,6 +532,17 @@
               }}d prior obs.) across cohorts.
             </p>
             <div class="table-controls">
+              <InputGroup unstyled class="table-search">
+                <InputGroupAddon>
+                  <i class="pi pi-search" />
+                </InputGroupAddon>
+                <InputText
+                  v-model="search"
+                  unstyled
+                  placeholder="Search..."
+                  class="rounded-r-lg"
+                />
+              </InputGroup>
               <div class="col-selector">
                 <label class="field-label">Columns</label>
                 <ColumnSelector
@@ -535,6 +567,16 @@
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
+              v-model:filters="continuousGlobalFilter"
+              :globalFilterFields="[
+                'covariateName',
+                'domain',
+                'concept',
+                'timeWindow',
+                'windowDays',
+                'subType',
+                'detail',
+              ]"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -1165,6 +1207,8 @@ import ColumnSelector from "@/shared/ui/columnSelector";
 import Slider from "primevue/slider";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
@@ -1370,6 +1414,19 @@ const scatterChartSpec = ({ data }) =>
     data,
     selectedDatabaseName: selectedDatabaseName.value,
   });
+
+const search = ref("");
+const binaryGlobalFilter = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+const continuousGlobalFilter = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+watch(search, (val) => {
+  binaryGlobalFilter.value.global.value = val;
+  continuousGlobalFilter.value.global.value = val;
+});
 
 const binaryFilters = ref({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },

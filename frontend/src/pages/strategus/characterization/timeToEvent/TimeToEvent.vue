@@ -68,6 +68,17 @@
 
           <div v-else-if="activeResultTab === 1">
             <div class="table-controls">
+              <InputGroup unstyled class="table-search">
+                <InputGroupAddon>
+                  <i class="pi pi-search" />
+                </InputGroupAddon>
+                <InputText
+                  v-model="search"
+                  unstyled
+                  placeholder="Search..."
+                  class="rounded-r-lg"
+                />
+              </InputGroup>
               <div class="col-selector">
                 <label class="field-label">Columns</label>
                 <ColumnSelector
@@ -92,6 +103,14 @@
               :rowsPerPageOptions="[10, 25, 50, 100]"
               :filterDisplay="showFilters ? 'row' : undefined"
               v-model:filters="tableFilters"
+              :globalFilterFields="[
+                'databaseName',
+                'targetName',
+                'outcomeName',
+                'outcomeType',
+                'targetOutcomeType',
+                'timeScale',
+              ]"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -275,6 +294,8 @@ import ColumnSelector from "@/shared/ui/columnSelector";
 import CensoredCell from "../shared/censoredCell";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { formatCensored } from "@/shared/lib/formatters";
@@ -345,7 +366,10 @@ const tteChartHeightComputed = computed(() =>
   tteChartHeight(filteredPlotData.value)
 );
 
+const search = ref("");
+
 const tableFilters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   targetName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   outcomeName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -354,6 +378,10 @@ const tableFilters = ref({
   timeToEvent: { value: null, matchMode: FilterMatchMode.CONTAINS },
   numEvents: { value: null, matchMode: FilterMatchMode.CONTAINS },
   timeScale: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+watch(search, (val) => {
+  tableFilters.value.global.value = val;
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);

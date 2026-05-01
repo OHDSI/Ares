@@ -59,7 +59,7 @@
   --surface-900: 18, 18, 18;
   --surface-950: 8 8 8;
 
-  /* Semantic color tokens — light mode */
+  /* Semantic color tokens - light mode */
   --color-bg-page: #f8fafc;
   --color-bg-surface: #ffffff;
   --color-bg-raised: #f8fafc;
@@ -108,7 +108,7 @@
 }
 
 .dark {
-  /* Semantic color tokens — dark mode */
+  /* Semantic color tokens - dark mode */
   --color-bg-page: #141414;
   --color-bg-surface: #212121;
   --color-bg-raised: #2a2a2a;

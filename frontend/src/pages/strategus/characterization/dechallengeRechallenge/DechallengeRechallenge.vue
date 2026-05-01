@@ -31,6 +31,17 @@
 
     <div v-if="showResults" class="section results-body">
       <div class="table-controls">
+        <InputGroup unstyled class="table-search">
+          <InputGroupAddon>
+            <i class="pi pi-search" />
+          </InputGroupAddon>
+          <InputText
+            v-model="search"
+            unstyled
+            placeholder="Search..."
+            class="rounded-r-lg"
+          />
+        </InputGroup>
         <div class="col-selector">
           <label class="field-label">Columns</label>
           <ColumnSelector
@@ -55,6 +66,7 @@
         :rows="25"
         :filterDisplay="showFilters ? 'row' : undefined"
         v-model:filters="tableFilters"
+        :globalFilterFields="['databaseName']"
         sortMode="multiple"
         removableSort
         :striped-rows="store.getters.getSettings.strippedRows"
@@ -506,6 +518,8 @@ import Column from "primevue/column";
 import Button from "primevue/button";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import Message from "primevue/message";
 import ColumnSelector from "@/shared/ui/columnSelector";
 import CensoredCell from "../shared/censoredCell";
@@ -585,7 +599,10 @@ const lastGeneratedConfig = ref(null);
 const failsDialogVisible = ref(false);
 const failPlotData = ref([]);
 
+const search = ref("");
+
 const tableFilters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   dechallengeStopInterval: { value: null, matchMode: FilterMatchMode.CONTAINS },
   dechallengeEvaluationWindow: {
@@ -607,6 +624,10 @@ const tableFilters = ref({
   pctRechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
   pctRechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
   pctRechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+watch(search, (val) => {
+  tableFilters.value.global.value = val;
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);

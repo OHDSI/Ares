@@ -59,6 +59,17 @@
         ><div :key="activeResultTab">
           <div v-if="activeResultTab === 0">
             <div class="table-controls">
+              <InputGroup unstyled class="table-search">
+                <InputGroupAddon>
+                  <i class="pi pi-search" />
+                </InputGroupAddon>
+                <InputText
+                  v-model="search"
+                  unstyled
+                  placeholder="Search..."
+                  class="rounded-r-lg"
+                />
+              </InputGroup>
               <div class="col-selector">
                 <label class="field-label">Columns</label>
                 <ColumnSelector
@@ -85,6 +96,15 @@
               :rowsPerPageOptions="[10, 25, 50, 100]"
               :filterDisplay="showBinaryFilters ? 'row' : undefined"
               v-model:filters="binaryTableFilters"
+              :globalFilterFields="[
+                'covariateName',
+                'domain',
+                'concept',
+                'timeWindow',
+                'windowDays',
+                'subType',
+                'detail',
+              ]"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -450,6 +470,17 @@
 
           <div v-else-if="activeResultTab === 1">
             <div class="table-controls">
+              <InputGroup unstyled class="table-search">
+                <InputGroupAddon>
+                  <i class="pi pi-search" />
+                </InputGroupAddon>
+                <InputText
+                  v-model="search"
+                  unstyled
+                  placeholder="Search..."
+                  class="rounded-r-lg"
+                />
+              </InputGroup>
               <div class="col-selector">
                 <label class="field-label">Columns</label>
                 <ColumnSelector
@@ -457,7 +488,6 @@
                   :options="csColumnOptions"
                 />
               </div>
-
               <Button
                 :icon="
                   showContinuousFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
@@ -477,6 +507,15 @@
               :rowsPerPageOptions="[10, 25, 50, 100]"
               :filterDisplay="showContinuousFilters ? 'row' : undefined"
               v-model:filters="continuousTableFilters"
+              :globalFilterFields="[
+                'covariateName',
+                'domain',
+                'concept',
+                'timeWindow',
+                'windowDays',
+                'subType',
+                'detail',
+              ]"
               sortMode="multiple"
               removableSort
               :striped-rows="store.getters.getSettings.strippedRows"
@@ -893,6 +932,8 @@ import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
@@ -1065,7 +1106,10 @@ const filteredContinuousRows = computed(() => {
   return rows;
 });
 
+const search = ref("");
+
 const binaryTableFilters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
   windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -1078,6 +1122,7 @@ const binaryTableFilters = ref({
   averageValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const continuousTableFilters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
   windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -1107,6 +1152,11 @@ const continuousTableFilters = ref({
   averageValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
   standardDeviation_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
   medianValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+watch(search, (val) => {
+  binaryTableFilters.value.global.value = val;
+  continuousTableFilters.value.global.value = val;
 });
 
 const outcomeOptions = computed(() => props.outcomeTable ?? []);
