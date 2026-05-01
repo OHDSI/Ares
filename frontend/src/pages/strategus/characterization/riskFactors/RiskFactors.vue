@@ -53,7 +53,28 @@
       ]"
     />
 
-    <div v-if="showResults" class="section results-body">
+    <div
+      v-if="showResults"
+      :class="[
+        'section',
+        'results-body',
+        {
+          'results-fullscreen': isFullscreen,
+          'results-leaving': isFullscreenLeaving,
+        },
+      ]"
+    >
+      <div v-if="isFullscreen" class="section-header">
+        <h3>Risk Factors</h3>
+        <button
+          class="fullscreen-btn"
+          title="Exit fullscreen (Esc)"
+          @click="exitFullscreen"
+        >
+          <SvgIcon :path="mdiFullscreenExit" :size="18" />
+        </button>
+      </div>
+
       <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
 
       <Transition name="tab-fade" mode="out-in"
@@ -64,26 +85,16 @@
               Fraction of patients ({{ helpTextObs }}d prior obs.) stratified by
               outcome during time-at-risk.
             </p>
-            <div class="table-controls">
-              <InputGroup unstyled class="table-search">
-                <InputGroupAddon>
-                  <i class="pi pi-search" />
-                </InputGroupAddon>
-                <InputText
-                  v-model="search"
-                  unstyled
-                  placeholder="Search..."
-                  class="rounded-r-lg"
-                />
-              </InputGroup>
-              <div class="col-selector">
-                <label class="field-label">Columns</label>
-                <ColumnSelector
-                  v-model="selectedColumns"
-                  :options="rfColumnOptions"
-                  placeholder="Select columns"
-                />
-              </div>
+            <TableToolbar
+              v-model:search="search"
+              v-model:columns="selectedColumns"
+              :column-options="rfColumnOptions"
+              v-model:show-filters="showBinaryFilters"
+              v-model:fullscreen="isFullscreen"
+              :table-ref="binaryTableRef"
+              :rows="filteredBinaryRows"
+              filename="risk-factors-binary"
+            >
               <div class="smd-threshold">
                 <span class="smd-label">|SMD| ≥</span>
                 <div class="smd-filter">
@@ -97,23 +108,15 @@
                   <span class="smd-val">{{ binaryAbsSmdMin.toFixed(2) }}</span>
                 </div>
               </div>
-              <Button
-                :icon="
-                  showBinaryFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
-                "
-                :severity="showBinaryFilters ? 'primary' : 'secondary'"
-                text
-                rounded
-                class="filter-toggle-btn"
-                :title="showBinaryFilters ? 'Hide filters' : 'Show filters'"
-                @click="showBinaryFilters = !showBinaryFilters"
-              />
-            </div>
+            </TableToolbar>
             <DataTable
+              ref="binaryTableRef"
               :value="filteredBinaryRows"
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+              currentPageReportTemplate="{first}–{last} of {totalRecords}"
               v-model:filters="binaryGlobalFilter"
               :globalFilterFields="[
                 'covariateName',
@@ -625,26 +628,16 @@
               Continuous feature distributions ({{ helpTextObs }}d prior obs.)
               stratified by outcome during time-at-risk.
             </p>
-            <div class="table-controls">
-              <InputGroup unstyled class="table-search">
-                <InputGroupAddon>
-                  <i class="pi pi-search" />
-                </InputGroupAddon>
-                <InputText
-                  v-model="search"
-                  unstyled
-                  placeholder="Search..."
-                  class="rounded-r-lg"
-                />
-              </InputGroup>
-              <div class="col-selector">
-                <label class="field-label">Columns</label>
-                <ColumnSelector
-                  v-model="selectedContinuousColumns"
-                  :options="rfContinuousColumnOptions"
-                  placeholder="Select columns"
-                />
-              </div>
+            <TableToolbar
+              v-model:search="search"
+              v-model:columns="selectedContinuousColumns"
+              :column-options="rfContinuousColumnOptions"
+              v-model:show-filters="showContinuousFilters"
+              v-model:fullscreen="isFullscreen"
+              :table-ref="continuousTableRef"
+              :rows="filteredContinuousRows"
+              filename="risk-factors-continuous"
+            >
               <div class="smd-threshold">
                 <span class="smd-label">|SMD| ≥</span>
                 <div class="smd-filter">
@@ -655,28 +648,20 @@
                     :step="0.01"
                     class="smd-slider"
                   />
-                  <span class="smd-val">{{
-                    continuousAbsSmdMin.toFixed(2)
-                  }}</span>
+                  <span class="smd-val">
+                    {{ continuousAbsSmdMin.toFixed(2) }}
+                  </span>
                 </div>
               </div>
-              <Button
-                :icon="
-                  showContinuousFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
-                "
-                :severity="showContinuousFilters ? 'primary' : 'secondary'"
-                text
-                rounded
-                class="filter-toggle-btn"
-                :title="showContinuousFilters ? 'Hide filters' : 'Show filters'"
-                @click="showContinuousFilters = !showContinuousFilters"
-              />
-            </div>
+            </TableToolbar>
             <DataTable
+              ref="continuousTableRef"
               :value="filteredContinuousRows"
               :paginator="true"
               :rows="25"
               :rowsPerPageOptions="[10, 25, 50, 100]"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+              currentPageReportTemplate="{first}–{last} of {totalRecords}"
               v-model:filters="continuousGlobalFilter"
               :globalFilterFields="[
                 'covariateName',
@@ -1568,7 +1553,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, toRef } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  toRef,
+} from "vue";
 
 import ResultsLoader from "../shared/resultsLoader";
 import ViewToggle from "../shared/viewToggle";
@@ -1579,8 +1572,9 @@ import { useTarWashout } from "../shared/useTarWashout";
 import { formatCensored, formatPct, formatNum } from "@/shared/lib/formatters";
 import { useGroupBanding } from "../shared/useGroupBanding";
 import CensoredCell from "../shared/censoredCell";
-import ColumnSelector from "@/shared/ui/columnSelector";
-import Button from "primevue/button";
+import TableToolbar from "@/widgets/tableToolbar";
+import SvgIcon from "@/shared/ui/svgIcon";
+import { mdiFullscreen, mdiFullscreenExit } from "@mdi/js";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
@@ -1590,8 +1584,6 @@ import MultiSelect from "primevue/multiselect";
 import Slider from "primevue/slider";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
-import InputGroup from "primevue/inputgroup";
-import InputGroupAddon from "primevue/inputgroupaddon";
 import FilterInput from "../shared/filterInput";
 import { FilterMatchMode } from "primevue/api";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
@@ -1600,6 +1592,9 @@ import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.
 
 const store = useStore();
 const { headerPt, subPt, bodyPt } = useGroupBanding();
+
+const binaryTableRef = ref(null);
+const continuousTableRef = ref(null);
 
 const STORAGE_KEY_BINARY = "char:riskFactors:binary";
 const STORAGE_KEY_CONT = "char:riskFactors:continuous";
@@ -2317,7 +2312,30 @@ const generateDisabled = computed(() => {
   );
 });
 
+const isFullscreen = ref(false);
+const isFullscreenLeaving = ref(false);
+
+function exitFullscreen() {
+  isFullscreenLeaving.value = true;
+  setTimeout(() => {
+    isFullscreen.value = false;
+    isFullscreenLeaving.value = false;
+  }, 230);
+}
+
+function toggleFullscreen() {
+  if (isFullscreen.value) exitFullscreen();
+  else isFullscreen.value = true;
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape" && isFullscreen.value) exitFullscreen();
+}
+
+onUnmounted(() => window.removeEventListener("keydown", onKeydown));
+
 onMounted(async () => {
+  window.addEventListener("keydown", onKeydown);
   const url = props.initialUrlState;
 
   if (url?.outcomeId && outcomeOptions.value.length) {
@@ -2378,12 +2396,83 @@ onMounted(async () => {
   min-width: 160px;
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.section-header h3 {
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.fullscreen-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-subtle);
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.fullscreen-btn:hover {
+  color: var(--color-interactive-hover);
+  background: var(--color-overlay-subtle);
+}
+
+.fullscreen-btn:focus-visible {
+  outline: none;
+}
+
+.results-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  border-radius: 0;
+  max-width: none;
+  padding: 1.25rem 1.75rem;
+  background: var(--color-bg-page);
+  overflow-y: auto;
+  animation: rf-fs-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.results-fullscreen.results-leaving {
+  animation: rf-fs-leave 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes rf-fs-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rf-fs-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
 .smd-threshold {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  align-self: flex-end;
-  padding-bottom: 2px;
 }
 
 .smd-label {
@@ -2416,27 +2505,6 @@ onMounted(async () => {
   flex-direction: column;
   gap: 4px;
   width: 100%;
-}
-
-.table-controls {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  margin-bottom: 0.75rem;
-}
-
-.col-selector {
-  min-width: 200px;
-  flex: 1 1 500px;
-}
-
-.filter-toggle-btn {
-  flex-shrink: 0;
-  margin-bottom: 2px;
-  width: 2.25rem;
-  height: 2.25rem;
-  font-size: 1rem;
 }
 
 :deep(.p-sortable-column-icon) {

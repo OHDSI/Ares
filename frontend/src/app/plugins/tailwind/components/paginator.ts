@@ -143,6 +143,12 @@ export default {
       ],
     },
   },
+  currentpagereport: {
+    class: [
+      "text-xs text-surface-400 dark:text-white/40",
+      "mx-2 whitespace-nowrap tabular-nums",
+    ],
+  },
   jumptopagedropdown: {
     root: ({ props, state }) => ({
       class: [
