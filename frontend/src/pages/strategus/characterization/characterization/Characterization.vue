@@ -445,12 +445,15 @@ import Tooltip from "@/shared/ui/tooltip";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
+import useRubberBandSelection from "@/shared/lib/composables/useRubberBandSelection";
 
 const route = useRoute();
 const store = useStore();
 
 const { readUrl, updateUrl, clearChildParams, isSelfWrite } =
   useCharacterizationUrl();
+
+useRubberBandSelection();
 
 const ANALYSIS_DEFS = [
   {
