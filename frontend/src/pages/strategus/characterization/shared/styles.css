@@ -68,6 +68,41 @@
   animation: bh-reveal 0.4s ease both;
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.section-header h3 {
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.fullscreen-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-subtle);
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.fullscreen-btn:hover {
+  color: var(--color-interactive-hover);
+  background: var(--color-overlay-subtle);
+}
+
+.fullscreen-btn:focus-visible {
+  outline: none;
+}
+
 .tab-fade-leave-active {
   transition: opacity 0.1s ease;
 }

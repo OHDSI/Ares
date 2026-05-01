@@ -52,44 +52,44 @@
 
     <p v-if="showResults && helpText" class="help-note">{{ helpText }}</p>
 
-    <div v-if="showResults" class="section results-body">
+    <div
+      v-if="showResults"
+      :class="[
+        'section',
+        'results-body',
+        {
+          'results-fullscreen': isFullscreen,
+          'results-leaving': isFullscreenLeaving,
+        },
+      ]"
+    >
+      <div v-if="isFullscreen" class="section-header">
+        <h3>Case Series</h3>
+        <button
+          class="fullscreen-btn"
+          title="Exit fullscreen (Esc)"
+          @click="exitFullscreen"
+        >
+          <SvgIcon :path="mdiFullscreenExit" :size="18" />
+        </button>
+      </div>
       <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
 
       <Transition name="tab-fade" mode="out-in"
         ><div :key="activeResultTab">
           <div v-if="activeResultTab === 0">
-            <div class="table-controls">
-              <InputGroup unstyled class="table-search">
-                <InputGroupAddon>
-                  <i class="pi pi-search" />
-                </InputGroupAddon>
-                <InputText
-                  v-model="search"
-                  unstyled
-                  placeholder="Search..."
-                  class="rounded-r-lg"
-                />
-              </InputGroup>
-              <div class="col-selector">
-                <label class="field-label">Columns</label>
-                <ColumnSelector
-                  v-model="selectedColumns"
-                  :options="csColumnOptions"
-                />
-              </div>
-              <Button
-                :icon="
-                  showBinaryFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
-                "
-                :severity="showBinaryFilters ? 'primary' : 'secondary'"
-                text
-                rounded
-                class="filter-toggle-btn"
-                :title="showBinaryFilters ? 'Hide filters' : 'Show filters'"
-                @click="showBinaryFilters = !showBinaryFilters"
-              />
-            </div>
+            <TableToolbar
+              v-model:search="search"
+              v-model:columns="selectedColumns"
+              :column-options="csColumnOptions"
+              v-model:show-filters="showBinaryFilters"
+              v-model:fullscreen="isFullscreen"
+              :table-ref="binaryTableRef"
+              :rows="filteredBinaryRows"
+              filename="case-series-binary"
+            />
             <DataTable
+              ref="binaryTableRef"
               :value="filteredBinaryRows"
               :paginator="true"
               :rows="25"
@@ -469,38 +469,18 @@
           </div>
 
           <div v-else-if="activeResultTab === 1">
-            <div class="table-controls">
-              <InputGroup unstyled class="table-search">
-                <InputGroupAddon>
-                  <i class="pi pi-search" />
-                </InputGroupAddon>
-                <InputText
-                  v-model="search"
-                  unstyled
-                  placeholder="Search..."
-                  class="rounded-r-lg"
-                />
-              </InputGroup>
-              <div class="col-selector">
-                <label class="field-label">Columns</label>
-                <ColumnSelector
-                  v-model="selectedColumns"
-                  :options="csColumnOptions"
-                />
-              </div>
-              <Button
-                :icon="
-                  showContinuousFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
-                "
-                :severity="showContinuousFilters ? 'primary' : 'secondary'"
-                text
-                rounded
-                class="filter-toggle-btn"
-                :title="showContinuousFilters ? 'Hide filters' : 'Show filters'"
-                @click="showContinuousFilters = !showContinuousFilters"
-              />
-            </div>
+            <TableToolbar
+              v-model:search="search"
+              v-model:columns="selectedColumns"
+              :column-options="csColumnOptions"
+              v-model:show-filters="showContinuousFilters"
+              v-model:fullscreen="isFullscreen"
+              :table-ref="continuousTableRef"
+              :rows="filteredContinuousRows"
+              filename="case-series-continuous"
+            />
             <DataTable
+              ref="continuousTableRef"
               :value="filteredContinuousRows"
               :paginator="true"
               :rows="25"
@@ -912,7 +892,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, toRef } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  toRef,
+} from "vue";
 
 import ResultsLoader from "../shared/resultsLoader";
 import ViewToggle from "../shared/viewToggle";
@@ -923,8 +911,7 @@ import { useTarWashout } from "../shared/useTarWashout";
 import { formatCensored, formatPct, formatNum } from "@/shared/lib/formatters";
 import { useGroupBanding } from "../shared/useGroupBanding";
 import CensoredCell from "../shared/censoredCell";
-import ColumnSelector from "@/shared/ui/columnSelector";
-import Button from "primevue/button";
+import TableToolbar from "@/widgets/tableToolbar";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
@@ -932,15 +919,33 @@ import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
-import InputGroup from "primevue/inputgroup";
-import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import SvgIcon from "@/shared/ui/svgIcon";
+import { mdiFullscreenExit } from "@mdi/js";
 
 const store = useStore();
+
+const binaryTableRef = ref(null);
+const continuousTableRef = ref(null);
+const isFullscreen = ref(false);
+const isFullscreenLeaving = ref(false);
+
+function exitFullscreen() {
+  isFullscreenLeaving.value = true;
+  setTimeout(() => {
+    isFullscreen.value = false;
+    isFullscreenLeaving.value = false;
+  }, 230);
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape" && isFullscreen.value) exitFullscreen();
+}
+
 const STORAGE_KEY = "char:caseSeries";
 
 const csColumnOptions = [
@@ -1432,6 +1437,7 @@ const generateDisabled = computed(() => {
 });
 
 onMounted(async () => {
+  window.addEventListener("keydown", onKeydown);
   const url = props.initialUrlState;
   if (url?.outcomeId && outcomeOptions.value.length) {
     const match = outcomeOptions.value.find(
@@ -1460,6 +1466,8 @@ onMounted(async () => {
     await generate();
   }
 });
+
+onUnmounted(() => window.removeEventListener("keydown", onKeydown));
 </script>
 
 <style scoped>
@@ -1490,25 +1498,42 @@ onMounted(async () => {
   line-height: 1.4;
 }
 
-.table-controls {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  margin-bottom: 0.75rem;
+.results-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  border-radius: 0;
+  max-width: none;
+  padding: 1.25rem 1.75rem;
+  background: var(--color-bg-page);
+  overflow-y: auto;
+  animation: cs-fs-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.col-selector {
-  min-width: 200px;
-  flex: 1 1 400px;
+.results-fullscreen.results-leaving {
+  animation: cs-fs-leave 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
-.filter-toggle-btn {
-  flex-shrink: 0;
-  margin-bottom: 2px;
-  width: 2.25rem;
-  height: 2.25rem;
-  font-size: 1rem;
+@keyframes cs-fs-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes cs-fs-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
 }
 
 :deep(.p-sortable-column-icon) {

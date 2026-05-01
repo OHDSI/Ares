@@ -133,9 +133,9 @@
   --color-badge-bg: rgba(148, 163, 184, 0.08);
   --color-badge-border: rgba(148, 163, 184, 0.2);
 
-  --color-tooltip-bg: #f1f5f9;
-  --color-tooltip-fg: #1e293b;
-  --color-tooltip-border: #cbd5e1;
+  --color-tooltip-bg: #1e293b;
+  --color-tooltip-fg: #e2e8f0;
+  --color-tooltip-border: #475569;
 
   --color-toc-hover: #cbd5e1;
 

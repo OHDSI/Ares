@@ -16,7 +16,27 @@
       :items="[targetName, lastGeneratedConfig.outcomeNames]"
     />
 
-    <div v-if="showResults" class="section results-body">
+    <div
+      v-if="showResults"
+      :class="[
+        'section',
+        'results-body',
+        {
+          'results-fullscreen': isFullscreen,
+          'results-leaving': isFullscreenLeaving,
+        },
+      ]"
+    >
+      <div v-if="isFullscreen" class="section-header">
+        <h3>Cohort Incidence</h3>
+        <button
+          class="fullscreen-btn"
+          title="Exit fullscreen (Esc)"
+          @click="exitFullscreen"
+        >
+          <SvgIcon :path="mdiFullscreenExit" :size="18" />
+        </button>
+      </div>
       <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
 
       <Transition name="tab-fade" mode="out-in"
@@ -35,24 +55,17 @@
                   class="w-full"
                 />
               </div>
-              <InputGroup unstyled class="table-search">
-                <InputGroupAddon>
-                  <i class="pi pi-search" />
-                </InputGroupAddon>
-                <InputText
-                  v-model="search"
-                  unstyled
-                  placeholder="Search..."
-                  class="rounded-r-lg"
-                />
-              </InputGroup>
-              <div class="col-selector">
-                <label class="field-label">Columns</label>
-                <ColumnSelector
-                  v-model="selectedColumns"
-                  :options="columnOptions"
-                />
-              </div>
+            </div>
+            <TableToolbar
+              v-model:search="search"
+              v-model:columns="selectedColumns"
+              :column-options="columnOptions"
+              v-model:show-filters="showFilters"
+              v-model:fullscreen="isFullscreen"
+              :table-ref="tableRef"
+              :rows="tableRows"
+              filename="cohort-incidence"
+            >
               <div class="strat-checks">
                 <div>
                   <Checkbox
@@ -76,19 +89,11 @@
                   /><label for="yearStrat">Year stratified</label>
                 </div>
               </div>
-              <Button
-                :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
-                :severity="showFilters ? 'primary' : 'secondary'"
-                text
-                rounded
-                class="filter-toggle-btn"
-                :title="showFilters ? 'Hide filters' : 'Show filters'"
-                @click="showFilters = !showFilters"
-              />
-            </div>
+            </TableToolbar>
 
             <DataTable
               v-if="tableRows.length"
+              ref="tableRef"
               :value="tableRows"
               :paginator="true"
               :rows="25"
@@ -410,7 +415,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from "vue";
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import Chart from "@/widgets/echarts/echarts";
 import {
   cohortIncidenceChartSpec,
@@ -424,16 +429,16 @@ import ContextBar from "../shared/contextBar";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import MultiSelect from "primevue/multiselect";
-import ColumnSelector from "@/shared/ui/columnSelector";
 import { colSelectorPt } from "../shared/colSelectorPt";
 import Dropdown from "primevue/dropdown";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
-import InputGroup from "primevue/inputgroup";
-import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
+import TableToolbar from "@/widgets/tableToolbar";
+import SvgIcon from "@/shared/ui/svgIcon";
+import { mdiFullscreenExit } from "@mdi/js";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { formatNum } from "@/shared/lib/formatters";
 import { useStore } from "vuex";
@@ -489,6 +494,22 @@ const showResults = ref(false);
 const showFilters = ref(false);
 const loaderState = ref("idle");
 const selectedOutcomes = ref([]);
+
+const tableRef = ref(null);
+const isFullscreen = ref(false);
+const isFullscreenLeaving = ref(false);
+
+function exitFullscreen() {
+  isFullscreenLeaving.value = true;
+  setTimeout(() => {
+    isFullscreen.value = false;
+    isFullscreenLeaving.value = false;
+  }, 230);
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape" && isFullscreen.value) exitFullscreen();
+}
 const fullData = ref([]);
 const lastGeneratedConfig = ref(null);
 
@@ -675,6 +696,7 @@ const generateDisabled = computed(() => {
 });
 
 onMounted(async () => {
+  window.addEventListener("keydown", onKeydown);
   const url = props.initialUrlState;
   if (url?.outcomeIds?.length && outcomeOptions.value.length) {
     const matches = outcomeOptions.value.filter((o) =>
@@ -688,6 +710,10 @@ onMounted(async () => {
     applyTableFilter();
   }
 });
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", onKeydown);
+});
 </script>
 
 <style scoped>
@@ -697,6 +723,44 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+.results-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  border-radius: 0;
+  max-width: none;
+  padding: 1.25rem 1.75rem;
+  background: var(--color-bg-page);
+  overflow-y: auto;
+  animation: ci-fs-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.results-fullscreen.results-leaving {
+  animation: ci-fs-leave 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes ci-fs-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ci-fs-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
 }
 
 .table-filters {
@@ -709,19 +773,6 @@ onMounted(async () => {
 
 .table-filters > div:first-child {
   min-width: 250px;
-}
-
-.col-selector {
-  min-width: 200px;
-  flex: 1 1 400px;
-}
-
-.filter-toggle-btn {
-  flex-shrink: 0;
-  margin-bottom: 2px;
-  width: 2.25rem;
-  height: 2.25rem;
-  font-size: 1rem;
 }
 
 :deep(.p-sortable-column-icon) {

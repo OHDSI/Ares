@@ -41,7 +41,27 @@
       ]"
     />
 
-    <div v-if="showResults" class="section results-body">
+    <div
+      v-if="showResults"
+      :class="[
+        'section',
+        'results-body',
+        {
+          'results-fullscreen': isFullscreen,
+          'results-leaving': isFullscreenLeaving,
+        },
+      ]"
+    >
+      <div v-if="isFullscreen" class="section-header">
+        <h3>Database Comparison</h3>
+        <button
+          class="fullscreen-btn"
+          title="Exit fullscreen (Esc)"
+          @click="exitFullscreen"
+        >
+          <SvgIcon :path="mdiFullscreenExit" :size="18" />
+        </button>
+      </div>
       <ViewToggle v-model="activeResultTab" :tabs="resultTabs" />
 
       <Transition name="tab-fade" mode="out-in"
@@ -51,38 +71,18 @@
               Fraction of patients ({{ covRef[0]?.minPriorObservation }}d prior
               obs.) with each binary feature.
             </p>
-            <div class="table-controls">
-              <InputGroup unstyled class="table-search">
-                <InputGroupAddon>
-                  <i class="pi pi-search" />
-                </InputGroupAddon>
-                <InputText
-                  v-model="search"
-                  unstyled
-                  placeholder="Search..."
-                  class="rounded-r-lg"
-                />
-              </InputGroup>
-              <div class="col-selector">
-                <label class="field-label">Columns</label>
-                <ColumnSelector
-                  v-model="selectedBinaryColumns"
-                  :options="dbBinaryColumnOptions"
-                />
-              </div>
-              <Button
-                :icon="
-                  showBinaryFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
-                "
-                :severity="showBinaryFilters ? 'primary' : 'secondary'"
-                text
-                rounded
-                class="filter-toggle-btn"
-                :title="showBinaryFilters ? 'Hide filters' : 'Show filters'"
-                @click="showBinaryFilters = !showBinaryFilters"
-              />
-            </div>
+            <TableToolbar
+              v-model:search="search"
+              v-model:columns="selectedBinaryColumns"
+              :column-options="dbBinaryColumnOptions"
+              v-model:show-filters="showBinaryFilters"
+              v-model:fullscreen="isFullscreen"
+              :table-ref="binaryTableRef"
+              :rows="filteredBinaryRows"
+              filename="database-comparison-binary"
+            />
             <DataTable
+              ref="binaryTableRef"
               :value="filteredBinaryRows"
               :paginator="true"
               :rows="25"
@@ -505,38 +505,18 @@
                 covRef[0]?.minPriorObservation
               }}d prior obs.) across databases.
             </p>
-            <div class="table-controls">
-              <InputGroup unstyled class="table-search">
-                <InputGroupAddon>
-                  <i class="pi pi-search" />
-                </InputGroupAddon>
-                <InputText
-                  v-model="search"
-                  unstyled
-                  placeholder="Search..."
-                  class="rounded-r-lg"
-                />
-              </InputGroup>
-              <div class="col-selector">
-                <label class="field-label">Columns</label>
-                <ColumnSelector
-                  v-model="selectedContinuousColumns"
-                  :options="dbContinuousColumnOptions"
-                />
-              </div>
-              <Button
-                :icon="
-                  showContinuousFilters ? 'pi pi-filter-slash' : 'pi pi-filter'
-                "
-                :severity="showContinuousFilters ? 'primary' : 'secondary'"
-                text
-                rounded
-                class="filter-toggle-btn"
-                :title="showContinuousFilters ? 'Hide filters' : 'Show filters'"
-                @click="showContinuousFilters = !showContinuousFilters"
-              />
-            </div>
+            <TableToolbar
+              v-model:search="search"
+              v-model:columns="selectedContinuousColumns"
+              :column-options="dbContinuousColumnOptions"
+              v-model:show-filters="showContinuousFilters"
+              v-model:fullscreen="isFullscreen"
+              :table-ref="continuousTableRef"
+              :rows="filteredContinuousRows"
+              filename="database-comparison-continuous"
+            />
             <DataTable
+              ref="continuousTableRef"
               :value="filteredContinuousRows"
               :paginator="true"
               :rows="25"
@@ -1078,23 +1058,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, toRef } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  toRef,
+} from "vue";
 
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import MultiSelect from "primevue/multiselect";
-import ColumnSelector from "@/shared/ui/columnSelector";
 import { colSelectorPt } from "../shared/colSelectorPt";
 import Dropdown from "primevue/dropdown";
 import Slider from "primevue/slider";
 import Button from "primevue/button";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
-import InputGroup from "primevue/inputgroup";
-import InputGroupAddon from "primevue/inputgroupaddon";
 import { FilterMatchMode } from "primevue/api";
+import TableToolbar from "@/widgets/tableToolbar";
+import SvgIcon from "@/shared/ui/svgIcon";
+import { mdiFullscreenExit } from "@mdi/js";
 
 import Chart from "@/widgets/echarts/echarts";
 import FilterInput from "../shared/filterInput";
@@ -1221,6 +1209,23 @@ const showBinaryFilters = ref(false);
 const showContinuousFilters = ref(false);
 const loaderState = ref("idle");
 const showPlot = ref(false);
+
+const binaryTableRef = ref(null);
+const continuousTableRef = ref(null);
+const isFullscreen = ref(false);
+const isFullscreenLeaving = ref(false);
+
+function exitFullscreen() {
+  isFullscreenLeaving.value = true;
+  setTimeout(() => {
+    isFullscreen.value = false;
+    isFullscreenLeaving.value = false;
+  }, 230);
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape" && isFullscreen.value) exitFullscreen();
+}
 
 const minCharVal = ref(0);
 const minThreshold = ref(0.01);
@@ -1641,6 +1646,7 @@ const generateDisabled = computed(() => {
 });
 
 onMounted(async () => {
+  window.addEventListener("keydown", onKeydown);
   const url = props.initialUrlState;
   await nextTick();
 
@@ -1653,6 +1659,10 @@ onMounted(async () => {
   if (selectedDatabases.value.length >= 2) {
     await generate();
   }
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", onKeydown);
 });
 </script>
 
@@ -1730,25 +1740,42 @@ onMounted(async () => {
   width: 100%;
 }
 
-.table-controls {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  margin-bottom: 0.75rem;
+.results-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  border-radius: 0;
+  max-width: none;
+  padding: 1.25rem 1.75rem;
+  background: var(--color-bg-page);
+  overflow-y: auto;
+  animation: dc-fs-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.col-selector {
-  min-width: 200px;
-  flex: 1 1 400px;
+.results-fullscreen.results-leaving {
+  animation: dc-fs-leave 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
-.filter-toggle-btn {
-  flex-shrink: 0;
-  margin-bottom: 2px;
-  width: 2.25rem;
-  height: 2.25rem;
-  font-size: 1rem;
+@keyframes dc-fs-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dc-fs-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
 }
 
 :deep(.p-sortable-column-icon) {

@@ -29,38 +29,39 @@
       attempts cannot be observed.
     </Message>
 
-    <div v-if="showResults" class="section results-body">
-      <div class="table-controls">
-        <InputGroup unstyled class="table-search">
-          <InputGroupAddon>
-            <i class="pi pi-search" />
-          </InputGroupAddon>
-          <InputText
-            v-model="search"
-            unstyled
-            placeholder="Search..."
-            class="rounded-r-lg"
-          />
-        </InputGroup>
-        <div class="col-selector">
-          <label class="field-label">Columns</label>
-          <ColumnSelector
-            v-model="selectedColumns"
-            :options="drColumnOptions"
-            placeholder="Select columns"
-          />
-        </div>
-        <Button
-          :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
-          :severity="showFilters ? 'primary' : 'secondary'"
-          text
-          rounded
-          class="filter-toggle-btn"
-          :title="showFilters ? 'Hide filters' : 'Show filters'"
-          @click="showFilters = !showFilters"
-        />
+    <div
+      v-if="showResults"
+      :class="[
+        'section',
+        'results-body',
+        {
+          'results-fullscreen': isFullscreen,
+          'results-leaving': isFullscreenLeaving,
+        },
+      ]"
+    >
+      <div v-if="isFullscreen" class="section-header">
+        <h3>Dechallenge / Rechallenge</h3>
+        <button
+          class="fullscreen-btn"
+          title="Exit fullscreen (Esc)"
+          @click="exitFullscreen"
+        >
+          <SvgIcon :path="mdiFullscreenExit" :size="18" />
+        </button>
       </div>
+      <TableToolbar
+        v-model:search="search"
+        v-model:columns="selectedColumns"
+        :column-options="drColumnOptions"
+        v-model:show-filters="showFilters"
+        v-model:fullscreen="isFullscreen"
+        :table-ref="tableRef"
+        :rows="tableData"
+        filename="dechallenge-rechallenge"
+      />
       <DataTable
+        ref="tableRef"
         :value="tableData"
         :paginator="tableData.length > 25"
         :rows="25"
@@ -513,15 +514,13 @@ import { failsChartSpec } from "./chartSpec";
 import ResultsLoader from "../shared/resultsLoader";
 import OutcomeSelector from "../shared/outcomeSelector";
 import ContextBar from "../shared/contextBar";
+import TableToolbar from "@/widgets/tableToolbar";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import InputText from "primevue/inputtext";
-import InputGroup from "primevue/inputgroup";
-import InputGroupAddon from "primevue/inputgroupaddon";
 import Message from "primevue/message";
-import ColumnSelector from "@/shared/ui/columnSelector";
 import CensoredCell from "../shared/censoredCell";
 import Tooltip from "@/shared/ui/tooltip";
 import { FilterMatchMode } from "primevue/api";
@@ -530,6 +529,8 @@ import { StrategusService } from "@/shared/api/aresApi/services/strategusService
 import { formatCensored, formatPct } from "@/shared/lib/formatters";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import SvgIcon from "@/shared/ui/svgIcon";
+import { mdiFullscreenExit } from "@mdi/js";
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
@@ -585,6 +586,18 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["state-change"]);
+
+const tableRef = ref(null);
+const isFullscreen = ref(false);
+const isFullscreenLeaving = ref(false);
+
+function exitFullscreen() {
+  isFullscreenLeaving.value = true;
+  setTimeout(() => {
+    isFullscreen.value = false;
+    isFullscreenLeaving.value = false;
+  }, 230);
+}
 
 const loading = ref(false);
 const showResults = ref(false);
@@ -740,8 +753,9 @@ const generateDisabled = computed(() => {
 });
 
 function onKeyDown(e: KeyboardEvent) {
-  if (e.key === "Escape" && failsDialogVisible.value) {
-    failsDialogVisible.value = false;
+  if (e.key === "Escape") {
+    if (isFullscreen.value) exitFullscreen();
+    else if (failsDialogVisible.value) failsDialogVisible.value = false;
   }
 }
 
@@ -813,25 +827,42 @@ onUnmounted(() => {
   width: 100%;
 }
 
-.table-controls {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  margin-bottom: 0.75rem;
+.results-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  border-radius: 0;
+  max-width: none;
+  padding: 1.25rem 1.75rem;
+  background: var(--color-bg-page);
+  overflow-y: auto;
+  animation: dr-fs-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.col-selector {
-  min-width: 200px;
-  flex: 1 1 400px;
+.results-fullscreen.results-leaving {
+  animation: dr-fs-leave 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
-.filter-toggle-btn {
-  flex-shrink: 0;
-  margin-bottom: 2px;
-  width: 2.25rem;
-  height: 2.25rem;
-  font-size: 1rem;
+@keyframes dr-fs-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dr-fs-leave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
 }
 
 :deep(.p-sortable-column-icon) {
