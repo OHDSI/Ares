@@ -20,7 +20,14 @@ import * as transform from "echarts-simple-transform";
 import darkTheme from "../themes/dark-theme.json";
 import lightTheme from "../themes/light-theme.json";
 
-import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  computed,
+  watch,
+  nextTick,
+} from "vue";
 import {
   CREATE_SELECTION,
   DELETE_SELECTION,
@@ -626,9 +633,10 @@ const disposeChart = function () {
   }
 };
 
-watch(data, () => {
+watch(data, async () => {
   if (data.value && data.value.length) {
     disposeChart();
+    await nextTick();
     initChart();
     if (annotationsMode.value) {
       updateChart();

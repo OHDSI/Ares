@@ -1,7 +1,14 @@
+const COL_LABEL_H = 30;
+const ROW_LABEL_H = 22;
+const GRID_H = 175;
+const AXIS_H = 45;
+const LEGEND_H = 50;
+const ROW_H = ROW_LABEL_H + GRID_H + AXIS_H;
+
 export function cohortIncidenceChartHeight(data: any[]): string {
   if (!data.length) return "400px";
   const rows = new Set(data.map((r) => r.databaseName)).size;
-  return `${Math.max(400, rows * 280)}px`;
+  return `${COL_LABEL_H + rows * ROW_H + LEGEND_H}px`;
 }
 
 export function cohortIncidenceChartSpec({
@@ -41,7 +48,6 @@ export function cohortIncidenceChartSpec({
   const cols = facetCol.length;
   const rows = facetRow.length;
   const cellW = 100 / Math.max(cols, 1);
-  const cellH = 100 / Math.max(rows, 1);
   const grids = [],
     xAxes = [],
     yAxes = [],
@@ -49,17 +55,39 @@ export function cohortIncidenceChartSpec({
     seriesList = [];
   let gi = 0;
   const globalMax = Math.max(...data.map((r) => r.incidenceRateP100py), 1);
+  const trunc = (s: string, n = 38) =>
+    s.length > n ? s.slice(0, n - 1) + "…" : s;
+
+  for (let ci = 0; ci < cols; ci++) {
+    titles.push({
+      text: trunc(facetCol[ci]),
+      left: `${ci * cellW + cellW / 2 + 2}%`,
+      top: 5,
+      textAlign: "center",
+      textStyle: { fontSize: 11, fontWeight: "normal" },
+    });
+  }
 
   for (let ri = 0; ri < rows; ri++) {
+    const rowTop = COL_LABEL_H + ri * ROW_H;
+
+    titles.push({
+      text: facetRow[ri],
+      left: "52%",
+      top: rowTop - 6,
+      textAlign: "center",
+      textStyle: { fontSize: 11, fontWeight: "bold" },
+    });
+
     for (let ci = 0; ci < cols; ci++) {
       const dbName = facetRow[ri];
       const facetLabel = facetCol[ci];
 
       grids.push({
         left: `${ci * cellW + 8}%`,
-        top: `${ri * cellH + 8}%`,
+        top: rowTop + ROW_LABEL_H,
         width: `${cellW - 12}%`,
-        height: `${cellH - 18}%`,
+        height: GRID_H,
       });
       xAxes.push({
         gridIndex: gi,
@@ -70,17 +98,7 @@ export function cohortIncidenceChartSpec({
       yAxes.push({
         gridIndex: gi,
         type: "value",
-        name: ri === 0 && ci === 0 ? "Rate /100py" : "",
         max: plotFixedY ? Math.ceil(globalMax * 1.1) : undefined,
-      });
-      titles.push({
-        text: ri === 0 ? facetLabel : "",
-        subtext: ci === 0 ? dbName : "",
-        left: `${ci * cellW + cellW / 2 + 2}%`,
-        top: `${ri * cellH}%`,
-        textAlign: "center",
-        textStyle: { fontSize: 11, fontWeight: "normal" },
-        subtextStyle: { fontSize: 11, fontWeight: "bold" },
       });
 
       const facetData = data.filter(
@@ -115,15 +133,7 @@ export function cohortIncidenceChartSpec({
 
   return {
     backgroundColor: "transparent",
-    title: [
-      {
-        text: "Incidence Rates",
-        left: "center",
-        top: 0,
-        textStyle: { fontSize: 14 },
-      },
-      ...titles,
-    ],
+    title: titles,
     tooltip: {
       trigger: "item",
       formatter: (p) =>
