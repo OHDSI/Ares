@@ -636,6 +636,19 @@ watch(data, () => {
   }
 });
 
+watch(
+  () => props.chartSpec,
+  () => {
+    if (!myChart || !data.value.length) return;
+    const option = props.chartSpec({
+      data: data.value,
+      minMax: minMax.value,
+      zeroBaseline: zeroBaseline.value,
+    });
+    myChart.setOption(option, { notMerge: true });
+  }
+);
+
 onMounted(() => {
   echarts.registerTheme("dark", darkTheme);
   echarts.registerTheme("light", lightTheme);
