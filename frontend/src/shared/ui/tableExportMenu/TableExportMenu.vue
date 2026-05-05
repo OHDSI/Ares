@@ -2,7 +2,7 @@
   <div class="export-menu">
     <Tooltip text="Export">
       <button class="export-trigger" @click.stop="toggle">
-        <svg-icon type="mdi" :path="mdiTableArrowRight" class="trigger-icon" />
+        <i class="pi pi-copy trigger-icon" />
       </button>
     </Tooltip>
 
@@ -36,9 +36,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import SvgIcon from "@/shared/ui/svgIcon";
 import Tooltip from "@/shared/ui/tooltip";
-import { mdiTableArrowRight } from "@mdi/js";
 
 interface Props {
   tableRef: { $el?: HTMLElement } | null;
@@ -291,8 +289,7 @@ function saveCsv() {
 }
 
 .trigger-icon {
-  width: 1.1rem;
-  height: 1.1rem;
+  font-size: 1rem;
 }
 
 .export-panel {

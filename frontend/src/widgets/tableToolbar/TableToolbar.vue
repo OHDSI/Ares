@@ -144,7 +144,7 @@ defineEmits<{
 }
 
 .toolbar-icon {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1.7rem;
+  height: 1.7rem;
 }
 </style>

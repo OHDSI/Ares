@@ -16,11 +16,7 @@
           : 'rounded-full'
       "
     >
-      <svg-icon
-        type="mdi"
-        :path="mdiTable"
-        class="h-5 w-5 text-surface-500 dark:text-white/60"
-      />
+      <i class="pi pi-table text-[1rem] text-surface-500 dark:text-white/60" />
     </div>
     <MultiSelect
       :model-value="modelValue"
@@ -42,8 +38,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import MultiSelect from "primevue/multiselect";
-import SvgIcon from "@/shared/ui/svgIcon";
-import { mdiTable } from "@mdi/js";
 
 interface Props {
   modelValue: (string | number)[];
