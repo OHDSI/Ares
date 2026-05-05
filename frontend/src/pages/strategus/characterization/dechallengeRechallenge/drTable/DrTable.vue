@@ -7,17 +7,16 @@
       v-model:show-filters="showFilters"
       v-model:fullscreen="localFullscreen"
       :table-ref="tableRef"
-      :rows="props.data"
+      :rows="filteredRows"
+      :search-error="searchError"
+      :search-suggestions="searchSuggestions"
       filename="dechallenge-rechallenge"
     />
     <DataTable
       ref="tableRef"
-      :value="props.data"
-      :paginator="props.data.length > 25"
+      :value="filteredRows"
+      :paginator="filteredRows.length > 25"
       :rows="25"
-      :filterDisplay="showFilters ? 'row' : undefined"
-      v-model:filters="tableFilters"
-      :globalFilterFields="['databaseName']"
       sortMode="multiple"
       removableSort
       :striped-rows="store.getters.getSettings.strippedRows"
@@ -29,17 +28,18 @@
         style="text-align: start"
         :pt="{ headerContent: 'justify-start' }"
         field="databaseName"
-        header="Database"
         sortable
         :showFilterMenu="false"
       >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Search..."
-            size="small"
-          />
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>Database</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.databaseName"
+              placeholder="Search..."
+            />
+          </div>
         </template>
       </Column>
       <Column
@@ -47,17 +47,18 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="dechallengeStopInterval"
-        header="Stop Interval"
         sortable
         :showFilterMenu="false"
       >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>Stop Interval</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.dechallengeStopInterval"
+              type="numeric"
+            />
+          </div>
         </template>
       </Column>
       <Column
@@ -65,17 +66,18 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="dechallengeEvaluationWindow"
-        header="Eval Window"
         sortable
         :showFilterMenu="false"
       >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>Eval Window</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.dechallengeEvaluationWindow"
+              type="numeric"
+            />
+          </div>
         </template>
       </Column>
       <Column
@@ -83,20 +85,21 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="numExposureEras"
-        header="# Exp Eras"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># Exp Eras</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.numExposureEras"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.numExposureEras)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -104,20 +107,21 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="numPersonsExposed"
-        header="# Exposed"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># Exposed</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.numPersonsExposed"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.numPersonsExposed)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -125,20 +129,21 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="numCases"
-        header="# Cases"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># Cases</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.numCases"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.numCases)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -146,20 +151,21 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="dechallengeAttempt"
-        header="# D.Attempt"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># D.Attempt</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.dechallengeAttempt"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.dechallengeAttempt)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -167,20 +173,21 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="dechallengeFail"
-        header="# D.Fail"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># D.Fail</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.dechallengeFail"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.dechallengeFail)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -188,20 +195,21 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="dechallengeSuccess"
-        header="# D.Success"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># D.Success</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.dechallengeSuccess"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.dechallengeSuccess)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -209,83 +217,87 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="pctDechallengeAttempt"
-        header="% D.Attempt"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>% D.Attempt</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.pctDechallengeAttempt"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">{{
           formatPct(rowData.pctDechallengeAttempt)
         }}</template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
-        </template>
       </Column>
       <Column
         :hidden="!selectedColumns.includes('pctDechallengeSuccess')"
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="pctDechallengeSuccess"
-        header="% D.Success"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>% D.Success</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.pctDechallengeSuccess"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">{{
           formatPct(rowData.pctDechallengeSuccess)
         }}</template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
-        </template>
       </Column>
       <Column
         :hidden="!selectedColumns.includes('pctDechallengeFail')"
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="pctDechallengeFail"
-        header="% D.Fail"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>% D.Fail</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.pctDechallengeFail"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">{{
           formatPct(rowData.pctDechallengeFail)
         }}</template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
-        </template>
       </Column>
       <Column
         :hidden="!selectedColumns.includes('rechallengeAttempt')"
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="rechallengeAttempt"
-        header="# R.Attempt"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># R.Attempt</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.rechallengeAttempt"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.rechallengeAttempt)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -293,20 +305,21 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="rechallengeFail"
-        header="# R.Fail"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># R.Fail</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.rechallengeFail"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.rechallengeFail)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -314,20 +327,21 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="rechallengeSuccess"
-        header="# R.Success"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span># R.Success</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.rechallengeSuccess"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">
           <CensoredCell :text="formatCensored(rowData.rechallengeSuccess)" />
-        </template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
         </template>
       </Column>
       <Column
@@ -335,63 +349,66 @@
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="pctRechallengeAttempt"
-        header="% R.Attempt"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>% R.Attempt</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.pctRechallengeAttempt"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">{{
           formatPct(rowData.pctRechallengeAttempt)
         }}</template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
-        </template>
       </Column>
       <Column
         :hidden="!selectedColumns.includes('pctRechallengeSuccess')"
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="pctRechallengeSuccess"
-        header="% R.Success"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>% R.Success</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.pctRechallengeSuccess"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">{{
           formatPct(rowData.pctRechallengeSuccess)
         }}</template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
-        </template>
       </Column>
       <Column
         :hidden="!selectedColumns.includes('pctRechallengeFail')"
         style="text-align: end"
         :pt="{ headerContent: 'justify-end' }"
         field="pctRechallengeFail"
-        header="% R.Fail"
         sortable
         :showFilterMenu="false"
       >
+        <template #header>
+          <div class="col-header-with-filter">
+            <span>% R.Fail</span>
+            <FilterInput
+              v-if="showFilters"
+              :filterObj="tableFilters.pctRechallengeFail"
+              type="numeric"
+            />
+          </div>
+        </template>
         <template #body="{ data: rowData }">{{
           formatPct(rowData.pctRechallengeFail)
         }}</template>
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Filter..."
-            size="small"
-          />
-        </template>
       </Column>
       <Column
         header="Fails"
@@ -457,10 +474,11 @@ import TableToolbar from "@/widgets/tableToolbar";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
-import InputText from "primevue/inputtext";
+import FilterInput from "../../shared/filterInput";
 import CensoredCell from "../../shared/censoredCell";
 import Tooltip from "@/shared/ui/tooltip";
 import { FilterMatchMode } from "primevue/api";
+import { useTableFilter } from "../../shared/useTableFilter";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { formatCensored, formatPct } from "@/shared/lib/formatters";
@@ -537,33 +555,81 @@ const search = ref("");
 const showFilters = ref(false);
 
 const tableFilters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  dechallengeStopInterval: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  dechallengeEvaluationWindow: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
+  databaseName: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  dechallengeStopInterval: {
+    value: null as any,
+    matchMode: FilterMatchMode.EQUALS,
   },
-  numExposureEras: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  numPersonsExposed: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  numCases: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  dechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  dechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  dechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  pctDechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  pctDechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  pctDechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  rechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  rechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  rechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  pctRechallengeAttempt: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  pctRechallengeSuccess: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  pctRechallengeFail: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  dechallengeEvaluationWindow: {
+    value: null as any,
+    matchMode: FilterMatchMode.EQUALS,
+  },
+  numExposureEras: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  numPersonsExposed: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  numCases: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  dechallengeAttempt: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  dechallengeFail: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  dechallengeSuccess: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  pctDechallengeAttempt: {
+    value: null as any,
+    matchMode: FilterMatchMode.EQUALS,
+  },
+  pctDechallengeSuccess: {
+    value: null as any,
+    matchMode: FilterMatchMode.EQUALS,
+  },
+  pctDechallengeFail: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  rechallengeAttempt: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  rechallengeFail: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  rechallengeSuccess: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  pctRechallengeAttempt: {
+    value: null as any,
+    matchMode: FilterMatchMode.EQUALS,
+  },
+  pctRechallengeSuccess: {
+    value: null as any,
+    matchMode: FilterMatchMode.EQUALS,
+  },
+  pctRechallengeFail: { value: null as any, matchMode: FilterMatchMode.EQUALS },
 });
 
-watch(search, (val) => {
-  tableFilters.value.global.value = val;
-});
+const dropdownFilters = ref({} as Record<string, any>);
+
+const searchSuggestions = [
+  "databaseName",
+  "dechallengeStopInterval",
+  "dechallengeEvaluationWindow",
+  "numExposureEras",
+  "numPersonsExposed",
+  "numCases",
+  "dechallengeAttempt",
+  "dechallengeFail",
+  "dechallengeSuccess",
+  "pctDechallengeAttempt",
+  "pctDechallengeSuccess",
+  "pctDechallengeFail",
+  "rechallengeAttempt",
+  "rechallengeFail",
+  "rechallengeSuccess",
+  "pctRechallengeAttempt",
+  "pctRechallengeSuccess",
+  "pctRechallengeFail",
+];
+
+const { filteredRows, applyNow, searchError } = useTableFilter(
+  () => props.data,
+  dropdownFilters,
+  tableFilters,
+  search,
+  ref({} as Record<string, string>),
+  tableRef
+);
+
+watch(
+  () => props.data,
+  () => applyNow(),
+  { immediate: true }
+);
 
 const failsDialogVisible = ref(false);
 const failPlotData = ref([]);

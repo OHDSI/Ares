@@ -8,6 +8,9 @@
       v-model:fullscreen="localFullscreen"
       :table-ref="tableRef"
       :rows="filteredRows"
+      :search-error="searchError"
+      :search-suggestions="searchSuggestions"
+      :search-value-map="searchValueMap"
       filename="cohort-comparison-binary"
     />
     <DataTable
@@ -16,16 +19,6 @@
       :paginator="true"
       :rows="25"
       :rowsPerPageOptions="[10, 25, 50, 100]"
-      v-model:filters="globalFilter"
-      :globalFilterFields="[
-        'covariateName',
-        'domain',
-        'concept',
-        'timeWindow',
-        'windowDays',
-        'subType',
-        'detail',
-      ]"
       sortMode="multiple"
       removableSort
       :striped-rows="store.getters.getSettings.strippedRows"
@@ -144,6 +137,7 @@
                   v-if="showFilters"
                   :filterObj="tableFilters.windowDays"
                   placeholder="e.g. -365 to -1"
+                  type="numeric"
                 />
               </div>
             </template>
@@ -208,6 +202,7 @@
                 <FilterInput
                   v-if="showFilters && tableFilters.SMD"
                   :filterObj="tableFilters.SMD"
+                  type="numeric"
                 />
               </div>
             </template>
@@ -265,6 +260,7 @@
                   v-if="tableFilters['sumValue_' + ref.id]"
                   :filterObj="tableFilters['sumValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
                 />
               </template>
             </Column>
@@ -277,6 +273,7 @@
                   v-if="tableFilters['averageValue_' + ref.id]"
                   :filterObj="tableFilters['averageValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
                 />
               </template>
             </Column>
@@ -452,6 +449,11 @@ import {
   formatSmd,
 } from "@/shared/lib/formatters";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { useTableFilter } from "../../shared/useTableFilter";
+import {
+  useDynamicColumnKeys,
+  COVARIATE_FILTER_KEYS,
+} from "../../shared/useDynamicColumnKeys";
 
 interface CovRefItem {
   id: string;
@@ -512,14 +514,6 @@ const tableRef = ref(null);
 const search = ref("");
 const showFilters = ref(false);
 
-const globalFilter = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
-
-watch(search, (val) => {
-  globalFilter.value.global.value = val;
-});
-
 const tableFilters = ref<Record<string, any>>({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -553,6 +547,35 @@ const subTypeOptions = computed(
     ].sort() as string[]
 );
 
+const { keyMap, searchSuggestions } = useDynamicColumnKeys(() => props.covRef, {
+  getName: (r) =>
+    r.cohortId === props.targetCohortId ? "target" : "comparator",
+  getId: (r) => r.id,
+  getN: (r) => r.n,
+  statMap: { count: "sumValue", pct: "averageValue" },
+  staticKeys: COVARIATE_FILTER_KEYS,
+  conditionalKeys: () => (props.covRef.length === 2 ? ["SMD", "absSMD"] : []),
+});
+
+const searchValueMap = computed(() => ({
+  domain: domainOptions.value,
+  subType: subTypeOptions.value,
+  timeWindow: timeWindowOptions,
+}));
+
+const {
+  filteredRows: _rows,
+  applyNow,
+  searchError,
+} = useTableFilter(
+  () => props.data,
+  dropdownFilters,
+  tableFilters,
+  search,
+  keyMap,
+  tableRef
+);
+
 watch(
   () => props.covRef,
   (newRefs) => {
@@ -580,33 +603,14 @@ watch(
     tableFilters.value = filters;
     dropdownFilters.value = { domain: null, subType: null, timeWindow: null };
     absSmdMin.value = 0;
+    applyNow();
   },
   { immediate: true }
 );
 
 const filteredRows = computed(() => {
-  let rows = props.data;
-  for (const [key, filter] of Object.entries(tableFilters.value)) {
-    if (filter.value != null && filter.value !== "") {
-      const val = String(filter.value).toLowerCase();
-      rows = rows.filter((r) =>
-        String(r[key] ?? "")
-          .toLowerCase()
-          .includes(val)
-      );
-    }
-  }
-  if (dropdownFilters.value.domain)
-    rows = rows.filter((r: any) => r.domain === dropdownFilters.value.domain);
-  if (dropdownFilters.value.subType)
-    rows = rows.filter((r: any) => r.subType === dropdownFilters.value.subType);
-  if (dropdownFilters.value.timeWindow)
-    rows = rows.filter(
-      (r: any) => r.timeWindow === dropdownFilters.value.timeWindow
-    );
-  if (absSmdMin.value > 0)
-    rows = rows.filter((r) => (r.absSMD ?? 0) >= absSmdMin.value);
-  return rows;
+  if (absSmdMin.value <= 0) return _rows.value;
+  return _rows.value.filter((r: any) => (r.absSMD ?? 0) >= absSmdMin.value);
 });
 
 const { headerPt, subPt, bodyPt } = useGroupBanding();

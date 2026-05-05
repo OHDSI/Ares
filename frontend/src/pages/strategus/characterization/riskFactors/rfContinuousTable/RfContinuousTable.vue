@@ -8,6 +8,9 @@
       v-model:fullscreen="localFullscreen"
       :table-ref="tableRef"
       :rows="filteredRows"
+      :search-error="searchError"
+      :search-suggestions="searchSuggestions"
+      :search-value-map="searchValueMap"
       filename="risk-factors-continuous"
     >
       <div class="smd-threshold">
@@ -34,16 +37,6 @@
       :rowsPerPageOptions="[10, 25, 50, 100]"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
       currentPageReportTemplate="{first}–{last} of {totalRecords}"
-      v-model:filters="globalFilter"
-      :globalFilterFields="[
-        'covariateName',
-        'domain',
-        'concept',
-        'timeWindow',
-        'windowDays',
-        'subType',
-        'detail',
-      ]"
       sortMode="multiple"
       removableSort
       :striped-rows="store.getters.getSettings.strippedRows"
@@ -144,6 +137,7 @@
                   v-if="showFilters"
                   :filterObj="tableFilters.windowDays"
                   placeholder="e.g. -365 to -1"
+                  type="numeric"
                 />
               </div>
             </template>
@@ -371,6 +365,7 @@
                   v-if="tableFilters['caseCountValue_' + ref.id]"
                   :filterObj="tableFilters['caseCountValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -382,6 +377,7 @@
                   v-if="tableFilters['caseAverageValue_' + ref.id]"
                   :filterObj="tableFilters['caseAverageValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -393,6 +389,7 @@
                   v-if="tableFilters['caseStandardDeviation_' + ref.id]"
                   :filterObj="tableFilters['caseStandardDeviation_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -404,6 +401,7 @@
                   v-if="tableFilters['caseMedianValue_' + ref.id]"
                   :filterObj="tableFilters['caseMedianValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -415,6 +413,7 @@
                   v-if="tableFilters['caseMinValue_' + ref.id]"
                   :filterObj="tableFilters['caseMinValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -426,6 +425,7 @@
                   v-if="tableFilters['caseMaxValue_' + ref.id]"
                   :filterObj="tableFilters['caseMaxValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -437,6 +437,7 @@
                   v-if="tableFilters['targetCountValue_' + ref.id]"
                   :filterObj="tableFilters['targetCountValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -448,6 +449,7 @@
                   v-if="tableFilters['targetAverageValue_' + ref.id]"
                   :filterObj="tableFilters['targetAverageValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -459,6 +461,7 @@
                   v-if="tableFilters['targetStandardDeviation_' + ref.id]"
                   :filterObj="tableFilters['targetStandardDeviation_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -470,6 +473,7 @@
                   v-if="tableFilters['targetMedianValue_' + ref.id]"
                   :filterObj="tableFilters['targetMedianValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -481,6 +485,7 @@
                   v-if="tableFilters['targetMinValue_' + ref.id]"
                   :filterObj="tableFilters['targetMinValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
             <Column
@@ -492,6 +497,7 @@
                   v-if="tableFilters['targetMaxValue_' + ref.id]"
                   :filterObj="tableFilters['targetMaxValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
               /></template>
             </Column>
           </template>
@@ -834,6 +840,11 @@ import CensoredCell from "../../shared/censoredCell";
 import { useGroupBanding } from "../../shared/useGroupBanding";
 import { formatCensored, formatNum } from "@/shared/lib/formatters";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { useTableFilter } from "../../shared/useTableFilter";
+import {
+  useDynamicColumnKeys,
+  COVARIATE_FILTER_KEYS,
+} from "../../shared/useDynamicColumnKeys";
 
 const props = defineProps<{
   data: any[];
@@ -910,13 +921,6 @@ const showFilters = ref(false);
 const absSmdMin = ref(0);
 const smdMax = ref(2);
 
-const globalFilter = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
-watch(search, (val) => {
-  globalFilter.value.global.value = val;
-});
-
 const tableFilters = ref<Record<string, any>>({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -943,6 +947,48 @@ const subTypeOptions = computed(
     [
       ...new Set(props.data.map((r: any) => r.subType).filter(Boolean)),
     ].sort() as string[]
+);
+
+const { keyMap, searchSuggestions } = useDynamicColumnKeys(() => props.rfRef, {
+  getName: (r) => r.databaseName,
+  getId: (r) => r.id,
+  getN: (r) => r.caseN,
+  statMap: {
+    "case.count": "caseCountValue",
+    "case.mean": "caseAverageValue",
+    "case.stdev": "caseStandardDeviation",
+    "case.median": "caseMedianValue",
+    "case.min": "caseMinValue",
+    "case.max": "caseMaxValue",
+    "target.count": "targetCountValue",
+    "target.mean": "targetAverageValue",
+    "target.stdev": "targetStandardDeviation",
+    "target.median": "targetMedianValue",
+    "target.min": "targetMinValue",
+    "target.max": "targetMaxValue",
+    smd: "SMD",
+    abssmd: "absSMD",
+  },
+  staticKeys: COVARIATE_FILTER_KEYS,
+});
+
+const searchValueMap = computed(() => ({
+  domain: domainOptions.value,
+  subType: subTypeOptions.value,
+  timeWindow: timeWindowOptions,
+}));
+
+const {
+  filteredRows: _rows,
+  applyNow,
+  searchError,
+} = useTableFilter(
+  () => props.data,
+  dropdownFilters,
+  tableFilters,
+  search,
+  keyMap,
+  tableRef
 );
 
 watch(
@@ -980,9 +1026,17 @@ watch(
     tableFilters.value = f;
     dropdownFilters.value = { domain: null, subType: null, timeWindow: null };
     absSmdMin.value = 0;
+    applyNow();
   },
   { immediate: true }
 );
+
+const filteredRows = computed(() => {
+  if (absSmdMin.value <= 0) return _rows.value;
+  return _rows.value.filter((r: any) =>
+    props.rfRef.some((ref) => (r[`absSMD_${ref.id}`] ?? 0) >= absSmdMin.value)
+  );
+});
 
 const dbIndexMap = computed(() => {
   const map: Record<string, number> = {};
@@ -1034,34 +1088,6 @@ const dbColspan = computed(() => {
   return c + t + s || 1;
 });
 const dbGroupHidden = computed(() => dbColspan.value === 0);
-
-const filteredRows = computed(() => {
-  let rows = props.data;
-  for (const [key, filter] of Object.entries(tableFilters.value)) {
-    if (filter.value != null && filter.value !== "") {
-      const val = String(filter.value).toLowerCase();
-      rows = rows.filter((r) =>
-        String(r[key] ?? "")
-          .toLowerCase()
-          .includes(val)
-      );
-    }
-  }
-  if (dropdownFilters.value.domain)
-    rows = rows.filter((r: any) => r.domain === dropdownFilters.value.domain);
-  if (dropdownFilters.value.subType)
-    rows = rows.filter((r: any) => r.subType === dropdownFilters.value.subType);
-  if (dropdownFilters.value.timeWindow)
-    rows = rows.filter(
-      (r: any) => r.timeWindow === dropdownFilters.value.timeWindow
-    );
-  if (absSmdMin.value > 0) {
-    rows = rows.filter((r) =>
-      props.rfRef.some((ref) => (r[`absSMD_${ref.id}`] ?? 0) >= absSmdMin.value)
-    );
-  }
-  return rows;
-});
 </script>
 
 <style scoped>

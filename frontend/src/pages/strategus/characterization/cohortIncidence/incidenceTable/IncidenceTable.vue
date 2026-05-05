@@ -20,7 +20,9 @@
     v-model:show-filters="showFilters"
     v-model:fullscreen="localFullscreen"
     :table-ref="tableRef"
-    :rows="tableRows"
+    :rows="filteredRows"
+    :search-error="searchError"
+    :search-suggestions="searchSuggestions"
     filename="cohort-incidence"
   >
     <div class="strat-checks">
@@ -51,19 +53,10 @@
   <DataTable
     v-if="tableRows.length"
     ref="tableRef"
-    :value="tableRows"
+    :value="filteredRows"
     :paginator="true"
     :rows="25"
     :rowsPerPageOptions="[10, 25, 50, 100]"
-    :filterDisplay="showFilters ? 'row' : undefined"
-    v-model:filters="tableFilters"
-    :globalFilterFields="[
-      'databaseName',
-      'outcomeName',
-      'ageGroupName',
-      'genderName',
-      'startYear',
-    ]"
     sortMode="multiple"
     removableSort
     :striped-rows="store.getters.getSettings.strippedRows"
@@ -75,17 +68,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="databaseName"
-      header="Database"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Database</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.databaseName"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -93,19 +87,22 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="outcomeName"
-      header="Outcome"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
-          v-model="filterModel.value"
-          :options="uniqueOutcomeNames"
-          placeholder="All"
-          :showClear="true"
-          class="w-full"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Outcome</span>
+          <Dropdown
+            v-if="showFilters"
+            v-model="tableFilters.outcomeName.value"
+            :options="uniqueOutcomeNames"
+            placeholder="All"
+            :showClear="true"
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -113,19 +110,22 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="tar"
-      header="TAR"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
-          v-model="filterModel.value"
-          :options="uniqueTars"
-          placeholder="All"
-          :showClear="true"
-          class="w-full"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>TAR</span>
+          <Dropdown
+            v-if="showFilters"
+            v-model="tableFilters.tar.value"
+            :options="uniqueTars"
+            placeholder="All"
+            :showClear="true"
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -133,17 +133,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="ageGroupName"
-      header="Age"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Age</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.ageGroupName"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -151,17 +152,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="genderName"
-      header="Sex"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Sex</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.genderName"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -169,17 +171,18 @@
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="startYear"
-      header="Year"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Filter..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Year</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.startYear"
+            placeholder="Filter..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -187,19 +190,22 @@
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="cleanWindow"
-      header="Clean Win."
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <Dropdown
-          v-model="filterModel.value"
-          :options="uniqueCleanWindows"
-          placeholder="All"
-          :showClear="true"
-          class="w-full"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Clean Win.</span>
+          <Dropdown
+            v-if="showFilters"
+            v-model="tableFilters.cleanWindow.value"
+            :options="uniqueCleanWindows"
+            placeholder="All"
+            :showClear="true"
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -207,17 +213,18 @@
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="personsAtRisk"
-      header="Persons"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Filter..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Persons</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.personsAtRisk"
+            type="numeric"
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -225,17 +232,18 @@
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="personDays"
-      header="Person Days"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Filter..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Person Days</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.personDays"
+            type="numeric"
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -243,17 +251,18 @@
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="outcomes"
-      header="Outcomes"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Filter..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Outcomes</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.outcomes"
+            type="numeric"
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -261,42 +270,44 @@
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="incidenceProportionP100p"
-      header="Prop. /100p"
       sortable
       :showFilterMenu="false"
     >
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Prop. /100p</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.incidenceProportionP100p"
+            type="numeric"
+          />
+        </div>
+      </template>
       <template #body="{ data }">{{
         formatNum(data.incidenceProportionP100p)
       }}</template>
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Filter..."
-          size="small"
-        />
-      </template>
     </Column>
     <Column
       :hidden="!selectedColumns.includes('incidenceRateP100py')"
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="incidenceRateP100py"
-      header="Rate /100py"
       sortable
       :showFilterMenu="false"
     >
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Rate /100py</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.incidenceRateP100py"
+            type="numeric"
+          />
+        </div>
+      </template>
       <template #body="{ data }">{{
         formatNum(data.incidenceRateP100py)
       }}</template>
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Filter..."
-          size="small"
-        />
-      </template>
     </Column>
   </DataTable>
 </template>
@@ -309,10 +320,11 @@ import Column from "primevue/column";
 import MultiSelect from "primevue/multiselect";
 import Dropdown from "primevue/dropdown";
 import Checkbox from "primevue/checkbox";
-import InputText from "primevue/inputtext";
+import FilterInput from "../../shared/filterInput";
 import { FilterMatchMode } from "primevue/api";
 import { colSelectorPt } from "../../shared/colSelectorPt";
 import { formatNum } from "@/shared/lib/formatters";
+import { useTableFilter } from "../../shared/useTableFilter";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 
@@ -379,27 +391,51 @@ const includeYear = ref(false);
 const tableRows = ref<any[]>([]);
 
 const tableFilters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  outcomeName: { value: null, matchMode: FilterMatchMode.EQUALS },
-  tar: { value: null, matchMode: FilterMatchMode.EQUALS },
-  ageGroupName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  genderName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  startYear: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  cleanWindow: { value: null, matchMode: FilterMatchMode.EQUALS },
-  personsAtRisk: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  personDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  outcomes: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  databaseName: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  outcomeName: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  tar: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  ageGroupName: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  genderName: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  startYear: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  cleanWindow: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  personsAtRisk: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  personDays: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  outcomes: { value: null as any, matchMode: FilterMatchMode.EQUALS },
   incidenceProportionP100p: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
+    value: null as any,
+    matchMode: FilterMatchMode.EQUALS,
   },
-  incidenceRateP100py: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  incidenceRateP100py: {
+    value: null as any,
+    matchMode: FilterMatchMode.EQUALS,
+  },
 });
 
-watch(search, (val) => {
-  tableFilters.value.global.value = val;
-});
+const dropdownFilters = ref({} as Record<string, any>);
+
+const searchSuggestions = [
+  "databaseName",
+  "outcomeName",
+  "tar",
+  "ageGroupName",
+  "genderName",
+  "startYear",
+  "cleanWindow",
+  "personsAtRisk",
+  "personDays",
+  "outcomes",
+  "incidenceProportionP100p",
+  "incidenceRateP100py",
+];
+
+const { filteredRows, applyNow, searchError } = useTableFilter(
+  () => tableRows.value,
+  dropdownFilters,
+  tableFilters,
+  search,
+  ref({} as Record<string, string>),
+  tableRef
+);
 
 const uniqueDatabases = computed(() =>
   [...new Set(props.data.map((r) => r.databaseName))].sort()
@@ -424,6 +460,7 @@ function applyTableFilter() {
 
 watch([tableDatabases, includeAge, includeSex, includeYear], () => {
   applyTableFilter();
+  applyNow();
 });
 
 watch(
@@ -431,6 +468,7 @@ watch(
   () => {
     tableDatabases.value = [...uniqueDatabases.value];
     applyTableFilter();
+    applyNow();
   },
   { immediate: true }
 );
@@ -476,5 +514,14 @@ watch(
 
 .mt-3 {
   margin-top: 0.75rem;
+}
+
+.filter-dropdown {
+  width: 100%;
+  font-size: 0.75rem;
+}
+:deep(.filter-dropdown .p-dropdown-label) {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
 }
 </style>

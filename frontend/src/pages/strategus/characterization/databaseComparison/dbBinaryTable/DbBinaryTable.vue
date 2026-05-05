@@ -12,6 +12,9 @@
       v-model:fullscreen="localFullscreen"
       :table-ref="tableRef"
       :rows="filteredRows"
+      :search-error="searchError"
+      :search-suggestions="searchSuggestions"
+      :search-value-map="searchValueMap"
       filename="database-comparison-binary"
     />
     <DataTable
@@ -20,16 +23,6 @@
       :paginator="true"
       :rows="25"
       :rowsPerPageOptions="[10, 25, 50, 100]"
-      v-model:filters="globalFilter"
-      :globalFilterFields="[
-        'covariateName',
-        'domain',
-        'concept',
-        'timeWindow',
-        'windowDays',
-        'subType',
-        'detail',
-      ]"
       sortMode="multiple"
       removableSort
       :striped-rows="store.getters.getSettings.strippedRows"
@@ -74,6 +67,7 @@
                   placeholder="All"
                   showClear
                   class="filter-dropdown"
+                  @click.stop
                 />
               </div>
             </template>
@@ -113,6 +107,7 @@
                   placeholder="All"
                   showClear
                   class="filter-dropdown"
+                  @click.stop
                 />
               </div>
             </template>
@@ -131,6 +126,7 @@
                   v-if="showFilters"
                   :filterObj="tableFilters.windowDays"
                   placeholder="Search..."
+                  type="numeric"
                 />
               </div>
             </template>
@@ -152,6 +148,7 @@
                   placeholder="All"
                   showClear
                   class="filter-dropdown"
+                  @click.stop
                 />
               </div>
             </template>
@@ -213,6 +210,7 @@
                 <FilterInput
                   v-if="tableFilters.SMD"
                   :filterObj="tableFilters.SMD"
+                  type="numeric"
                 />
               </div>
             </template>
@@ -247,6 +245,7 @@
                   v-if="tableFilters['sumValue_' + ref.id]"
                   :filterObj="tableFilters['sumValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
                 />
               </template>
             </Column>
@@ -259,6 +258,7 @@
                   v-if="tableFilters['averageValue_' + ref.id]"
                   :filterObj="tableFilters['averageValue_' + ref.id]"
                   input-style="width:100%"
+                  type="numeric"
                 />
               </template>
             </Column>
@@ -401,6 +401,11 @@ import { useGroupBanding } from "../../shared/useGroupBanding";
 import { formatPercentStat, formatCount } from "@/shared/lib/formatters";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { useTableFilter } from "../../shared/useTableFilter";
+import {
+  useDynamicColumnKeys,
+  COVARIATE_FILTER_KEYS,
+} from "../../shared/useDynamicColumnKeys";
 
 interface CovRefEntry {
   id: string;
@@ -458,13 +463,20 @@ const search = ref("");
 const showFilters = ref(false);
 const tableRef = ref(null);
 
-const globalFilter = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+const { keyMap, searchSuggestions } = useDynamicColumnKeys(() => props.covRef, {
+  getName: (r) => r.databaseName,
+  getId: (r) => r.id,
+  getN: (r) => r.n,
+  statMap: { count: "sumValue", pct: "averageValue" },
+  staticKeys: COVARIATE_FILTER_KEYS,
+  conditionalKeys: () => (props.covRef.length === 2 ? ["SMD"] : []),
 });
 
-watch(search, (val) => {
-  globalFilter.value.global.value = val;
-});
+const searchValueMap = computed(() => ({
+  domain: domainOptions.value,
+  subType: subTypeOptions.value,
+  timeWindow: timeWindowOptions,
+}));
 
 const tableFilters = ref<Record<string, { value: any; matchMode: string }>>({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -496,6 +508,15 @@ const subTypeOptions = computed(
     ].sort() as string[]
 );
 
+const { filteredRows, applyNow, searchError } = useTableFilter(
+  () => props.data,
+  dropdownFilters,
+  tableFilters,
+  search,
+  keyMap,
+  tableRef
+);
+
 watch(
   () => props.data,
   () => {
@@ -521,32 +542,10 @@ watch(
       base.SMD = { value: null, matchMode: FilterMatchMode.CONTAINS };
     }
     tableFilters.value = base;
+    applyNow();
   },
   { immediate: true }
 );
-
-const filteredRows = computed(() => {
-  let rows = props.data;
-  if (dropdownFilters.value.domain)
-    rows = rows.filter((r: any) => r.domain === dropdownFilters.value.domain);
-  if (dropdownFilters.value.subType)
-    rows = rows.filter((r: any) => r.subType === dropdownFilters.value.subType);
-  if (dropdownFilters.value.timeWindow)
-    rows = rows.filter(
-      (r: any) => r.timeWindow === dropdownFilters.value.timeWindow
-    );
-  for (const [key, filter] of Object.entries(tableFilters.value)) {
-    if (filter.value != null && filter.value !== "") {
-      const val = String(filter.value).toLowerCase();
-      rows = rows.filter((r) =>
-        String(r[key] ?? "")
-          .toLowerCase()
-          .includes(val)
-      );
-    }
-  }
-  return rows;
-});
 
 const groupColspan = computed(() => {
   const n =

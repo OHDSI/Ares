@@ -6,25 +6,17 @@
     v-model:show-filters="showFilters"
     v-model:fullscreen="localFullscreen"
     :table-ref="tableRef"
-    :rows="data"
+    :rows="filteredRows"
+    :search-error="searchError"
+    :search-suggestions="searchSuggestions"
     filename="time-to-event"
   />
   <DataTable
     ref="tableRef"
-    :value="data"
+    :value="filteredRows"
     :paginator="true"
     :rows="25"
     :rowsPerPageOptions="[10, 25, 50, 100]"
-    :filterDisplay="showFilters ? 'row' : undefined"
-    v-model:filters="tableFilters"
-    :globalFilterFields="[
-      'databaseName',
-      'targetName',
-      'outcomeName',
-      'outcomeType',
-      'targetOutcomeType',
-      'timeScale',
-    ]"
     sortMode="multiple"
     removableSort
     :striped-rows="store.getters.getSettings.strippedRows"
@@ -36,17 +28,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="databaseName"
-      header="Database"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Database</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.databaseName"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -54,17 +47,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="targetName"
-      header="Target"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Target</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.targetName"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -72,17 +66,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="outcomeName"
-      header="Outcome"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Outcome</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.outcomeName"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -90,17 +85,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="outcomeType"
-      header="Outcome Type"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Outcome Type</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.outcomeType"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -108,17 +104,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="targetOutcomeType"
-      header="Timing"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Timing</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.targetOutcomeType"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -126,17 +123,18 @@
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="timeToEvent"
-      header="Days"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Filter..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Days</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.timeToEvent"
+            type="numeric"
+          />
+        </div>
       </template>
     </Column>
     <Column
@@ -144,20 +142,21 @@
       style="text-align: end"
       :pt="{ headerContent: 'justify-end' }"
       field="numEvents"
-      header="# Events"
       sortable
       :showFilterMenu="false"
     >
+      <template #header>
+        <div class="col-header-with-filter">
+          <span># Events</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.numEvents"
+            type="numeric"
+          />
+        </div>
+      </template>
       <template #body="{ data }">
         <CensoredCell :text="formatCensored(data.numEvents)" />
-      </template>
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Filter..."
-          size="small"
-        />
       </template>
     </Column>
     <Column
@@ -165,17 +164,18 @@
       style="text-align: start"
       :pt="{ headerContent: 'justify-start' }"
       field="timeScale"
-      header="Scale"
       sortable
       :showFilterMenu="false"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Scale</span>
+          <FilterInput
+            v-if="showFilters"
+            :filterObj="tableFilters.timeScale"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
   </DataTable>
@@ -186,12 +186,13 @@ import { ref, computed, watch } from "vue";
 import TableToolbar from "@/widgets/tableToolbar";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import CensoredCell from "../../shared/censoredCell";
+import FilterInput from "../../shared/filterInput";
 import { formatCensored } from "@/shared/lib/formatters";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { useTableFilter } from "../../shared/useTableFilter";
 
 const props = defineProps<{
   data: any[];
@@ -247,20 +248,46 @@ const search = ref("");
 const showFilters = ref(false);
 
 const tableFilters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  targetName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  outcomeName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  outcomeType: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  targetOutcomeType: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  timeToEvent: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  numEvents: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  timeScale: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  databaseName: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  targetName: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  outcomeName: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  outcomeType: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
+  targetOutcomeType: {
+    value: null as any,
+    matchMode: FilterMatchMode.CONTAINS,
+  },
+  timeToEvent: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  numEvents: { value: null as any, matchMode: FilterMatchMode.EQUALS },
+  timeScale: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
 });
 
-watch(search, (val) => {
-  tableFilters.value.global.value = val;
-});
+const dropdownFilters = ref({} as Record<string, any>);
+
+const searchSuggestions = [
+  "databaseName",
+  "targetName",
+  "outcomeName",
+  "outcomeType",
+  "targetOutcomeType",
+  "timeToEvent",
+  "numEvents",
+  "timeScale",
+];
+
+const { filteredRows, applyNow, searchError } = useTableFilter(
+  () => props.data,
+  dropdownFilters,
+  tableFilters,
+  search,
+  ref({} as Record<string, string>),
+  tableRef
+);
+
+watch(
+  () => props.data,
+  () => applyNow(),
+  { immediate: true }
+);
 </script>
 
 <style scoped>

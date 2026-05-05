@@ -8,6 +8,9 @@
       v-model:fullscreen="localFullscreen"
       :table-ref="tableRef"
       :rows="filteredRows"
+      :search-error="searchError"
+      :search-suggestions="searchSuggestions"
+      :search-value-map="searchValueMap"
       filename="case-series-continuous"
     />
     <DataTable
@@ -16,17 +19,6 @@
       :paginator="true"
       :rows="25"
       :rowsPerPageOptions="[10, 25, 50, 100]"
-      :filterDisplay="showFilters ? 'row' : undefined"
-      v-model:filters="continuousTableFilters"
-      :globalFilterFields="[
-        'covariateName',
-        'domain',
-        'concept',
-        'timeWindow',
-        'windowDays',
-        'subType',
-        'detail',
-      ]"
       sortMode="multiple"
       removableSort
       :striped-rows="store.getters.getSettings.strippedRows"
@@ -38,51 +30,160 @@
           <Column
             :hidden="!selectedColumns.includes('covariateName')"
             :pt="{ headerContent: 'justify-start' }"
-            header="Covariate"
             :rowspan="showFilters ? 3 : 2"
-          />
+            sortField="covariateName"
+            sortable
+          >
+            <template #header>
+              <div class="col-header-with-filter">
+                <span>Covariate</span>
+                <FilterInput
+                  v-if="showFilters"
+                  :filterObj="tableFilters.covariateName"
+                  placeholder="Search..."
+                />
+              </div>
+            </template>
+          </Column>
           <Column
             :hidden="!selectedColumns.includes('domain')"
             :pt="{ headerContent: 'justify-start' }"
-            header="Domain"
             :rowspan="showFilters ? 3 : 2"
-          />
+            sortField="domain"
+            sortable
+          >
+            <template #header>
+              <div class="col-header-with-filter">
+                <span>Domain</span>
+                <Dropdown
+                  v-if="showFilters"
+                  v-model="dropdownFilters.domain"
+                  :options="domainOptions"
+                  placeholder="All"
+                  showClear
+                  class="filter-dropdown"
+                  @click.stop
+                />
+              </div>
+            </template>
+          </Column>
           <Column
             :hidden="!selectedColumns.includes('concept')"
             :pt="{ headerContent: 'justify-start' }"
-            header="Concept"
             :rowspan="showFilters ? 3 : 2"
-          />
+            sortField="concept"
+            sortable
+          >
+            <template #header>
+              <div class="col-header-with-filter">
+                <span>Concept</span>
+                <FilterInput
+                  v-if="showFilters"
+                  :filterObj="tableFilters.concept"
+                  placeholder="Search..."
+                />
+              </div>
+            </template>
+          </Column>
           <Column
             :hidden="!selectedColumns.includes('timeWindow')"
             :pt="{ headerContent: 'justify-start' }"
-            header="Time Window"
             :rowspan="showFilters ? 3 : 2"
-          />
+            sortField="timeWindow"
+            sortable
+          >
+            <template #header>
+              <div class="col-header-with-filter">
+                <span>Time Window</span>
+                <Dropdown
+                  v-if="showFilters"
+                  v-model="dropdownFilters.timeWindow"
+                  :options="timeWindowOptions"
+                  placeholder="All"
+                  showClear
+                  class="filter-dropdown"
+                  @click.stop
+                />
+              </div>
+            </template>
+          </Column>
           <Column
             :hidden="!selectedColumns.includes('windowDays')"
             :pt="{ headerContent: 'justify-start' }"
-            header="Window Days"
             :rowspan="showFilters ? 3 : 2"
-          />
+            sortField="windowDays"
+            sortable
+          >
+            <template #header>
+              <div class="col-header-with-filter">
+                <span>Window Days</span>
+                <FilterInput
+                  v-if="showFilters"
+                  :filterObj="tableFilters.windowDays"
+                  placeholder="e.g. -365 to -1"
+                  type="numeric"
+                />
+              </div>
+            </template>
+          </Column>
           <Column
             :hidden="!selectedColumns.includes('subType')"
             :pt="{ headerContent: 'justify-start' }"
-            header="Sub-type"
             :rowspan="showFilters ? 3 : 2"
-          />
+            sortField="subType"
+            sortable
+          >
+            <template #header>
+              <div class="col-header-with-filter">
+                <span>Sub-type</span>
+                <Dropdown
+                  v-if="showFilters"
+                  v-model="dropdownFilters.subType"
+                  :options="subTypeOptions"
+                  placeholder="All"
+                  showClear
+                  class="filter-dropdown"
+                  @click.stop
+                />
+              </div>
+            </template>
+          </Column>
           <Column
             :hidden="!selectedColumns.includes('detail')"
             :pt="{ headerContent: 'justify-start' }"
-            header="Detail"
             :rowspan="showFilters ? 3 : 2"
-          />
+            sortField="detail"
+            sortable
+          >
+            <template #header>
+              <div class="col-header-with-filter">
+                <span>Detail</span>
+                <FilterInput
+                  v-if="showFilters"
+                  :filterObj="tableFilters.detail"
+                  placeholder="Search..."
+                />
+              </div>
+            </template>
+          </Column>
           <Column
             :hidden="!selectedColumns.includes('covariateId')"
             :pt="{ headerContent: 'justify-start' }"
-            header="ID"
             :rowspan="showFilters ? 3 : 2"
-          />
+            sortField="covariateId"
+            sortable
+          >
+            <template #header>
+              <div class="col-header-with-filter">
+                <span>ID</span>
+                <FilterInput
+                  v-if="showFilters"
+                  :filterObj="tableFilters.covariateId"
+                  placeholder="Search..."
+                />
+              </div>
+            </template>
+          </Column>
           <Column
             v-if="hasContinuousPhase('Before')"
             :hidden="groupHidden"
@@ -114,6 +215,8 @@
                 headerContent: 'justify-end',
               }"
               header="Count"
+              :sortField="'countValue_' + phase"
+              sortable
             /><Column
               :hidden="!selectedColumns.includes('min')"
               :pt="{
@@ -121,6 +224,8 @@
                 headerContent: 'justify-end',
               }"
               header="Min"
+              :sortField="'minValue_' + phase"
+              sortable
             /><Column
               :hidden="!selectedColumns.includes('max')"
               :pt="{
@@ -128,6 +233,8 @@
                 headerContent: 'justify-end',
               }"
               header="Max"
+              :sortField="'maxValue_' + phase"
+              sortable
             />
             <Column
               :hidden="!selectedColumns.includes('mean')"
@@ -136,6 +243,8 @@
                 headerContent: 'justify-end',
               }"
               header="Mean"
+              :sortField="'averageValue_' + phase"
+              sortable
             /><Column
               :hidden="!selectedColumns.includes('stdev')"
               :pt="{
@@ -143,6 +252,8 @@
                 headerContent: 'justify-end',
               }"
               header="StDev"
+              :sortField="'standardDeviation_' + phase"
+              sortable
             /><Column
               :hidden="!selectedColumns.includes('median')"
               :pt="{
@@ -150,7 +261,109 @@
                 headerContent: 'justify-end',
               }"
               header="Median"
+              :sortField="'medianValue_' + phase"
+              sortable
             />
+          </template>
+        </Row>
+        <Row v-if="showFilters">
+          <template v-for="phase in presentPhases" :key="'cf-' + phase">
+            <Column
+              :hidden="!selectedColumns.includes('statCount')"
+              :pt="{
+                ...subPt(phaseIndex[phase]),
+                headerContent: 'justify-end',
+              }"
+            >
+              <template #header>
+                <FilterInput
+                  v-if="tableFilters['countValue_' + phase]"
+                  :filterObj="tableFilters['countValue_' + phase]"
+                  input-style="width:100%"
+                  type="numeric"
+                />
+              </template>
+            </Column>
+            <Column
+              :hidden="!selectedColumns.includes('min')"
+              :pt="{
+                ...subPt(phaseIndex[phase]),
+                headerContent: 'justify-end',
+              }"
+            >
+              <template #header>
+                <FilterInput
+                  v-if="tableFilters['minValue_' + phase]"
+                  :filterObj="tableFilters['minValue_' + phase]"
+                  input-style="width:100%"
+                  type="numeric"
+                />
+              </template>
+            </Column>
+            <Column
+              :hidden="!selectedColumns.includes('max')"
+              :pt="{
+                ...subPt(phaseIndex[phase]),
+                headerContent: 'justify-end',
+              }"
+            >
+              <template #header>
+                <FilterInput
+                  v-if="tableFilters['maxValue_' + phase]"
+                  :filterObj="tableFilters['maxValue_' + phase]"
+                  input-style="width:100%"
+                  type="numeric"
+                />
+              </template>
+            </Column>
+            <Column
+              :hidden="!selectedColumns.includes('mean')"
+              :pt="{
+                ...subPt(phaseIndex[phase]),
+                headerContent: 'justify-end',
+              }"
+            >
+              <template #header>
+                <FilterInput
+                  v-if="tableFilters['averageValue_' + phase]"
+                  :filterObj="tableFilters['averageValue_' + phase]"
+                  input-style="width:100%"
+                  type="numeric"
+                />
+              </template>
+            </Column>
+            <Column
+              :hidden="!selectedColumns.includes('stdev')"
+              :pt="{
+                ...subPt(phaseIndex[phase]),
+                headerContent: 'justify-end',
+              }"
+            >
+              <template #header>
+                <FilterInput
+                  v-if="tableFilters['standardDeviation_' + phase]"
+                  :filterObj="tableFilters['standardDeviation_' + phase]"
+                  input-style="width:100%"
+                  type="numeric"
+                />
+              </template>
+            </Column>
+            <Column
+              :hidden="!selectedColumns.includes('median')"
+              :pt="{
+                ...subPt(phaseIndex[phase]),
+                headerContent: 'justify-end',
+              }"
+            >
+              <template #header>
+                <FilterInput
+                  v-if="tableFilters['medianValue_' + phase]"
+                  :filterObj="tableFilters['medianValue_' + phase]"
+                  input-style="width:100%"
+                  type="numeric"
+                />
+              </template>
+            </Column>
           </template>
         </Row>
       </ColumnGroup>
@@ -158,247 +371,109 @@
       <Column
         :hidden="!selectedColumns.includes('covariateName')"
         field="covariateName"
-        :showFilterMenu="false"
         style="text-align: start"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Search..."
-            size="small"
-          />
-        </template>
-      </Column>
+      />
       <Column
         :hidden="!selectedColumns.includes('domain')"
         field="domain"
-        :showFilterMenu="false"
         style="text-align: start"
-      >
-        <template #filter>
-          <Dropdown
-            v-model="continuousDropdownFilters.domain"
-            :options="continuousDomainOptions"
-            placeholder="All"
-            showClear
-            class="filter-dropdown"
-          />
-        </template>
-      </Column>
+      />
       <Column
         :hidden="!selectedColumns.includes('concept')"
         field="concept"
-        :showFilterMenu="false"
         style="text-align: start"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Search..."
-            size="small"
-          />
-        </template>
-      </Column>
+      />
       <Column
         :hidden="!selectedColumns.includes('timeWindow')"
         field="timeWindow"
-        :showFilterMenu="false"
         style="text-align: start"
-      >
-        <template #filter>
-          <Dropdown
-            v-model="continuousDropdownFilters.timeWindow"
-            :options="timeWindowOptions"
-            placeholder="All"
-            showClear
-            class="filter-dropdown"
-          />
-        </template>
-      </Column>
+      />
       <Column
         :hidden="!selectedColumns.includes('windowDays')"
         field="windowDays"
-        :showFilterMenu="false"
         style="text-align: start"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Search..."
-            size="small"
-          />
-        </template>
-      </Column>
+      />
       <Column
         :hidden="!selectedColumns.includes('subType')"
         field="subType"
-        :showFilterMenu="false"
         style="text-align: start"
-      >
-        <template #filter>
-          <Dropdown
-            v-model="continuousDropdownFilters.subType"
-            :options="continuousSubTypeOptions"
-            placeholder="All"
-            showClear
-            class="filter-dropdown"
-          />
-        </template>
-      </Column>
+      />
       <Column
         :hidden="!selectedColumns.includes('detail')"
         field="detail"
-        :showFilterMenu="false"
         style="text-align: start"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Search..."
-            size="small"
-          />
-        </template>
-      </Column>
+      />
       <Column
         :hidden="!selectedColumns.includes('covariateId')"
-        style="text-align: start"
         field="covariateId"
-        sortable
-        :showFilterMenu="false"
-      >
-        <template #filter="{ filterModel, filterCallback }">
-          <InputText
-            v-model="filterModel.value"
-            @input="filterCallback()"
-            placeholder="Search..."
-            size="small"
-          />
-        </template>
-      </Column>
+        style="text-align: start"
+      />
       <template v-for="phase in presentPhases" :key="'cc-' + phase">
         <Column
           :hidden="!selectedColumns.includes('statCount')"
           style="text-align: end"
           :field="'countValue_' + phase"
-          sortable
           :showFilterMenu="false"
           :pt="bodyPt(phaseIndex[phase])"
         >
           <template #body="{ data }">
             <CensoredCell :text="formatCensored(data['countValue_' + phase])" />
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Filter..."
-              size="small"
-            />
-          </template>
         </Column>
         <Column
           :hidden="!selectedColumns.includes('min')"
           style="text-align: end"
           :field="'minValue_' + phase"
-          sortable
           :showFilterMenu="false"
           :pt="bodyPt(phaseIndex[phase])"
         >
           <template #body="{ data }">{{
             formatNum(data["minValue_" + phase])
           }}</template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Filter..."
-              size="small"
-            />
-          </template>
         </Column>
         <Column
           :hidden="!selectedColumns.includes('max')"
           style="text-align: end"
           :field="'maxValue_' + phase"
-          sortable
           :showFilterMenu="false"
           :pt="bodyPt(phaseIndex[phase])"
         >
           <template #body="{ data }">{{
             formatNum(data["maxValue_" + phase])
           }}</template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Filter..."
-              size="small"
-            />
-          </template>
         </Column>
         <Column
           :hidden="!selectedColumns.includes('mean')"
           style="text-align: end"
           :field="'averageValue_' + phase"
-          sortable
           :showFilterMenu="false"
           :pt="bodyPt(phaseIndex[phase])"
         >
           <template #body="{ data }">{{
             formatNum(data["averageValue_" + phase])
           }}</template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Filter..."
-              size="small"
-            />
-          </template>
         </Column>
         <Column
           :hidden="!selectedColumns.includes('stdev')"
           style="text-align: end"
           :field="'standardDeviation_' + phase"
-          sortable
           :showFilterMenu="false"
           :pt="bodyPt(phaseIndex[phase])"
         >
           <template #body="{ data }">{{
             formatNum(data["standardDeviation_" + phase])
           }}</template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Filter..."
-              size="small"
-            />
-          </template>
         </Column>
         <Column
           :hidden="!selectedColumns.includes('median')"
           style="text-align: end"
           :field="'medianValue_' + phase"
-          sortable
           :showFilterMenu="false"
           :pt="bodyPt(phaseIndex[phase])"
         >
           <template #body="{ data }">{{
             formatNum(data["medianValue_" + phase])
           }}</template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Filter..."
-              size="small"
-            />
-          </template>
         </Column>
       </template>
     </DataTable>
@@ -413,13 +488,18 @@ import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup";
 import Row from "primevue/row";
 import Dropdown from "primevue/dropdown";
-import InputText from "primevue/inputtext";
 import { FilterMatchMode } from "primevue/api";
 import TableToolbar from "@/widgets/tableToolbar";
 import CensoredCell from "../../shared/censoredCell";
+import FilterInput from "../../shared/filterInput";
 import { formatCensored, formatNum } from "@/shared/lib/formatters";
 import { useGroupBanding } from "../../shared/useGroupBanding";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
+import { useTableFilter } from "../../shared/useTableFilter";
+import {
+  useDynamicColumnKeys,
+  COVARIATE_FILTER_KEYS,
+} from "../../shared/useDynamicColumnKeys";
 
 const props = defineProps<{
   data: any[];
@@ -488,79 +568,86 @@ const tableRef = ref(null);
 
 const timeWindowOptions = ["temporal", "any_time_prior", "window"];
 
-const continuousDropdownFilters = ref<{
+const dropdownFilters = ref<{
   domain: string | null;
   subType: string | null;
   timeWindow: string | null;
 }>({ domain: null, subType: null, timeWindow: null });
 
-const continuousDomainOptions = computed(
+const domainOptions = computed(
   () =>
     [
       ...new Set(props.data.map((r: any) => r.domain).filter(Boolean)),
     ].sort() as string[]
 );
 
-const continuousSubTypeOptions = computed(
+const subTypeOptions = computed(
   () =>
     [
       ...new Set(props.data.map((r: any) => r.subType).filter(Boolean)),
     ].sort() as string[]
 );
 
-const continuousTableFilters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+const tableFilters = ref<Record<string, { value: any; matchMode: string }>>({
   covariateName: { value: null, matchMode: FilterMatchMode.CONTAINS },
   concept: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  windowDays: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  windowDays: { value: null, matchMode: FilterMatchMode.EQUALS },
   detail: { value: null, matchMode: FilterMatchMode.CONTAINS },
   covariateId: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  countValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  minValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  maxValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  averageValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  standardDeviation_Before: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  },
-  medianValue_Before: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  countValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  minValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  maxValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  averageValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  standardDeviation_During: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  },
-  medianValue_During: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  countValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  minValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  maxValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  averageValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  standardDeviation_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  medianValue_After: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  countValue_Before: { value: null, matchMode: FilterMatchMode.EQUALS },
+  minValue_Before: { value: null, matchMode: FilterMatchMode.EQUALS },
+  maxValue_Before: { value: null, matchMode: FilterMatchMode.EQUALS },
+  averageValue_Before: { value: null, matchMode: FilterMatchMode.EQUALS },
+  standardDeviation_Before: { value: null, matchMode: FilterMatchMode.EQUALS },
+  medianValue_Before: { value: null, matchMode: FilterMatchMode.EQUALS },
+  countValue_During: { value: null, matchMode: FilterMatchMode.EQUALS },
+  minValue_During: { value: null, matchMode: FilterMatchMode.EQUALS },
+  maxValue_During: { value: null, matchMode: FilterMatchMode.EQUALS },
+  averageValue_During: { value: null, matchMode: FilterMatchMode.EQUALS },
+  standardDeviation_During: { value: null, matchMode: FilterMatchMode.EQUALS },
+  medianValue_During: { value: null, matchMode: FilterMatchMode.EQUALS },
+  countValue_After: { value: null, matchMode: FilterMatchMode.EQUALS },
+  minValue_After: { value: null, matchMode: FilterMatchMode.EQUALS },
+  maxValue_After: { value: null, matchMode: FilterMatchMode.EQUALS },
+  averageValue_After: { value: null, matchMode: FilterMatchMode.EQUALS },
+  standardDeviation_After: { value: null, matchMode: FilterMatchMode.EQUALS },
+  medianValue_After: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
 
-watch(search, (val) => {
-  continuousTableFilters.value.global.value = val;
+const { keyMap, searchSuggestions } = useDynamicColumnKeys(() => props.phases, {
+  getName: (p) => p,
+  getId: (p) => p,
+  statMap: {
+    count: "countValue",
+    min: "minValue",
+    max: "maxValue",
+    mean: "averageValue",
+    stdev: "standardDeviation",
+    median: "medianValue",
+  },
+  staticKeys: COVARIATE_FILTER_KEYS,
 });
 
-const filteredRows = computed(() => {
-  let rows = props.data;
-  if (continuousDropdownFilters.value.domain)
-    rows = rows.filter(
-      (r: any) => r.domain === continuousDropdownFilters.value.domain
-    );
-  if (continuousDropdownFilters.value.subType)
-    rows = rows.filter(
-      (r: any) => r.subType === continuousDropdownFilters.value.subType
-    );
-  if (continuousDropdownFilters.value.timeWindow)
-    rows = rows.filter(
-      (r: any) => r.timeWindow === continuousDropdownFilters.value.timeWindow
-    );
-  return rows;
-});
+const searchValueMap = computed(() => ({
+  domain: domainOptions.value,
+  subType: subTypeOptions.value,
+  timeWindow: timeWindowOptions,
+}));
+
+const { filteredRows, applyNow, searchError } = useTableFilter(
+  () => props.data,
+  dropdownFilters,
+  tableFilters,
+  search,
+  keyMap,
+  tableRef
+);
+
+watch(
+  () => props.data,
+  () => applyNow(),
+  { immediate: true }
+);
 
 function hasContinuousPhase(phase: string) {
   return props.phases.includes(phase);
