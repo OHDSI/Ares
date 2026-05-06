@@ -14,10 +14,6 @@
     class="selector-table"
     :rowClass="getRowClass"
   >
-    <Column
-      :selectionMode="multiple ? 'multiple' : 'single'"
-      headerStyle="width: 3rem"
-    />
     <Column field="parentName" header="Name" sortable :showFilterMenu="false">
       <template #body="{ data }">
         <span>{{ data.parentName }}</span>

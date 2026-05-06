@@ -15,7 +15,6 @@
     :loading="props.loading"
     removableSort
   >
-    <Column selectionMode="single" headerStyle="width: 3rem" />
     <Column
       field="parentName"
       header="Target"
