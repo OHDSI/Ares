@@ -2,7 +2,11 @@
   <div class="risk-factors">
     <div class="section">
       <label class="field-label">Outcome</label>
-      <OutcomeSelector v-model="selectedOutcome" :options="outcomeOptions" />
+      <OutcomeSelector
+        v-model="selectedOutcome"
+        :options="outcomeOptions"
+        :availabilityKey="props.outcomeAvailKey"
+      />
 
       <div class="controls-row">
         <div>
@@ -147,6 +151,7 @@ import RfContinuousTable from "./rfContinuousTable";
 const props = defineProps({
   targetRow: { type: Object },
   outcomeTable: { type: Array },
+  outcomeAvailKey: { type: String, default: null },
   initialUrlState: { type: Object, default: null },
 });
 

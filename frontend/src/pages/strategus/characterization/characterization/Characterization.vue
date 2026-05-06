@@ -314,14 +314,9 @@ const unavailableAnalyses = computed(() => {
 function buildExtraProps(analysis) {
   const extra = {};
   if (analysis.needsOutcome) {
+    extra.outcomeTable = outcomeTable.value;
     const availKey = ANALYSIS_AVAIL_KEY[analysis.key];
-    if (availKey) {
-      extra.outcomeTable = outcomeTable.value.filter(
-        (o) => o[availKey] !== false
-      );
-    } else {
-      extra.outcomeTable = outcomeTable.value;
-    }
+    if (availKey) extra.outcomeAvailKey = availKey;
   }
   if (analysis.needsTargetTable) {
     extra.targetTable = targetTable.value;

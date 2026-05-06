@@ -6,6 +6,7 @@
         v-model="selectedOutcomes"
         :options="outcomeOptions"
         :multiple="true"
+        :availabilityKey="props.outcomeAvailKey"
       />
 
       <GenerateButton :disabled="generateDisabled" @click="generate" />
@@ -84,6 +85,7 @@ const darkMode = computed(() => store.getters.getSettings.darkMode);
 const props = defineProps({
   targetRow: { type: Object },
   outcomeTable: { type: Array },
+  outcomeAvailKey: { type: String, default: null },
   initialUrlState: { type: Object, default: null },
 });
 

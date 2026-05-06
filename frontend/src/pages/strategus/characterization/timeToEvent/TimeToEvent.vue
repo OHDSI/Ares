@@ -2,7 +2,11 @@
   <div class="time-to-event">
     <div class="section">
       <label class="field-label">Outcome</label>
-      <OutcomeSelector v-model="selectedOutcome" :options="outcomeOptions" />
+      <OutcomeSelector
+        v-model="selectedOutcome"
+        :options="outcomeOptions"
+        :availabilityKey="props.outcomeAvailKey"
+      />
 
       <GenerateButton :disabled="generateDisabled" @click="generate" />
     </div>
@@ -95,6 +99,7 @@ function onKeydown(e: KeyboardEvent) {
 const props = defineProps({
   targetRow: { type: Object },
   outcomeTable: { type: Array },
+  outcomeAvailKey: { type: String, default: null },
   initialUrlState: { type: Object, default: null },
 });
 
