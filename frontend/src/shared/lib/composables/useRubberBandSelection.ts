@@ -166,6 +166,14 @@ export default function useRubberBandSelection() {
     );
   }
 
+  function getThText(th: HTMLElement): string {
+    const clone = th.cloneNode(true) as HTMLElement;
+    clone
+      .querySelectorAll(".fi-wrap, .filter-dropdown, .smd-filter")
+      .forEach((el) => el.remove());
+    return clone.innerText.trim();
+  }
+
   // TSV: sparse — first cell of each span gets text, rest blank
   function getHeaderLines(): string[] {
     const thead = getThead();
@@ -182,7 +190,7 @@ export default function useRubberBandSelection() {
 
         const colspan = parseInt(th.getAttribute("colspan") ?? "1", 10);
         const rowspan = parseInt(th.getAttribute("rowspan") ?? "1", 10);
-        const text = th.innerText.trim();
+        const text = getThText(th);
 
         for (let c = 0; c < colspan; c++) {
           grid[rowIdx][col + c] = c === 0 ? text : "";
@@ -198,7 +206,9 @@ export default function useRubberBandSelection() {
       });
     });
 
-    return grid.map((row) => row.join("\t"));
+    return grid
+      .map((row) => row.join("\t"))
+      .filter((line) => line.replace(/\t/g, "").length > 0);
   }
 
   // HTML: preserve colspan/rowspan so spreadsheet apps render merged cells
@@ -207,19 +217,35 @@ export default function useRubberBandSelection() {
 
     let headerHtml = "";
     if (thead) {
+      const allRows = Array.from(thead.querySelectorAll("tr"));
+      const skipped = new Set(
+        allRows.reduce<number[]>((acc, tr, i) => {
+          const ths = visibleThs(tr);
+          if (ths.length > 0 && ths.every((th) => getThText(th) === ""))
+            acc.push(i);
+          return acc;
+        }, [])
+      );
+
       headerHtml = "<thead>";
-      Array.from(thead.querySelectorAll("tr")).forEach((tr) => {
+      allRows.forEach((tr, rowIdx) => {
+        if (skipped.has(rowIdx)) return;
         headerHtml += "<tr>";
         visibleThs(tr).forEach((th) => {
           const colspan = th.getAttribute("colspan");
-          const rowspan = th.getAttribute("rowspan");
+          let rowspan = parseInt(th.getAttribute("rowspan") ?? "1", 10);
+          for (let r = rowIdx + 1; r < rowIdx + rowspan; r++) {
+            if (skipped.has(r)) rowspan--;
+          }
           const attrs = [
             colspan ? `colspan="${colspan}"` : "",
-            rowspan ? `rowspan="${rowspan}"` : "",
+            rowspan > 1 ? `rowspan="${rowspan}"` : "",
           ]
             .filter(Boolean)
             .join(" ");
-          headerHtml += `<th ${attrs} style="background-color:#c8c8c8;font-weight:bold;padding:4px 8px;text-align:center;">${th.innerText.trim()}</th>`;
+          headerHtml += `<th ${attrs} style="background-color:#c8c8c8;font-weight:bold;padding:4px 8px;text-align:center;">${getThText(
+            th
+          )}</th>`;
         });
         headerHtml += "</tr>";
       });
