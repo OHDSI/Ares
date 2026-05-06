@@ -39,7 +39,8 @@
         <div class="nav-separator" />
       </div>
 
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" ref="navRef">
+        <div class="nav-indicator" :style="indicatorStyle" />
         <button
           v-for="(section, idx) in sections"
           :key="section.key"
@@ -75,7 +76,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, markRaw, watch, onMounted, onUnmounted } from "vue";
+import {
+  computed,
+  ref,
+  markRaw,
+  watch,
+  onMounted,
+  onUnmounted,
+  nextTick,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import Dropdown from "primevue/dropdown";
@@ -143,6 +152,7 @@ const schemaReady = ref(false);
 
 onMounted(() => {
   document.addEventListener("mousemove", onDocMouseMove);
+  updateIndicator();
 });
 
 onUnmounted(() => {
@@ -199,18 +209,35 @@ const currentSection = computed(() => {
 });
 
 const setCurrentTab = function (val: number) {
-  const query: Record<string, any> = { report: val };
-  if (route.query.schema) query.schema = route.query.schema;
+  const query: Record<string, string> = { report: String(val) };
+  if (route.query.schema) query.schema = route.query.schema as string;
   router.push({ query });
 };
+
+const navRef = ref<HTMLElement | null>(null);
+const indicatorTop = ref(0);
+const indicatorHeight = ref(40);
+
+const indicatorStyle = computed(() => ({
+  top: `${indicatorTop.value}px`,
+  height: `${indicatorHeight.value}px`,
+}));
+
+function updateIndicator() {
+  nextTick(() => {
+    const buttons =
+      navRef.value?.querySelectorAll<HTMLElement>("button.nav-item");
+    const btn = buttons?.[currentSection.value];
+    if (!btn) return;
+    indicatorTop.value = btn.offsetTop;
+    indicatorHeight.value = btn.offsetHeight;
+  });
+}
+
+watch(currentSection, updateIndicator);
 </script>
 
 <style scoped>
-.nav-item.schema-item:hover {
-  color: var(--color-interactive-hover);
-  border-left-color: transparent;
-}
-
 .schema-dropdown {
   flex: 1;
   min-width: 0;
@@ -238,10 +265,21 @@ const setCurrentTab = function (val: number) {
 }
 
 .sidebar-nav {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
   padding: 0;
+}
+
+.nav-indicator {
+  position: absolute;
+  left: 0;
+  width: 3px;
+  background: var(--color-text);
+  transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
 .nav-item {
@@ -257,21 +295,27 @@ const setCurrentTab = function (val: number) {
   font-weight: 500;
   cursor: pointer;
   user-select: none;
-  transition: color 0.15s ease, border-left-color 0.15s ease;
+  transition: color 0.15s ease, background-color 0.15s ease,
+    border-left-color 0.15s ease;
   text-align: left;
   width: 100%;
   white-space: nowrap;
 }
 
-.nav-item:hover {
+.nav-item:hover:not(.active) {
   color: var(--color-interactive-hover);
+  background-color: var(--color-active-bg);
   border-left-color: var(--color-border-strong);
+}
+
+.nav-item.schema-item:hover {
+  background-color: transparent;
+  border-left-color: transparent;
 }
 
 .nav-item.active {
   color: var(--color-interactive-hover);
   font-weight: 600;
-  border-left-color: var(--primary-500, #3b82f6);
 }
 
 .nav-item i {
