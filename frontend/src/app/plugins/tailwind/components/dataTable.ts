@@ -370,20 +370,19 @@ export default {
   },
   bodyrow: ({ context }) => ({
     class: [
-      // context.selected
-      //   ? "bg-primary-50 text-primary-700 dark:bg-primary-300"
-      //   : "bg-surface-0 text-surface-600 dark:bg-surface-800",
-      context.stripedRows
+      context.selected
+        ? "bg-surface-300 text-surface-800 dark:bg-surface-600 dark:text-white"
+        : context.stripedRows
         ? context.index % 2 === 0
           ? "bg-surface-50 text-surface-600 dark:bg-surface-650"
-          : "bg-primary-100/50 text-surface-600 dark:bg-surface-800"
+          : "text-surface-600 dark:bg-surface-800"
         : "",
       "transition duration-200",
       "focus:outline focus:outline-[0.15rem] focus:outline-primary-200 focus:outline-offset-[-0.15rem]", // Focus
       "dark:text-white/80 dark:focus:outline dark:focus:outline-[0.15rem] dark:focus:outline-primary-300 dark:focus:outline-offset-[-0.15rem]", // Dark Mode
       {
         "cursor-pointer": context.selectable,
-        "hover:bg-surface-300/20 hover:text-surface-600":
+        "hover:bg-surface-200 hover:text-surface-800 dark:hover:bg-surface-700 dark:hover:text-white":
           context.selectable && !context.selected, // Hover
       },
     ],
