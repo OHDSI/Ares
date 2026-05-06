@@ -24,6 +24,8 @@
     :search-error="searchError"
     :search-suggestions="searchSuggestions"
     filename="cohort-incidence"
+    :has-active-filters="hasActiveFilters"
+    @clear-filters="clearFilters"
   >
     <div class="strat-checks">
       <div>
@@ -428,14 +430,15 @@ const searchSuggestions = [
   "incidenceRateP100py",
 ];
 
-const { filteredRows, applyNow, searchError } = useTableFilter(
-  () => tableRows.value,
-  dropdownFilters,
-  tableFilters,
-  search,
-  ref({} as Record<string, string>),
-  tableRef
-);
+const { filteredRows, applyNow, searchError, hasActiveFilters, clearFilters } =
+  useTableFilter(
+    () => tableRows.value,
+    dropdownFilters,
+    tableFilters,
+    search,
+    ref({} as Record<string, string>),
+    tableRef
+  );
 
 const uniqueDatabases = computed(() =>
   [...new Set(props.data.map((r) => r.databaseName))].sort()

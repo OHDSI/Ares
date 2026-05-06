@@ -12,6 +12,8 @@
       :search-suggestions="searchSuggestions"
       :search-value-map="searchValueMap"
       filename="cohort-comparison-continuous"
+      :has-active-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
     <DataTable
       ref="tableRef"
@@ -757,6 +759,8 @@ const {
   filteredRows: _rows,
   applyNow,
   searchError,
+  hasActiveFilters: _hasBaseFilters,
+  clearFilters: _clearBaseFilters,
 } = useTableFilter(
   () => props.data,
   dropdownFilters,
@@ -765,6 +769,14 @@ const {
   keyMap,
   tableRef
 );
+
+const hasActiveFilters = computed(
+  () => _hasBaseFilters.value || absSmdMin.value > 0
+);
+function clearFilters() {
+  _clearBaseFilters();
+  absSmdMin.value = 0;
+}
 
 watch(
   () => props.covRef,

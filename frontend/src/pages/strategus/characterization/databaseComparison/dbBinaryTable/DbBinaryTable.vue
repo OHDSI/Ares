@@ -16,6 +16,8 @@
       :search-suggestions="searchSuggestions"
       :search-value-map="searchValueMap"
       filename="database-comparison-binary"
+      :has-active-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
     <DataTable
       ref="tableRef"
@@ -508,14 +510,15 @@ const subTypeOptions = computed(
     ].sort() as string[]
 );
 
-const { filteredRows, applyNow, searchError } = useTableFilter(
-  () => props.data,
-  dropdownFilters,
-  tableFilters,
-  search,
-  keyMap,
-  tableRef
-);
+const { filteredRows, applyNow, searchError, hasActiveFilters, clearFilters } =
+  useTableFilter(
+    () => props.data,
+    dropdownFilters,
+    tableFilters,
+    search,
+    keyMap,
+    tableRef
+  );
 
 watch(
   () => props.data,

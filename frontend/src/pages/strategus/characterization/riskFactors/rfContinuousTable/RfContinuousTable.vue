@@ -12,6 +12,8 @@
       :search-suggestions="searchSuggestions"
       :search-value-map="searchValueMap"
       filename="risk-factors-continuous"
+      :has-active-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     >
       <div class="smd-threshold">
         <span class="smd-label">|SMD| ≥</span>
@@ -982,6 +984,8 @@ const {
   filteredRows: _rows,
   applyNow,
   searchError,
+  hasActiveFilters: _hasBaseFilters,
+  clearFilters: _clearBaseFilters,
 } = useTableFilter(
   () => props.data,
   dropdownFilters,
@@ -990,6 +994,14 @@ const {
   keyMap,
   tableRef
 );
+
+const hasActiveFilters = computed(
+  () => _hasBaseFilters.value || absSmdMin.value > 0
+);
+function clearFilters() {
+  _clearBaseFilters();
+  absSmdMin.value = 0;
+}
 
 watch(
   () => props.rfRef,

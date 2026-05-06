@@ -10,6 +10,8 @@
     :search-error="searchError"
     :search-suggestions="searchSuggestions"
     filename="time-to-event"
+    :has-active-filters="hasActiveFilters"
+    @clear-filters="clearFilters"
   />
   <DataTable
     ref="tableRef"
@@ -274,14 +276,15 @@ const searchSuggestions = [
   "timeScale",
 ];
 
-const { filteredRows, applyNow, searchError } = useTableFilter(
-  () => props.data,
-  dropdownFilters,
-  tableFilters,
-  search,
-  ref({} as Record<string, string>),
-  tableRef
-);
+const { filteredRows, applyNow, searchError, hasActiveFilters, clearFilters } =
+  useTableFilter(
+    () => props.data,
+    dropdownFilters,
+    tableFilters,
+    search,
+    ref({} as Record<string, string>),
+    tableRef
+  );
 
 watch(
   () => props.data,

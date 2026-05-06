@@ -55,9 +55,18 @@
           text
           rounded
           class="filter-toggle-btn"
-          @click="$emit('update:showFilters', !showFilters)"
+          @click="toggleFilters"
         />
       </Tooltip>
+      <Transition name="clear-btn">
+        <span v-if="hasActiveFilters" class="clear-btn-wrap">
+          <Tooltip text="Clear filters">
+            <button class="toolbar-icon-btn" @click="$emit('clear-filters')">
+              <i class="pi pi-times-circle" />
+            </button>
+          </Tooltip>
+        </span>
+      </Transition>
       <TableExportMenu
         :table-ref="tableRef"
         :rows="rows"
@@ -96,6 +105,7 @@ interface Props {
   columns: (string | number)[];
   columnOptions: Array<{ label: string; key: string }>;
   showFilters: boolean;
+  hasActiveFilters?: boolean;
   tableRef: { $el?: HTMLElement } | null;
   rows?: Record<string, unknown>[];
   filename?: string;
@@ -109,6 +119,7 @@ const props = withDefaults(defineProps<Props>(), {
   rows: undefined,
   filename: "export",
   fullscreen: false,
+  hasActiveFilters: false,
   searchError: null,
   searchSuggestions: () => [],
   searchValueMap: () => ({}),
@@ -119,7 +130,13 @@ const emit = defineEmits<{
   (e: "update:columns", value: (string | number)[]): void;
   (e: "update:showFilters", value: boolean): void;
   (e: "update:fullscreen", value: boolean): void;
+  (e: "clear-filters"): void;
 }>();
+
+function toggleFilters() {
+  if (props.showFilters) emit("clear-filters");
+  emit("update:showFilters", !props.showFilters);
+}
 
 const inputFocused = ref(false);
 const hoveredIdx = ref(-1);
@@ -330,6 +347,31 @@ function handleKeyDown(e: KeyboardEvent) {
   width: 2.25rem;
   height: 2.25rem;
   font-size: 1rem;
+}
+
+.clear-btn-wrap {
+  display: inline-flex;
+  align-items: center;
+  transform-origin: left center;
+  max-width: 2.5rem;
+  overflow: visible;
+}
+
+.clear-btn-enter-active {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s ease, max-width 0.22s ease;
+}
+
+.clear-btn-leave-active {
+  transition: transform 0.18s cubic-bezier(0.4, 0, 1, 1), opacity 0.15s ease-in,
+    max-width 0.2s ease-in;
+}
+
+.clear-btn-enter-from,
+.clear-btn-leave-to {
+  transform: scale(0);
+  opacity: 0;
+  max-width: 0;
 }
 
 .toolbar-icon-btn {

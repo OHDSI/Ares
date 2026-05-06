@@ -12,6 +12,8 @@
       :search-suggestions="searchSuggestions"
       :search-value-map="searchValueMap"
       filename="case-series-continuous"
+      :has-active-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
     <DataTable
       ref="tableRef"
@@ -634,14 +636,15 @@ const searchValueMap = computed(() => ({
   timeWindow: timeWindowOptions,
 }));
 
-const { filteredRows, applyNow, searchError } = useTableFilter(
-  () => props.data,
-  dropdownFilters,
-  tableFilters,
-  search,
-  keyMap,
-  tableRef
-);
+const { filteredRows, applyNow, searchError, hasActiveFilters, clearFilters } =
+  useTableFilter(
+    () => props.data,
+    dropdownFilters,
+    tableFilters,
+    search,
+    keyMap,
+    tableRef
+  );
 
 watch(
   () => props.data,

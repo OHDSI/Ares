@@ -19,6 +19,8 @@ export function useTableFilter(
   filteredRows: ShallowRef<any[]>;
   applyNow: () => void;
   searchError: ComputedRef<string | null>;
+  hasActiveFilters: ComputedRef<boolean>;
+  clearFilters: () => void;
 } {
   const searchError = computed<string | null>(() => {
     const q = search.value.trim();
@@ -69,5 +71,30 @@ export function useTableFilter(
     tableRef
   );
 
-  return { filteredRows, applyNow, searchError };
+  const hasActiveFilters = computed(() => {
+    if (search.value.trim()) return true;
+    if (Object.values(dropdownFilters.value).some((v) => v != null))
+      return true;
+    return Object.values(tableFilters.value).some(
+      (f) => f.value != null && f.value !== ""
+    );
+  });
+
+  function clearFilters() {
+    search.value = "";
+    for (const key of Object.keys(dropdownFilters.value)) {
+      dropdownFilters.value[key] = null;
+    }
+    for (const filter of Object.values(tableFilters.value)) {
+      filter.value = null;
+    }
+  }
+
+  return {
+    filteredRows,
+    applyNow,
+    searchError,
+    hasActiveFilters,
+    clearFilters,
+  };
 }

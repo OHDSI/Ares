@@ -11,6 +11,8 @@
       :search-error="searchError"
       :search-suggestions="searchSuggestions"
       filename="dechallenge-rechallenge"
+      :has-active-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
     <DataTable
       ref="tableRef"
@@ -616,14 +618,15 @@ const searchSuggestions = [
   "pctRechallengeFail",
 ];
 
-const { filteredRows, applyNow, searchError } = useTableFilter(
-  () => props.data,
-  dropdownFilters,
-  tableFilters,
-  search,
-  ref({} as Record<string, string>),
-  tableRef
-);
+const { filteredRows, applyNow, searchError, hasActiveFilters, clearFilters } =
+  useTableFilter(
+    () => props.data,
+    dropdownFilters,
+    tableFilters,
+    search,
+    ref({} as Record<string, string>),
+    tableRef
+  );
 
 watch(
   () => props.data,
