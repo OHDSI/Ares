@@ -3,9 +3,11 @@ import { classifyDomain, domainColors } from "../shared/domainColors";
 export function scatterChartSpec({
   data = [],
   selectedDatabaseName = "",
+  darkMode = false,
 }: {
   data: any[];
   selectedDatabaseName?: string;
+  darkMode?: boolean;
 }) {
   if (!data.length) return {};
 
@@ -34,23 +36,25 @@ export function scatterChartSpec({
       [1, 1],
     ],
     symbol: "none",
-    lineStyle: { type: "dashed", color: "#000", width: 1 },
+    lineStyle: { type: "dashed", color: darkMode ? "#bbb" : "#666", width: 1 },
     tooltip: { show: false },
   });
 
   return {
     backgroundColor: "transparent",
+    grid: { bottom: 90, top: 70, left: 20, right: 10, containLabel: true },
+    dataZoom: [
+      { type: "inside", xAxisIndex: 0, filterMode: "none" },
+      { type: "inside", yAxisIndex: 0, filterMode: "none" },
+      { type: "slider", xAxisIndex: 0, filterMode: "none", bottom: 10 },
+    ],
     title: {
       text: `Database: ${selectedDatabaseName}`,
       left: "center",
+      top: 30,
       textStyle: { fontSize: 14 },
     },
-    legend: {
-      right: 0,
-      orient: "vertical",
-      top: 30,
-      data: Object.keys(domainMap),
-    },
+    legend: { top: 0, orient: "horizontal", data: Object.keys(domainMap) },
     tooltip: {
       trigger: "item",
       formatter: (params) => {

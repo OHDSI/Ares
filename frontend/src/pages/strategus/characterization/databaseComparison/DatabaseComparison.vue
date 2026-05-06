@@ -75,11 +75,7 @@
             />
           </div>
           <div v-else-if="activeResultTab === 1">
-            <DbBinaryPlot
-              :data="binaryRows"
-              :cov-ref="covRef"
-              :dark-mode="false"
-            />
+            <DbBinaryPlot :data="binaryRows" :cov-ref="covRef" />
           </div>
           <div v-else-if="activeResultTab === 2">
             <DbContinuousTable

@@ -13,6 +13,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vuex";
 import Chart from "@/widgets/echarts/echarts";
 import { scatterChartSpec } from "../chartSpec";
 
@@ -29,10 +31,14 @@ const props = defineProps<{
   selectedDatabaseName: string;
 }>();
 
+const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
+
 function chartSpec({ data }: { data: any[] }) {
   return scatterChartSpec({
     data,
     selectedDatabaseName: props.selectedDatabaseName,
+    darkMode: darkMode.value,
   });
 }
 </script>

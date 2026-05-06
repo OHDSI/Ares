@@ -38,6 +38,7 @@
 import { ref, computed, watch } from "vue";
 import Dropdown from "primevue/dropdown";
 import Chart from "@/widgets/echarts/echarts";
+import { useStore } from "vuex";
 import { classifyDomain, domainColors } from "../../shared/domainColors";
 
 interface CovRefEntry {
@@ -49,8 +50,10 @@ interface CovRefEntry {
 const props = defineProps<{
   data: any[];
   covRef: CovRefEntry[];
-  darkMode: boolean;
 }>();
+
+const store = useStore();
+const darkMode = computed(() => store.getters.getSettings.darkMode);
 
 const plotXAxis = ref<string | null>(null);
 const plotYAxis = ref<string | null>(null);
@@ -85,6 +88,7 @@ watch(
 const scatterChartSpec = computed(() => {
   const xId = plotXAxis.value;
   const yId = plotYAxis.value;
+  const isDark = darkMode.value;
 
   return ({ data }: { data: any[] }) => {
     if (xId == null || yId == null || !data?.length) return {};
@@ -121,12 +125,18 @@ const scatterChartSpec = computed(() => {
         [1, 1],
       ],
       symbol: "none",
-      lineStyle: { type: "dashed", color: "#000", width: 1 },
+      lineStyle: { type: "dashed", color: isDark ? "#bbb" : "#666", width: 1 },
       tooltip: { show: false },
     });
 
     return {
-      legend: { right: 0, orient: "vertical", data: Object.keys(domainMap) },
+      grid: { bottom: 90, top: 50, left: 20, right: 10, containLabel: true },
+      dataZoom: [
+        { type: "inside", xAxisIndex: 0, filterMode: "none" },
+        { type: "inside", yAxisIndex: 0, filterMode: "none" },
+        { type: "slider", xAxisIndex: 0, filterMode: "none", bottom: 10 },
+      ],
+      legend: { top: 0, orient: "horizontal", data: Object.keys(domainMap) },
       tooltip: {
         trigger: "item",
         formatter: (params: any) => {
