@@ -123,7 +123,7 @@ export default {
       "absolute top-0 left-0",
 
       // Shape
-      "border-0 dark:border",
+      "border border-surface-200",
       "rounded-md",
       "shadow-md",
 
@@ -158,7 +158,7 @@ export default {
       "rounded",
 
       // Spacing
-      "my-2 mx-1",
+      "my-0.5 mx-1",
       "py-1 px-2",
 
       // Color
@@ -171,25 +171,25 @@ export default {
           !context.focused && !context.selected && context.disabled,
       },
       {
-        "bg-primary-100 dark:bg-surface-600/60 text-surface-700 dark:text-white/80":
+        "bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-white/80":
           context.focused && !context.selected,
       },
       {
-        "bg-surface-100 dark:bg-surface-700 text-primary-700 dark:text-white/80":
+        "bg-surface-100 dark:bg-surface-700 text-surface-900 dark:text-white/90 font-medium":
           context.focused && context.selected,
       },
       {
-        "bg-surface-100 dark:bg-surface-700 text-primary-700 dark:text-white/80":
+        "bg-surface-100 dark:bg-surface-700 text-surface-900 dark:text-white/90 font-medium":
           !context.focused && context.selected,
       },
 
       //States
       {
-        "hover:bg-primary-200 dark:hover:bg-surface-600/80":
+        "hover:bg-surface-100 dark:hover:bg-surface-700":
           !context.focused && !context.selected,
       },
       {
-        "hover:text-surface-700 hover:bg-primary-200 dark:hover:text-white dark:hover:bg-surface-600/80":
+        "hover:text-surface-700 hover:bg-surface-100 dark:hover:text-white dark:hover:bg-surface-700":
           context.focused && !context.selected,
       },
       "focus-visible:outline-none focus-visible:outline-offset-0 focus-visible:ring focus-visible:ring-inset focus-visible:ring-primary-400/50 dark:focus-visible:ring-primary-300/50",
@@ -238,7 +238,7 @@ export default {
   header: {
     class: [
       // Spacing
-      "py-3 px-5",
+      "py-2 px-3",
       "m-0",
 
       //Shape
@@ -248,8 +248,8 @@ export default {
 
       // Color
       "text-surface-700 dark:text-white/80",
-      "bg-surface-100 dark:bg-surface-800",
-      "border-surface-300 dark:border-surface-700",
+      "bg-transparent",
+      "border-surface-200 dark:border-surface-700",
     ],
   },
   filtercontainer: {
@@ -262,7 +262,7 @@ export default {
       "leading-none",
 
       // Sizing
-      "pr-7 py-3 px-3",
+      "pr-7 py-1.5 px-3",
       "-mr-7",
       "w-full",
 
@@ -273,7 +273,7 @@ export default {
 
       // Shape
       "border",
-      "rounded-lg",
+      "rounded-md",
       "appearance-none",
 
       // Transitions

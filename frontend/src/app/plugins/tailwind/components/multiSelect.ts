@@ -81,7 +81,7 @@ export default {
       "py-1.5 px-3 mr-2",
 
       // Shape
-      "rounded-[1.14rem]",
+      "rounded",
 
       // Colors
       "bg-surface-200 dark:bg-surface-700",
@@ -133,7 +133,7 @@ export default {
       "absolute top-0 left-0",
 
       // Shape
-      "border-0 dark:border",
+      "border border-surface-200",
       "rounded-md",
       "shadow-md",
 
@@ -147,7 +147,7 @@ export default {
     class: [
       "flex items-center justify-between",
       // Spacing
-      "py-3 px-5",
+      "py-2 px-3",
       "m-0",
 
       //Shape
@@ -157,8 +157,8 @@ export default {
 
       // Color
       "text-surface-700 dark:text-white/80",
-      "bg-surface-100 dark:bg-surface-800",
-      "border-surface-300 dark:border-surface-700",
+      "bg-transparent",
+      "border-surface-200 dark:border-surface-700",
     ],
   },
   headerCheckboxContainer: {
@@ -170,8 +170,8 @@ export default {
       "align-bottom",
 
       // Size
-      "w-6",
-      "h-6",
+      "w-5",
+      "h-5",
 
       // Misc
       "cursor-pointer",
@@ -188,8 +188,8 @@ export default {
         "align-bottom",
 
         // Size
-        "w-6",
-        "h-6",
+        "w-5",
+        "h-5",
 
         // Spacing
         "mr-2",
@@ -207,16 +207,16 @@ export default {
         "justify-center",
 
         // Size
-        "w-6",
-        "h-6",
+        "w-5",
+        "h-5",
 
         // Shape
-        "rounded-md",
-        "border-2",
+        "rounded",
+        "border",
 
         // Colors
         {
-          "border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-900":
+          "border-surface-300 bg-surface-0 dark:border-surface-600 dark:bg-surface-900":
             !context.checked,
           "border-primary-500 bg-primary-500 dark:border-primary-400 dark:bg-primary-400":
             context.checked,
@@ -272,11 +272,11 @@ export default {
         "text-base leading-none",
 
         // Size
-        "w-4",
-        "h-4",
+        "w-3",
+        "h-3",
 
         // Colors
-        "text-white dark:text-surface-900",
+        "text-white",
 
         // Transitions
         "transition-all",
@@ -294,8 +294,8 @@ export default {
         "align-bottom",
 
         // Size
-        "w-6",
-        "h-6",
+        "w-5",
+        "h-5",
 
         // Spacing
         "mr-2",
@@ -313,16 +313,16 @@ export default {
         "justify-center",
 
         // Size
-        "w-6",
-        "h-6",
+        "w-5",
+        "h-5",
 
         // Shape
-        "rounded-md",
-        "border-2",
+        "rounded",
+        "border",
 
         // Colors
         {
-          "border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-900":
+          "border-surface-300 bg-surface-0 dark:border-surface-600 dark:bg-surface-900":
             !context.checked,
           "border-primary-500 bg-primary-500 dark:border-primary-400 dark:bg-primary-400":
             context.checked,
@@ -378,11 +378,11 @@ export default {
         "text-base leading-none",
 
         // Size
-        "w-4",
-        "h-4",
+        "w-3",
+        "h-3",
 
         // Colors
-        "text-white dark:text-surface-900",
+        "text-white",
 
         // Transitions
         "transition-all",
@@ -455,7 +455,7 @@ export default {
       "rounded",
 
       // Spacing
-      "my-2 mx-1",
+      "my-0.5 mx-1",
       "py-1 px-2",
 
       // Color
@@ -468,25 +468,25 @@ export default {
           !context.focused && !context.selected && context.disabled,
       },
       {
-        "bg-primary-100 dark:bg-surface-600/60 text-surface-700 dark:text-white/80":
+        "bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-white/80":
           context.focused && !context.selected,
       },
       {
-        "bg-surface-100 dark:bg-surface-700 text-primary-700 dark:text-white/80":
+        "bg-surface-100 dark:bg-surface-700 text-surface-900 dark:text-white/90 font-medium":
           context.focused && context.selected,
       },
       {
-        "bg-surface-100 dark:bg-surface-700 text-primary-700 dark:text-white/80":
+        "bg-surface-100 dark:bg-surface-700 text-surface-900 dark:text-white/90 font-medium":
           !context.focused && context.selected,
       },
 
       //States
       {
-        "hover:bg-primary-200 dark:hover:bg-surface-600/80":
+        "hover:bg-surface-100 dark:hover:bg-surface-700":
           !context.focused && !context.selected,
       },
       {
-        "hover:text-surface-700 hover:bg-primary-200 dark:hover:text-white dark:hover:bg-surface-600/80":
+        "hover:text-surface-700 hover:bg-surface-100 dark:hover:text-white dark:hover:bg-surface-700":
           context.focused && !context.selected,
       },
 
@@ -527,7 +527,7 @@ export default {
       "leading-none",
 
       // Sizing
-      "pr-7 py-3 px-3",
+      "pr-7 py-1.5 px-3",
       "-mr-7",
       "w-full",
 
@@ -539,7 +539,7 @@ export default {
 
       // Shape
       "border",
-      "rounded-lg",
+      "rounded-md",
       "appearance-none",
 
       // Transitions

@@ -77,7 +77,7 @@ export default {
       "absolute top-0 left-0",
 
       // Shape
-      "border-0 dark:border",
+      "border border-surface-200",
       "rounded-md",
       "shadow-md",
 
@@ -195,63 +195,32 @@ export default {
     checkboxcontainer: {
       class: "mr-2",
     },
-    checkbox: ({ context, props }) => ({
-      class: [
-        "relative",
-
-        // Alignment
-        "flex",
-        "items-center",
-        "justify-center",
-
-        // Size
-        "w-6",
-        "h-6",
-
-        // Shape
-        "rounded-lg",
-        "border-2",
-
-        // Colors
-        "text-surface-100",
-        {
-          "border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-900":
-            !context.checked,
-          "border-primary-500 dark:border-primary-400": context.checked,
-        },
-
-        // States
-        "focus:outline-none focus:outline-offset-0",
-        {
-          "hover:border-primary-500 dark:hover:border-primary-400":
-            !props.disabled,
-          "ring ring-primary-400/50 dark:ring-primary-300/50":
-            !props.disabled && context.focused,
-          "cursor-default opacity-60": props.disabled,
-        },
-
-        // Transitions
-
-        // Misc
-        "cursor-pointer",
-      ],
-    }),
-    checkboxicon: {
-      class: [
-        // Font
-        "text-base leading-none",
-
-        // Size
-        "w-4",
-        "h-4",
-
-        // Colors
-        "text-white dark:text-surface-900",
-
-        // Transitions
-        "transition-all",
-        "duration-200",
-      ],
+    nodeCheckbox: {
+      root: {
+        class: ["relative inline-flex align-bottom w-5 h-5 cursor-pointer select-none"],
+      },
+      box: ({ context, props }) => ({
+        class: [
+          "flex items-center justify-center",
+          "w-5 h-5",
+          "rounded border",
+          {
+            "border-surface-300 bg-surface-0 dark:border-surface-600 dark:bg-surface-900":
+              !context.checked,
+            "border-primary-500 bg-primary-500 dark:border-primary-400 dark:bg-primary-400":
+              context.checked,
+          },
+          {
+            "hover:border-primary-500 dark:hover:border-primary-400":
+              !props.disabled,
+            "cursor-default opacity-60": props.disabled,
+          },
+          "transition-colors duration-150 cursor-pointer",
+        ],
+      }),
+      icon: {
+        class: ["w-3 h-3 text-white"],
+      },
     },
     nodeicon: {
       class: [

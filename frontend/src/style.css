@@ -82,6 +82,7 @@
   --color-interactive: rgba(100, 116, 139, 0.8);
   --color-interactive-hover: #334155;
   --color-active-bg: transparent;
+  --color-hover-bg: rgba(var(--primary-400), 0.12);
   --color-badge-bg: rgba(100, 116, 139, 0.07);
   --color-badge-border: rgba(100, 116, 139, 0.2);
 
