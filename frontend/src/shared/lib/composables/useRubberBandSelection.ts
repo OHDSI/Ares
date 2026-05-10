@@ -8,12 +8,12 @@ function ensureStyles() {
   style.id = STYLE_ID;
   style.textContent = `
     tr.rbs-selected > td {
-      background-color: rgba(59, 130, 246, 0.12) !important;
+      box-shadow: inset 0 0 0 1000px rgba(59, 130, 246, 0.12);
       outline: 1px solid rgba(59, 130, 246, 0.3);
       outline-offset: -1px;
     }
     .dark tr.rbs-selected > td {
-      background-color: rgba(96, 165, 250, 0.15) !important;
+      box-shadow: inset 0 0 0 1000px rgba(96, 165, 250, 0.15);
       outline-color: rgba(96, 165, 250, 0.35);
     }
     .rbs-rect {
@@ -23,6 +23,87 @@ function ensureStyles() {
       border: 1px solid rgba(59, 130, 246, 0.55);
       background: rgba(59, 130, 246, 0.06);
       border-radius: 2px;
+    }
+    .rbs-copy-btn {
+      position: fixed;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #2563eb;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(96, 165, 250, 0.55);
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(6px);
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      user-select: none;
+    }
+    .rbs-copy-btn:hover {
+      background: rgba(239, 246, 255, 0.98);
+      border-color: rgba(59, 130, 246, 0.7);
+    }
+    .rbs-copy-btn.rbs-copied {
+      color: #16a34a;
+      border-color: rgba(22, 163, 74, 0.4);
+    }
+    .dark .rbs-copy-btn {
+      color: #93c5fd;
+      background: rgba(33, 33, 33, 0.95);
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+    .dark .rbs-copy-btn:hover {
+      background: rgba(45, 45, 45, 0.98);
+      border-color: rgba(96, 165, 250, 0.65);
+    }
+    .dark .rbs-copy-btn.rbs-copied {
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.35);
+    }
+    @keyframes rbs-row-out {
+      from {
+        box-shadow: inset 0 0 0 1000px rgba(59, 130, 246, 0.12);
+        outline: 1px solid rgba(59, 130, 246, 0.3);
+        outline-offset: -1px;
+      }
+      to {
+        box-shadow: inset 0 0 0 1000px rgba(59, 130, 246, 0);
+        outline: 1px solid transparent;
+        outline-offset: -1px;
+      }
+    }
+    @keyframes rbs-row-out-dark {
+      from {
+        box-shadow: inset 0 0 0 1000px rgba(96, 165, 250, 0.15);
+        outline: 1px solid rgba(96, 165, 250, 0.35);
+        outline-offset: -1px;
+      }
+      to {
+        box-shadow: inset 0 0 0 1000px rgba(96, 165, 250, 0);
+        outline: 1px solid transparent;
+        outline-offset: -1px;
+      }
+    }
+    tr.rbs-fading > td {
+      animation: rbs-row-out 0.2s ease forwards;
+    }
+    .dark tr.rbs-fading > td {
+      animation-name: rbs-row-out-dark;
+    }
+    @keyframes rbs-btn-out {
+      to {
+        opacity: 0;
+        transform: translateY(3px);
+      }
+    }
+    .rbs-copy-btn.rbs-dismissing {
+      animation: rbs-btn-out 0.13s ease forwards;
+      pointer-events: none;
     }
   `;
   document.head.appendChild(style);
@@ -51,8 +132,14 @@ async function writeToClipboard(tsv: string, html: string) {
   }
 }
 
+const COPY_ICON =
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+const CHECK_ICON =
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
 export default function useRubberBandSelection() {
   let rect: HTMLDivElement | null = null;
+  let copyBtn: HTMLButtonElement | null = null;
   let activeTbody: HTMLElement | null = null;
   let isSelecting = false;
   let startX = 0;
@@ -85,10 +172,18 @@ export default function useRubberBandSelection() {
   }
 
   function clearSelection() {
-    activeTbody
-      ?.querySelectorAll("tr.rbs-selected")
-      .forEach((tr) => tr.classList.remove("rbs-selected"));
+    const rows = Array.from(
+      activeTbody?.querySelectorAll<HTMLElement>("tr.rbs-selected") ?? []
+    );
+    rows.forEach((tr) => {
+      tr.classList.remove("rbs-selected");
+      tr.classList.add("rbs-fading");
+    });
     selectedTrs.clear();
+    setTimeout(
+      () => rows.forEach((tr) => tr.classList.remove("rbs-fading")),
+      220
+    );
   }
 
   function updateSelection(
@@ -108,8 +203,86 @@ export default function useRubberBandSelection() {
         r.right >= left &&
         r.left <= right;
       tr.classList.toggle("rbs-selected", hit);
-      if (hit) selectedTrs.add(tr);
+      if (hit) {
+        tr.classList.remove("rbs-fading");
+        selectedTrs.add(tr);
+      }
     });
+  }
+
+  function buildTsv(): string {
+    const lines: string[] = [...getHeaderLines()];
+    selectedTrs.forEach((tr) => {
+      const line = Array.from(tr.querySelectorAll<HTMLElement>("td"))
+        .map((td) => td.innerText.trim())
+        .join("\t");
+      lines.push(line);
+    });
+    return lines.join("\n");
+  }
+
+  function doCopy() {
+    writeToClipboard(buildTsv(), buildHtml());
+  }
+
+  function triggerCopiedFeedback() {
+    if (copyBtn) {
+      copyBtn.classList.add("rbs-copied");
+      copyBtn.innerHTML = `${CHECK_ICON}<span>Copied</span>`;
+    }
+    setTimeout(() => {
+      destroyCopyBtn();
+      clearSelection();
+    }, 700);
+  }
+
+  function destroyCopyBtn(animate = true) {
+    if (!copyBtn) return;
+    document.removeEventListener("mousedown", onDismissMouseDown);
+    const btn = copyBtn;
+    copyBtn = null;
+    if (animate && btn.isConnected) {
+      btn.classList.add("rbs-dismissing");
+      setTimeout(() => btn.remove(), 140);
+    } else {
+      btn.remove();
+    }
+  }
+
+  function onDismissMouseDown(e: MouseEvent) {
+    if (
+      copyBtn &&
+      e.target !== copyBtn &&
+      !copyBtn.contains(e.target as Node)
+    ) {
+      destroyCopyBtn();
+      clearSelection();
+    }
+  }
+
+  function showCopyBtn(cursorX: number, cursorY: number) {
+    destroyCopyBtn();
+
+    const btn = document.createElement("button");
+    btn.className = "rbs-copy-btn";
+    btn.innerHTML = `${COPY_ICON}<span>Copy</span>`;
+    document.body.appendChild(btn);
+
+    const bw = btn.offsetWidth;
+    const bh = btn.offsetHeight;
+    const left = Math.min(cursorX + 12, window.innerWidth - bw - 8);
+    const top = Math.min(cursorY + 12, window.innerHeight - bh - 8);
+    btn.style.left = `${left}px`;
+    btn.style.top = `${top}px`;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      doCopy();
+      triggerCopiedFeedback();
+    });
+
+    copyBtn = btn;
+    document.addEventListener("mousedown", onDismissMouseDown);
   }
 
   function onMouseDown(e: MouseEvent) {
@@ -146,10 +319,13 @@ export default function useRubberBandSelection() {
     updateSelection(x, y, x + w, y + h);
   }
 
-  function onMouseUp() {
+  function onMouseUp(e: MouseEvent) {
     if (!isSelecting) return;
     isSelecting = false;
     hideRect();
+    if (selectedTrs.size > 0) {
+      showCopyBtn(e.clientX, e.clientY);
+    }
   }
 
   function getThead(): HTMLElement | null {
@@ -267,23 +443,16 @@ export default function useRubberBandSelection() {
     return `<table>${headerHtml}${bodyHtml}</table>`;
   }
 
-  function onKeyDown(e: KeyboardEvent) {
-    if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== "c") return;
+  function onCopy(e: ClipboardEvent) {
     if (selectedTrs.size === 0) return;
 
     const active = document.activeElement;
     if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA"))
       return;
 
-    const lines: string[] = [...getHeaderLines()];
-    selectedTrs.forEach((tr) => {
-      const line = Array.from(tr.querySelectorAll<HTMLElement>("td"))
-        .map((td) => td.innerText.trim())
-        .join("\t");
-      lines.push(line);
-    });
-
-    writeToClipboard(lines.join("\n"), buildHtml());
+    e.preventDefault();
+    doCopy();
+    triggerCopiedFeedback();
   }
 
   onMounted(() => {
@@ -292,14 +461,15 @@ export default function useRubberBandSelection() {
     document.addEventListener("mousedown", onMouseDown);
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("copy", onCopy);
   });
 
   onUnmounted(() => {
     destroyRect();
+    destroyCopyBtn(false);
     document.removeEventListener("mousedown", onMouseDown);
     document.removeEventListener("mousemove", onMouseMove);
     document.removeEventListener("mouseup", onMouseUp);
-    document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener("copy", onCopy);
   });
 }

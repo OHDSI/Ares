@@ -15,6 +15,18 @@ export interface FilterParseResult {
 const CLAUSE_RE =
   /^([a-zA-Z_][a-zA-Z0-9_.]*)\s*(<=|>=|!=|contains|<|>|=)\s*([\s\S]+)$/i;
 
+function isIncompleteClause(text: string): boolean {
+  const t = text.trim();
+  if (!t) return true;
+  if (!/^[a-zA-Z_]/.test(t)) return false;
+  const afterKey = t.replace(/^[a-zA-Z_][a-zA-Z0-9_.]*/, "");
+  if (!afterKey.trim()) return true;
+  const opAndRest = afterKey.trimStart();
+  const spaceIdx = opAndRest.indexOf(" ");
+  if (spaceIdx === -1) return true;
+  return !opAndRest.slice(spaceIdx + 1).trim(); // op typed but value is empty
+}
+
 function parseClause(
   text: string
 ): { key: string; op: FilterOperator; value: string } | null {
@@ -49,6 +61,7 @@ export function parseFilterQuery(input: string): FilterParseResult {
   for (let i = 0; i < segments.length; i++) {
     const parsed = parseClause(segments[i]);
     if (!parsed) {
+      if (isIncompleteClause(segments[i])) return { clauses: [], error: null };
       return { clauses: [], error: `Cannot parse: "${segments[i].trim()}"` };
     }
     clauses.push({ ...parsed, connector: i === 0 ? "and" : connectors[i - 1] });
