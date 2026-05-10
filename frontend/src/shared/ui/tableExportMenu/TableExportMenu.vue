@@ -356,7 +356,7 @@ function saveCsv() {
 }
 
 .export-item:hover:not(:disabled) {
-  background: var(--color-active-bg);
+  background: var(--color-hover-bg);
   color: var(--color-interactive-hover);
 }
 
