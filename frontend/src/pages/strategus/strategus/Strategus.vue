@@ -196,12 +196,12 @@ const sections = [
     icon: "pi pi-chart-bar",
     component: markRaw(Characterization),
   },
-  {
-    key: "documents",
-    label: "Study Protocol",
-    icon: "pi pi-file",
-    component: markRaw(Protocol),
-  },
+  // {
+  //   key: "documents",
+  //   label: "Study Protocol",
+  //   icon: "pi pi-file",
+  //   component: markRaw(Protocol),
+  // },
 ];
 
 const currentSection = computed(() => {
