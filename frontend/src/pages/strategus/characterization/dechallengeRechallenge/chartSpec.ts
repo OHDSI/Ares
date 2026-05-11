@@ -72,8 +72,26 @@ export function failsChartSpec({ data = [] }: { data: any[] }) {
     },
     grid: { bottom: 80 },
     dataZoom: [
-      { type: "inside", xAxisIndex: 0, filterMode: "none" },
-      { type: "slider", xAxisIndex: 0, filterMode: "none", bottom: 8 },
+      {
+        type: "inside",
+        xAxisIndex: [0],
+        filterMode: "none",
+        zoomOnMouseWheel: true,
+        preventDefaultMouseMove: true,
+      },
+      {
+        type: "inside",
+        yAxisIndex: [0],
+        filterMode: "none",
+        zoomOnMouseWheel: true,
+        preventDefaultMouseMove: true,
+      },
+      {
+        type: "slider",
+        xAxisIndex: [0],
+        filterMode: "none",
+        bottom: 8,
+      },
     ],
     xAxis: {
       name: "Time from first exposure",
