@@ -44,7 +44,7 @@ import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacteriza
 
 interface CovRefEntry {
   id: number;
-  databaseId: string;
+  databaseId: string | number;
   databaseName: string;
   n: number;
 }
@@ -70,10 +70,10 @@ watch(
       if (!_urlRestored) {
         const url = readUrl();
         const xMatch = url.dbpX
-          ? newRefs.find((r) => r.databaseId === url.dbpX)
+          ? newRefs.find((r) => String(r.databaseId) === url.dbpX)
           : null;
         const yMatch = url.dbpY
-          ? newRefs.find((r) => r.databaseId === url.dbpY)
+          ? newRefs.find((r) => String(r.databaseId) === url.dbpY)
           : null;
         plotXAxis.value = xMatch ? xMatch.id : newRefs[0].id;
         plotYAxis.value = yMatch ? yMatch.id : newRefs[1].id;
@@ -96,7 +96,10 @@ watch([plotXAxis, plotYAxis], ([x, y]) => {
   if (!_chartReady) return;
   const xRef = x != null ? props.covRef.find((r) => r.id === x) : null;
   const yRef = y != null ? props.covRef.find((r) => r.id === y) : null;
-  patchUrl({ dbpX: xRef?.databaseId ?? null, dbpY: yRef?.databaseId ?? null });
+  patchUrl({
+    dbpX: xRef != null ? String(xRef.databaseId) : null,
+    dbpY: yRef != null ? String(yRef.databaseId) : null,
+  });
 });
 
 onMounted(async () => {
