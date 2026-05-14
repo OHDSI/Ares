@@ -1,4 +1,5 @@
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted, ref, computed } from "vue";
+import { writeToClipboard } from "@/shared/lib/clipboard";
 
 const STYLE_ID = "rbs-global-styles";
 
@@ -23,47 +24,6 @@ function ensureStyles() {
       border: 1px solid rgba(59, 130, 246, 0.55);
       background: rgba(59, 130, 246, 0.06);
       border-radius: 2px;
-    }
-    .rbs-copy-btn {
-      position: fixed;
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 500;
-      line-height: 1.4;
-      color: #2563eb;
-      background: rgba(255, 255, 255, 0.96);
-      border: 1px solid rgba(96, 165, 250, 0.55);
-      border-radius: 5px;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      backdrop-filter: blur(6px);
-      transition: background 0.12s, color 0.12s, border-color 0.12s;
-      user-select: none;
-    }
-    .rbs-copy-btn:hover {
-      background: rgba(239, 246, 255, 0.98);
-      border-color: rgba(59, 130, 246, 0.7);
-    }
-    .rbs-copy-btn.rbs-copied {
-      color: #16a34a;
-      border-color: rgba(22, 163, 74, 0.4);
-    }
-    .dark .rbs-copy-btn {
-      color: #93c5fd;
-      background: rgba(33, 33, 33, 0.95);
-      border-color: rgba(96, 165, 250, 0.4);
-    }
-    .dark .rbs-copy-btn:hover {
-      background: rgba(45, 45, 45, 0.98);
-      border-color: rgba(96, 165, 250, 0.65);
-    }
-    .dark .rbs-copy-btn.rbs-copied {
-      color: #4ade80;
-      border-color: rgba(74, 222, 128, 0.35);
     }
     @keyframes rbs-row-out {
       from {
@@ -95,56 +55,25 @@ function ensureStyles() {
     .dark tr.rbs-fading > td {
       animation-name: rbs-row-out-dark;
     }
-    @keyframes rbs-btn-out {
-      to {
-        opacity: 0;
-        transform: translateY(3px);
-      }
-    }
-    .rbs-copy-btn.rbs-dismissing {
-      animation: rbs-btn-out 0.13s ease forwards;
-      pointer-events: none;
-    }
   `;
   document.head.appendChild(style);
 }
 
-async function writeToClipboard(tsv: string, html: string) {
-  try {
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        "text/plain": new Blob([tsv], { type: "text/plain" }),
-        "text/html": new Blob([html], { type: "text/html" }),
-      }),
-    ]);
-  } catch {
-    try {
-      await navigator.clipboard.writeText(tsv);
-    } catch {
-      const el = document.createElement("textarea");
-      el.value = tsv;
-      el.style.cssText = "position:fixed;opacity:0;top:0;left:0";
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
-    }
-  }
-}
-
-const COPY_ICON =
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-const CHECK_ICON =
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const MIN_DRAG = 8;
 
 export default function useRubberBandSelection() {
   let rect: HTMLDivElement | null = null;
-  let copyBtn: HTMLButtonElement | null = null;
   let activeTbody: HTMLElement | null = null;
   let isSelecting = false;
+  let hasDragged = false;
   let startX = 0;
   let startY = 0;
   const selectedTrs = new Set<HTMLElement>();
+
+  const copyVisible = ref(false);
+  const copyPos = ref({ x: 0, y: 0 });
+  const copyText = computed(() => buildTsv());
+  const rbsCopied = ref(false);
 
   function createRect() {
     rect = document.createElement("div");
@@ -221,68 +150,12 @@ export default function useRubberBandSelection() {
     return lines.join("\n");
   }
 
-  function doCopy() {
-    writeToClipboard(buildTsv(), buildHtml());
-  }
-
-  function triggerCopiedFeedback() {
-    if (copyBtn) {
-      copyBtn.classList.add("rbs-copied");
-      copyBtn.innerHTML = `${CHECK_ICON}<span>Copied</span>`;
-    }
+  function onCopied() {
     setTimeout(() => {
-      destroyCopyBtn();
+      copyVisible.value = false;
+      rbsCopied.value = false;
       clearSelection();
     }, 700);
-  }
-
-  function destroyCopyBtn(animate = true) {
-    if (!copyBtn) return;
-    document.removeEventListener("mousedown", onDismissMouseDown);
-    const btn = copyBtn;
-    copyBtn = null;
-    if (animate && btn.isConnected) {
-      btn.classList.add("rbs-dismissing");
-      setTimeout(() => btn.remove(), 140);
-    } else {
-      btn.remove();
-    }
-  }
-
-  function onDismissMouseDown(e: MouseEvent) {
-    if (
-      copyBtn &&
-      e.target !== copyBtn &&
-      !copyBtn.contains(e.target as Node)
-    ) {
-      destroyCopyBtn();
-      clearSelection();
-    }
-  }
-
-  function showCopyBtn(cursorX: number, cursorY: number) {
-    destroyCopyBtn();
-
-    const btn = document.createElement("button");
-    btn.className = "rbs-copy-btn";
-    btn.innerHTML = `${COPY_ICON}<span>Copy</span>`;
-    document.body.appendChild(btn);
-
-    const bw = btn.offsetWidth;
-    const bh = btn.offsetHeight;
-    const left = Math.min(cursorX + 12, window.innerWidth - bw - 8);
-    const top = Math.min(cursorY + 12, window.innerHeight - bh - 8);
-    btn.style.left = `${left}px`;
-    btn.style.top = `${top}px`;
-
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      doCopy();
-      triggerCopiedFeedback();
-    });
-
-    copyBtn = btn;
-    document.addEventListener("mousedown", onDismissMouseDown);
   }
 
   function onMouseDown(e: MouseEvent) {
@@ -302,18 +175,26 @@ export default function useRubberBandSelection() {
     e.preventDefault();
     activeTbody = tbody;
     isSelecting = true;
+    hasDragged = false;
     startX = e.clientX;
     startY = e.clientY;
+    copyVisible.value = false;
     clearSelection();
   }
 
   function onMouseMove(e: MouseEvent) {
     if (!isSelecting) return;
 
-    const x = Math.min(startX, e.clientX);
-    const y = Math.min(startY, e.clientY);
     const w = Math.abs(e.clientX - startX);
     const h = Math.abs(e.clientY - startY);
+
+    if (!hasDragged && Math.sqrt(w * w + h * h) >= MIN_DRAG) {
+      hasDragged = true;
+    }
+    if (!hasDragged) return;
+
+    const x = Math.min(startX, e.clientX);
+    const y = Math.min(startY, e.clientY);
 
     showRect(x, y, w, h);
     updateSelection(x, y, x + w, y + h);
@@ -323,9 +204,22 @@ export default function useRubberBandSelection() {
     if (!isSelecting) return;
     isSelecting = false;
     hideRect();
-    if (selectedTrs.size > 0) {
-      showCopyBtn(e.clientX, e.clientY);
+    if (hasDragged && selectedTrs.size > 0) {
+      const bw = 80;
+      const bh = 28;
+      copyPos.value = {
+        x: Math.min(e.clientX + 12, window.innerWidth - bw - 8),
+        y: Math.min(e.clientY + 12, window.innerHeight - bh - 8),
+      };
+      copyVisible.value = true;
     }
+  }
+
+  function onDismissMouseDown(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    if (target.closest(".rbs-floating-copy")) return;
+    copyVisible.value = false;
+    clearSelection();
   }
 
   function getThead(): HTMLElement | null {
@@ -350,7 +244,6 @@ export default function useRubberBandSelection() {
     return clone.innerText.trim();
   }
 
-  // TSV: sparse — first cell of each span gets text, rest blank
   function getHeaderLines(): string[] {
     const thead = getThead();
     if (!thead) return [];
@@ -387,7 +280,6 @@ export default function useRubberBandSelection() {
       .filter((line) => line.replace(/\t/g, "").length > 0);
   }
 
-  // HTML: preserve colspan/rowspan so spreadsheet apps render merged cells
   function buildHtml(): string {
     const thead = getThead();
 
@@ -451,14 +343,17 @@ export default function useRubberBandSelection() {
       return;
 
     e.preventDefault();
-    doCopy();
-    triggerCopiedFeedback();
+    writeToClipboard(buildTsv(), buildHtml());
+    copyVisible.value = true;
+    rbsCopied.value = true;
+    onCopied();
   }
 
   onMounted(() => {
     ensureStyles();
     createRect();
     document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("mousedown", onDismissMouseDown);
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
     document.addEventListener("copy", onCopy);
@@ -466,10 +361,12 @@ export default function useRubberBandSelection() {
 
   onUnmounted(() => {
     destroyRect();
-    destroyCopyBtn(false);
     document.removeEventListener("mousedown", onMouseDown);
+    document.removeEventListener("mousedown", onDismissMouseDown);
     document.removeEventListener("mousemove", onMouseMove);
     document.removeEventListener("mouseup", onMouseUp);
     document.removeEventListener("copy", onCopy);
   });
+
+  return { copyVisible, copyPos, copyText, rbsCopied, onCopied };
 }

@@ -145,6 +145,7 @@ import Dropdown from "primevue/dropdown";
 import MultiSelect from "primevue/multiselect";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 import RfBinaryTable from "./rfBinaryTable";
 import RfContinuousTable from "./rfContinuousTable";
 
@@ -157,12 +158,15 @@ const props = defineProps({
 
 const emit = defineEmits(["state-change"]);
 
+const { updateUrl } = useCharacterizationUrl();
+
 const loading = ref(false);
 const showResults = ref(false);
 const loaderState = ref("idle");
 const lastGeneratedConfig = ref(null);
 
 const activeResultTab = ref(0);
+watch(activeResultTab, (val) => updateUrl({ rfView: val }));
 const resultTabs = [
   { key: "binary", label: "Binary Features" },
   { key: "continuous", label: "Continuous Features" },
@@ -548,6 +552,7 @@ onMounted(async () => {
     selectedWashout.value
   ) {
     await generate();
+    if (url?.rfView != null) activeResultTab.value = url.rfView;
   }
 });
 </script>

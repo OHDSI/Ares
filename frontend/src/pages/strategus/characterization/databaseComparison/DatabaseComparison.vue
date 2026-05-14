@@ -118,6 +118,7 @@ import ViewToggle from "../shared/viewToggle";
 import ContextBar from "../shared/contextBar";
 import { useAvailableDatabases } from "../shared/useAvailableDatabases";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 
 import DbBinaryTable from "./dbBinaryTable";
 import DbBinaryPlot from "./dbBinaryPlot";
@@ -130,7 +131,10 @@ const props = defineProps({
 
 const emit = defineEmits(["state-change"]);
 
+const { updateUrl, patchUrl } = useCharacterizationUrl();
+
 const activeResultTab = ref(0);
+watch(activeResultTab, (val) => updateUrl({ dbView: val }));
 const resultTabs = [
   { key: "binary", label: "Binary Table" },
   { key: "plot", label: "Binary Plot" },
@@ -158,6 +162,10 @@ function onKeydown(e: KeyboardEvent) {
 
 const minCharVal = ref(0);
 const minThreshold = ref(0.01);
+
+watch(minThreshold, (val) => {
+  patchUrl({ dbThresh: val !== 0.01 ? String(val) : null });
+});
 const selectedDatabases = ref([]);
 
 const binaryRows = ref([]);
@@ -301,8 +309,11 @@ onMounted(async () => {
     if (valid.length) selectedDatabases.value = valid;
   }
 
+  if (url?.dbThresh != null) minThreshold.value = url.dbThresh;
+
   if (selectedDatabases.value.length >= 2) {
     await generate();
+    if (url?.dbView != null) activeResultTab.value = url.dbView;
   }
 });
 

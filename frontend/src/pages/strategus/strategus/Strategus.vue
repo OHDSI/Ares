@@ -91,6 +91,7 @@ import Dropdown from "primevue/dropdown";
 
 import DataSources from "@/pages/strategus/dataSources";
 import Characterization from "@/pages/strategus/characterization/characterization";
+import CohortGenerator from "@/pages/strategus/cohortGenerator";
 import Protocol from "@/pages/strategus/protocol";
 import {
   StrategusService,
@@ -195,6 +196,12 @@ const sections = [
     label: "Characterization",
     icon: "pi pi-chart-bar",
     component: markRaw(Characterization),
+  },
+  {
+    key: "cohorts",
+    label: "Cohorts",
+    icon: "pi pi-users",
+    component: markRaw(CohortGenerator),
   },
   // {
   //   key: "documents",

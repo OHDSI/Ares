@@ -132,7 +132,7 @@ onMounted(() => {
   flex-shrink: 0;
   width: 1.9rem;
   height: 1.5rem;
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-family: monospace;
   border: 1px solid var(--color-border);
   border-radius: 3px;

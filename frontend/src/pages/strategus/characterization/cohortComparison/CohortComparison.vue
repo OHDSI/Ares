@@ -133,6 +133,7 @@ import CcBinaryPlot from "./ccBinaryPlot";
 import CcContinuousTable from "./ccContinuousTable";
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
+import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 
 const props = defineProps({
   targetRow: { type: Object },
@@ -141,6 +142,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["state-change"]);
+
+const { updateUrl } = useCharacterizationUrl();
 
 const loading = ref(false);
 const showResults = ref(false);
@@ -171,6 +174,7 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 const activeResultTab = ref(0);
+watch(activeResultTab, (val) => updateUrl({ ccView: val }));
 const resultTabs = [
   { key: "binary", label: "Binary Table" },
   { key: "plot", label: "Binary Plot" },
@@ -328,6 +332,7 @@ onMounted(async () => {
 
   if (selectedDatabase.value && selectedComparator.value) {
     await generate();
+    if (url?.ccView != null) activeResultTab.value = url.ccView;
   }
 });
 

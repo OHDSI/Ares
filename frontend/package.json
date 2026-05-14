@@ -12,6 +12,7 @@
     "lint:fix": "eslint src --fix"
   },
   "dependencies": {
+    "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lang-markdown": "6.2.2",
     "@codemirror/lang-sql": "6.5.4",
     "@codemirror/theme-one-dark": "6.1.2",

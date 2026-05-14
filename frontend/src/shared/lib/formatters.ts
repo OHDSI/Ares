@@ -131,6 +131,20 @@ export function formatDate(val: string | null | undefined): string {
   });
 }
 
+export function formatDateTime(val: string | null | undefined): string {
+  if (!val) return "";
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return val;
+  return d.toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
 /** Timestamp (ISO string or Date) -> locale time string. Null/empty -> fallback (default "—"). */
 export function formatTime(
   ts: string | Date | null | undefined,

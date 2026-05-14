@@ -131,6 +131,7 @@ import GenerateButton from "@/pages/strategus/characterization/shared/generateBu
 
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
+import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 import SvgIcon from "@/shared/ui/svgIcon";
 import { mdiFullscreenExit } from "@mdi/js";
 import CsBinaryTable from "./csBinaryTable";
@@ -162,12 +163,15 @@ const props = defineProps({
 
 const emit = defineEmits(["state-change"]);
 
+const { updateUrl } = useCharacterizationUrl();
+
 const loading = ref(false);
 const showResults = ref(false);
 const loaderState = ref("idle");
 const lastGeneratedConfig = ref(null);
 
 const activeResultTab = ref(0);
+watch(activeResultTab, (val) => updateUrl({ csView: val }));
 const resultTabs = [
   { key: "binary", label: "Binary Features" },
   { key: "continuous", label: "Continuous Features" },
@@ -469,6 +473,7 @@ onMounted(async () => {
     selectedWashout.value
   ) {
     await generate();
+    if (url?.csView != null) activeResultTab.value = url.csView;
   }
 });
 

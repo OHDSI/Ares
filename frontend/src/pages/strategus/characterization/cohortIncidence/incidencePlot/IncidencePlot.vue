@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import Chart from "@/widgets/echarts/echarts";
 import {
   cohortIncidenceChartSpec,
@@ -62,17 +62,38 @@ import {
 import MultiSelect from "primevue/multiselect";
 import Dropdown from "primevue/dropdown";
 import Checkbox from "primevue/checkbox";
+import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 
 const props = defineProps<{
   data: any[];
   darkMode: boolean;
 }>();
 
+const { readUrl, patchUrl } = useCharacterizationUrl();
+
 const plotDatabases = ref<string[]>([]);
 const plotOutcomes = ref<string[]>([]);
 const plotXAxis = ref("Age");
 const plotSexStratify = ref(false);
 const plotFixedY = ref(true);
+let _chartReady = false;
+let _urlRestored = false;
+
+function writeCipUrl() {
+  if (!_chartReady) return;
+  patchUrl({
+    cipDbs: plotDatabases.value.length ? plotDatabases.value.join(",") : null,
+    cipOuts: plotOutcomes.value.length ? plotOutcomes.value.join(",") : null,
+    cipX: plotXAxis.value !== "Age" ? plotXAxis.value : null,
+    cipSex: plotSexStratify.value ? "1" : null,
+    cipFixY: !plotFixedY.value ? "0" : null,
+  });
+}
+
+watch(
+  [plotDatabases, plotOutcomes, plotXAxis, plotSexStratify, plotFixedY],
+  writeCipUrl
+);
 
 const uniqueDatabases = computed(() =>
   [...new Set(props.data.map((r) => r.databaseName))].sort()
@@ -122,11 +143,29 @@ const plotChartSpec = computed(
 
 watch(
   () => props.data,
-  () => {
+  (data) => {
+    if (!data.length) return;
+    if (!_urlRestored) {
+      _urlRestored = true;
+      const url = readUrl();
+      if (url.cipDbs?.length) plotDatabases.value = url.cipDbs;
+      if (url.cipOuts?.length) plotOutcomes.value = url.cipOuts;
+      return;
+    }
     plotDatabases.value = [];
     plotOutcomes.value = [];
-  }
+  },
+  { immediate: true }
 );
+
+onMounted(async () => {
+  const url = readUrl();
+  if (url.cipX) plotXAxis.value = url.cipX;
+  plotSexStratify.value = url.cipSex;
+  plotFixedY.value = url.cipFixY;
+  await nextTick();
+  _chartReady = true;
+});
 </script>
 
 <style scoped>

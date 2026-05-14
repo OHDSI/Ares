@@ -35,14 +35,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import Dropdown from "primevue/dropdown";
 import Chart from "@/widgets/echarts/echarts";
 import { useStore } from "vuex";
 import { classifyDomain, domainColors } from "../../shared/domainColors";
+import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 
 interface CovRefEntry {
-  id: string;
+  id: number;
+  databaseId: string;
   databaseName: string;
   n: number;
 }
@@ -54,29 +56,34 @@ const props = defineProps<{
 
 const store = useStore();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
+const { readUrl, patchUrl } = useCharacterizationUrl();
 
 const plotXAxis = ref<string | null>(null);
 const plotYAxis = ref<string | null>(null);
-
-watch(
-  () => props.data,
-  () => {
-    if (props.covRef.length >= 2) {
-      plotXAxis.value = props.covRef[0].id;
-      plotYAxis.value = props.covRef[1].id;
-    } else {
-      plotXAxis.value = null;
-      plotYAxis.value = null;
-    }
-  }
-);
+let _chartReady = false;
+let _urlRestored = false;
 
 watch(
   () => props.covRef,
   (newRefs) => {
     if (newRefs.length >= 2) {
-      plotXAxis.value = newRefs[0].id;
-      plotYAxis.value = newRefs[1].id;
+      if (!_urlRestored) {
+        const url = readUrl();
+        const xMatch = url.dbpX
+          ? newRefs.find((r) => r.databaseId === url.dbpX)
+          : null;
+        const yMatch = url.dbpY
+          ? newRefs.find((r) => r.databaseId === url.dbpY)
+          : null;
+        plotXAxis.value = xMatch ? xMatch.id : newRefs[0].id;
+        plotYAxis.value = yMatch ? yMatch.id : newRefs[1].id;
+        _urlRestored = true;
+      } else {
+        if (!newRefs.some((r) => r.id === plotXAxis.value))
+          plotXAxis.value = newRefs[0].id;
+        if (!newRefs.some((r) => r.id === plotYAxis.value))
+          plotYAxis.value = newRefs[1].id;
+      }
     } else {
       plotXAxis.value = null;
       plotYAxis.value = null;
@@ -84,6 +91,18 @@ watch(
   },
   { immediate: true }
 );
+
+watch([plotXAxis, plotYAxis], ([x, y]) => {
+  if (!_chartReady) return;
+  const xRef = x != null ? props.covRef.find((r) => r.id === x) : null;
+  const yRef = y != null ? props.covRef.find((r) => r.id === y) : null;
+  patchUrl({ dbpX: xRef?.databaseId ?? null, dbpY: yRef?.databaseId ?? null });
+});
+
+onMounted(async () => {
+  await nextTick();
+  _chartReady = true;
+});
 
 const scatterChartSpec = computed(() => {
   const xId = plotXAxis.value;
@@ -109,13 +128,26 @@ const scatterChartSpec = computed(() => {
       ]);
     }
 
-    const series: any[] = Object.entries(domainMap).map(([domain, points]) => ({
-      name: domain,
-      type: "scatter",
-      data: points,
-      symbolSize: 8,
-      itemStyle: { color: domainColors[domain] ?? "#999" },
-    }));
+    const series: any[] = [];
+    for (const [domain, points] of Object.entries(domainMap)) {
+      series.push({
+        name: domain,
+        type: "scatter",
+        data: points,
+        symbolSize: 8,
+        itemStyle: { color: domainColors[domain] ?? "#999" },
+      });
+      series.push({
+        name: `__ghost_${domain}`,
+        type: "scatter",
+        data: points,
+        symbolSize: 28,
+        itemStyle: { opacity: 0 },
+        emphasis: { itemStyle: { opacity: 0 } },
+        legendHoverLink: false,
+        z: 10,
+      });
+    }
 
     series.push({
       name: "x = y",
@@ -139,6 +171,9 @@ const scatterChartSpec = computed(() => {
       legend: { top: 0, orient: "horizontal", data: Object.keys(domainMap) },
       tooltip: {
         trigger: "item",
+        appendToBody: true,
+        confine: true,
+        extraCssText: "max-width: 280px; word-break: break-word;",
         formatter: (params: any) => {
           if (params.seriesName === "x = y") return "";
           const [x, y, name] = params.data;

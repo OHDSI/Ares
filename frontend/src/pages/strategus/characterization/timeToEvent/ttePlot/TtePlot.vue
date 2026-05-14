@@ -48,20 +48,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import Chart from "@/widgets/echarts/echarts";
 import { tteChartSpec, tteChartHeight } from "../chartSpec";
 import MultiSelect from "primevue/multiselect";
+import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 
 const props = defineProps<{
   data: any[];
   darkMode: boolean;
 }>();
 
+const { readUrl, patchUrl } = useCharacterizationUrl();
+
 const plotDatabases = ref<string[]>([]);
 const plotTimeScales = ref<string[]>([]);
 const plotOutcomeTypes = ref<string[]>([]);
 const plotTargetOutcomeTypes = ref<string[]>([]);
+let _chartReady = false;
+let _urlRestored = false;
+
+function writeTteUrl() {
+  if (!_chartReady) return;
+  patchUrl({
+    tteDbs: plotDatabases.value.length ? plotDatabases.value.join(",") : null,
+    tteTs: plotTimeScales.value.length ? plotTimeScales.value.join(",") : null,
+    tteOt: plotOutcomeTypes.value.length
+      ? plotOutcomeTypes.value.join(",")
+      : null,
+    tteTot: plotTargetOutcomeTypes.value.length
+      ? plotTargetOutcomeTypes.value.join(",")
+      : null,
+  });
+}
+
+watch(
+  [plotDatabases, plotTimeScales, plotOutcomeTypes, plotTargetOutcomeTypes],
+  writeTteUrl
+);
 
 const uniqueDatabases = computed(() => [
   ...new Set(props.data.map((r) => r.databaseName)),
@@ -97,14 +121,57 @@ const tteChartHeightComputed = computed(() =>
 
 watch(
   () => props.data,
-  () => {
+  (data) => {
+    if (!data.length) return;
+    if (!_urlRestored) {
+      _urlRestored = true;
+      const url = readUrl();
+      const restoreMulti = (
+        urlVals: string[] | null,
+        opts: string[],
+        setter: (v: string[]) => void
+      ) => {
+        if (urlVals?.length) {
+          const valid = urlVals.filter((v) => opts.includes(v));
+          setter(valid.length ? valid : [...opts]);
+        } else {
+          setter([...opts]);
+        }
+      };
+      restoreMulti(
+        url.tteDbs,
+        uniqueDatabases.value,
+        (v) => (plotDatabases.value = v)
+      );
+      restoreMulti(
+        url.tteTs,
+        uniqueTimeScales.value,
+        (v) => (plotTimeScales.value = v)
+      );
+      restoreMulti(
+        url.tteOt,
+        uniqueOutcomeTypes.value,
+        (v) => (plotOutcomeTypes.value = v)
+      );
+      restoreMulti(
+        url.tteTot,
+        uniqueTargetOutcomeTypes.value,
+        (v) => (plotTargetOutcomeTypes.value = v)
+      );
+      return;
+    }
     plotDatabases.value = [...uniqueDatabases.value];
     plotTimeScales.value = [...uniqueTimeScales.value];
     plotOutcomeTypes.value = [...uniqueOutcomeTypes.value];
     plotTargetOutcomeTypes.value = [...uniqueTargetOutcomeTypes.value];
   },
-  { immediate: false }
+  { immediate: true }
 );
+
+onMounted(async () => {
+  await nextTick();
+  _chartReady = true;
+});
 </script>
 
 <style scoped>

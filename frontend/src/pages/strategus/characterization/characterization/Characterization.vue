@@ -150,6 +150,22 @@
         </div>
       </div>
     </Transition>
+
+    <Teleport to="body">
+      <CopyButton
+        v-if="copyVisible"
+        :text="copyText"
+        :force-copied="rbsCopied"
+        class="rbs-floating-copy"
+        :style="{
+          position: 'fixed',
+          left: copyPos.x + 'px',
+          top: copyPos.y + 'px',
+          zIndex: 10000,
+        }"
+        @copied="onCopied"
+      />
+    </Teleport>
   </div>
 </template>
 
@@ -187,6 +203,7 @@ import Tooltip from "@/shared/ui/tooltip";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 import useRubberBandSelection from "@/shared/lib/composables/useRubberBandSelection";
+import CopyButton from "@/shared/lib/copyButton";
 
 const route = useRoute();
 const store = useStore();
@@ -194,7 +211,10 @@ const store = useStore();
 const { readUrl, updateUrl, clearChildParams, isSelfWrite } =
   useCharacterizationUrl();
 
-useRubberBandSelection();
+let _tabFromUrl = false;
+
+const { copyVisible, copyPos, copyText, rbsCopied, onCopied } =
+  useRubberBandSelection();
 
 const ANALYSIS_DEFS = [
   {
@@ -456,10 +476,16 @@ watch(selectedTarget, async (newTarget, oldTarget) => {
   }
   if (newTarget.cohortId !== oldTarget?.cohortId) {
     if (initialUrlState.value) {
+      _tabFromUrl = true;
       activeTab.value = tabKeyToIndex(initialUrlState.value.tab);
     } else {
+      _tabFromUrl = true;
       activeTab.value = 0;
-      clearChildParams();
+      clearChildParams({
+        report: route.query.report,
+        targetId: newTarget.cohortId,
+        tab: null,
+      });
     }
     await fetchOutcomeTable(newTarget.cohortId);
     await nextTick();
@@ -483,6 +509,14 @@ watch(stickyCtxItems, async (items) => {
 watch(activeTab, () => {
   stickyCtxItems.value = [];
   stickyDatabases.value = [];
+  if (!_tabFromUrl && selectedTarget.value) {
+    clearChildParams({
+      report: route.query.report,
+      targetId: selectedTarget.value.cohortId,
+      tab: activeTabKey(),
+    });
+  }
+  _tabFromUrl = false;
 });
 
 onBeforeRouteUpdate((to) => {
@@ -501,6 +535,12 @@ onBeforeRouteUpdate((to) => {
     comparatorId: q.comparatorId ? parseInt(q.comparatorId, 10) : null,
     tar: q.tar || null,
     washout: q.washout || null,
+    dbView: q.dbView != null ? parseInt(q.dbView, 10) : null,
+    ccView: q.ccView != null ? parseInt(q.ccView, 10) : null,
+    rfView: q.rfView != null ? parseInt(q.rfView, 10) : null,
+    ciView: q.ciView != null ? parseInt(q.ciView, 10) : null,
+    tteView: q.tteView != null ? parseInt(q.tteView, 10) : null,
+    csView: q.csView != null ? parseInt(q.csView, 10) : null,
   };
 
   initialUrlState.value = newState;
@@ -536,6 +576,7 @@ onBeforeRouteUpdate((to) => {
 
   const newTabIdx = tabKeyToIndex(newState.tab);
   if (activeTab.value !== newTabIdx) {
+    _tabFromUrl = true;
     activeTab.value = newTabIdx;
   }
 });

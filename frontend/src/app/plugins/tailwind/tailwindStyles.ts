@@ -28,6 +28,7 @@ import checkBox from "@/app/plugins/tailwind/components/checkBox";
 import accordion from "@/app/plugins/tailwind/components/accordion";
 import toast from "@/app/plugins/tailwind/components/toast";
 import chip from "@/app/plugins/tailwind/components/chip";
+import selectButton from "@/app/plugins/tailwind/components/selectButton";
 
 export const tailwindTheme = {
   tabview,
@@ -60,4 +61,5 @@ export const tailwindTheme = {
   accordion,
   toast,
   chip,
+  selectButton,
 };

@@ -345,6 +345,91 @@ export const StrategusService = {
       );
     },
   },
+  cohorts: {
+    getCounts(cohortIds?: number[], databaseIds?: string[]) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/cohorts/counts`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: {
+            cohortIds: cohortIds?.join(","),
+            databaseIds: databaseIds?.join(","),
+            schema: _currentSchema,
+          },
+        },
+        {}
+      );
+    },
+    getGeneration(cohortIds?: number[]) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/cohorts/generation`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: {
+            cohortIds: cohortIds?.join(","),
+            schema: _currentSchema,
+          },
+        },
+        {}
+      );
+    },
+    getDefinitions() {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/cohorts/definitions`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: { schema: _currentSchema },
+        },
+        {}
+      );
+    },
+    getDefinitionMarkdown(cohortId: number) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/cohorts/definition-markdown`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: { cohortId, schema: _currentSchema },
+        },
+        {}
+      );
+    },
+    getInclusionRules(cohortId: number) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/cohorts/inclusion-rules`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: { cohortId, schema: _currentSchema },
+        },
+        {}
+      );
+    },
+    getInclusionStats(cohortId: number, databaseIds?: string[]) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/cohorts/inclusion-stats`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: {
+            cohortId,
+            databaseIds: databaseIds?.join(","),
+            schema: _currentSchema,
+          },
+        },
+        {}
+      );
+    },
+  },
   debug: {
     getRunningQueries() {
       return apiService(

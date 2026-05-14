@@ -76,6 +76,7 @@ import SvgIcon from "@/shared/ui/svgIcon";
 import { mdiFullscreenExit } from "@mdi/js";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useStore } from "vuex";
+import { useCharacterizationUrl } from "@/shared/lib/composables/useCharacterizationUrl";
 import IncidenceTable from "./incidenceTable";
 import IncidencePlot from "./incidencePlot";
 
@@ -90,6 +91,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["state-change"]);
+
+const { updateUrl } = useCharacterizationUrl();
 
 const loading = ref(false);
 const showResults = ref(false);
@@ -115,6 +118,7 @@ const fullData = ref([]);
 const lastGeneratedConfig = ref(null);
 
 const activeResultTab = ref(0);
+watch(activeResultTab, (val) => updateUrl({ ciView: val }));
 const resultTabs = [
   { key: "table", label: "Table" },
   { key: "plots", label: "Plots" },
@@ -199,6 +203,7 @@ onMounted(async () => {
   await nextTick();
   if (selectedOutcomes.value.length) {
     await generate();
+    if (url?.ciView != null) activeResultTab.value = url.ciView;
   }
 });
 

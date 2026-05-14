@@ -5,11 +5,11 @@
       v-if="store.getters.getData.cdmsourceData"
     >
       <div
-        v-for="(d, i) in store.getters.getData.cdmsourceData.columns"
-        :key="i"
+        v-for="(value, key) in store.getters.getData.cdmsourceData[0]"
+        :key="key"
       >
-        <span class="font-bold">{{ d }}</span
-        >: {{ store.getters.getData.cdmsourceData[0][d] }}
+        <span class="font-bold">{{ formatKey(key) }}</span
+        >: {{ value }}
       </div>
     </div>
     <template #footer>
@@ -43,6 +43,13 @@ import { mdiCodeBraces, mdiHelpCircle } from "@mdi/js";
 import { openNewTab } from "@/shared/lib/utils";
 
 const store = useStore();
+
+function formatKey(key: string): string {
+  return key
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
 </script>
 
 <style scoped></style>

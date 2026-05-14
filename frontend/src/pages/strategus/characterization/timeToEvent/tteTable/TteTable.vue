@@ -184,7 +184,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, nextTick } from "vue";
 import TableToolbar from "@/widgets/tableToolbar";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -195,6 +195,7 @@ import { formatCensored } from "@/shared/lib/formatters";
 import { useStore } from "vuex";
 import { UPDATE_COLUMN_SELECTION } from "@/widgets/settings/model/store/actions.type";
 import { useTableFilter } from "../../shared/useTableFilter";
+import { useTableUrlState } from "@/shared/lib/composables/useTableUrlState";
 
 const props = defineProps<{
   data: any[];
@@ -213,6 +214,7 @@ const localFullscreen = computed({
 });
 
 const STORAGE_KEY = "char:timeToEvent";
+const urlState = useTableUrlState(STORAGE_KEY);
 
 const tableColumnOptions = [
   { label: "Database", key: "databaseName" },
@@ -234,20 +236,34 @@ const TTE_DEFAULT_COLUMNS = [
   "numEvents",
 ];
 
+const _urlCols = urlState.readState().cols;
 const tableSelectedColumns = ref(
-  store.getters.getSettings.persistColumnSelection &&
-    store.getters.getSettings.columnSelection?.[STORAGE_KEY]?.length
+  _urlCols?.length
+    ? _urlCols
+    : store.getters.getSettings.persistColumnSelection &&
+      store.getters.getSettings.columnSelection?.[STORAGE_KEY]?.length
     ? store.getters.getSettings.columnSelection[STORAGE_KEY]
     : TTE_DEFAULT_COLUMNS
 );
 
+let _tableReady = false;
+
 watch(tableSelectedColumns, (val) => {
+  if (!_tableReady) return;
+  urlState.writeState({ cols: val });
   store.dispatch(UPDATE_COLUMN_SELECTION, { [STORAGE_KEY]: val });
 });
 
 const tableRef = ref(null);
 const search = ref("");
 const showFilters = ref(false);
+
+watch(search, (val) => {
+  if (_tableReady) urlState.writeState({ search: val });
+});
+watch(showFilters, (val) => {
+  if (_tableReady) urlState.writeState({ showFilters: val });
+});
 
 const tableFilters = ref({
   databaseName: { value: null as any, matchMode: FilterMatchMode.CONTAINS },
@@ -291,6 +307,39 @@ watch(
   () => applyNow(),
   { immediate: true }
 );
+
+function writeFiltersToUrl() {
+  if (!_tableReady) return;
+  const merged: Record<string, any> = {};
+  for (const [k, f] of Object.entries(tableFilters.value)) {
+    if (f.value != null && f.value !== "")
+      merged[k] = { v: f.value, m: f.matchMode };
+  }
+  urlState.writeState({ filters: Object.keys(merged).length ? merged : null });
+}
+watch(tableFilters, writeFiltersToUrl, { deep: true });
+
+onMounted(async () => {
+  const state = urlState.readState();
+  if (state.search) search.value = state.search;
+  if (state.showFilters) showFilters.value = true;
+  if (state.filters) {
+    for (const [k, v] of Object.entries(state.filters)) {
+      if (k in tableFilters.value) {
+        const e = v as any;
+        if (e && typeof e === "object" && "v" in e) {
+          tableFilters.value[k].value = e.v;
+          tableFilters.value[k].matchMode = e.m;
+        } else {
+          tableFilters.value[k].value = e;
+        }
+      }
+    }
+    applyNow();
+  }
+  await nextTick();
+  _tableReady = true;
+});
 </script>
 
 <style scoped>

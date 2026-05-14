@@ -20,13 +20,26 @@ export function scatterChartSpec({
     domainMap[domain].push([x, y, row.covariateName]);
   }
 
-  const series: any[] = Object.entries(domainMap).map(([domain, points]) => ({
-    name: domain,
-    type: "scatter",
-    data: points,
-    symbolSize: 8,
-    itemStyle: { color: domainColors[domain] ?? "#999" },
-  }));
+  const series: any[] = [];
+  for (const [domain, points] of Object.entries(domainMap)) {
+    series.push({
+      name: domain,
+      type: "scatter",
+      data: points,
+      symbolSize: 8,
+      itemStyle: { color: domainColors[domain] ?? "#999" },
+    });
+    series.push({
+      name: `__ghost_${domain}`,
+      type: "scatter",
+      data: points,
+      symbolSize: 28,
+      itemStyle: { opacity: 0 },
+      emphasis: { itemStyle: { opacity: 0 } },
+      legendHoverLink: false,
+      z: 10,
+    });
+  }
 
   series.push({
     name: "x = y",
@@ -57,6 +70,9 @@ export function scatterChartSpec({
     legend: { top: 0, orient: "horizontal", data: Object.keys(domainMap) },
     tooltip: {
       trigger: "item",
+      appendToBody: true,
+      confine: true,
+      extraCssText: "max-width: 280px; word-break: break-word;",
       formatter: (params) => {
         if ((params as any).seriesName === "x = y") return "";
         const [x, y, name] = (params as any).data;
