@@ -42,7 +42,7 @@ export async function getCohortDefinitions({
     let sql;
     if (subsetTableExists) {
         sql = `
-      SELECT cd.*, csd.json AS subset_definition_json
+      SELECT cd.*, cd.sql_command AS sql, csd.json AS subset_definition_json
       FROM ${schema}.${cgTablePrefix}cohort_definition cd
       LEFT JOIN ${schema}.${cgTablePrefix}cohort_subset_definition csd
         ON cd.subset_definition_id = csd.subset_definition_id
@@ -50,7 +50,7 @@ export async function getCohortDefinitions({
     `;
     } else {
         sql = `
-      SELECT *, NULL AS subset_definition_json
+      SELECT *, sql_command AS sql, NULL AS subset_definition_json
       FROM ${schema}.${cgTablePrefix}cohort_definition
       ${targetClauseNoAlias}
     `;
