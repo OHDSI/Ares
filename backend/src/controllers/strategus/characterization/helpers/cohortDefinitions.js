@@ -1,17 +1,19 @@
-import { queryDb } from '../../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../../config/postgresDbConnection.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 function toArray(v) {
-    return Array.isArray(v) ? v : [v];
+  return Array.isArray(v) ? v : [v];
 }
 
 function buildInClause(prefix, values, params) {
-    const keys = values.map((_, i) => `@${prefix}${i}`);
-    values.forEach((v, i) => { params[`${prefix}${i}`] = v; });
-    return keys.join(',');
+  const keys = values.map((_, i) => `@${prefix}${i}`);
+  values.forEach((v, i) => {
+    params[`${prefix}${i}`] = v;
+  });
+  return keys.join(",");
 }
 
 /**
@@ -22,41 +24,47 @@ function buildInClause(prefix, values, params) {
  * @returns {Promise<object[]>}
  */
 export async function getCohortDefinitions({
-                                               schema,
-                                               cgTablePrefix = 'cg_',
-                                               targetIds = null,
-                                           }) {
-    let subsetTableExists = true;
-    try {
-        await queryDb(`SELECT * FROM ${schema}.${cgTablePrefix}cohort_subset_definition LIMIT 1`);
-    } catch {
-        subsetTableExists = false;
-    }
+  schema,
+  cgTablePrefix = "cg_",
+  targetIds = null,
+}) {
+  let subsetTableExists = true;
+  try {
+    await queryDb(
+      `SELECT * FROM ${schema}.${cgTablePrefix}cohort_subset_definition LIMIT 1`,
+    );
+  } catch {
+    subsetTableExists = false;
+  }
 
-    const params = {};
-    const targetClause = addOptionalClause(targetIds != null,
-        `WHERE cd.cohort_definition_id IN (${buildInClause('targetId', toArray(targetIds ?? []), params)})`);
-    const targetClauseNoAlias = addOptionalClause(targetIds != null,
-        `WHERE cohort_definition_id IN (${(targetIds ?? []).map((_, i) => `@targetId${i}`).join(',')})`);
+  const params = {};
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `WHERE cd.cohort_definition_id IN (${buildInClause("targetId", toArray(targetIds ?? []), params)})`,
+  );
+  const targetClauseNoAlias = addOptionalClause(
+    targetIds != null,
+    `WHERE cohort_definition_id IN (${(targetIds ?? []).map((_, i) => `@targetId${i}`).join(",")})`,
+  );
 
-    let sql;
-    if (subsetTableExists) {
-        sql = `
+  let sql;
+  if (subsetTableExists) {
+    sql = `
       SELECT cd.*, cd.sql_command AS sql, csd.json AS subset_definition_json
       FROM ${schema}.${cgTablePrefix}cohort_definition cd
       LEFT JOIN ${schema}.${cgTablePrefix}cohort_subset_definition csd
         ON cd.subset_definition_id = csd.subset_definition_id
       ${targetClause}
     `;
-    } else {
-        sql = `
+  } else {
+    sql = `
       SELECT *, sql_command AS sql, NULL AS subset_definition_json
       FROM ${schema}.${cgTablePrefix}cohort_definition
       ${targetClauseNoAlias}
     `;
-    }
+  }
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }
 
 /**
@@ -65,26 +73,26 @@ export async function getCohortDefinitions({
  * @returns {string}
  */
 export function extractSubsetCohorts(json) {
-    if (json == null || json === '') return '';
+  if (json == null || json === "") return "";
 
-    try {
-        const parsed = typeof json === 'string' ? JSON.parse(json) : json;
-        const defs = Array.isArray(parsed) ? parsed : [parsed];
+  try {
+    const parsed = typeof json === "string" ? JSON.parse(json) : json;
+    const defs = Array.isArray(parsed) ? parsed : [parsed];
 
-        const cohortIds = new Set();
-        for (const def of defs) {
-            const operators = def.subsetOperators ?? [];
-            for (const op of operators) {
-                if (op.subsetType === 'CohortSubsetOperator') {
-                    for (const id of (op.cohortIds ?? [])) {
-                        cohortIds.add(id);
-                    }
-                }
-            }
+    const cohortIds = new Set();
+    for (const def of defs) {
+      const operators = def.subsetOperators ?? [];
+      for (const op of operators) {
+        if (op.subsetType === "CohortSubsetOperator") {
+          for (const id of op.cohortIds ?? []) {
+            cohortIds.add(id);
+          }
         }
-
-        return [...cohortIds].join('');
-    } catch {
-        return '';
+      }
     }
+
+    return [...cohortIds].join("");
+  } catch {
+    return "";
+  }
 }

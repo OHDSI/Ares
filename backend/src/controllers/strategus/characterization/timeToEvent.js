@@ -1,17 +1,19 @@
-import { queryDb } from '../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../config/postgresDbConnection.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 function toArray(v) {
-    return Array.isArray(v) ? v : [v];
+  return Array.isArray(v) ? v : [v];
 }
 
 function buildInClause(prefix, values, params) {
-    const keys = values.map((_, i) => `@${prefix}${i}`);
-    values.forEach((v, i) => { params[`${prefix}${i}`] = v; });
-    return keys.join(',');
+  const keys = values.map((_, i) => `@${prefix}${i}`);
+  values.forEach((v, i) => {
+    params[`${prefix}${i}`] = v;
+  });
+  return keys.join(",");
 }
 
 /**
@@ -25,21 +27,25 @@ function buildInClause(prefix, values, params) {
  * @returns {Promise<object[]>}
  */
 export async function getTimeToEvent({
-                                         schema,
-                                         cTablePrefix = 'c_',
-                                         cgTablePrefix = 'cg_',
-                                         databaseTable = 'database_meta_data',
-                                         targetIds = null,
-                                         outcomeIds = null,
-                                     }) {
-    const params = {};
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  outcomeIds = null,
+}) {
+  const params = {};
 
-    const targetClause = addOptionalClause(targetIds != null,
-        `AND tte.TARGET_COHORT_DEFINITION_ID IN (${buildInClause('targetId', toArray(targetIds ?? []), params)})`);
-    const outcomeClause = addOptionalClause(outcomeIds != null,
-        `AND tte.OUTCOME_COHORT_DEFINITION_ID IN (${buildInClause('outcomeId', toArray(outcomeIds ?? []), params)})`);
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND tte.TARGET_COHORT_DEFINITION_ID IN (${buildInClause("targetId", toArray(targetIds ?? []), params)})`,
+  );
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND tte.OUTCOME_COHORT_DEFINITION_ID IN (${buildInClause("outcomeId", toArray(outcomeIds ?? []), params)})`,
+  );
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       d.database_id,
@@ -64,5 +70,5 @@ export async function getTimeToEvent({
       ${outcomeClause}
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }

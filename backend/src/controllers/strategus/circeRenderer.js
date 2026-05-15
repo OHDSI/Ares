@@ -101,10 +101,11 @@ function renderTextFilter(filter) {
 }
 
 function renderConceptList(list, quote = '"') {
-  if (!list || !Array.isArray(list) || list.length === 0) return "[none specified]";
+  if (!list || !Array.isArray(list) || list.length === 0)
+    return "[none specified]";
   const names = list.map(
     (item) =>
-      `${quote}${(item.CONCEPT_NAME ?? item.conceptName ?? "").toLowerCase()}${quote}`
+      `${quote}${(item.CONCEPT_NAME ?? item.conceptName ?? "").toLowerCase()}${quote}`,
   );
   if (names.length === 1) return names[0];
   const last = names[names.length - 1];
@@ -113,7 +114,7 @@ function renderConceptList(list, quote = '"') {
 
 function renderConceptSetSelection(sel, conceptSets, defaultName = "any") {
   if (!sel) return "";
-  const excluded = sel.IsExcluded ?? sel.isExcluded ? "not " : "";
+  const excluded = (sel.IsExcluded ?? sel.isExcluded) ? "not " : "";
   const id = sel.CodesetId ?? sel.codesetId;
   return `${excluded}in ${codesetName(id, defaultName, conceptSets)}`;
 }
@@ -140,8 +141,7 @@ function renderDateAdjustment(da) {
   const endWith = da.EndWith ?? da.endWith ?? "END_DATE";
   const startOffset = da.StartOffset ?? da.startOffset ?? 0;
   const endOffset = da.EndOffset ?? da.endOffset ?? 0;
-  const toDatePart = (dt) =>
-    dt === "START_DATE" ? "start date" : "end date";
+  const toDatePart = (dt) => (dt === "START_DATE" ? "start date" : "end date");
   const startDesc =
     startOffset !== 0
       ? `${Math.abs(startOffset)} days ${startOffset < 0 ? "before" : "after"}`
@@ -163,7 +163,8 @@ function renderUserDefinedPeriod(p) {
   let desc = "";
   if (start) desc += `a user defined start date of ${formatDate(start)}`;
   if (start && end) desc += " and";
-  if (end) desc += `${!start ? "a user defined " : " "}end date of ${formatDate(end)}`;
+  if (end)
+    desc += `${!start ? "a user defined " : " "}end date of ${formatDate(end)}`;
   return desc;
 }
 
@@ -228,7 +229,7 @@ function renderAgeGender(c) {
   }
   if (genderCS) {
     parts.push(
-      `who have gender ${renderConceptSetSelection(genderCS, [])} concept set`
+      `who have gender ${renderConceptSetSelection(genderCS, [])} concept set`,
     );
   }
   return parts.join(" ");
@@ -263,19 +264,39 @@ function renderWindowCriteria(countCriteria, indexLabel = "cohort entry") {
   const restrictParts = [];
   if (countCriteria.RestrictVisit ?? countCriteria.restrictVisit)
     restrictParts.push(`at same visit as ${indexLabel}`);
-  if (countCriteria.IgnoreObservationPeriod ?? countCriteria.ignoreObservationPeriod)
+  if (
+    countCriteria.IgnoreObservationPeriod ??
+    countCriteria.ignoreObservationPeriod
+  )
     restrictParts.push("allow events outside observation period");
 
   const parts = [...windowParts, ...restrictParts];
   if (!parts.length) return "";
-  return windowParts.join(" and ") + (restrictParts.length ? (windowParts.length ? "; " : "") + restrictParts.join(" and ") : "");
+  return (
+    windowParts.join(" and ") +
+    (restrictParts.length
+      ? (windowParts.length ? "; " : "") + restrictParts.join(" and ")
+      : "")
+  );
 }
 
 // Detect criteria type from wrapper object
 const KNOWN_TYPES = [
-  "ConditionEra", "ConditionOccurrence", "Death", "DeviceExposure", "DoseEra",
-  "DrugEra", "DrugExposure", "LocationRegion", "Measurement", "Observation",
-  "ObservationPeriod", "ProcedureOccurrence", "Specimen", "VisitOccurrence", "VisitDetail",
+  "ConditionEra",
+  "ConditionOccurrence",
+  "Death",
+  "DeviceExposure",
+  "DoseEra",
+  "DrugEra",
+  "DrugExposure",
+  "LocationRegion",
+  "Measurement",
+  "Observation",
+  "ObservationPeriod",
+  "ProcedureOccurrence",
+  "Specimen",
+  "VisitOccurrence",
+  "VisitDetail",
 ];
 
 function criteriaTypeName(wrapper) {
@@ -284,100 +305,264 @@ function criteriaTypeName(wrapper) {
 }
 
 const TYPE_META = {
-  ConditionEra:        { label: "condition era",        default: "any condition",    source: null },
-  ConditionOccurrence: { label: "condition occurrence",  default: "any condition",    source: "ConditionSourceConcept" },
-  Death:               { label: "death",                 default: "any form",         source: "DeathSourceConcept" },
-  DeviceExposure:      { label: "device exposure",       default: "any device",       source: "DeviceSourceConcept" },
-  DoseEra:             { label: "dose era",              default: "any drug",         source: null },
-  DrugEra:             { label: "drug era",              default: "any drug",         source: null },
-  DrugExposure:        { label: "drug exposure",         default: "any drug",         source: "DrugSourceConcept" },
-  LocationRegion:      { label: "location",              default: "any location",     source: null },
-  Measurement:         { label: "measurement",           default: "any measurement",  source: "MeasurementSourceConcept" },
-  Observation:         { label: "observation",           default: "any observation",  source: "ObservationSourceConcept" },
-  ObservationPeriod:   { label: "observation period",    default: "observation period", source: null },
-  ProcedureOccurrence: { label: "procedure occurrence",  default: "any procedure",    source: "ProcedureSourceConcept" },
-  Specimen:            { label: "specimen",              default: "any specimen",     source: "SpecimenSourceConcept" },
-  VisitOccurrence:     { label: "visit occurrence",      default: "any visit",        source: "VisitSourceConcept" },
-  VisitDetail:         { label: "visit detail",          default: "any visit detail", source: "VisitDetailSourceConcept" },
+  ConditionEra: {
+    label: "condition era",
+    default: "any condition",
+    source: null,
+  },
+  ConditionOccurrence: {
+    label: "condition occurrence",
+    default: "any condition",
+    source: "ConditionSourceConcept",
+  },
+  Death: { label: "death", default: "any form", source: "DeathSourceConcept" },
+  DeviceExposure: {
+    label: "device exposure",
+    default: "any device",
+    source: "DeviceSourceConcept",
+  },
+  DoseEra: { label: "dose era", default: "any drug", source: null },
+  DrugEra: { label: "drug era", default: "any drug", source: null },
+  DrugExposure: {
+    label: "drug exposure",
+    default: "any drug",
+    source: "DrugSourceConcept",
+  },
+  LocationRegion: { label: "location", default: "any location", source: null },
+  Measurement: {
+    label: "measurement",
+    default: "any measurement",
+    source: "MeasurementSourceConcept",
+  },
+  Observation: {
+    label: "observation",
+    default: "any observation",
+    source: "ObservationSourceConcept",
+  },
+  ObservationPeriod: {
+    label: "observation period",
+    default: "observation period",
+    source: null,
+  },
+  ProcedureOccurrence: {
+    label: "procedure occurrence",
+    default: "any procedure",
+    source: "ProcedureSourceConcept",
+  },
+  Specimen: {
+    label: "specimen",
+    default: "any specimen",
+    source: "SpecimenSourceConcept",
+  },
+  VisitOccurrence: {
+    label: "visit occurrence",
+    default: "any visit",
+    source: "VisitSourceConcept",
+  },
+  VisitDetail: {
+    label: "visit detail",
+    default: "any visit detail",
+    source: "VisitDetailSourceConcept",
+  },
 };
 
 function buildTypeAttrs(type, c, conceptSets) {
   const attrs = [];
-  const push = (v) => { if (v) attrs.push(v); };
+  const push = (v) => {
+    if (v) attrs.push(v);
+  };
 
   const A = (key) => c[key] ?? c[key.charAt(0).toLowerCase() + key.slice(1)];
 
   switch (type) {
     case "ConditionEra":
       push(renderEventDateCriteria(A("EraStartDate"), A("EraEndDate")));
-      if (A("EraLength")) push(`era length is ${renderNumericRange(A("EraLength"))} days`);
-      if (A("OccurrenceCount")) push(`containing ${renderNumericRange(A("OccurrenceCount"))} occurrences`);
+      if (A("EraLength"))
+        push(`era length is ${renderNumericRange(A("EraLength"))} days`);
+      if (A("OccurrenceCount"))
+        push(
+          `containing ${renderNumericRange(A("OccurrenceCount"))} occurrences`,
+        );
       break;
 
     case "ConditionOccurrence":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("ConditionType")?.length) push(`a condition type that${A("ConditionTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("ConditionType"))}`);
-      if (A("ConditionTypeCS")) push(`a condition type concept ${renderConceptSetSelection(A("ConditionTypeCS"), conceptSets)} concept set`);
-      if (A("StopReason")) push(`with a stop reason ${renderTextFilter(A("StopReason"))}`);
-      if (A("ProviderSpecialty")?.length) push(`a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`);
-      if (A("ProviderSpecialtyCS")) push(`a provider specialty concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`);
-      if (A("ConditionStatus")?.length) push(`a condition status that is: ${renderConceptList(A("ConditionStatus"))}`);
-      if (A("ConditionStatusCS")) push(`a condition status concept ${renderConceptSetSelection(A("ConditionStatusCS"), conceptSets)} concept set`);
-      if (A("VisitType")?.length) push(`a visit occurrence that is: ${renderConceptList(A("VisitType"))}`);
-      if (A("VisitTypeCS")) push(`a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("ConditionType")?.length)
+        push(
+          `a condition type that${A("ConditionTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("ConditionType"))}`,
+        );
+      if (A("ConditionTypeCS"))
+        push(
+          `a condition type concept ${renderConceptSetSelection(A("ConditionTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("StopReason"))
+        push(`with a stop reason ${renderTextFilter(A("StopReason"))}`);
+      if (A("ProviderSpecialty")?.length)
+        push(
+          `a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`,
+        );
+      if (A("ProviderSpecialtyCS"))
+        push(
+          `a provider specialty concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`,
+        );
+      if (A("ConditionStatus")?.length)
+        push(
+          `a condition status that is: ${renderConceptList(A("ConditionStatus"))}`,
+        );
+      if (A("ConditionStatusCS"))
+        push(
+          `a condition status concept ${renderConceptSetSelection(A("ConditionStatusCS"), conceptSets)} concept set`,
+        );
+      if (A("VisitType")?.length)
+        push(
+          `a visit occurrence that is: ${renderConceptList(A("VisitType"))}`,
+        );
+      if (A("VisitTypeCS"))
+        push(
+          `a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`,
+        );
       break;
 
     case "Death":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("DeathType")?.length) push(`a death type that${A("DeathTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("DeathType"))}`);
-      if (A("DeathTypeCS")) push(`a death type concept ${renderConceptSetSelection(A("DeathTypeCS"), conceptSets)} concept set`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("DeathType")?.length)
+        push(
+          `a death type that${A("DeathTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("DeathType"))}`,
+        );
+      if (A("DeathTypeCS"))
+        push(
+          `a death type concept ${renderConceptSetSelection(A("DeathTypeCS"), conceptSets)} concept set`,
+        );
       break;
 
     case "DeviceExposure":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("DeviceType")?.length) push(`a device type that${A("DeviceTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("DeviceType"))}`);
-      if (A("DeviceTypeCS")) push(`a device type concept ${renderConceptSetSelection(A("DeviceTypeCS"), conceptSets)} concept set`);
-      if (A("UniqueDeviceId")) push(`unique device ID ${renderTextFilter(A("UniqueDeviceId"))}`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("DeviceType")?.length)
+        push(
+          `a device type that${A("DeviceTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("DeviceType"))}`,
+        );
+      if (A("DeviceTypeCS"))
+        push(
+          `a device type concept ${renderConceptSetSelection(A("DeviceTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("UniqueDeviceId"))
+        push(`unique device ID ${renderTextFilter(A("UniqueDeviceId"))}`);
       if (A("Quantity")) push(`quantity ${renderNumericRange(A("Quantity"))}`);
-      if (A("ProviderSpecialty")?.length) push(`a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`);
-      if (A("ProviderSpecialtyCS")) push(`a provider specialty concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`);
-      if (A("VisitType")?.length) push(`a visit occurrence that is: ${renderConceptList(A("VisitType"))}`);
-      if (A("VisitTypeCS")) push(`a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`);
+      if (A("ProviderSpecialty")?.length)
+        push(
+          `a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`,
+        );
+      if (A("ProviderSpecialtyCS"))
+        push(
+          `a provider specialty concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`,
+        );
+      if (A("VisitType")?.length)
+        push(
+          `a visit occurrence that is: ${renderConceptList(A("VisitType"))}`,
+        );
+      if (A("VisitTypeCS"))
+        push(
+          `a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`,
+        );
       break;
 
     case "DoseEra":
       push(renderEventDateCriteria(A("EraStartDate"), A("EraEndDate")));
       if (A("Unit")?.length) push(`unit is: ${renderConceptList(A("Unit"))}`);
-      if (A("UnitCS")) push(`a unit concept ${renderConceptSetSelection(A("UnitCS"), conceptSets)} concept set`);
-      if (A("EraLength")) push(`with era length ${renderNumericRange(A("EraLength"))} days`);
-      if (A("DoseValue")) push(`with dose value ${renderNumericRange(A("DoseValue"))}`);
+      if (A("UnitCS"))
+        push(
+          `a unit concept ${renderConceptSetSelection(A("UnitCS"), conceptSets)} concept set`,
+        );
+      if (A("EraLength"))
+        push(`with era length ${renderNumericRange(A("EraLength"))} days`);
+      if (A("DoseValue"))
+        push(`with dose value ${renderNumericRange(A("DoseValue"))}`);
       break;
 
     case "DrugEra":
       push(renderEventDateCriteria(A("EraStartDate"), A("EraEndDate")));
-      if (A("EraLength")) push(`with era length ${renderNumericRange(A("EraLength"))} days`);
-      if (A("OccurrenceCount")) push(`with occurrence count ${renderNumericRange(A("OccurrenceCount"))}`);
-      if (A("GapDays")) push(`with gap days ${renderNumericRange(A("GapDays"))}`);
+      if (A("EraLength"))
+        push(`with era length ${renderNumericRange(A("EraLength"))} days`);
+      if (A("OccurrenceCount"))
+        push(
+          `with occurrence count ${renderNumericRange(A("OccurrenceCount"))}`,
+        );
+      if (A("GapDays"))
+        push(`with gap days ${renderNumericRange(A("GapDays"))}`);
       break;
 
     case "DrugExposure":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("DrugType")?.length) push(`a drug type that${A("DrugTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("DrugType"))}`);
-      if (A("DrugTypeCS")) push(`a drug type concept ${renderConceptSetSelection(A("DrugTypeCS"), conceptSets)} concept set`);
-      if (A("Refills")) push(`with refills ${renderNumericRange(A("Refills"))}`);
-      if (A("Quantity")) push(`with quantity ${renderNumericRange(A("Quantity"))}`);
-      if (A("DaysSupply")) push(`with days supply ${renderNumericRange(A("DaysSupply"))} days`);
-      if (A("EffectiveDrugDose")) push(`with effective drug dose ${renderNumericRange(A("EffectiveDrugDose"))}`);
-      if (A("DoseUnit")?.length) push(`dose unit: ${renderConceptList(A("DoseUnit"))}`);
-      if (A("DoseUnitCS")) push(`a dose unit concept ${renderConceptSetSelection(A("DoseUnitCS"), conceptSets)} concept set`);
-      if (A("RouteConcept")?.length) push(`with route: ${renderConceptList(A("RouteConcept"))}`);
-      if (A("RouteConceptCS")) push(`a route concept ${renderConceptSetSelection(A("RouteConceptCS"), conceptSets)} concept set`);
-      if (A("LotNumber")) push(`lot number ${renderTextFilter(A("LotNumber"))}`);
-      if (A("StopReason")) push(`with a stop reason ${renderTextFilter(A("StopReason"))}`);
-      if (A("ProviderSpecialty")?.length) push(`a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`);
-      if (A("ProviderSpecialtyCS")) push(`a provider specialty concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`);
-      if (A("VisitType")?.length) push(`a visit occurrence that is: ${renderConceptList(A("VisitType"))}`);
-      if (A("VisitTypeCS")) push(`a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("DrugType")?.length)
+        push(
+          `a drug type that${A("DrugTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("DrugType"))}`,
+        );
+      if (A("DrugTypeCS"))
+        push(
+          `a drug type concept ${renderConceptSetSelection(A("DrugTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("Refills"))
+        push(`with refills ${renderNumericRange(A("Refills"))}`);
+      if (A("Quantity"))
+        push(`with quantity ${renderNumericRange(A("Quantity"))}`);
+      if (A("DaysSupply"))
+        push(`with days supply ${renderNumericRange(A("DaysSupply"))} days`);
+      if (A("EffectiveDrugDose"))
+        push(
+          `with effective drug dose ${renderNumericRange(A("EffectiveDrugDose"))}`,
+        );
+      if (A("DoseUnit")?.length)
+        push(`dose unit: ${renderConceptList(A("DoseUnit"))}`);
+      if (A("DoseUnitCS"))
+        push(
+          `a dose unit concept ${renderConceptSetSelection(A("DoseUnitCS"), conceptSets)} concept set`,
+        );
+      if (A("RouteConcept")?.length)
+        push(`with route: ${renderConceptList(A("RouteConcept"))}`);
+      if (A("RouteConceptCS"))
+        push(
+          `a route concept ${renderConceptSetSelection(A("RouteConceptCS"), conceptSets)} concept set`,
+        );
+      if (A("LotNumber"))
+        push(`lot number ${renderTextFilter(A("LotNumber"))}`);
+      if (A("StopReason"))
+        push(`with a stop reason ${renderTextFilter(A("StopReason"))}`);
+      if (A("ProviderSpecialty")?.length)
+        push(
+          `a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`,
+        );
+      if (A("ProviderSpecialtyCS"))
+        push(
+          `a provider specialty concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`,
+        );
+      if (A("VisitType")?.length)
+        push(
+          `a visit occurrence that is: ${renderConceptList(A("VisitType"))}`,
+        );
+      if (A("VisitTypeCS"))
+        push(
+          `a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`,
+        );
       break;
 
     case "LocationRegion":
@@ -385,107 +570,302 @@ function buildTypeAttrs(type, c, conceptSets) {
       break;
 
     case "Measurement":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("MeasurementType")?.length) push(`a measurement type that${A("MeasurementTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("MeasurementType"))}`);
-      if (A("MeasurementTypeCS")) push(`a measurement type concept ${renderConceptSetSelection(A("MeasurementTypeCS"), conceptSets)} concept set`);
-      if (A("Operator")?.length) push(`with operator: ${renderConceptList(A("Operator"))}`);
-      if (A("OperatorCS")) push(`an operator concept ${renderConceptSetSelection(A("OperatorCS"), conceptSets)} concept set`);
-      if (A("ValueAsNumber")) push(`numeric value ${renderNumericRange(A("ValueAsNumber"))}`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("MeasurementType")?.length)
+        push(
+          `a measurement type that${A("MeasurementTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("MeasurementType"))}`,
+        );
+      if (A("MeasurementTypeCS"))
+        push(
+          `a measurement type concept ${renderConceptSetSelection(A("MeasurementTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("Operator")?.length)
+        push(`with operator: ${renderConceptList(A("Operator"))}`);
+      if (A("OperatorCS"))
+        push(
+          `an operator concept ${renderConceptSetSelection(A("OperatorCS"), conceptSets)} concept set`,
+        );
+      if (A("ValueAsNumber"))
+        push(`numeric value ${renderNumericRange(A("ValueAsNumber"))}`);
       if (A("Unit")?.length) push(`unit: ${renderConceptList(A("Unit"))}`);
-      if (A("UnitCS")) push(`a unit concept ${renderConceptSetSelection(A("UnitCS"), conceptSets)} concept set`);
-      if (A("ValueAsConcept")?.length) push(`with value as concept: ${renderConceptList(A("ValueAsConcept"))}`);
-      if (A("ValueAsConceptCS")) push(`a value as concept ${renderConceptSetSelection(A("ValueAsConceptCS"), conceptSets)} concept set`);
+      if (A("UnitCS"))
+        push(
+          `a unit concept ${renderConceptSetSelection(A("UnitCS"), conceptSets)} concept set`,
+        );
+      if (A("ValueAsConcept")?.length)
+        push(
+          `with value as concept: ${renderConceptList(A("ValueAsConcept"))}`,
+        );
+      if (A("ValueAsConceptCS"))
+        push(
+          `a value as concept ${renderConceptSetSelection(A("ValueAsConceptCS"), conceptSets)} concept set`,
+        );
       if (A("RangeLow")) push(`low range ${renderNumericRange(A("RangeLow"))}`);
-      if (A("RangeHigh")) push(`high range ${renderNumericRange(A("RangeHigh"))}`);
-      if (A("RangeLowRatio")) push(`low range-to-value ratio ${renderNumericRange(A("RangeLowRatio"))}`);
-      if (A("RangeHighRatio")) push(`high range-to-value ratio ${renderNumericRange(A("RangeHighRatio"))}`);
-      if (A("Abnormal") === true) push("with an abnormal result (measurement value falls outside the low and high range)");
-      if (A("ProviderSpecialty")?.length) push(`a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`);
-      if (A("ProviderSpecialtyCS")) push(`a provider speciality concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`);
-      if (A("VisitType")?.length) push(`a visit occurrence that is: ${renderConceptList(A("VisitType"))}`);
-      if (A("VisitTypeCS")) push(`a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`);
+      if (A("RangeHigh"))
+        push(`high range ${renderNumericRange(A("RangeHigh"))}`);
+      if (A("RangeLowRatio"))
+        push(
+          `low range-to-value ratio ${renderNumericRange(A("RangeLowRatio"))}`,
+        );
+      if (A("RangeHighRatio"))
+        push(
+          `high range-to-value ratio ${renderNumericRange(A("RangeHighRatio"))}`,
+        );
+      if (A("Abnormal") === true)
+        push(
+          "with an abnormal result (measurement value falls outside the low and high range)",
+        );
+      if (A("ProviderSpecialty")?.length)
+        push(
+          `a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`,
+        );
+      if (A("ProviderSpecialtyCS"))
+        push(
+          `a provider speciality concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`,
+        );
+      if (A("VisitType")?.length)
+        push(
+          `a visit occurrence that is: ${renderConceptList(A("VisitType"))}`,
+        );
+      if (A("VisitTypeCS"))
+        push(
+          `a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`,
+        );
       break;
 
     case "Observation":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("ObservationType")?.length) push(`an observation type that${A("ObservationTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("ObservationType"))}`);
-      if (A("ObservationTypeCS")) push(`an observation type concept ${renderConceptSetSelection(A("ObservationTypeCS"), conceptSets)} concept set`);
-      if (A("ValueAsNumber")) push(`numeric value ${renderNumericRange(A("ValueAsNumber"))}`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("ObservationType")?.length)
+        push(
+          `an observation type that${A("ObservationTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("ObservationType"))}`,
+        );
+      if (A("ObservationTypeCS"))
+        push(
+          `an observation type concept ${renderConceptSetSelection(A("ObservationTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("ValueAsNumber"))
+        push(`numeric value ${renderNumericRange(A("ValueAsNumber"))}`);
       if (A("Unit")?.length) push(`unit: ${renderConceptList(A("Unit"))}`);
-      if (A("UnitCS")) push(`an unit concept ${renderConceptSetSelection(A("UnitCS"), conceptSets)} concept set`);
-      if (A("ValueAsConcept")?.length) push(`with value as concept: ${renderConceptList(A("ValueAsConcept"))}`);
-      if (A("ValueAsConceptCS")) push(`a value as concept ${renderConceptSetSelection(A("ValueAsConceptCS"), conceptSets)} concept set`);
-      if (A("ValueAsString")) push(`with value as string ${renderTextFilter(A("ValueAsString"))}`);
-      if (A("Qualifier")?.length) push(`with qualifier: ${renderConceptList(A("Qualifier"))}`);
-      if (A("QualifierCS")) push(`a qualifier concept ${renderConceptSetSelection(A("QualifierCS"), conceptSets)} concept set`);
-      if (A("ProviderSpecialty")?.length) push(`a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`);
-      if (A("ProviderSpecialtyCS")) push(`a provider speciality concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`);
-      if (A("VisitType")?.length) push(`a visit occurrence that is: ${renderConceptList(A("VisitType"))}`);
-      if (A("VisitTypeCS")) push(`a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`);
+      if (A("UnitCS"))
+        push(
+          `an unit concept ${renderConceptSetSelection(A("UnitCS"), conceptSets)} concept set`,
+        );
+      if (A("ValueAsConcept")?.length)
+        push(
+          `with value as concept: ${renderConceptList(A("ValueAsConcept"))}`,
+        );
+      if (A("ValueAsConceptCS"))
+        push(
+          `a value as concept ${renderConceptSetSelection(A("ValueAsConceptCS"), conceptSets)} concept set`,
+        );
+      if (A("ValueAsString"))
+        push(`with value as string ${renderTextFilter(A("ValueAsString"))}`);
+      if (A("Qualifier")?.length)
+        push(`with qualifier: ${renderConceptList(A("Qualifier"))}`);
+      if (A("QualifierCS"))
+        push(
+          `a qualifier concept ${renderConceptSetSelection(A("QualifierCS"), conceptSets)} concept set`,
+        );
+      if (A("ProviderSpecialty")?.length)
+        push(
+          `a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`,
+        );
+      if (A("ProviderSpecialtyCS"))
+        push(
+          `a provider speciality concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`,
+        );
+      if (A("VisitType")?.length)
+        push(
+          `a visit occurrence that is: ${renderConceptList(A("VisitType"))}`,
+        );
+      if (A("VisitTypeCS"))
+        push(
+          `a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`,
+        );
       break;
 
     case "ObservationPeriod":
       push(renderEventDateCriteria(A("PeriodStartDate"), A("PeriodEndDate")));
       push(renderUserDefinedPeriod(A("UserDefinedPeriod")));
-      if (A("PeriodType")?.length) push(`period type is: ${renderConceptList(A("PeriodType"))}`);
-      if (A("PeriodTypeCS")) push(`a period type concept ${renderConceptSetSelection(A("PeriodTypeCS"), conceptSets)} concept set`);
-      if (A("PeriodLength")) push(`with a length ${renderNumericRange(A("PeriodLength"))} days`);
+      if (A("PeriodType")?.length)
+        push(`period type is: ${renderConceptList(A("PeriodType"))}`);
+      if (A("PeriodTypeCS"))
+        push(
+          `a period type concept ${renderConceptSetSelection(A("PeriodTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("PeriodLength"))
+        push(`with a length ${renderNumericRange(A("PeriodLength"))} days`);
       break;
 
     case "ProcedureOccurrence":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("ProcedureType")?.length) push(`a procedure type that${A("ProcedureTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("ProcedureType"))}`);
-      if (A("ProcedureTypeCS")) push(`a procedure type concept ${renderConceptSetSelection(A("ProcedureTypeCS"), conceptSets)} concept set`);
-      if (A("Modifier")?.length) push(`with modifier: ${renderConceptList(A("Modifier"))}`);
-      if (A("ModifierCS")) push(`a modifier concept ${renderConceptSetSelection(A("ModifierCS"), conceptSets)} concept set`);
-      if (A("Quantity")) push(`with quantity ${renderNumericRange(A("Quantity"))}`);
-      if (A("ProviderSpecialty")?.length) push(`a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`);
-      if (A("ProviderSpecialtyCS")) push(`a provider speciality concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`);
-      if (A("VisitType")?.length) push(`a visit occurrence that is: ${renderConceptList(A("VisitType"))}`);
-      if (A("VisitTypeCS")) push(`a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("ProcedureType")?.length)
+        push(
+          `a procedure type that${A("ProcedureTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("ProcedureType"))}`,
+        );
+      if (A("ProcedureTypeCS"))
+        push(
+          `a procedure type concept ${renderConceptSetSelection(A("ProcedureTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("Modifier")?.length)
+        push(`with modifier: ${renderConceptList(A("Modifier"))}`);
+      if (A("ModifierCS"))
+        push(
+          `a modifier concept ${renderConceptSetSelection(A("ModifierCS"), conceptSets)} concept set`,
+        );
+      if (A("Quantity"))
+        push(`with quantity ${renderNumericRange(A("Quantity"))}`);
+      if (A("ProviderSpecialty")?.length)
+        push(
+          `a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`,
+        );
+      if (A("ProviderSpecialtyCS"))
+        push(
+          `a provider speciality concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`,
+        );
+      if (A("VisitType")?.length)
+        push(
+          `a visit occurrence that is: ${renderConceptList(A("VisitType"))}`,
+        );
+      if (A("VisitTypeCS"))
+        push(
+          `a visit concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`,
+        );
       break;
 
     case "Specimen":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("SpecimenType")?.length) push(`a specimen type that${A("SpecimenTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("SpecimenType"))}`);
-      if (A("SpecimenTypeCS")) push(`a specimen type concept ${renderConceptSetSelection(A("SpecimenTypeCS"), conceptSets)} concept set`);
-      if (A("Quantity")) push(`with quantity ${renderNumericRange(A("Quantity"))}`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("SpecimenType")?.length)
+        push(
+          `a specimen type that${A("SpecimenTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("SpecimenType"))}`,
+        );
+      if (A("SpecimenTypeCS"))
+        push(
+          `a specimen type concept ${renderConceptSetSelection(A("SpecimenTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("Quantity"))
+        push(`with quantity ${renderNumericRange(A("Quantity"))}`);
       if (A("Unit")?.length) push(`with unit: ${renderConceptList(A("Unit"))}`);
-      if (A("UnitCS")) push(`an unit concept ${renderConceptSetSelection(A("UnitCS"), conceptSets)} concept set`);
-      if (A("AnatomicSite")?.length) push(`with anatomic site: ${renderConceptList(A("AnatomicSite"))}`);
-      if (A("AnatomicSiteCS")) push(`an anatomic site concept ${renderConceptSetSelection(A("AnatomicSiteCS"), conceptSets)} concept set`);
-      if (A("DiseaseStatus")?.length) push(`with disease status: ${renderConceptList(A("DiseaseStatus"))}`);
-      if (A("DiseaseStatusCS")) push(`a disease status concept ${renderConceptSetSelection(A("DiseaseStatusCS"), conceptSets)} concept set`);
-      if (A("SourceId")) push(`with source ID ${renderTextFilter(A("SourceId"))}`);
+      if (A("UnitCS"))
+        push(
+          `an unit concept ${renderConceptSetSelection(A("UnitCS"), conceptSets)} concept set`,
+        );
+      if (A("AnatomicSite")?.length)
+        push(`with anatomic site: ${renderConceptList(A("AnatomicSite"))}`);
+      if (A("AnatomicSiteCS"))
+        push(
+          `an anatomic site concept ${renderConceptSetSelection(A("AnatomicSiteCS"), conceptSets)} concept set`,
+        );
+      if (A("DiseaseStatus")?.length)
+        push(`with disease status: ${renderConceptList(A("DiseaseStatus"))}`);
+      if (A("DiseaseStatusCS"))
+        push(
+          `a disease status concept ${renderConceptSetSelection(A("DiseaseStatusCS"), conceptSets)} concept set`,
+        );
+      if (A("SourceId"))
+        push(`with source ID ${renderTextFilter(A("SourceId"))}`);
       break;
 
     case "VisitOccurrence":
-      push(renderEventDateCriteria(A("OccurrenceStartDate"), A("OccurrenceEndDate")));
-      if (A("VisitType")?.length) push(`a visit type that${A("VisitTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("VisitType"))}`);
-      if (A("VisitTypeCS")) push(`a visit type concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`);
-      if (A("ProviderSpecialty")?.length) push(`a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`);
-      if (A("ProviderSpecialtyCS")) push(`a provider speciality concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`);
-      if (A("PlaceOfServiceCS")) push(`a place of service that is ${renderConceptSetSelection(A("PlaceOfServiceCS"), conceptSets)} concept set`);
-      if (A("VisitLength")) push(`with length ${renderNumericRange(A("VisitLength"))} days`);
+      push(
+        renderEventDateCriteria(
+          A("OccurrenceStartDate"),
+          A("OccurrenceEndDate"),
+        ),
+      );
+      if (A("VisitType")?.length)
+        push(
+          `a visit type that${A("VisitTypeExclude") ? " is not:" : " is:"} ${renderConceptList(A("VisitType"))}`,
+        );
+      if (A("VisitTypeCS"))
+        push(
+          `a visit type concept ${renderConceptSetSelection(A("VisitTypeCS"), conceptSets)} concept set`,
+        );
+      if (A("ProviderSpecialty")?.length)
+        push(
+          `a provider specialty that is: ${renderConceptList(A("ProviderSpecialty"))}`,
+        );
+      if (A("ProviderSpecialtyCS"))
+        push(
+          `a provider speciality concept ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`,
+        );
+      if (A("PlaceOfServiceCS"))
+        push(
+          `a place of service that is ${renderConceptSetSelection(A("PlaceOfServiceCS"), conceptSets)} concept set`,
+        );
+      if (A("VisitLength"))
+        push(`with length ${renderNumericRange(A("VisitLength"))} days`);
       break;
 
     case "VisitDetail":
-      push(renderEventDateCriteria(A("VisitDetailStartDate"), A("VisitDetailEndDate")));
-      if (A("VisitDetailTypeCS")?.CodesetId ?? A("VisitDetailTypeCS")?.codesetId) push(`a visit detail type that is ${renderConceptSetSelection(A("VisitDetailTypeCS"), conceptSets)} concept set`);
-      if (A("ProviderSpecialtyCS")?.CodesetId ?? A("ProviderSpecialtyCS")?.codesetId) push(`a provider specialty that is ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`);
-      if (A("PlaceOfServiceCS")) push(`a place of service that is ${renderConceptSetSelection(A("PlaceOfServiceCS"), conceptSets)} concept set`);
-      if (A("VisitDetailLength")) push(`with length ${renderNumericRange(A("VisitDetailLength"))} days`);
+      push(
+        renderEventDateCriteria(
+          A("VisitDetailStartDate"),
+          A("VisitDetailEndDate"),
+        ),
+      );
+      if (
+        A("VisitDetailTypeCS")?.CodesetId ??
+        A("VisitDetailTypeCS")?.codesetId
+      )
+        push(
+          `a visit detail type that is ${renderConceptSetSelection(A("VisitDetailTypeCS"), conceptSets)} concept set`,
+        );
+      if (
+        A("ProviderSpecialtyCS")?.CodesetId ??
+        A("ProviderSpecialtyCS")?.codesetId
+      )
+        push(
+          `a provider specialty that is ${renderConceptSetSelection(A("ProviderSpecialtyCS"), conceptSets)} concept set`,
+        );
+      if (A("PlaceOfServiceCS"))
+        push(
+          `a place of service that is ${renderConceptSetSelection(A("PlaceOfServiceCS"), conceptSets)} concept set`,
+        );
+      if (A("VisitDetailLength"))
+        push(`with length ${renderNumericRange(A("VisitDetailLength"))} days`);
       break;
   }
 
   return attrs;
 }
 
-function renderCriteria(wrapper, conceptSets, level, isPlural = true, countCriteria = null, indexLabel = "cohort entry") {
+function renderCriteria(
+  wrapper,
+  conceptSets,
+  level,
+  isPlural = true,
+  countCriteria = null,
+  indexLabel = "cohort entry",
+) {
   const type = criteriaTypeName(wrapper);
   if (!type) return "Unknown criteria type.";
   const c = wrapper[type];
-  const meta = TYPE_META[type] ?? { label: type.toLowerCase(), default: "any", source: null };
+  const meta = TYPE_META[type] ?? {
+    label: type.toLowerCase(),
+    default: "any",
+    source: null,
+  };
 
   const attrs = [];
   if (countCriteria) {
@@ -509,7 +889,8 @@ function renderCriteria(wrapper, conceptSets, level, isPlural = true, countCrite
 
   const sourceKey = meta.source;
   if (sourceKey) {
-    const sourceId = c[sourceKey] ?? c[sourceKey.charAt(0).toLowerCase() + sourceKey.slice(1)];
+    const sourceId =
+      c[sourceKey] ?? c[sourceKey.charAt(0).toLowerCase() + sourceKey.slice(1)];
     if (sourceId != null) {
       desc += ` (including ${codesetName(sourceId, meta.default, conceptSets)} source concepts)`;
     }
@@ -554,7 +935,11 @@ const COUNT_COLUMN_MAP = {
   VISIT_ID: "visits",
 };
 
-function renderDemographicCriteria(c, conceptSets, indexLabel = "cohort entry") {
+function renderDemographicCriteria(
+  c,
+  conceptSets,
+  indexLabel = "cohort entry",
+) {
   const attrs = [];
   const ageGender = renderAgeGender(c);
   if (ageGender) attrs.push(ageGender);
@@ -562,18 +947,30 @@ function renderDemographicCriteria(c, conceptSets, indexLabel = "cohort entry") 
   const endDate = c.OccurrenceEndDate ?? c.occurrenceEndDate;
   const dateStr = renderEventDateCriteria(startDate, endDate);
   if (dateStr) attrs.push(dateStr);
-  if ((c.Race ?? c.race)?.length) attrs.push(`race is: ${renderConceptList(c.Race ?? c.race)}`);
-  if ((c.Ethnicity ?? c.ethnicity)?.length) attrs.push(`ethnicity is: ${renderConceptList(c.Ethnicity ?? c.ethnicity)}`);
-  if (attrs.length > 0) return `with the following event criteria: ${attrs.join("; ")}.`;
+  if ((c.Race ?? c.race)?.length)
+    attrs.push(`race is: ${renderConceptList(c.Race ?? c.race)}`);
+  if ((c.Ethnicity ?? c.ethnicity)?.length)
+    attrs.push(
+      `ethnicity is: ${renderConceptList(c.Ethnicity ?? c.ethnicity)}`,
+    );
+  if (attrs.length > 0)
+    return `with the following event criteria: ${attrs.join("; ")}.`;
   return "any event (no demographic criteria specified).";
 }
 
-function renderCountCriteria(cc, conceptSets, level, indexLabel = "cohort entry") {
+function renderCountCriteria(
+  cc,
+  conceptSets,
+  level,
+  indexLabel = "cohort entry",
+) {
   const occ = cc.Occurrence ?? cc.occurrence ?? {};
   const occType = occ.Type ?? occ.type ?? 0;
   const occCount = occ.Count ?? occ.count ?? 0;
   const isDistinct = occ.IsDistinct ?? occ.isDistinct ?? false;
-  const countCol = COUNT_COLUMN_MAP[occ.CountColumn ?? occ.countColumn ?? "DOMAIN_CONCEPT"] ?? "standard concepts";
+  const countCol =
+    COUNT_COLUMN_MAP[occ.CountColumn ?? occ.countColumn ?? "DOMAIN_CONCEPT"] ??
+    "standard concepts";
 
   const criteriaWrapper = cc.Criteria ?? cc.criteria;
   if (!criteriaWrapper) return "";
@@ -585,16 +982,25 @@ function renderCountCriteria(cc, conceptSets, level, indexLabel = "cohort entry"
     having = `${optionName(COUNT_TYPE_OPTIONS, occType)} ${occCount}`;
   }
 
-  let distinctPart = isDistinct ? ` distinct ${countCol} from` : "";
+  const distinctPart = isDistinct ? ` distinct ${countCol} from` : "";
   const isPlural = occCount !== 1;
-  const criteriaStr = renderCriteria(criteriaWrapper, conceptSets, level, isPlural, cc, indexLabel);
+  const criteriaStr = renderCriteria(
+    criteriaWrapper,
+    conceptSets,
+    level,
+    isPlural,
+    cc,
+    indexLabel,
+  );
 
   return `having ${having}${distinctPart} ${criteriaStr}`;
 }
 
 function renderGroup(group, conceptSets, level, indexLabel = "cohort entry") {
   const criteriaList = toSafeArray(group.CriteriaList ?? group.criteriaList);
-  const demoList = toSafeArray(group.DemographicCriteriaList ?? group.demographicCriteriaList);
+  const demoList = toSafeArray(
+    group.DemographicCriteriaList ?? group.demographicCriteriaList,
+  );
   const groups = toSafeArray(group.Groups ?? group.groups);
   const type = group.Type ?? group.type ?? "ALL";
   const count = group.Count ?? group.count;
@@ -610,13 +1016,19 @@ function renderGroup(group, conceptSets, level, indexLabel = "cohort entry") {
     const lines = [header];
     let i = 1;
     for (const demo of demoList) {
-      lines.push(`\n${indent}${i++}. ${renderDemographicCriteria(demo, conceptSets, indexLabel)}`);
+      lines.push(
+        `\n${indent}${i++}. ${renderDemographicCriteria(demo, conceptSets, indexLabel)}`,
+      );
     }
     for (const cc of criteriaList) {
-      lines.push(`\n${indent}${i++}. ${renderCountCriteria(cc, conceptSets, level + 1, indexLabel)}`);
+      lines.push(
+        `\n${indent}${i++}. ${renderCountCriteria(cc, conceptSets, level + 1, indexLabel)}`,
+      );
     }
     for (const sub of groups) {
-      lines.push(`\n${indent}${i++}. ${renderGroup(sub, conceptSets, level + 1, indexLabel)}`);
+      lines.push(
+        `\n${indent}${i++}. ${renderGroup(sub, conceptSets, level + 1, indexLabel)}`,
+      );
     }
     return lines.join("");
   }
@@ -636,14 +1048,21 @@ function renderStrategy(endStrategy, conceptSets) {
   }
   const ds = endStrategy.DateOffset ?? endStrategy.dateOffset;
   if (ds) {
-    const field = optionName(DATE_OFFSET_FIELD_OPTIONS, ds.DateField ?? ds.dateField ?? "StartDate");
+    const field = optionName(
+      DATE_OFFSET_FIELD_OPTIONS,
+      ds.DateField ?? ds.dateField ?? "StartDate",
+    );
     const offset = ds.Offset ?? ds.offset ?? 0;
     return `The cohort end date will be offset from index event's ${field} plus ${formatValue(offset, "day")}.\n`;
   }
   const ce = endStrategy.CustomEra ?? endStrategy.customEra;
   if (ce) {
     const drugId = ce.DrugCodesetId ?? ce.drugCodesetId;
-    const drugName = codesetName(drugId, "_invalid drug specified_", conceptSets);
+    const drugName = codesetName(
+      drugId,
+      "_invalid drug specified_",
+      conceptSets,
+    );
     const gapDays = ce.GapDays ?? ce.gapDays ?? 0;
     const offset = ce.Offset ?? ce.offset ?? 0;
     const dso = ce.DaysSupplyOverride ?? ce.daysSupplyOverride;
@@ -661,7 +1080,10 @@ function renderStrategy(endStrategy, conceptSets) {
 export function renderCohortMarkdown(expressionJson) {
   let expr;
   try {
-    expr = typeof expressionJson === "string" ? JSON.parse(expressionJson) : expressionJson;
+    expr =
+      typeof expressionJson === "string"
+        ? JSON.parse(expressionJson)
+        : expressionJson;
   } catch {
     return "_Error: could not parse cohort expression._";
   }
@@ -674,13 +1096,20 @@ export function renderCohortMarkdown(expressionJson) {
   const pc = expr.PrimaryCriteria ?? expr.primaryCriteria ?? {};
   const criteriaList = toSafeArray(pc.CriteriaList ?? pc.criteriaList);
   const obsWin = pc.ObservationWindow ?? pc.observationWindow ?? {};
-  const primaryLimit = pc.PrimaryCriteriaLimit ?? pc.primaryLimit ?? { Type: "All" };
+  const primaryLimit = pc.PrimaryCriteriaLimit ??
+    pc.primaryLimit ?? { Type: "All" };
   const additionalCriteria = expr.AdditionalCriteria ?? expr.additionalCriteria;
-  const qualifiedLimit = expr.QualifiedLimit ?? expr.qualifiedLimit ?? { Type: "All" };
-  const expressionLimit = expr.ExpressionLimit ?? expr.expressionLimit ?? { Type: "All" };
-  const inclusionRules = toSafeArray(expr.InclusionRules ?? expr.inclusionRules);
+  const qualifiedLimit = expr.QualifiedLimit ??
+    expr.qualifiedLimit ?? { Type: "All" };
+  const expressionLimit = expr.ExpressionLimit ??
+    expr.expressionLimit ?? { Type: "All" };
+  const inclusionRules = toSafeArray(
+    expr.InclusionRules ?? expr.inclusionRules,
+  );
   const endStrategy = expr.EndStrategy ?? expr.endStrategy ?? {};
-  const censoringCriteria = toSafeArray(expr.CensoringCriteria ?? expr.censoringCriteria);
+  const censoringCriteria = toSafeArray(
+    expr.CensoringCriteria ?? expr.censoringCriteria,
+  );
   const collapseSettings = expr.CollapseSettings ?? expr.collapseSettings ?? {};
   const censorWindow = expr.CensorWindow ?? expr.censorWindow ?? {};
 
@@ -713,15 +1142,21 @@ export function renderCohortMarkdown(expressionJson) {
 
   const plType = primaryLimit.Type ?? primaryLimit.type ?? "All";
   if (plType !== "All") {
-    lines.push(`\nLimit cohort entry events to the ${renderLimit(primaryLimit)} per person.\n`);
+    lines.push(
+      `\nLimit cohort entry events to the ${renderLimit(primaryLimit)} per person.\n`,
+    );
   }
 
   if (additionalCriteria) {
-    lines.push(`\nRestrict entry events to ${renderGroup(additionalCriteria, conceptSets, 0)}  \n`);
+    lines.push(
+      `\nRestrict entry events to ${renderGroup(additionalCriteria, conceptSets, 0)}  \n`,
+    );
     if (plType === "All") {
       const qlType = qualifiedLimit.Type ?? qualifiedLimit.type ?? "All";
       if (qlType !== "All") {
-        lines.push(`\nLimit these restricted entry events to the ${renderLimit(qualifiedLimit)} per person.\n`);
+        lines.push(
+          `\nLimit these restricted entry events to the ${renderLimit(qualifiedLimit)} per person.\n`,
+        );
       }
     }
   }
@@ -742,7 +1177,9 @@ export function renderCohortMarkdown(expressionJson) {
   if (plType === "All" && !additionalCriteria) {
     const elType = expressionLimit.Type ?? expressionLimit.type ?? "All";
     if (elType !== "All") {
-      lines.push(`\nLimit qualifying entry events to the ${renderLimit(qualifiedLimit)} per person.\n`);
+      lines.push(
+        `\nLimit qualifying entry events to the ${renderLimit(qualifiedLimit)} per person.\n`,
+      );
     }
   }
 
@@ -751,7 +1188,9 @@ export function renderCohortMarkdown(expressionJson) {
   lines.push(renderStrategy(endStrategy, conceptSets));
 
   if (censoringCriteria.length > 0) {
-    lines.push("\nThe person exits the cohort when encountering any of the following events:\n");
+    lines.push(
+      "\nThe person exits the cohort when encountering any of the following events:\n",
+    );
     censoringCriteria.forEach((c, i) => {
       lines.push(`\n${i + 1}. ${renderCriteria(c, conceptSets, 0)}`);
     });
@@ -760,7 +1199,9 @@ export function renderCohortMarkdown(expressionJson) {
 
   // Cohort Eras
   const eraPad = collapseSettings.EraPad ?? collapseSettings.eraPad ?? 0;
-  lines.push(`\n### Cohort Eras\n\nRemaining events will be combined into cohort eras if they are within ${eraPad} days of each other.\n`);
+  lines.push(
+    `\n### Cohort Eras\n\nRemaining events will be combined into cohort eras if they are within ${eraPad} days of each other.\n`,
+  );
 
   const cStart = censorWindow.StartDate ?? censorWindow.startDate;
   const cEnd = censorWindow.EndDate ?? censorWindow.endDate;
@@ -781,18 +1222,22 @@ export function renderCohortMarkdown(expressionJson) {
       if (items.length === 0) {
         lines.push("\nThere are no concept set items in this concept set.  \n");
       } else {
-        lines.push("\n|Concept ID|Concept Name|Code|Vocabulary|Excluded|Descendants|Mapped|\n");
-        lines.push("|:---|:---------------------------------------|:--|:-----|:--:|:--:|:--:|\n");
+        lines.push(
+          "\n|Concept ID|Concept Name|Code|Vocabulary|Excluded|Descendants|Mapped|\n",
+        );
+        lines.push(
+          "|:---|:---------------------------------------|:--|:-----|:--:|:--:|:--:|\n",
+        );
         for (const item of items) {
           const con = item.concept ?? {};
           lines.push(
             `|${con.CONCEPT_ID ?? con.conceptId ?? ""}` +
-            `|${con.CONCEPT_NAME ?? con.conceptName ?? ""}` +
-            `|${con.CONCEPT_CODE ?? con.conceptCode ?? ""}` +
-            `|${con.VOCABULARY_ID ?? con.vocabularyId ?? ""}` +
-            `|${renderCheckbox(item.isExcluded)}` +
-            `|${renderCheckbox(item.includeDescendants)}` +
-            `|${renderCheckbox(item.includeMapped)}|\n`
+              `|${con.CONCEPT_NAME ?? con.conceptName ?? ""}` +
+              `|${con.CONCEPT_CODE ?? con.conceptCode ?? ""}` +
+              `|${con.VOCABULARY_ID ?? con.vocabularyId ?? ""}` +
+              `|${renderCheckbox(item.isExcluded)}` +
+              `|${renderCheckbox(item.includeDescendants)}` +
+              `|${renderCheckbox(item.includeMapped)}|\n`,
           );
         }
         lines.push("\n");

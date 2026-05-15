@@ -1,27 +1,33 @@
-import { queryDb } from '../../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../../config/postgresDbConnection.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 function toArray(v) {
-    return Array.isArray(v) ? v : [v];
+  return Array.isArray(v) ? v : [v];
 }
 
 function buildInClause(prefix, values, params) {
-    const keys = values.map((_, i) => `@${prefix}${i}`);
-    values.forEach((v, i) => { params[`${prefix}${i}`] = v; });
-    return keys.join(',');
+  const keys = values.map((_, i) => `@${prefix}${i}`);
+  values.forEach((v, i) => {
+    params[`${prefix}${i}`] = v;
+  });
+  return keys.join(",");
 }
 
 function pivotType(rows) {
-    const map = new Map();
-    for (const r of rows) {
-        const key = `${r.cohortDefinitionId}|${r.cohortName}`;
-        if (!map.has(key)) map.set(key, { cohortName: r.cohortName, cohortDefinitionId: r.cohortDefinitionId });
-        map.get(key)[r.type] = r.value;
-    }
-    return [...map.values()];
+  const map = new Map();
+  for (const r of rows) {
+    const key = `${r.cohortDefinitionId}|${r.cohortName}`;
+    if (!map.has(key))
+      map.set(key, {
+        cohortName: r.cohortName,
+        cohortDefinitionId: r.cohortDefinitionId,
+      });
+    map.get(key)[r.type] = r.value;
+  }
+  return [...map.values()];
 }
 
 /**
@@ -32,11 +38,11 @@ function pivotType(rows) {
  * @returns {Promise<object[]>}
  */
 export async function getSccsTargets({
-                                         schema,
-                                         sccsTablePrefix = 'sccs_',
-                                         cgTablePrefix = 'cg_',
-                                     }) {
-    const sql = `
+  schema,
+  sccsTablePrefix = "sccs_",
+  cgTablePrefix = "cg_",
+}) {
+  const sql = `
     SELECT DISTINCT
       cd.cohort_name,
       sc.era_id AS cohort_definition_id,
@@ -52,8 +58,8 @@ export async function getSccsTargets({
       ON sc.era_id = cd.cohort_definition_id
   `;
 
-    const rows = await queryDb(sql);
-    return pivotType(rows);
+  const rows = await queryDb(sql);
+  return pivotType(rows);
 }
 
 /**
@@ -65,17 +71,19 @@ export async function getSccsTargets({
  * @returns {Promise<object[]>}
  */
 export async function getSccsOutcomes({
-                                          schema,
-                                          sccsTablePrefix = 'sccs_',
-                                          cgTablePrefix = 'cg_',
-                                          targetId = null,
-                                      }) {
-    const params = {};
+  schema,
+  sccsTablePrefix = "sccs_",
+  cgTablePrefix = "cg_",
+  targetId = null,
+}) {
+  const params = {};
 
-    const targetClause = addOptionalClause(targetId != null,
-        `AND sc.era_id IN (${buildInClause('targetId', toArray(targetId ?? []), params)})`);
+  const targetClause = addOptionalClause(
+    targetId != null,
+    `AND sc.era_id IN (${buildInClause("targetId", toArray(targetId ?? []), params)})`,
+  );
 
-    const sql = `
+  const sql = `
     SELECT DISTINCT
       cd.cohort_name,
       eos.outcome_id AS cohort_definition_id,
@@ -98,6 +106,6 @@ export async function getSccsOutcomes({
       ${targetClause}
   `;
 
-    const rows = await queryDb(sql, params);
-    return pivotType(rows);
+  const rows = await queryDb(sql, params);
+  return pivotType(rows);
 }

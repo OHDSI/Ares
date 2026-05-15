@@ -1,4 +1,4 @@
-import { queryDb } from '../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../config/postgresDbConnection.js";
 
 /**
  * For a given target, checks which outcomes have actual result data
@@ -13,24 +13,24 @@ import { queryDb } from '../../../config/postgresDbConnection.js';
  * @returns {Promise<object[]>}
  */
 export async function getOutcomeDataAvailability({
-                                                     schema,
-                                                     cTablePrefix = 'c_',
-                                                     ciTablePrefix = 'ci_',
-                                                     targetId,
-                                                     outcomeIds,
-                                                 }) {
-    if (!targetId || !outcomeIds?.length) return [];
+  schema,
+  cTablePrefix = "c_",
+  ciTablePrefix = "ci_",
+  targetId,
+  outcomeIds,
+}) {
+  if (!targetId || !outcomeIds?.length) return [];
 
-    const params = { targetId };
+  const params = { targetId };
 
-    const oidPlaceholders = outcomeIds.map((id, i) => {
-        params[`oid${i}`] = id;
-        return `@oid${i}`;
-    });
+  const oidPlaceholders = outcomeIds.map((id, i) => {
+    params[`oid${i}`] = id;
+    return `@oid${i}`;
+  });
 
-    const sql = `
+  const sql = `
     WITH outcomes AS (
-      SELECT unnest(ARRAY[${oidPlaceholders.join(',')}]::int[]) AS outcome_id
+      SELECT unnest(ARRAY[${oidPlaceholders.join(",")}]::int[]) AS outcome_id
     )
     SELECT
       o.outcome_id,
@@ -74,5 +74,5 @@ export async function getOutcomeDataAvailability({
     FROM outcomes o
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }

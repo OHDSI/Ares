@@ -1,17 +1,19 @@
-import { queryDb } from '../../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../../config/postgresDbConnection.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 function toArray(v) {
-    return Array.isArray(v) ? v : [v];
+  return Array.isArray(v) ? v : [v];
 }
 
 function buildInClause(prefix, values, params) {
-    const keys = values.map((_, i) => `@${prefix}${i}`);
-    values.forEach((v, i) => { params[`${prefix}${i}`] = v; });
-    return keys.join(',');
+  const keys = values.map((_, i) => `@${prefix}${i}`);
+  values.forEach((v, i) => {
+    params[`${prefix}${i}`] = v;
+  });
+  return keys.join(",");
 }
 
 /**
@@ -31,41 +33,56 @@ function buildInClause(prefix, values, params) {
  * @returns {Promise<object[]>}
  */
 export async function getCaseBinaryFeatures({
-                                                schema,
-                                                cTablePrefix = 'c_',
-                                                cgTablePrefix = 'cg_',
-                                                databaseTable = 'database_meta_data',
-                                                targetIds = null,
-                                                outcomeIds = null,
-                                                databaseIds = null,
-                                                analysisIds = null,
-                                                riskWindowStart = null,
-                                                riskWindowEnd = null,
-                                                startAnchor = null,
-                                                endAnchor = null,
-                                            }) {
-    const params = {};
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  outcomeIds = null,
+  databaseIds = null,
+  analysisIds = null,
+  riskWindowStart = null,
+  riskWindowEnd = null,
+  startAnchor = null,
+  endAnchor = null,
+}) {
+  const params = {};
 
-    const analysisFilter = analysisIds != null
-        ? `(SELECT * FROM ${schema}.${cTablePrefix}covariate_ref WHERE analysis_id IN (${buildInClause('analysisId', toArray(analysisIds), params)}))`
-        : `${schema}.${cTablePrefix}covariate_ref`;
+  const analysisFilter =
+    analysisIds != null
+      ? `(SELECT * FROM ${schema}.${cTablePrefix}covariate_ref WHERE analysis_id IN (${buildInClause("analysisId", toArray(analysisIds), params)}))`
+      : `${schema}.${cTablePrefix}covariate_ref`;
 
-    const targetClause = addOptionalClause(targetIds != null,
-        `AND c.TARGET_COHORT_ID IN (${buildInClause('targetId', toArray(targetIds ?? []), params)})`);
-    const outcomeClause = addOptionalClause(outcomeIds != null,
-        `AND c.OUTCOME_COHORT_ID IN (${buildInClause('outcomeId', toArray(outcomeIds ?? []), params)})`);
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND c.database_id IN (${buildInClause('databaseId', toArray(databaseIds ?? []), params)})`);
-    const rwStartClause = addOptionalClause(riskWindowStart != null,
-        `AND s.RISK_WINDOW_START IN (${buildInClause('rwStart', toArray(riskWindowStart ?? []), params)})`);
-    const rwEndClause = addOptionalClause(riskWindowEnd != null,
-        `AND s.RISK_WINDOW_END IN (${buildInClause('rwEnd', toArray(riskWindowEnd ?? []), params)})`);
-    const startAnchorClause = addOptionalClause(startAnchor != null,
-        `AND s.START_ANCHOR IN (${buildInClause('startAnchor', toArray(startAnchor ?? []), params)})`);
-    const endAnchorClause = addOptionalClause(endAnchor != null,
-        `AND s.END_ANCHOR IN (${buildInClause('endAnchor', toArray(endAnchor ?? []), params)})`);
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND c.TARGET_COHORT_ID IN (${buildInClause("targetId", toArray(targetIds ?? []), params)})`,
+  );
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND c.OUTCOME_COHORT_ID IN (${buildInClause("outcomeId", toArray(outcomeIds ?? []), params)})`,
+  );
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND c.database_id IN (${buildInClause("databaseId", toArray(databaseIds ?? []), params)})`,
+  );
+  const rwStartClause = addOptionalClause(
+    riskWindowStart != null,
+    `AND s.RISK_WINDOW_START IN (${buildInClause("rwStart", toArray(riskWindowStart ?? []), params)})`,
+  );
+  const rwEndClause = addOptionalClause(
+    riskWindowEnd != null,
+    `AND s.RISK_WINDOW_END IN (${buildInClause("rwEnd", toArray(riskWindowEnd ?? []), params)})`,
+  );
+  const startAnchorClause = addOptionalClause(
+    startAnchor != null,
+    `AND s.START_ANCHOR IN (${buildInClause("startAnchor", toArray(startAnchor ?? []), params)})`,
+  );
+  const endAnchorClause = addOptionalClause(
+    endAnchor != null,
+    `AND s.END_ANCHOR IN (${buildInClause("endAnchor", toArray(endAnchor ?? []), params)})`,
+  );
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       c.database_id,
@@ -113,7 +130,7 @@ export async function getCaseBinaryFeatures({
       ${endAnchorClause}
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }
 
 /**
@@ -129,39 +146,62 @@ export async function getCaseBinaryFeatures({
  * @returns {Promise<object[]>}
  */
 export async function getCaseTargetBinaryFeatures({
-                                                      schema,
-                                                      cTablePrefix = 'c_',
-                                                      cgTablePrefix = 'cg_',
-                                                      databaseTable = 'database_meta_data',
-                                                      targetIds = null,
-                                                      outcomeIds = null,
-                                                      databaseIds = null,
-                                                      analysisIds = null,
-                                                  }) {
-    const params = {};
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  outcomeIds = null,
+  databaseIds = null,
+  analysisIds = null,
+}) {
+  const params = {};
 
-    const analysisFilter = analysisIds != null
-        ? `(SELECT * FROM ${schema}.${cTablePrefix}covariate_ref WHERE analysis_id IN (${buildInClause('analysisId', toArray(analysisIds), params)}))`
-        : `${schema}.${cTablePrefix}covariate_ref`;
+  const analysisFilter =
+    analysisIds != null
+      ? `(SELECT * FROM ${schema}.${cTablePrefix}covariate_ref WHERE analysis_id IN (${buildInClause("analysisId", toArray(analysisIds), params)}))`
+      : `${schema}.${cTablePrefix}covariate_ref`;
 
-    const targetClause = addOptionalClause(targetIds != null,
-        `AND tcd.target_cohort_id IN (${buildInClause('targetId', toArray(targetIds ?? []), params)})`);
-    const outcomeClause = addOptionalClause(outcomeIds != null,
-        `AND tcd.outcome_cohort_id IN (${buildInClause('outcomeId', toArray(outcomeIds ?? []), params)})`);
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND tcd.target_cohort_id IN (${buildInClause("targetId", toArray(targetIds ?? []), params)})`,
+  );
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND tcd.outcome_cohort_id IN (${buildInClause("outcomeId", toArray(outcomeIds ?? []), params)})`,
+  );
 
-    const cTargetClause = addOptionalClause(targetIds != null,
-        `AND c.TARGET_COHORT_ID IN (${toArray(targetIds ?? []).map((_, i) => `@targetId${i}`).join(',')})`);
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND c.database_id IN (${buildInClause('databaseId', toArray(databaseIds ?? []), params)})`);
+  const cTargetClause = addOptionalClause(
+    targetIds != null,
+    `AND c.TARGET_COHORT_ID IN (${toArray(targetIds ?? [])
+      .map((_, i) => `@targetId${i}`)
+      .join(",")})`,
+  );
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND c.database_id IN (${buildInClause("databaseId", toArray(databaseIds ?? []), params)})`,
+  );
 
-    const exTargetClause = addOptionalClause(targetIds != null,
-        `AND c.TARGET_COHORT_ID IN (${toArray(targetIds ?? []).map((_, i) => `@targetId${i}`).join(',')})`);
-    const exOutcomeClause = addOptionalClause(outcomeIds != null,
-        `AND c.OUTCOME_COHORT_ID IN (${toArray(outcomeIds ?? []).map((_, i) => `@outcomeId${i}`).join(',')})`);
-    const exDbClause = addOptionalClause(databaseIds != null,
-        `AND c.database_id IN (${toArray(databaseIds ?? []).map((_, i) => `@databaseId${i}`).join(',')})`);
+  const exTargetClause = addOptionalClause(
+    targetIds != null,
+    `AND c.TARGET_COHORT_ID IN (${toArray(targetIds ?? [])
+      .map((_, i) => `@targetId${i}`)
+      .join(",")})`,
+  );
+  const exOutcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND c.OUTCOME_COHORT_ID IN (${toArray(outcomeIds ?? [])
+      .map((_, i) => `@outcomeId${i}`)
+      .join(",")})`,
+  );
+  const exDbClause = addOptionalClause(
+    databaseIds != null,
+    `AND c.database_id IN (${toArray(databaseIds ?? [])
+      .map((_, i) => `@databaseId${i}`)
+      .join(",")})`,
+  );
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       t.database_id,
@@ -268,5 +308,5 @@ export async function getCaseTargetBinaryFeatures({
       ON outcome.cohort_definition_id = t.outcome_cohort_id
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }

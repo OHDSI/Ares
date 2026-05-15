@@ -1,4 +1,4 @@
-import { queryDb } from '../../config/postgresDbConnection.js';
+import { queryDb } from "../../config/postgresDbConnection.js";
 
 /**
  * Fetches all database metadata rows.
@@ -8,10 +8,10 @@ import { queryDb } from '../../config/postgresDbConnection.js';
  * @returns {Promise<object[]>}
  */
 export async function getDatasources({
-                                         schema,
-                                         databaseTable = 'database_meta_data',
-                                     }) {
-    const sql = `
+  schema,
+  databaseTable = "database_meta_data",
+}) {
+  const sql = `
     SELECT
       database_id,
       cdm_source_name,
@@ -30,5 +30,5 @@ export async function getDatasources({
     ORDER BY cdm_source_abbreviation
   `;
 
-    return queryDb(sql);
+  return queryDb(sql);
 }

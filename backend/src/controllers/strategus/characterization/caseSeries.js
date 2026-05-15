@@ -1,7 +1,7 @@
-import { parseCovariateNameString } from './helpers/parseCovariateNameString.js';
+import { parseCovariateNameString } from "./helpers/parseCovariateNameString.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 /**
@@ -23,53 +23,78 @@ function addOptionalClause(condition, clause) {
  * @returns {Promise<object[]>}
  */
 async function getBinaryCaseSeries(connectionHandler, options) {
-    const {
-        schema,
-        cTablePrefix = 'c_',
-        cgTablePrefix = 'cg_',
-        databaseTable = 'database_meta_data',
-        targetId,
-        outcomeId,
-        databaseIds = null,
-        riskWindowStart = null,
-        riskWindowEnd = null,
-        startAnchor = null,
-        endAnchor = null,
-        conceptIds = null,
-        minVal = null,
-    } = options;
+  const {
+    schema,
+    cTablePrefix = "c_",
+    cgTablePrefix = "cg_",
+    databaseTable = "database_meta_data",
+    targetId,
+    outcomeId,
+    databaseIds = null,
+    riskWindowStart = null,
+    riskWindowEnd = null,
+    startAnchor = null,
+    endAnchor = null,
+    conceptIds = null,
+    minVal = null,
+  } = options;
 
-    if (targetId == null) throw new Error('targetId must be entered');
-    if (outcomeId == null) throw new Error('outcomeId must be entered');
-    if (Array.isArray(targetId)) throw new Error('Must be single targetId');
-    if (Array.isArray(outcomeId)) throw new Error('Must be single outcomeId');
+  if (targetId == null) throw new Error("targetId must be entered");
+  if (outcomeId == null) throw new Error("outcomeId must be entered");
+  if (Array.isArray(targetId)) throw new Error("Must be single targetId");
+  if (Array.isArray(outcomeId)) throw new Error("Must be single outcomeId");
 
-    const params = { targetId, outcomeId };
+  const params = { targetId, outcomeId };
 
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND cov.database_id IN (${databaseIds ? databaseIds.map((_, i) => `@databaseId${i}`).join(',') : ''})`);
-    if (databaseIds) databaseIds.forEach((id, i) => { params[`databaseId${i}`] = id; });
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND cov.database_id IN (${databaseIds ? databaseIds.map((_, i) => `@databaseId${i}`).join(",") : ""})`,
+  );
+  if (databaseIds)
+    databaseIds.forEach((id, i) => {
+      params[`databaseId${i}`] = id;
+    });
 
-    const rwStartClause = addOptionalClause(riskWindowStart != null, 'AND s.risk_window_start = @riskWindowStart');
-    if (riskWindowStart != null) params.riskWindowStart = riskWindowStart;
+  const rwStartClause = addOptionalClause(
+    riskWindowStart != null,
+    "AND s.risk_window_start = @riskWindowStart",
+  );
+  if (riskWindowStart != null) params.riskWindowStart = riskWindowStart;
 
-    const rwEndClause = addOptionalClause(riskWindowEnd != null, 'AND s.risk_window_end = @riskWindowEnd');
-    if (riskWindowEnd != null) params.riskWindowEnd = riskWindowEnd;
+  const rwEndClause = addOptionalClause(
+    riskWindowEnd != null,
+    "AND s.risk_window_end = @riskWindowEnd",
+  );
+  if (riskWindowEnd != null) params.riskWindowEnd = riskWindowEnd;
 
-    const startAnchorClause = addOptionalClause(startAnchor != null, "AND s.start_anchor = @startAnchor");
-    if (startAnchor != null) params.startAnchor = startAnchor;
+  const startAnchorClause = addOptionalClause(
+    startAnchor != null,
+    "AND s.start_anchor = @startAnchor",
+  );
+  if (startAnchor != null) params.startAnchor = startAnchor;
 
-    const endAnchorClause = addOptionalClause(endAnchor != null, "AND s.end_anchor = @endAnchor");
-    if (endAnchor != null) params.endAnchor = endAnchor;
+  const endAnchorClause = addOptionalClause(
+    endAnchor != null,
+    "AND s.end_anchor = @endAnchor",
+  );
+  if (endAnchor != null) params.endAnchor = endAnchor;
 
-    const minValClause = addOptionalClause(minVal != null, 'AND cov.average_value >= @minVal');
-    if (minVal != null) params.minVal = minVal;
+  const minValClause = addOptionalClause(
+    minVal != null,
+    "AND cov.average_value >= @minVal",
+  );
+  if (minVal != null) params.minVal = minVal;
 
-    const conceptClause = addOptionalClause(conceptIds != null,
-        `AND cr.concept_id IN (${conceptIds ? conceptIds.map((_, i) => `@conceptId${i}`).join(',') : ''})`);
-    if (conceptIds) conceptIds.forEach((id, i) => { params[`conceptId${i}`] = id; });
+  const conceptClause = addOptionalClause(
+    conceptIds != null,
+    `AND cr.concept_id IN (${conceptIds ? conceptIds.map((_, i) => `@conceptId${i}`).join(",") : ""})`,
+  );
+  if (conceptIds)
+    conceptIds.forEach((id, i) => {
+      params[`conceptId${i}`] = id;
+    });
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       d.database_id,
@@ -121,9 +146,12 @@ async function getBinaryCaseSeries(connectionHandler, options) {
       ${conceptClause}
   `;
 
-    return connectionHandler.queryDb(sql, params).then((rows) =>
-        rows.map((r) => ({ ...r, covariateNameParsed: parseCovariateNameString(r.covariateName) }))
-    );
+  return connectionHandler.queryDb(sql, params).then((rows) =>
+    rows.map((r) => ({
+      ...r,
+      covariateNameParsed: parseCovariateNameString(r.covariateName),
+    })),
+  );
 }
 
 /**
@@ -143,44 +171,61 @@ async function getBinaryCaseSeries(connectionHandler, options) {
  * @returns {Promise<object[]>}
  */
 async function getContinuousCaseSeries(connectionHandler, options) {
-    const {
-        schema,
-        cTablePrefix = 'c_',
-        cgTablePrefix = 'cg_',
-        databaseTable = 'database_meta_data',
-        targetId,
-        outcomeId,
-        databaseIds = null,
-        riskWindowStart = null,
-        riskWindowEnd = null,
-        startAnchor = null,
-        endAnchor = null,
-    } = options;
+  const {
+    schema,
+    cTablePrefix = "c_",
+    cgTablePrefix = "cg_",
+    databaseTable = "database_meta_data",
+    targetId,
+    outcomeId,
+    databaseIds = null,
+    riskWindowStart = null,
+    riskWindowEnd = null,
+    startAnchor = null,
+    endAnchor = null,
+  } = options;
 
-    if (targetId == null) throw new Error('targetId must be entered');
-    if (outcomeId == null) throw new Error('outcomeId must be entered');
-    if (Array.isArray(targetId)) throw new Error('Must be single targetId');
-    if (Array.isArray(outcomeId)) throw new Error('Must be single outcomeId');
+  if (targetId == null) throw new Error("targetId must be entered");
+  if (outcomeId == null) throw new Error("outcomeId must be entered");
+  if (Array.isArray(targetId)) throw new Error("Must be single targetId");
+  if (Array.isArray(outcomeId)) throw new Error("Must be single outcomeId");
 
-    const params = { targetId, outcomeId };
+  const params = { targetId, outcomeId };
 
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND cov.database_id IN (${databaseIds ? databaseIds.map((_, i) => `@databaseId${i}`).join(',') : ''})`);
-    if (databaseIds) databaseIds.forEach((id, i) => { params[`databaseId${i}`] = id; });
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND cov.database_id IN (${databaseIds ? databaseIds.map((_, i) => `@databaseId${i}`).join(",") : ""})`,
+  );
+  if (databaseIds)
+    databaseIds.forEach((id, i) => {
+      params[`databaseId${i}`] = id;
+    });
 
-    const rwStartClause = addOptionalClause(riskWindowStart != null, 'AND s.risk_window_start = @riskWindowStart');
-    if (riskWindowStart != null) params.riskWindowStart = riskWindowStart;
+  const rwStartClause = addOptionalClause(
+    riskWindowStart != null,
+    "AND s.risk_window_start = @riskWindowStart",
+  );
+  if (riskWindowStart != null) params.riskWindowStart = riskWindowStart;
 
-    const rwEndClause = addOptionalClause(riskWindowEnd != null, 'AND s.risk_window_end = @riskWindowEnd');
-    if (riskWindowEnd != null) params.riskWindowEnd = riskWindowEnd;
+  const rwEndClause = addOptionalClause(
+    riskWindowEnd != null,
+    "AND s.risk_window_end = @riskWindowEnd",
+  );
+  if (riskWindowEnd != null) params.riskWindowEnd = riskWindowEnd;
 
-    const startAnchorClause = addOptionalClause(startAnchor != null, "AND s.start_anchor = @startAnchor");
-    if (startAnchor != null) params.startAnchor = startAnchor;
+  const startAnchorClause = addOptionalClause(
+    startAnchor != null,
+    "AND s.start_anchor = @startAnchor",
+  );
+  if (startAnchor != null) params.startAnchor = startAnchor;
 
-    const endAnchorClause = addOptionalClause(endAnchor != null, "AND s.end_anchor = @endAnchor");
-    if (endAnchor != null) params.endAnchor = endAnchor;
+  const endAnchorClause = addOptionalClause(
+    endAnchor != null,
+    "AND s.end_anchor = @endAnchor",
+  );
+  if (endAnchor != null) params.endAnchor = endAnchor;
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       cov.database_id,
@@ -237,11 +282,13 @@ async function getContinuousCaseSeries(connectionHandler, options) {
       AND cov.cohort_type IN ('CasesBetween', 'CasesAfter', 'CasesBefore')
   `;
 
-    return connectionHandler.queryDb(sql, params).then((rows) =>
-        rows.map((r) => ({ ...r, covariateNameParsed: parseCovariateNameString(r.covariateName) }))
-    );
+  return connectionHandler.queryDb(sql, params).then((rows) =>
+    rows.map((r) => ({
+      ...r,
+      covariateNameParsed: parseCovariateNameString(r.covariateName),
+    })),
+  );
 }
-
 
 /**
  * @param {object} connectionHandler
@@ -260,52 +307,123 @@ async function getContinuousCaseSeries(connectionHandler, options) {
  * @returns {Promise<object[]>}
  */
 async function getCaseCounts(connectionHandler, options) {
-    const {
-        schema,
-        cTablePrefix = 'c_',
-        cgTablePrefix = 'cg_',
-        databaseTable = 'database_meta_data',
-        targetIds = null,
-        outcomeIds = null,
-        databaseIds = null,
-        riskWindowStart = null,
-        riskWindowEnd = null,
-        startAnchor = null,
-        endAnchor = null,
-    } = options;
+  const {
+    schema,
+    cTablePrefix = "c_",
+    cgTablePrefix = "cg_",
+    databaseTable = "database_meta_data",
+    targetIds = null,
+    outcomeIds = null,
+    databaseIds = null,
+    riskWindowStart = null,
+    riskWindowEnd = null,
+    startAnchor = null,
+    endAnchor = null,
+  } = options;
 
-    const params = {};
-    const toArray = (v) => Array.isArray(v) ? v : [v];
+  const params = {};
+  const toArray = (v) => (Array.isArray(v) ? v : [v]);
 
-    const targetClause = addOptionalClause(targetIds != null,
-        `AND cc.TARGET_COHORT_ID IN (${targetIds != null ? toArray(targetIds).map((_, i) => `@targetId${i}`).join(',') : ''})`);
-    if (targetIds != null) toArray(targetIds).forEach((id, i) => { params[`targetId${i}`] = id; });
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND cc.TARGET_COHORT_ID IN (${
+      targetIds != null
+        ? toArray(targetIds)
+            .map((_, i) => `@targetId${i}`)
+            .join(",")
+        : ""
+    })`,
+  );
+  if (targetIds != null)
+    toArray(targetIds).forEach((id, i) => {
+      params[`targetId${i}`] = id;
+    });
 
-    const outcomeClause = addOptionalClause(outcomeIds != null,
-        `AND cc.OUTCOME_COHORT_ID IN (${outcomeIds != null ? toArray(outcomeIds).map((_, i) => `@outcomeId${i}`).join(',') : ''})`);
-    if (outcomeIds != null) toArray(outcomeIds).forEach((id, i) => { params[`outcomeId${i}`] = id; });
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND cc.OUTCOME_COHORT_ID IN (${
+      outcomeIds != null
+        ? toArray(outcomeIds)
+            .map((_, i) => `@outcomeId${i}`)
+            .join(",")
+        : ""
+    })`,
+  );
+  if (outcomeIds != null)
+    toArray(outcomeIds).forEach((id, i) => {
+      params[`outcomeId${i}`] = id;
+    });
 
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND d.database_id IN (${databaseIds ? databaseIds.map((_, i) => `@databaseId${i}`).join(',') : ''})`);
-    if (databaseIds) databaseIds.forEach((id, i) => { params[`databaseId${i}`] = id; });
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND d.database_id IN (${databaseIds ? databaseIds.map((_, i) => `@databaseId${i}`).join(",") : ""})`,
+  );
+  if (databaseIds)
+    databaseIds.forEach((id, i) => {
+      params[`databaseId${i}`] = id;
+    });
 
-    const rwStartClause = addOptionalClause(riskWindowStart != null,
-        `AND cc.RISK_WINDOW_START IN (${riskWindowStart != null ? toArray(riskWindowStart).map((_, i) => `@rwStart${i}`).join(',') : ''})`);
-    if (riskWindowStart != null) toArray(riskWindowStart).forEach((v, i) => { params[`rwStart${i}`] = v; });
+  const rwStartClause = addOptionalClause(
+    riskWindowStart != null,
+    `AND cc.RISK_WINDOW_START IN (${
+      riskWindowStart != null
+        ? toArray(riskWindowStart)
+            .map((_, i) => `@rwStart${i}`)
+            .join(",")
+        : ""
+    })`,
+  );
+  if (riskWindowStart != null)
+    toArray(riskWindowStart).forEach((v, i) => {
+      params[`rwStart${i}`] = v;
+    });
 
-    const rwEndClause = addOptionalClause(riskWindowEnd != null,
-        `AND cc.RISK_WINDOW_END IN (${riskWindowEnd != null ? toArray(riskWindowEnd).map((_, i) => `@rwEnd${i}`).join(',') : ''})`);
-    if (riskWindowEnd != null) toArray(riskWindowEnd).forEach((v, i) => { params[`rwEnd${i}`] = v; });
+  const rwEndClause = addOptionalClause(
+    riskWindowEnd != null,
+    `AND cc.RISK_WINDOW_END IN (${
+      riskWindowEnd != null
+        ? toArray(riskWindowEnd)
+            .map((_, i) => `@rwEnd${i}`)
+            .join(",")
+        : ""
+    })`,
+  );
+  if (riskWindowEnd != null)
+    toArray(riskWindowEnd).forEach((v, i) => {
+      params[`rwEnd${i}`] = v;
+    });
 
-    const startAnchorClause = addOptionalClause(startAnchor != null,
-        `AND cc.START_ANCHOR IN (${startAnchor != null ? toArray(startAnchor).map((_, i) => `@startAnchor${i}`).join(',') : ''})`);
-    if (startAnchor != null) toArray(startAnchor).forEach((v, i) => { params[`startAnchor${i}`] = v; });
+  const startAnchorClause = addOptionalClause(
+    startAnchor != null,
+    `AND cc.START_ANCHOR IN (${
+      startAnchor != null
+        ? toArray(startAnchor)
+            .map((_, i) => `@startAnchor${i}`)
+            .join(",")
+        : ""
+    })`,
+  );
+  if (startAnchor != null)
+    toArray(startAnchor).forEach((v, i) => {
+      params[`startAnchor${i}`] = v;
+    });
 
-    const endAnchorClause = addOptionalClause(endAnchor != null,
-        `AND cc.END_ANCHOR IN (${endAnchor != null ? toArray(endAnchor).map((_, i) => `@endAnchor${i}`).join(',') : ''})`);
-    if (endAnchor != null) toArray(endAnchor).forEach((v, i) => { params[`endAnchor${i}`] = v; });
+  const endAnchorClause = addOptionalClause(
+    endAnchor != null,
+    `AND cc.END_ANCHOR IN (${
+      endAnchor != null
+        ? toArray(endAnchor)
+            .map((_, i) => `@endAnchor${i}`)
+            .join(",")
+        : ""
+    })`,
+  );
+  if (endAnchor != null)
+    toArray(endAnchor).forEach((v, i) => {
+      params[`endAnchor${i}`] = v;
+    });
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       d.database_id,
@@ -338,11 +456,7 @@ async function getCaseCounts(connectionHandler, options) {
       ${endAnchorClause}
   `;
 
-    return connectionHandler.queryDb(sql, params);
+  return connectionHandler.queryDb(sql, params);
 }
 
-export {
-    getBinaryCaseSeries,
-    getContinuousCaseSeries,
-    getCaseCounts,
-};
+export { getBinaryCaseSeries, getContinuousCaseSeries, getCaseCounts };

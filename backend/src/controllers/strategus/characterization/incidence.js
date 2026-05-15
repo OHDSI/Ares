@@ -1,7 +1,7 @@
-import { queryDb } from '../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../config/postgresDbConnection.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 /**
@@ -15,28 +15,34 @@ function addOptionalClause(condition, clause) {
  * @returns {Promise<object[]>}
  */
 export async function getIncidenceRates({
-                                            schema,
-                                            ciTablePrefix = 'ci_',
-                                            cgTablePrefix = 'cg_',
-                                            databaseTable = 'database_meta_data',
-                                            targetIds = null,
-                                            outcomeIds = null,
-                                        }) {
-    const params = {};
+  schema,
+  ciTablePrefix = "ci_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  outcomeIds = null,
+}) {
+  const params = {};
 
-    const targetClause = addOptionalClause(
-        targetIds != null,
-        `AND target_cohort_definition_id IN (${(targetIds ?? []).map((_, i) => `@targetId${i}`).join(',')})`,
-    );
-    if (targetIds) targetIds.forEach((id, i) => { params[`targetId${i}`] = id; });
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND target_cohort_definition_id IN (${(targetIds ?? []).map((_, i) => `@targetId${i}`).join(",")})`,
+  );
+  if (targetIds)
+    targetIds.forEach((id, i) => {
+      params[`targetId${i}`] = id;
+    });
 
-    const outcomeClause = addOptionalClause(
-        outcomeIds != null,
-        `AND outcome_cohort_definition_id IN (${(outcomeIds ?? []).map((_, i) => `@outcomeId${i}`).join(',')})`,
-    );
-    if (outcomeIds) outcomeIds.forEach((id, i) => { params[`outcomeId${i}`] = id; });
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND outcome_cohort_definition_id IN (${(outcomeIds ?? []).map((_, i) => `@outcomeId${i}`).join(",")})`,
+  );
+  if (outcomeIds)
+    outcomeIds.forEach((id, i) => {
+      params[`outcomeId${i}`] = id;
+    });
 
-    const sql = `
+  const sql = `
     SELECT
       d.cdm_source_abbreviation AS database_name,
       d.database_id,
@@ -99,32 +105,36 @@ export async function getIncidenceRates({
       ${outcomeClause}
   `;
 
-    const rows = await queryDb(sql, params);
+  const rows = await queryDb(sql, params);
 
-    if (rows.length > 0) {
-        for (const r of rows) {
-            if (r.incidenceProportionP100p == null) {
-                r.incidenceProportionP100p = r.personsAtRisk ? (r.outcomes / r.personsAtRisk) * 100 : 0;
-            }
-            if (r.incidenceRateP100py == null) {
-                r.incidenceRateP100py = r.personDays ? (r.outcomes / (r.personDays / 365)) * 100 : 0;
-            }
-            for (const key of Object.keys(r)) {
-                if (r[key] == null) r[key] = 'Any';
-            }
-            r.tar = `( ${r.tarStartWith} + ${r.tarStartOffset} ) - ( ${r.tarEndWith} + ${r.tarEndOffset} )`;
-        }
-
-        const seen = new Set();
-        const unique = rows.filter((r) => {
-            const key = JSON.stringify(r);
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-        });
-
-        return unique;
+  if (rows.length > 0) {
+    for (const r of rows) {
+      if (r.incidenceProportionP100p == null) {
+        r.incidenceProportionP100p = r.personsAtRisk
+          ? (r.outcomes / r.personsAtRisk) * 100
+          : 0;
+      }
+      if (r.incidenceRateP100py == null) {
+        r.incidenceRateP100py = r.personDays
+          ? (r.outcomes / (r.personDays / 365)) * 100
+          : 0;
+      }
+      for (const key of Object.keys(r)) {
+        if (r[key] == null) r[key] = "Any";
+      }
+      r.tar = `( ${r.tarStartWith} + ${r.tarStartOffset} ) - ( ${r.tarEndWith} + ${r.tarEndOffset} )`;
     }
 
-    return rows;
+    const seen = new Set();
+    const unique = rows.filter((r) => {
+      const key = JSON.stringify(r);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    return unique;
+  }
+
+  return rows;
 }

@@ -1,7 +1,7 @@
-import { queryDb } from '../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../config/postgresDbConnection.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 /**
@@ -15,28 +15,34 @@ function addOptionalClause(condition, clause) {
  * @returns {Promise<object[]>}
  */
 export async function getDechallengeRechallenge({
-                                                    schema,
-                                                    cTablePrefix = 'c_',
-                                                    cgTablePrefix = 'cg_',
-                                                    databaseTable = 'database_meta_data',
-                                                    targetIds = null,
-                                                    outcomeIds = null,
-                                                }) {
-    const params = {};
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  outcomeIds = null,
+}) {
+  const params = {};
 
-    const targetClause = addOptionalClause(
-        targetIds != null,
-        `AND dr.TARGET_COHORT_DEFINITION_ID IN (${(targetIds ?? []).map((_, i) => `@targetId${i}`).join(',')})`,
-    );
-    if (targetIds) targetIds.forEach((id, i) => { params[`targetId${i}`] = id; });
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND dr.TARGET_COHORT_DEFINITION_ID IN (${(targetIds ?? []).map((_, i) => `@targetId${i}`).join(",")})`,
+  );
+  if (targetIds)
+    targetIds.forEach((id, i) => {
+      params[`targetId${i}`] = id;
+    });
 
-    const outcomeClause = addOptionalClause(
-        outcomeIds != null,
-        `AND dr.OUTCOME_COHORT_DEFINITION_ID IN (${(outcomeIds ?? []).map((_, i) => `@outcomeId${i}`).join(',')})`,
-    );
-    if (outcomeIds) outcomeIds.forEach((id, i) => { params[`outcomeId${i}`] = id; });
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND dr.OUTCOME_COHORT_DEFINITION_ID IN (${(outcomeIds ?? []).map((_, i) => `@outcomeId${i}`).join(",")})`,
+  );
+  if (outcomeIds)
+    outcomeIds.forEach((id, i) => {
+      params[`outcomeId${i}`] = id;
+    });
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       d.database_id,
@@ -73,7 +79,7 @@ export async function getDechallengeRechallenge({
       ${outcomeClause}
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }
 
 /**
@@ -88,33 +94,36 @@ export async function getDechallengeRechallenge({
  * @returns {Promise<object[]>}
  */
 export async function getDechallengeRechallengeFails({
-                                                         schema,
-                                                         cTablePrefix = 'c_',
-                                                         targetId,
-                                                         outcomeId,
-                                                         databaseId,
-                                                         dechallengeStopInterval = null,
-                                                         dechallengeEvaluationWindow = null,
-                                                     }) {
-    if (targetId == null) throw new Error('Must specify exactly one targetId');
-    if (outcomeId == null) throw new Error('Must specify exactly one outcomeId');
-    if (databaseId == null) throw new Error('Must specify exactly one databaseId');
+  schema,
+  cTablePrefix = "c_",
+  targetId,
+  outcomeId,
+  databaseId,
+  dechallengeStopInterval = null,
+  dechallengeEvaluationWindow = null,
+}) {
+  if (targetId == null) throw new Error("Must specify exactly one targetId");
+  if (outcomeId == null) throw new Error("Must specify exactly one outcomeId");
+  if (databaseId == null)
+    throw new Error("Must specify exactly one databaseId");
 
-    const params = { targetId, outcomeId, databaseId };
+  const params = { targetId, outcomeId, databaseId };
 
-    const stopClause = addOptionalClause(
-        dechallengeStopInterval != null,
-        'AND DECHALLENGE_STOP_INTERVAL = @dechallengeStopInterval',
-    );
-    if (dechallengeStopInterval != null) params.dechallengeStopInterval = dechallengeStopInterval;
+  const stopClause = addOptionalClause(
+    dechallengeStopInterval != null,
+    "AND DECHALLENGE_STOP_INTERVAL = @dechallengeStopInterval",
+  );
+  if (dechallengeStopInterval != null)
+    params.dechallengeStopInterval = dechallengeStopInterval;
 
-    const evalClause = addOptionalClause(
-        dechallengeEvaluationWindow != null,
-        'AND DECHALLENGE_EVALUATION_WINDOW = @dechallengeEvaluationWindow',
-    );
-    if (dechallengeEvaluationWindow != null) params.dechallengeEvaluationWindow = dechallengeEvaluationWindow;
+  const evalClause = addOptionalClause(
+    dechallengeEvaluationWindow != null,
+    "AND DECHALLENGE_EVALUATION_WINDOW = @dechallengeEvaluationWindow",
+  );
+  if (dechallengeEvaluationWindow != null)
+    params.dechallengeEvaluationWindow = dechallengeEvaluationWindow;
 
-    const sql = `
+  const sql = `
     SELECT *
     FROM ${schema}.${cTablePrefix}rechallenge_fail_case_series
     WHERE TARGET_COHORT_DEFINITION_ID = @targetId
@@ -124,5 +133,5 @@ export async function getDechallengeRechallengeFails({
       ${evalClause}
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }

@@ -1,17 +1,19 @@
-import { queryDb } from '../../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../../config/postgresDbConnection.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 function toArray(v) {
-    return Array.isArray(v) ? v : [v];
+  return Array.isArray(v) ? v : [v];
 }
 
 function buildInClause(prefix, values, params) {
-    const keys = values.map((_, i) => `@${prefix}${i}`);
-    values.forEach((v, i) => { params[`${prefix}${i}`] = v; });
-    return keys.join(',');
+  const keys = values.map((_, i) => `@${prefix}${i}`);
+  values.forEach((v, i) => {
+    params[`${prefix}${i}`] = v;
+  });
+  return keys.join(",");
 }
 
 /**
@@ -31,41 +33,56 @@ function buildInClause(prefix, values, params) {
  * @returns {Promise<object[]>}
  */
 export async function getCaseContinuousFeatures({
-                                                    schema,
-                                                    cTablePrefix = 'c_',
-                                                    cgTablePrefix = 'cg_',
-                                                    databaseTable = 'database_meta_data',
-                                                    targetIds = null,
-                                                    outcomeIds = null,
-                                                    analysisIds = null,
-                                                    databaseIds = null,
-                                                    riskWindowStart = null,
-                                                    riskWindowEnd = null,
-                                                    startAnchor = null,
-                                                    endAnchor = null,
-                                                }) {
-    const params = {};
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  outcomeIds = null,
+  analysisIds = null,
+  databaseIds = null,
+  riskWindowStart = null,
+  riskWindowEnd = null,
+  startAnchor = null,
+  endAnchor = null,
+}) {
+  const params = {};
 
-    const analysisFilter = analysisIds != null
-        ? `WHERE analysis_id IN (${buildInClause('analysisId', toArray(analysisIds), params)})`
-        : '';
+  const analysisFilter =
+    analysisIds != null
+      ? `WHERE analysis_id IN (${buildInClause("analysisId", toArray(analysisIds), params)})`
+      : "";
 
-    const targetClause = addOptionalClause(targetIds != null,
-        `AND c.TARGET_COHORT_ID IN (${buildInClause('targetId', toArray(targetIds ?? []), params)})`);
-    const outcomeClause = addOptionalClause(outcomeIds != null,
-        `AND c.outcome_cohort_id IN (${buildInClause('outcomeId', toArray(outcomeIds ?? []), params)})`);
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND c.database_id IN (${buildInClause('databaseId', toArray(databaseIds ?? []), params)})`);
-    const rwStartClause = addOptionalClause(riskWindowStart != null,
-        `AND s.RISK_WINDOW_START IN (${buildInClause('rwStart', toArray(riskWindowStart ?? []), params)})`);
-    const rwEndClause = addOptionalClause(riskWindowEnd != null,
-        `AND s.RISK_WINDOW_END IN (${buildInClause('rwEnd', toArray(riskWindowEnd ?? []), params)})`);
-    const startAnchorClause = addOptionalClause(startAnchor != null,
-        `AND s.START_ANCHOR IN (${buildInClause('startAnchor', toArray(startAnchor ?? []), params)})`);
-    const endAnchorClause = addOptionalClause(endAnchor != null,
-        `AND s.END_ANCHOR IN (${buildInClause('endAnchor', toArray(endAnchor ?? []), params)})`);
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND c.TARGET_COHORT_ID IN (${buildInClause("targetId", toArray(targetIds ?? []), params)})`,
+  );
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND c.outcome_cohort_id IN (${buildInClause("outcomeId", toArray(outcomeIds ?? []), params)})`,
+  );
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND c.database_id IN (${buildInClause("databaseId", toArray(databaseIds ?? []), params)})`,
+  );
+  const rwStartClause = addOptionalClause(
+    riskWindowStart != null,
+    `AND s.RISK_WINDOW_START IN (${buildInClause("rwStart", toArray(riskWindowStart ?? []), params)})`,
+  );
+  const rwEndClause = addOptionalClause(
+    riskWindowEnd != null,
+    `AND s.RISK_WINDOW_END IN (${buildInClause("rwEnd", toArray(riskWindowEnd ?? []), params)})`,
+  );
+  const startAnchorClause = addOptionalClause(
+    startAnchor != null,
+    `AND s.START_ANCHOR IN (${buildInClause("startAnchor", toArray(startAnchor ?? []), params)})`,
+  );
+  const endAnchorClause = addOptionalClause(
+    endAnchor != null,
+    `AND s.END_ANCHOR IN (${buildInClause("endAnchor", toArray(endAnchor ?? []), params)})`,
+  );
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       t.database_id,
@@ -148,7 +165,7 @@ export async function getCaseContinuousFeatures({
       ON outcome.cohort_definition_id = t.outcome_cohort_id
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }
 
 /**
@@ -163,26 +180,31 @@ export async function getCaseContinuousFeatures({
  * @returns {Promise<object[]>}
  */
 export async function getTargetContinuousFeatures({
-                                                      schema,
-                                                      cTablePrefix = 'c_',
-                                                      cgTablePrefix = 'cg_',
-                                                      databaseTable = 'database_meta_data',
-                                                      targetIds = null,
-                                                      analysisIds = null,
-                                                      databaseIds = null,
-                                                  }) {
-    const params = {};
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  analysisIds = null,
+  databaseIds = null,
+}) {
+  const params = {};
 
-    const analysisFilter = analysisIds != null
-        ? `WHERE analysis_id IN (${buildInClause('analysisId', toArray(analysisIds), params)})`
-        : '';
+  const analysisFilter =
+    analysisIds != null
+      ? `WHERE analysis_id IN (${buildInClause("analysisId", toArray(analysisIds), params)})`
+      : "";
 
-    const targetClause = addOptionalClause(targetIds != null,
-        `AND c.TARGET_COHORT_ID IN (${buildInClause('targetId', toArray(targetIds ?? []), params)})`);
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND c.database_id IN (${buildInClause('databaseId', toArray(databaseIds ?? []), params)})`);
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND c.TARGET_COHORT_ID IN (${buildInClause("targetId", toArray(targetIds ?? []), params)})`,
+  );
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND c.database_id IN (${buildInClause("databaseId", toArray(databaseIds ?? []), params)})`,
+  );
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       t.database_id,
@@ -244,5 +266,5 @@ export async function getTargetContinuousFeatures({
       ON target.cohort_definition_id = t.target_cohort_id
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }

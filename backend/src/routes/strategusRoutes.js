@@ -71,14 +71,14 @@ async function getValidSchemas() {
   }
   try {
     const rows = await queryDb(
-      `SELECT schema_name FROM ${DB_LIST_SCHEMA}.db_list`
+      `SELECT schema_name FROM ${DB_LIST_SCHEMA}.db_list`,
     );
     _validSchemas = new Set(rows.map((r) => r.schemaName));
   } catch (e) {
     logger.error(
       `db-list schema load failed: ${
         e instanceof Error ? e.message : String(e)
-      }`
+      }`,
     );
     _validSchemas = new Set();
   }
@@ -236,7 +236,7 @@ router.get(
       logger.error(`dechallenge-rechallenge: ${message}`);
       res.status(500).json({ error: message });
     }
-  }
+  },
 );
 
 // dechallenge rechanllenge
@@ -278,7 +278,7 @@ router.get(
       logger.error(`dechallenge-rechallenge-fails: ${message}`);
       res.status(500).json({ error: message });
     }
-  }
+  },
 );
 
 router.get("/api/characterization/cohort-unique-people", async (req, res) => {
@@ -436,7 +436,7 @@ router.get(
       logger.error(`continuous-risk-factors: ${message}`);
       res.status(500).json({ error: message });
     }
-  }
+  },
 );
 
 //time-to-event
@@ -586,7 +586,7 @@ router.get(
       logger.error(`outcome-data-availability: ${message}`);
       res.status(500).json({ error: message });
     }
-  }
+  },
 );
 
 router.get("/api/db-list", async (req, res) => {
@@ -595,7 +595,7 @@ router.get("/api/db-list", async (req, res) => {
   }
   try {
     const rows = await queryDb(
-      `SELECT db_name, schema_name, release_date FROM ${DB_LIST_SCHEMA}.db_list ORDER BY release_date DESC`
+      `SELECT db_name, schema_name, release_date FROM ${DB_LIST_SCHEMA}.db_list ORDER BY release_date DESC`,
     );
     res.json(rows);
   } catch (error) {
@@ -717,8 +717,11 @@ router.get("/api/cohorts/definition-markdown", async (req, res) => {
       schema: req.resolvedSchema,
       targetIds: [parseInt(cohortId, 10)],
     });
-    if (!rows.length) return res.status(404).json({ error: "Cohort not found" });
-    const markdown = renderCohortMarkdown(rows[0].json ?? rows[0].cohortJson ?? "{}");
+    if (!rows.length)
+      return res.status(404).json({ error: "Cohort not found" });
+    const markdown = renderCohortMarkdown(
+      rows[0].json ?? rows[0].cohortJson ?? "{}",
+    );
     res.json({ markdown });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

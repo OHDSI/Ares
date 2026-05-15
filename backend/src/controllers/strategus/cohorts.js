@@ -24,7 +24,7 @@ export async function getCohortCounts({
   // cg_cohort_count uses cohort_id, not cohort_definition_id
   if (cohortIds != null) {
     clauses.push(
-      `cc.cohort_id IN (${buildInClause("cid", toArray(cohortIds), params)})`
+      `cc.cohort_id IN (${buildInClause("cid", toArray(cohortIds), params)})`,
     );
   }
   if (databaseIds != null) {
@@ -32,8 +32,8 @@ export async function getCohortCounts({
       `cc.database_id IN (${buildInClause(
         "dbid",
         toArray(databaseIds),
-        params
-      )})`
+        params,
+      )})`,
     );
   }
 
@@ -71,8 +71,8 @@ export async function getCohortGeneration({
       `cd.cohort_definition_id IN (${buildInClause(
         "cid",
         toArray(cohortIds),
-        params
-      )})`
+        params,
+      )})`,
     );
   }
 
@@ -102,7 +102,7 @@ export async function getCohortGeneration({
     // Fallback: older CohortGenerator used cohort_id instead of cohort_definition_id
     const sqlLegacy = sql.replace(
       "cg.cohort_definition_id = cd.cohort_definition_id",
-      "cg.cohort_id = cd.cohort_definition_id"
+      "cg.cohort_id = cd.cohort_definition_id",
     );
     return queryDb(sqlLegacy, params);
   }
@@ -138,8 +138,8 @@ export async function getCohortInclusionStats({
       `cir.database_id IN (${buildInClause(
         "dbid",
         toArray(databaseIds),
-        params
-      )})`
+        params,
+      )})`,
     );
   }
 

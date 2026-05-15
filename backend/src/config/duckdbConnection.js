@@ -1,5 +1,5 @@
-import { DuckDBInstance } from '@duckdb/node-api';
-import dotenv from 'dotenv';
+import { DuckDBInstance } from "@duckdb/node-api";
+import dotenv from "dotenv";
 
 dotenv.config();
 

@@ -1,21 +1,32 @@
-import { queryDb } from '../../../config/postgresDbConnection.js';
+import { queryDb } from "../../../config/postgresDbConnection.js";
 
-import { getCaseBinaryFeatures, getCaseTargetBinaryFeatures } from './helpers/caseBinaryFeatures.js';
-import { getCaseContinuousFeatures, getTargetContinuousFeatures } from './helpers/caseContinuousFeatures.js';
-import { processBinaryRiskFactorFeatures, processContinuousRiskFactorFeatures } from './helpers/riskFactorProcessing.js';
+import {
+  getCaseBinaryFeatures,
+  getCaseTargetBinaryFeatures,
+} from "./helpers/caseBinaryFeatures.js";
+import {
+  getCaseContinuousFeatures,
+  getTargetContinuousFeatures,
+} from "./helpers/caseContinuousFeatures.js";
+import {
+  processBinaryRiskFactorFeatures,
+  processContinuousRiskFactorFeatures,
+} from "./helpers/riskFactorProcessing.js";
 
 function addOptionalClause(condition, clause) {
-    return condition ? clause : '';
+  return condition ? clause : "";
 }
 
 function toArray(v) {
-    return Array.isArray(v) ? v : [v];
+  return Array.isArray(v) ? v : [v];
 }
 
 function buildInClause(prefix, values, params) {
-    const keys = values.map((_, i) => `@${prefix}${i}`);
-    values.forEach((v, i) => { params[`${prefix}${i}`] = v; });
-    return keys.join(',');
+  const keys = values.map((_, i) => `@${prefix}${i}`);
+  values.forEach((v, i) => {
+    params[`${prefix}${i}`] = v;
+  });
+  return keys.join(",");
 }
 
 /**
@@ -34,36 +45,50 @@ function buildInClause(prefix, values, params) {
  * @returns {Promise<object[]>}
  */
 export async function getCaseCounts({
-                                        schema,
-                                        cTablePrefix = 'c_',
-                                        cgTablePrefix = 'cg_',
-                                        databaseTable = 'database_meta_data',
-                                        targetIds = null,
-                                        outcomeIds = null,
-                                        databaseIds = null,
-                                        riskWindowStart = null,
-                                        riskWindowEnd = null,
-                                        startAnchor = null,
-                                        endAnchor = null,
-                                    }) {
-    const params = {};
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  outcomeIds = null,
+  databaseIds = null,
+  riskWindowStart = null,
+  riskWindowEnd = null,
+  startAnchor = null,
+  endAnchor = null,
+}) {
+  const params = {};
 
-    const targetClause = addOptionalClause(targetIds != null,
-        `AND cc.TARGET_COHORT_ID IN (${buildInClause('targetId', toArray(targetIds ?? []), params)})`);
-    const outcomeClause = addOptionalClause(outcomeIds != null,
-        `AND cc.OUTCOME_COHORT_ID IN (${buildInClause('outcomeId', toArray(outcomeIds ?? []), params)})`);
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND d.database_id IN (${buildInClause('databaseId', toArray(databaseIds ?? []), params)})`);
-    const rwStartClause = addOptionalClause(riskWindowStart != null,
-        `AND cc.RISK_WINDOW_START IN (${buildInClause('rwStart', toArray(riskWindowStart ?? []), params)})`);
-    const rwEndClause = addOptionalClause(riskWindowEnd != null,
-        `AND cc.RISK_WINDOW_END IN (${buildInClause('rwEnd', toArray(riskWindowEnd ?? []), params)})`);
-    const startAnchorClause = addOptionalClause(startAnchor != null,
-        `AND cc.START_ANCHOR IN (${buildInClause('startAnchor', toArray(startAnchor ?? []), params)})`);
-    const endAnchorClause = addOptionalClause(endAnchor != null,
-        `AND cc.END_ANCHOR IN (${buildInClause('endAnchor', toArray(endAnchor ?? []), params)})`);
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND cc.TARGET_COHORT_ID IN (${buildInClause("targetId", toArray(targetIds ?? []), params)})`,
+  );
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND cc.OUTCOME_COHORT_ID IN (${buildInClause("outcomeId", toArray(outcomeIds ?? []), params)})`,
+  );
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND d.database_id IN (${buildInClause("databaseId", toArray(databaseIds ?? []), params)})`,
+  );
+  const rwStartClause = addOptionalClause(
+    riskWindowStart != null,
+    `AND cc.RISK_WINDOW_START IN (${buildInClause("rwStart", toArray(riskWindowStart ?? []), params)})`,
+  );
+  const rwEndClause = addOptionalClause(
+    riskWindowEnd != null,
+    `AND cc.RISK_WINDOW_END IN (${buildInClause("rwEnd", toArray(riskWindowEnd ?? []), params)})`,
+  );
+  const startAnchorClause = addOptionalClause(
+    startAnchor != null,
+    `AND cc.START_ANCHOR IN (${buildInClause("startAnchor", toArray(startAnchor ?? []), params)})`,
+  );
+  const endAnchorClause = addOptionalClause(
+    endAnchor != null,
+    `AND cc.END_ANCHOR IN (${buildInClause("endAnchor", toArray(endAnchor ?? []), params)})`,
+  );
 
-    const sql = `
+  const sql = `
     SELECT
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       d.database_id,
@@ -96,7 +121,7 @@ export async function getCaseCounts({
       ${endAnchorClause}
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }
 
 /**
@@ -111,32 +136,50 @@ export async function getCaseCounts({
  * @returns {Promise<object[]>}
  */
 export async function getCaseTargetCounts({
-                                              schema,
-                                              cTablePrefix = 'c_',
-                                              cgTablePrefix = 'cg_',
-                                              databaseTable = 'database_meta_data',
-                                              targetIds = null,
-                                              outcomeIds = null,
-                                              databaseIds = null,
-                                          }) {
-    const params = {};
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetIds = null,
+  outcomeIds = null,
+  databaseIds = null,
+}) {
+  const params = {};
 
-    const targetClause = addOptionalClause(targetIds != null,
-        `AND tcd.target_cohort_id IN (${buildInClause('targetId', toArray(targetIds ?? []), params)})`);
-    const outcomeClause = addOptionalClause(outcomeIds != null,
-        `AND tcd.outcome_cohort_id IN (${buildInClause('outcomeId', toArray(outcomeIds ?? []), params)})`);
+  const targetClause = addOptionalClause(
+    targetIds != null,
+    `AND tcd.target_cohort_id IN (${buildInClause("targetId", toArray(targetIds ?? []), params)})`,
+  );
+  const outcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND tcd.outcome_cohort_id IN (${buildInClause("outcomeId", toArray(outcomeIds ?? []), params)})`,
+  );
 
-    const ccTargetClause = addOptionalClause(targetIds != null,
-        `AND cc.TARGET_COHORT_ID IN (${toArray(targetIds ?? []).map((_, i) => `@targetId${i}`).join(',')})`);
-    const dbClause = addOptionalClause(databaseIds != null,
-        `AND cc.database_id IN (${buildInClause('databaseId', toArray(databaseIds ?? []), params)})`);
+  const ccTargetClause = addOptionalClause(
+    targetIds != null,
+    `AND cc.TARGET_COHORT_ID IN (${toArray(targetIds ?? [])
+      .map((_, i) => `@targetId${i}`)
+      .join(",")})`,
+  );
+  const dbClause = addOptionalClause(
+    databaseIds != null,
+    `AND cc.database_id IN (${buildInClause("databaseId", toArray(databaseIds ?? []), params)})`,
+  );
 
-    const exTargetClause = addOptionalClause(targetIds != null,
-        `AND cc.TARGET_COHORT_ID IN (${toArray(targetIds ?? []).map((_, i) => `@targetId${i}`).join(',')})`);
-    const exOutcomeClause = addOptionalClause(outcomeIds != null,
-        `AND cc.outcome_COHORT_ID IN (${toArray(outcomeIds ?? []).map((_, i) => `@outcomeId${i}`).join(',')})`);
+  const exTargetClause = addOptionalClause(
+    targetIds != null,
+    `AND cc.TARGET_COHORT_ID IN (${toArray(targetIds ?? [])
+      .map((_, i) => `@targetId${i}`)
+      .join(",")})`,
+  );
+  const exOutcomeClause = addOptionalClause(
+    outcomeIds != null,
+    `AND cc.outcome_COHORT_ID IN (${toArray(outcomeIds ?? [])
+      .map((_, i) => `@outcomeId${i}`)
+      .join(",")})`,
+  );
 
-    const sql = `
+  const sql = `
     SELECT DISTINCT
       targets.database_name,
       targets.database_id,
@@ -214,7 +257,7 @@ export async function getCaseTargetCounts({
       ON outcome_cohorts.cohort_definition_id = targets.outcome_id
   `;
 
-    return queryDb(sql, params);
+  return queryDb(sql, params);
 }
 
 /**
@@ -234,43 +277,94 @@ export async function getCaseTargetCounts({
  * @returns {Promise<object>} { caseCounts, targetCounts, caseFeatures, targetFeatures, result }
  */
 export async function getBinaryRiskFactors({
-                                               schema,
-                                               cTablePrefix = 'c_',
-                                               cgTablePrefix = 'cg_',
-                                               databaseTable = 'database_meta_data',
-                                               targetId,
-                                               outcomeId,
-                                               databaseIds = null,
-                                               analysisIds = null,
-                                               riskWindowStart = null,
-                                               riskWindowEnd = null,
-                                               startAnchor = null,
-                                               endAnchor = null,
-                                           }) {
-    if (targetId == null) throw new Error('targetId must be entered');
-    if (outcomeId == null) throw new Error('outcomeId must be entered');
-    if (Array.isArray(targetId)) throw new Error('Must be single targetId');
-    if (Array.isArray(outcomeId)) throw new Error('Must be single outcomeId');
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetId,
+  outcomeId,
+  databaseIds = null,
+  analysisIds = null,
+  riskWindowStart = null,
+  riskWindowEnd = null,
+  startAnchor = null,
+  endAnchor = null,
+}) {
+  if (targetId == null) throw new Error("targetId must be entered");
+  if (outcomeId == null) throw new Error("outcomeId must be entered");
+  if (Array.isArray(targetId)) throw new Error("Must be single targetId");
+  if (Array.isArray(outcomeId)) throw new Error("Must be single outcomeId");
 
-    // Fan out one query per database to keep the fast single-DB query plan
-    if (databaseIds && databaseIds.length > 1) {
-        const perDb = await Promise.all(
-            databaseIds.map((id) => getBinaryRiskFactors({ schema, cTablePrefix, cgTablePrefix, databaseTable, targetId, outcomeId, databaseIds: [id], analysisIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }))
-        );
-        return perDb.flatMap((r) => r ?? []);
-    }
+  // Fan out one query per database to keep the fast single-DB query plan
+  if (databaseIds && databaseIds.length > 1) {
+    const perDb = await Promise.all(
+      databaseIds.map((id) =>
+        getBinaryRiskFactors({
+          schema,
+          cTablePrefix,
+          cgTablePrefix,
+          databaseTable,
+          targetId,
+          outcomeId,
+          databaseIds: [id],
+          analysisIds,
+          riskWindowStart,
+          riskWindowEnd,
+          startAnchor,
+          endAnchor,
+        }),
+      ),
+    );
+    return perDb.flatMap((r) => r ?? []);
+  }
 
-    const shared = { schema, cTablePrefix, cgTablePrefix, databaseTable };
-    const dbIds = databaseIds?.length ? databaseIds : null;
+  const shared = { schema, cTablePrefix, cgTablePrefix, databaseTable };
+  const dbIds = databaseIds?.length ? databaseIds : null;
 
-    const [caseCounts, targetCounts, caseFeatures, targetFeatures] = await Promise.all([
-        getCaseCounts({ ...shared, targetIds: targetId, outcomeIds: outcomeId, databaseIds: dbIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }),
-        getCaseTargetCounts({ ...shared, targetIds: targetId, outcomeIds: outcomeId, databaseIds: dbIds }),
-        getCaseBinaryFeatures({ ...shared, targetIds: targetId, outcomeIds: outcomeId, databaseIds: dbIds, analysisIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }),
-        getCaseTargetBinaryFeatures({ ...shared, targetIds: targetId, outcomeIds: outcomeId, databaseIds: dbIds, analysisIds }),
+  const [caseCounts, targetCounts, caseFeatures, targetFeatures] =
+    await Promise.all([
+      getCaseCounts({
+        ...shared,
+        targetIds: targetId,
+        outcomeIds: outcomeId,
+        databaseIds: dbIds,
+        riskWindowStart,
+        riskWindowEnd,
+        startAnchor,
+        endAnchor,
+      }),
+      getCaseTargetCounts({
+        ...shared,
+        targetIds: targetId,
+        outcomeIds: outcomeId,
+        databaseIds: dbIds,
+      }),
+      getCaseBinaryFeatures({
+        ...shared,
+        targetIds: targetId,
+        outcomeIds: outcomeId,
+        databaseIds: dbIds,
+        analysisIds,
+        riskWindowStart,
+        riskWindowEnd,
+        startAnchor,
+        endAnchor,
+      }),
+      getCaseTargetBinaryFeatures({
+        ...shared,
+        targetIds: targetId,
+        outcomeIds: outcomeId,
+        databaseIds: dbIds,
+        analysisIds,
+      }),
     ]);
 
-    return processBinaryRiskFactorFeatures({ caseCounts, targetCounts, caseFeatures, targetFeatures });
+  return processBinaryRiskFactorFeatures({
+    caseCounts,
+    targetCounts,
+    caseFeatures,
+    targetFeatures,
+  });
 }
 
 /**
@@ -290,38 +384,68 @@ export async function getBinaryRiskFactors({
  * @returns {Promise<object>}
  */
 export async function getContinuousRiskFactors({
-                                                   schema,
-                                                   cTablePrefix = 'c_',
-                                                   cgTablePrefix = 'cg_',
-                                                   databaseTable = 'database_meta_data',
-                                                   targetId,
-                                                   outcomeId,
-                                                   analysisIds = null,
-                                                   databaseIds = null,
-                                                   riskWindowStart = null,
-                                                   riskWindowEnd = null,
-                                                   startAnchor = null,
-                                                   endAnchor = null,
-                                               }) {
-    if (targetId == null) throw new Error('targetId must be entered');
-    if (outcomeId == null) throw new Error('outcomeId must be entered');
-    if (Array.isArray(targetId)) throw new Error('Must be single targetId');
-    if (Array.isArray(outcomeId)) throw new Error('Must be single outcomeId');
+  schema,
+  cTablePrefix = "c_",
+  cgTablePrefix = "cg_",
+  databaseTable = "database_meta_data",
+  targetId,
+  outcomeId,
+  analysisIds = null,
+  databaseIds = null,
+  riskWindowStart = null,
+  riskWindowEnd = null,
+  startAnchor = null,
+  endAnchor = null,
+}) {
+  if (targetId == null) throw new Error("targetId must be entered");
+  if (outcomeId == null) throw new Error("outcomeId must be entered");
+  if (Array.isArray(targetId)) throw new Error("Must be single targetId");
+  if (Array.isArray(outcomeId)) throw new Error("Must be single outcomeId");
 
-    // Fan out one query per database to keep the fast single-DB query plan
-    if (databaseIds && databaseIds.length > 1) {
-        const perDb = await Promise.all(
-            databaseIds.map((id) => getContinuousRiskFactors({ schema, cTablePrefix, cgTablePrefix, databaseTable, targetId, outcomeId, databaseIds: [id], analysisIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }))
-        );
-        return perDb.flatMap((r) => r ?? []);
-    }
+  // Fan out one query per database to keep the fast single-DB query plan
+  if (databaseIds && databaseIds.length > 1) {
+    const perDb = await Promise.all(
+      databaseIds.map((id) =>
+        getContinuousRiskFactors({
+          schema,
+          cTablePrefix,
+          cgTablePrefix,
+          databaseTable,
+          targetId,
+          outcomeId,
+          databaseIds: [id],
+          analysisIds,
+          riskWindowStart,
+          riskWindowEnd,
+          startAnchor,
+          endAnchor,
+        }),
+      ),
+    );
+    return perDb.flatMap((r) => r ?? []);
+  }
 
-    const shared = { schema, cTablePrefix, cgTablePrefix, databaseTable };
+  const shared = { schema, cTablePrefix, cgTablePrefix, databaseTable };
 
-    const [caseFeatures, targetFeatures] = await Promise.all([
-        getCaseContinuousFeatures({ ...shared, targetIds: targetId, outcomeIds: outcomeId, analysisIds, databaseIds, riskWindowStart, riskWindowEnd, startAnchor, endAnchor }),
-        getTargetContinuousFeatures({ ...shared, targetIds: targetId, analysisIds, databaseIds }),
-    ]);
+  const [caseFeatures, targetFeatures] = await Promise.all([
+    getCaseContinuousFeatures({
+      ...shared,
+      targetIds: targetId,
+      outcomeIds: outcomeId,
+      analysisIds,
+      databaseIds,
+      riskWindowStart,
+      riskWindowEnd,
+      startAnchor,
+      endAnchor,
+    }),
+    getTargetContinuousFeatures({
+      ...shared,
+      targetIds: targetId,
+      analysisIds,
+      databaseIds,
+    }),
+  ]);
 
-    return processContinuousRiskFactorFeatures({ caseFeatures, targetFeatures });
+  return processContinuousRiskFactorFeatures({ caseFeatures, targetFeatures });
 }
