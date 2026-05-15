@@ -245,6 +245,7 @@ const actions = {
     let data = {};
     await Promise.allSettled(promises).then((responses) => {
       responses.forEach((response, index) => {
+        if (!data) return;
         const status = response.status;
         const fileData = response.value?.data;
         const fileName = payload.files[index].name;
@@ -415,7 +416,7 @@ const actions = {
           };
         });
       if (data[file].length === 0) {
-        handleNetworkError(responses[0], { dispatch }, reportName, isDuckDb);
+        handleNetworkError(responses, { dispatch }, reportName, isDuckDb);
         data = null;
       }
     }
