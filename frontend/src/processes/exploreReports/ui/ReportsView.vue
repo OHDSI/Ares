@@ -78,7 +78,8 @@ watch(
       loadStart = Date.now();
       loaderState.value = "loading";
     }
-  }
+  },
+  { flush: "sync" },
 );
 
 const path = computed(function () {

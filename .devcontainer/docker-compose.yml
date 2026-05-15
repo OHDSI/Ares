@@ -10,13 +10,16 @@ services:
     volumes:
       - workspace:/workspace
     command: sleep infinity
+    env_file:
+      - path: .env
+        required: false
     environment:
       HOSTNAME: "0.0.0.0"
       POSTGRES_HOST: db
       PGPORT: "5432"
       DATABASE_NAME: dev
       DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: jeN3-ETNivADpZBN
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - db
 
@@ -25,7 +28,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: jeN3-ETNivADpZBN
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: dev
     volumes:
       - postgres-data:/var/lib/postgresql/data

@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+(cd frontend && pnpm exec lint-staged)
+(cd backend && pnpm exec lint-staged)

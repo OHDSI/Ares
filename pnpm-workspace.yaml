@@ -1,6 +1,7 @@
 packages:
   - frontend
   - backend
+  - docs
 
 minimumReleaseAge: 2880
 blockExoticSubdeps: true

@@ -18,8 +18,8 @@ are open-source. [Learn more about OHDSI](https://www.ohdsi.org).
 
 - git client ([GitHub Desktop](https://desktop.github.com/) recommended). On macOS git comes preinstalled and can be
   accessed via the Terminal app. On linux systems might require installation using the appropriate package manager.
-- Node.js v18 or higher is required. [Download link](https://nodejs.org/en/download/package-manager)
-- NPM (node package manager) - installed by default with Node.js
+- Node.js v22 or higher is required. [Download link](https://nodejs.org/en/download/package-manager)
+- pnpm (package manager) - install via `npm install -g pnpm` or see [pnpm.io](https://pnpm.io/installation)
 
 ### Installation Steps
 
@@ -31,7 +31,7 @@ Open the [Ares releases](https://github.com/OHDSI/Ares/releases) page and downlo
 Here's an example running Ares using the "http-server" web server:
 
 ```bash
-    npm install -g http-server #download and install the http-server web server
+    pnpm add -g http-server #download and install the http-server web server
     
     http-server aresFolder #replace with the name of the folder containing Ares files
 ```
@@ -52,27 +52,24 @@ npm. These steps should be run from a bash shell or command prompt and are as fo
 
 ```bash
    cd aresDirectory #navigate to the directory Ares was cloned into
-   npm install #install Ares dependencies
-   npm run build -- --base=/ # Build the app. Replace "/" if you wish to run Ares within a subdirectory
+   pnpm install #install Ares dependencies
+   pnpm run build -- --base=/ # Build the app. Replace "/" if you wish to run Ares within a subdirectory
 ```
 
-The <span style="color:#81A1C1">"--base"</span>
-option is used to specify the base public path of the app. The default value is <span style="color:#3DD68C">"
-/ares/"</span> in case this option is not indicated.
+The `--base` option is used to specify the base public path of the app. The default value is `/ares/` in case this
+option is not indicated.
 
-The npm build process will create an output directory named <span style="color:#3DD68C">"/dist"</span> which will
-contain all files required for the ARES web
-application. These files should be placed in a directory that is served by any web server (like http-server), typically deployed in an
-<span style="color:#3DD68C">"/ares"</span> subdirectory (you can override that with the <span style="color:#81A1C1">"
---base"</span> option as shown above.
+The build process will create an output directory named `/dist` which will contain all files required for the ARES web
+application. These files should be placed in a directory that is served by any web server (like http-server), typically
+deployed in an `/ares` subdirectory (you can override that with the `--base` option as shown above).
 
 #### Running in dev mode
 
 The app could also be launched in dev mode and served by the built-in web server instantly. Run the following after
-cloning the repo and running <span style="color:#88C0D0">"npm install"</span>
+cloning the repo and running `pnpm install`:
 
 ```bash
-   npm run serve
+   pnpm run serve
 ```
 
 Once the server is running, the app will be available at http://localhost:8080/ares (port 8080 is the default value and

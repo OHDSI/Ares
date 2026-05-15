@@ -13,10 +13,10 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     port: 8080,
-    host: "0.0.0.0",
+    host: process.env.VITE_HOST ?? "localhost",
     proxy: {
-      "/ares-api": "http://0.0.0.0:3000",
-      "/webapi": "http://localhost:3000/webapi",
+      "/ares-api": `http://${process.env.VITE_HOST ?? "localhost"}:3000`,
+      "/webapi": `http://${process.env.VITE_HOST ?? "localhost"}:4000/webapi`,
     },
   },
   resolve: {

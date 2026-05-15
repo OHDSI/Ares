@@ -80,7 +80,7 @@ const initAnnotationTables = async (instance) => {
         `);
     }
 
-    connection.close();
+    connection.closeSync();
 };
 
 export default initAnnotationTables;

@@ -65,26 +65,32 @@
 </template>
 
 <script setup>
-import anime from "animejs";
+import { animate } from "animejs";
 import { onMounted } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
 const darkMode = store.getters.getSettings.darkMode;
 
-function animate() {
-  anime({
-    targets: ".logo",
-    strokeDashoffset: [anime.setDashoffset, 0],
+function runAnimation() {
+  document.querySelectorAll(".logo").forEach((el) => {
+    if (el.getTotalLength) {
+      const len = el.getTotalLength();
+      el.style.strokeDasharray = `${len}`;
+      el.style.strokeDashoffset = `${len}`;
+    }
+  });
+  animate(".logo", {
+    strokeDashoffset: 0,
     duration: 2000,
-    easing: "linear",
-    direction: "alternate",
+    ease:"linear",
+    alternate: true,
     loop: true,
   });
 }
 
 onMounted(() => {
-  animate();
+  runAnimation();
 });
 </script>
 

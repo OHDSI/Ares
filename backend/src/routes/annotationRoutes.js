@@ -23,7 +23,7 @@ router.post('/api/v1/annotations/search', async (req, res) => {
     res.status(500).json({ error: message });
   }
   finally {
-    connection.close()
+    connection.closeSync()
   }
 
 });
@@ -40,7 +40,7 @@ router.post('/api/v1/annotations/', async (req, res) => {
     res.status(500).json({ error: message });
   }
   finally {
-    connection.close()
+    connection.closeSync()
   }
 
 });
@@ -63,7 +63,7 @@ router.get('/api/v1/charts/', async (req, res) => {
     res.status(500).json({ error: message });
   }
   finally {
-    connection.close();
+    connection.closeSync();
   }
 });
 
@@ -78,7 +78,7 @@ router.post('/api/v1/annotations/new', async (req, res) => {
     res.status(500).json({ error: message });
   }
   finally {
-    connection.close();
+    connection.closeSync();
   }
 });
 
@@ -94,7 +94,7 @@ router.put('/api/v1/annotations/:id', async (req, res) => {
     res.status(500).json({ error: message });
   }
   finally {
-    connection.close();
+    connection.closeSync();
   }
 });
 
@@ -103,14 +103,14 @@ router.delete('/api/v1/annotations/:id', async (req, res) => {
   const connection = await dbInstance.connect();
   try {
     await deleteAnnotation(connection, id)
-    connection.close();
+    connection.closeSync();
     res.json({ message: 'Annotation deleted successfully' });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     res.status(500).json({ error: message });
   }
   finally {
-    connection.close();
+    connection.closeSync();
   }
 });
 

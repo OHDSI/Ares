@@ -15,38 +15,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
-          cache: npm
+          version: 11.1.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
 
       - name: Install Deps
         working-directory: ./docs
-        run: npm ci
-
-      - name: Clean dist folder
-        run: rm -rf docs/.vuepress/dist
+        run: pnpm install
 
       - name: Build Docs
         working-directory: ./docs
-        env:
-          NODE_OPTIONS: --max_old_space_size=8192
-        run: |
-          npm run docs:build || echo "Build failed"
-
-      - name: Verify dist folder exists
-        run: ls -la docs/.vuepress/dist
-
-      - name: Create .nojekyll file
-        run: echo "" > docs/.vuepress/dist/.nojekyll
+        run: pnpm run docs:build
 
       - name: Deploy Docs
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: docs/.vuepress/dist
+          folder: docs/docs/.vitepress/dist

@@ -7,9 +7,10 @@
   "packageManager": "pnpm@11.1.2",
   "scripts": {
     "serve": "concurrently \"pnpm --filter=./frontend run serve\" \"pnpm --filter=./backend run start\"",
-    "build": "pnpm --filter=./frontend run build"
+    "build": "pnpm --filter=./frontend run build",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.2.1"
   }
 }

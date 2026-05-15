@@ -3,7 +3,7 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "pnpm install",
+  "postCreateCommand": "pnpm install --frozen-lockfile",
   "forwardPorts": [3000, 8080],
   "portsAttributes": {
     "3000": { "label": "Backend (Express)" },

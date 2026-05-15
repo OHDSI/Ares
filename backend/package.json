@@ -3,17 +3,31 @@
   "version": "0.1",
   "private": true,
   "scripts": {
-    "start": "node ./main.js"
+    "start": "node ./main.js",
+    "lint": "eslint src main.js",
+    "lint:fix": "eslint src main.js --fix"
   },
   "type": "module",
+  "lint-staged": {
+    "*.js": "prettier --write"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.6.0",
+    "lint-staged": "^16.0.0",
+    "prettier": "^3.0.0"
+  },
   "dependencies": {
-    "@duckdb/node-api": "^1.1.3-alpha.10",
-    "cookie-parser": "~1.4.4",
+    "@duckdb/node-api": "^1.5.2-r.1",
+    "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
-    "debug": "~2.6.9",
+    "debug": "^4.3.0",
     "dotenv": "^16.4.7",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
+    "express": "^5.0.0",
+    "http-errors": "^2.0.0",
     "pg": "^8.18.0",
     "winston": "^3.17.0"
   }
