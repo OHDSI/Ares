@@ -1,0 +1,13 @@
+{
+  "name": "Ares",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "pnpm install",
+  "forwardPorts": [3000, 8080],
+  "portsAttributes": {
+    "3000": { "label": "Backend (Express)" },
+    "8080": { "label": "Frontend (Vite)" }
+  },
+  "remoteUser": "node"
+}

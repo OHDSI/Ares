@@ -12,8 +12,9 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     port: 8080,
+    host: "0.0.0.0",
     proxy: {
-      "/ares-api": "http://localhost:3000",
+      "/ares-api": "http://0.0.0.0:3000",
       "/webapi": "http://localhost:3000/webapi",
     },
   },
@@ -28,7 +29,7 @@ export default defineConfig({
   build: {
     target: "esnext",
     sourcemap: false,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         manualChunks(id) {
           if (

@@ -1,0 +1,35 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 12g
+    volumes:
+      - workspace:/workspace
+    command: sleep infinity
+    environment:
+      HOSTNAME: "0.0.0.0"
+      POSTGRES_HOST: db
+      PGPORT: "5432"
+      DATABASE_NAME: dev
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: jeN3-ETNivADpZBN
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: jeN3-ETNivADpZBN
+      POSTGRES_DB: dev
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+  workspace:
