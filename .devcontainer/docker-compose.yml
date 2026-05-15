@@ -15,6 +15,7 @@ services:
         required: false
     environment:
       HOSTNAME: "0.0.0.0"
+      VITE_HOST: "0.0.0.0"
       POSTGRES_HOST: db
       PGPORT: "5432"
       DATABASE_NAME: dev

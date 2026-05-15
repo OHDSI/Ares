@@ -32,7 +32,7 @@ jobs:
 
       - name: Install Deps
         working-directory: ./docs
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build Docs
         working-directory: ./docs
