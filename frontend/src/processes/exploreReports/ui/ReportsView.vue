@@ -79,7 +79,6 @@ watch(
       loaderState.value = "loading";
     }
   },
-  { flush: "sync" },
 );
 
 const path = computed(function () {
@@ -112,7 +111,6 @@ const loadViewData = function () {
 };
 
 watch(path, () => {
-  store.dispatch(RESET_DATA_STORAGE);
   if (!useAnnotationsBackend) {
     store.dispatch(LOAD_NOTES);
   } else {
@@ -143,7 +141,9 @@ onMounted(() => {
   transition: opacity 0.12s ease;
 }
 .page-fade-enter-active {
-  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s cubic-bezier(0.2, 0, 0, 1);
 }
 .page-fade-enter-from,
 .page-fade-leave-to {
