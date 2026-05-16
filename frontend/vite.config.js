@@ -15,7 +15,10 @@ export default defineConfig({
     port: 8080,
     host: process.env.VITE_HOST ?? "localhost",
     proxy: {
-      "/ares-api": `http://${process.env.VITE_HOST ?? "localhost"}:3000`,
+      "/ares-api": {
+        target: `http://${process.env.VITE_HOST ?? "localhost"}:3000`,
+        rewrite: (path) => path.replace(/^\/ares-api/, ""),
+      },
       "/webapi": `http://${process.env.VITE_HOST ?? "localhost"}:4000/webapi`,
     },
   },
