@@ -3,11 +3,15 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
+  "initializeCommand": "sh .devcontainer/init.sh",
   "postCreateCommand": "sh .devcontainer/setup.sh",
   "forwardPorts": [3000, 8080],
   "portsAttributes": {
     "3000": { "label": "Backend (Express)" },
     "8080": { "label": "Frontend (Vite)" }
+  },
+  "remoteEnv": {
+    "DATABASE_PATH": "${containerWorkspaceFolder}/backend/annotations.duckdb"
   },
   "remoteUser": "node"
 }
