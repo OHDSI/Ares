@@ -2,6 +2,10 @@
   "name": "ares-backend",
   "version": "0.1",
   "private": true,
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=11"
+  },
   "scripts": {
     "start": "node ./main.js",
     "lint": "eslint src main.js",

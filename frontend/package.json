@@ -4,6 +4,10 @@
   "description": "Apex Research Exploration System (ARES)",
   "author": "Frank DeFalco",
   "private": true,
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=11"
+  },
   "scripts": {
     "serve": "vite --open",
     "preview": "vite preview --open --port 8080",

@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "Provides documentation for Ares",
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=11"
+  },
   "type": "module",
   "scripts": {
     "docs:dev": "vitepress dev docs",

@@ -5,6 +5,10 @@
   "author": "Frank DeFalco",
   "private": true,
   "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=11"
+  },
   "scripts": {
     "serve": "concurrently \"pnpm --filter=./frontend run serve\" \"pnpm --filter=./backend run start\"",
     "build": "pnpm --filter=./frontend run build",
