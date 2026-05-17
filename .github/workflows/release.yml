@@ -35,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      attestations: write
+      id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
@@ -58,6 +60,11 @@ jobs:
 
       - name: Package
         run: zip -r ares-${{ needs.check.outputs.version }}.zip dist/
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32  # v4.1.0
+        with:
+          subject-path: ares-${{ needs.check.outputs.version }}.zip
 
       - name: Create release
         env:
