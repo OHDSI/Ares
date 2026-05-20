@@ -34,8 +34,18 @@ jobs:
           REPO: ${{ github.repository }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          gh issue create \
+          EXISTING=$(gh issue list \
             --repo "${REPO}" \
-            --title "Weekly security audit failed $(date +'%Y-%m-%d')" \
-            --body "The weekly \`pnpm audit\` found high-severity vulnerabilities. See the [workflow run](${RUN_URL}) for details." \
-            --label "security"
+            --label "security" \
+            --state open \
+            --json title \
+            --jq '[.[] | select(.title == "Weekly security audit failed")] | length')
+          if [ "$EXISTING" -eq 0 ]; then
+            gh issue create \
+              --repo "${REPO}" \
+              --title "Weekly security audit failed" \
+              --body "The weekly \`pnpm audit\` found high-severity vulnerabilities. See the [workflow run](${RUN_URL}) for details." \
+              --label "security"
+          else
+            echo "Open security audit issue already exists, skipping."
+          fi
