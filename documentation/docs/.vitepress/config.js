@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  outDir: '../dist',
   lang: 'en-US',
   base: '/Ares/',
   title: 'ARES',

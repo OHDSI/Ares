@@ -1,17 +1,18 @@
 packages:
   - frontend
   - backend
-  - docs
+  - documentation
 
 minimumReleaseAge: 2880
 blockExoticSubdeps: true
 trustPolicy: "no-downgrade"
 trustPolicyIgnoreAfter: 2880
 trustPolicyExclude:
-  - "chokidar"
+  - "chokidar" # inconsistent provenance attestation in upstream releases
 
 allowBuilds:
   "@duckdb/node-api": true
   "@parcel/watcher": true
   "esbuild": true
+  libxmljs2: true
   vue-demi: true

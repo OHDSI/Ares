@@ -4,7 +4,7 @@ RUN apk add --no-cache python3 py3-pip make g++ && corepack enable && corepack p
 WORKDIR /code
 COPY ./ /code/
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 RUN pnpm run build
 
 FROM docker.io/library/nginx:1.30.1@sha256:842a3f99afd73859b5c647f8be6f0000849be286674e30d9dbcf7a6902a69487 as webserver

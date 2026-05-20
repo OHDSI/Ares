@@ -5,14 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'docs/**'
-
-permissions:
-  contents: write
+      - 'documentation/**'
 
 jobs:
-  deploy-gh-pages:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -26,18 +25,42 @@ jobs:
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0
         with:
           node-version: 22.22.3
-          cache: pnpm
 
       - name: Install Deps
-        working-directory: ./docs
+        working-directory: ./documentation
         run: pnpm install --frozen-lockfile
 
       - name: Build Docs
-        working-directory: ./docs
+        working-directory: ./documentation
         run: pnpm run docs:build
+
+      - name: Verify build output
+        run: |
+          test -d documentation/dist \
+            || { echo "Error: build output directory does not exist"; exit 1; }
+          test -n "$(ls -A documentation/dist)" \
+            || { echo "Error: build output directory is empty"; exit 1; }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: docs-dist
+          path: documentation/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: docs-dist
+          path: dist
 
       - name: Deploy Docs
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f  # v4.8.0
         with:
           branch: gh-pages
-          folder: docs/docs/.vitepress/dist
+          folder: dist
