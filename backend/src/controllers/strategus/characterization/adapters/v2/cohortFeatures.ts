@@ -29,29 +29,25 @@ async function getCharacterizationTargetCohortCounts({
   );
 
   const sql = `
-    SELECT DISTINCT
+    SELECT
       ts.database_id,
       d.CDM_SOURCE_ABBREVIATION AS database_name,
       ts.target_id AS cohort_id,
       cg.cohort_name,
       ts.min_prior_observation,
-      attr.n
+      MAX(cc.cohort_subjects) AS n
     FROM ${schema}.${cTablePrefix}target_settings ts
     INNER JOIN ${schema}.${databaseTable} d
       ON ts.database_id = d.database_id
     INNER JOIN ${schema}.${cgTablePrefix}cohort_definition cg
       ON cg.cohort_definition_id = ts.target_id
-    LEFT JOIN (
-      SELECT cohort_definition_id, database_id, setting_id, MIN(n) AS n
-      FROM ${schema}.${cTablePrefix}attrition
-      GROUP BY cohort_definition_id, database_id, setting_id
-    ) attr
-      ON attr.cohort_definition_id = ts.target_id
-      AND attr.database_id = ts.database_id
-      AND attr.setting_id = ts.setting_id
+    LEFT JOIN ${schema}.${cgTablePrefix}cohort_count cc
+      ON cc.cohort_id = ts.target_id
+      AND cc.database_id = ts.database_id
     WHERE 1 = 1
       ${targetClause}
       ${dbClause}
+    GROUP BY ts.database_id, d.CDM_SOURCE_ABBREVIATION, ts.target_id, cg.cohort_name, ts.min_prior_observation
   `;
 
   return queryDb(sql, params);
