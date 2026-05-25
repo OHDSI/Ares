@@ -305,7 +305,7 @@ export async function getCharacterizationCohortContinuous({
     }
     const row = pivotMap.get(key)!;
     for (const field of valueFields) {
-      row[`${field}_${r.id}`] = (r[field] as number) ?? 0;
+      row[`${field}_${r.id}`] = Number(r[field] ?? 0);
     }
   }
 

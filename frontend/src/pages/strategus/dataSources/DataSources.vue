@@ -4,7 +4,12 @@
       <h3>Data Sources</h3>
     </div>
     <div class="section">
+      <Message v-if="error" severity="error" :closable="false">
+        Unable to reach the backend. Check that the server is running.
+      </Message>
+
       <DataTable
+        v-else
         :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
@@ -143,6 +148,7 @@ import { ref, onMounted } from "vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputText from "primevue/inputtext";
+import Message from "primevue/message";
 import { FilterMatchMode } from "primevue/api";
 import { useStore } from "vuex";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
@@ -152,6 +158,7 @@ import Tooltip from "@/shared/ui/tooltip";
 const store = useStore();
 const data = ref([]);
 const loading = ref(false);
+const error = ref(false);
 
 const filters = ref({
   cdmSourceName: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -166,6 +173,7 @@ onMounted(async () => {
     data.value = res.data ?? [];
   } catch (e) {
     console.error("Failed to load datasources:", e);
+    error.value = true;
   } finally {
     loading.value = false;
   }

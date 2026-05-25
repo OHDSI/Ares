@@ -9,7 +9,11 @@
           >
         </div>
         <div class="section">
+          <Message v-if="targetTableError" severity="error" :closable="false">
+            Unable to reach the backend. Check that the server is running.
+          </Message>
           <TargetTable
+            v-else
             :value="targetTable"
             :loading="loadingTargets"
             :selection="selectedTarget"
@@ -283,6 +287,7 @@ const ANALYSIS_AVAIL_KEY = {
 };
 
 const loadingTargets = ref(false);
+const targetTableError = ref(false);
 const loadingOutcomes = ref(false);
 const outcomeLoaderState = ref("idle");
 const showContent = ref(false);
@@ -380,9 +385,12 @@ function onChildStateChange(childState) {
 
 async function fetchTargetTable() {
   loadingTargets.value = true;
+  targetTableError.value = false;
   try {
     const res = await StrategusService.characterization.getTargetTable();
     targetTable.value = res.data;
+  } catch {
+    targetTableError.value = true;
   } finally {
     loadingTargets.value = false;
   }

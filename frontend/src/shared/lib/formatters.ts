@@ -21,11 +21,13 @@ export function formatNum(val: number | string | null | undefined): string {
  * result and display as the fallback label (default "< MT"). Null/NaN -> "N/A".
  */
 export function formatNumCensored(
-  val: number | null | undefined,
-  fallback = "< MT"
+  val: number | string | null | undefined,
+  fallback = "< MT",
 ): string {
-  if (val === null || val === undefined || isNaN(val)) return "N/A";
-  return val >= 0 ? val.toFixed(2) : fallback;
+  if (val === null || val === undefined) return "N/A";
+  const n = typeof val === "string" ? parseFloat(val) : val;
+  if (isNaN(n)) return "N/A";
+  return n >= 0 ? n.toFixed(2) : fallback;
 }
 
 /**
@@ -34,7 +36,7 @@ export function formatNumCensored(
  */
 export function formatCensored(
   val: number | null | undefined,
-  fallback = "< MT"
+  fallback = "< MT",
 ): string | number {
   if (val === null || val === undefined || isNaN(val)) return fallback;
   return val >= 0 ? val : `< ${Math.abs(val)}`;
@@ -45,7 +47,7 @@ export function formatCensored(
  */
 export function formatCount(
   val: number | null | undefined,
-  fallback = "< MT"
+  fallback = "< MT",
 ): string | number {
   if (val === null || val === undefined || isNaN(val)) return "N/A";
   return val >= 0 ? val : fallback;
@@ -64,7 +66,7 @@ export function formatPct(val: number | null | undefined): string {
  */
 export function formatPercentStat(
   val: number | null | undefined,
-  fallback = "< MT"
+  fallback = "< MT",
 ): string {
   if (val === null || val === undefined || isNaN(val)) return "N/A";
   return val >= 0 ? `${(val * 100).toFixed(2)} %` : fallback;
@@ -92,8 +94,8 @@ export function kmbFormatter(v: number): string {
       return num >= 100
         ? `${num.toFixed(0)}${suffix}`
         : num >= 10
-        ? `${num.toFixed(1)}${suffix}`
-        : `${num.toFixed(2)}${suffix}`;
+          ? `${num.toFixed(1)}${suffix}`
+          : `${num.toFixed(2)}${suffix}`;
     }
   }
   return v.toString();
@@ -148,7 +150,7 @@ export function formatDateTime(val: string | null | undefined): string {
 /** Timestamp (ISO string or Date) -> locale time string. Null/empty -> fallback (default "—"). */
 export function formatTime(
   ts: string | Date | null | undefined,
-  fallback = "—"
+  fallback = "—",
 ): string {
   if (!ts) return fallback;
   return new Date(ts).toLocaleTimeString();
@@ -187,8 +189,8 @@ export function formatSI(count: number): string {
         Math.abs(scaled) >= 100
           ? scaled.toFixed(0)
           : Math.abs(scaled) >= 10
-          ? scaled.toFixed(1)
-          : scaled.toFixed(2);
+            ? scaled.toFixed(1)
+            : scaled.toFixed(2);
       return `${fixed}${suffix}`;
     }
   }
@@ -225,7 +227,7 @@ export function durationClassMs(ms: number | null | undefined): string {
 // SQL / debug formatters
 
 export function extractContext(
-  query: string | null | undefined
+  query: string | null | undefined,
 ): string | null {
   const m = query?.match(/^\/\*\s*(.+?)\s*\*\//);
   return m ? m[1] : null;
@@ -241,7 +243,7 @@ export function formatSql(raw: string | null | undefined): string {
   return s
     .replace(
       /\b(SELECT|FROM|WHERE|INNER JOIN|LEFT JOIN|RIGHT JOIN|FULL OUTER JOIN|JOIN|ON|AND|OR|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|WITH|UNION ALL|UNION|INSERT INTO|INSERT|UPDATE|DELETE|SET|VALUES|CASE|WHEN|THEN|ELSE|END)\b/g,
-      "\n$1"
+      "\n$1",
     )
     .replace(/,(?!\s*\n)/g, ",\n  ")
     .replace(/^\n/, "")

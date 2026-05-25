@@ -8,7 +8,11 @@
       <PillNav v-model="activeTab" :tabs="tabs" />
     </div>
 
-    <Transition name="tab-fade" mode="out-in">
+    <Message v-if="error" severity="error" :closable="false" class="mt-3">
+      Unable to reach the backend. Check that the server is running.
+    </Message>
+
+    <Transition v-else name="tab-fade" mode="out-in">
       <div :key="activeTab">
         <CohortCounts
           v-if="activeTab === 0"
@@ -27,6 +31,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
+import Message from "primevue/message";
 import PillNav from "@/shared/ui/pillNav";
 import CohortCounts from "./cohortCounts";
 import CohortGeneration from "./cohortGeneration";
@@ -51,6 +56,7 @@ const tabs = [
 const cohortList = ref<any[]>([]);
 const countRows = ref<any[]>([]);
 const countsLoading = ref(false);
+const error = ref(false);
 
 onMounted(async () => {
   countsLoading.value = true;
@@ -63,6 +69,7 @@ onMounted(async () => {
     countRows.value = countsRes.data ?? [];
   } catch (e) {
     console.error("Failed to load cohort data:", e);
+    error.value = true;
   } finally {
     countsLoading.value = false;
   }
@@ -93,7 +100,9 @@ onMounted(async () => {
 }
 
 .tab-fade-enter-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
 }
 
 .tab-fade-enter-from,
