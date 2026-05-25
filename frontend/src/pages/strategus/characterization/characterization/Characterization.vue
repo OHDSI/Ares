@@ -669,7 +669,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   padding: 0.625rem 1rem;
-  //border: 1px solid v-bind(activeTargetBorder);
+  /* border: 1px solid v-bind(activeTargetBorder); */
   border-radius: 8px;
 }
 
