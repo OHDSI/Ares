@@ -158,7 +158,7 @@ const cohortOptions = computed(() =>
   props.cohortList.map((c) => ({
     label: c.cohortName,
     value: c.cohortDefinitionId,
-  }))
+  })),
 );
 
 const _url = readUrl();
@@ -189,7 +189,7 @@ const definitionMarkdown = ref<string>("");
 const definitionHtml = computed(() =>
   definitionMarkdown.value
     ? (marked.parse(definitionMarkdown.value) as string)
-    : ""
+    : "",
 );
 
 const inclusionRules = ref<any[]>([]);
@@ -200,7 +200,9 @@ const modeId = ref(_url.modeId ?? 1);
 const modeOptions = MODE_OPTIONS;
 
 const availableDatabases = computed(() =>
-  [...new Set(inclusionStats.value.map((r) => r.databaseName as string))].sort()
+  [
+    ...new Set(inclusionStats.value.map((r) => r.databaseName as string)),
+  ].sort(),
 );
 
 const attritionRows = computed(() => {
@@ -209,7 +211,7 @@ const attritionRows = computed(() => {
     inclusionRules.value,
     inclusionStats.value,
     modeId.value,
-    selectedDatabase.value
+    selectedDatabase.value,
   );
 });
 
@@ -249,7 +251,8 @@ async function generate(isRestoring = false) {
     selectedDef.value =
       defs.find((d) => d.cohortDefinitionId === selectedCohortId.value) ?? null;
 
-    definitionMarkdown.value = markdownRes.data?.markdown ?? "";
+    definitionMarkdown.value =
+      (markdownRes.data as { markdown: string })?.markdown ?? "";
 
     inclusionRules.value = rulesRes.data ?? [];
     inclusionStats.value = statsRes.data ?? [];

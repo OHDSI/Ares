@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true,
+    "types": [
+      "node",
+      "pg"
+    ],
+    "paths": {
+      "#shared/*": [
+        "./src/shared/*"
+      ],
+      "#config/*": [
+        "./src/config/*"
+      ],
+      "#utils/*": [
+        "./src/utils/*"
+      ],
+      "#types/*": [
+        "./src/types/*"
+      ],
+      "#routes/*": [
+        "./src/routes/*"
+      ],
+      "#middleware/*": [
+        "./src/middleware/*"
+      ]
+    },
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "main.ts",
+    "src/**/*.ts"
+  ]
+}

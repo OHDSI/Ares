@@ -25,6 +25,7 @@ allowBuilds:
   "@parcel/watcher": true
   "esbuild": true
   libxmljs2: true
+  lz4: false
   vue-demi: true
 
 # Explicit to prevent accidental override via CLI or local config

@@ -20,10 +20,10 @@ export function useLogsTool(intervalSec: Ref<number>) {
     if (logsPaused.value) return;
     try {
       const res = await StrategusService.debug.getLogs(logsCursor.value);
-      const { entries, cursor } = res.data as {
-        entries: LogEntry[];
-        cursor: number;
-      };
+      const entries = res.data as LogEntry[] | undefined;
+      const cursor =
+        (res.meta as { cursor?: number } | undefined)?.cursor ??
+        logsCursor.value;
       if (entries?.length) {
         logsEntries.value.push(...entries);
         logsCursor.value = cursor;

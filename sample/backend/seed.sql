@@ -931,11 +931,12 @@ BEGIN
 END $$;
 
 --
--- SCHEMA: app2 (second schema for testing db picker)
+-- SCHEMA: app2 (updated characterization schema - v2)
 --
 DROP SCHEMA IF EXISTS app2 CASCADE;
 CREATE SCHEMA app2;
 
+-- Unchanged tables (same structure as app)
 CREATE TABLE app2.database_meta_data          (LIKE app.database_meta_data);
 CREATE TABLE app2.cg_cohort_definition        (LIKE app.cg_cohort_definition);
 CREATE TABLE app2.cg_cohort_subset_definition (LIKE app.cg_cohort_subset_definition);
@@ -943,12 +944,17 @@ CREATE TABLE app2.cg_cohort_count             (LIKE app.cg_cohort_count);
 CREATE TABLE app2.cg_cohort_generation        (LIKE app.cg_cohort_generation);
 CREATE TABLE app2.cg_cohort_inclusion         (LIKE app.cg_cohort_inclusion);
 CREATE TABLE app2.cg_cohort_inc_result        (LIKE app.cg_cohort_inc_result);
-CREATE TABLE app2.c_settings                  (LIKE app.c_settings);
-CREATE TABLE app2.c_cohort_details            (LIKE app.c_cohort_details);
-CREATE TABLE app2.c_covariate_ref             (LIKE app.c_covariate_ref);
-CREATE TABLE app2.c_covariates                (LIKE app.c_covariates);
-CREATE TABLE app2.c_covariates_continuous     (LIKE app.c_covariates_continuous);
-CREATE TABLE app2.c_cohort_counts             (LIKE app.c_cohort_counts);
+CREATE TABLE app2.c_covariate_ref (
+    database_id           VARCHAR(100) NOT NULL,
+    setting_id            VARCHAR(50)  NOT NULL,
+    covariate_id          BIGINT       NOT NULL,
+    covariate_name        VARCHAR,
+    analysis_id           INT,
+    concept_id            BIGINT,
+    value_as_concept_id   INT,
+    collisions            INT,
+    PRIMARY KEY (database_id, setting_id, covariate_id)
+);
 CREATE TABLE app2.c_dechallenge_rechallenge   (LIKE app.c_dechallenge_rechallenge);
 CREATE TABLE app2.c_rechallenge_fail_case_series (LIKE app.c_rechallenge_fail_case_series);
 CREATE TABLE app2.c_time_to_event             (LIKE app.c_time_to_event);
@@ -959,8 +965,6 @@ CREATE TABLE app2.ci_tar_def                  (LIKE app.ci_tar_def);
 CREATE TABLE app2.ci_subgroup_def             (LIKE app.ci_subgroup_def);
 CREATE TABLE app2.ci_age_group_def            (LIKE app.ci_age_group_def);
 CREATE TABLE app2.ci_incidence_summary        (LIKE app.ci_incidence_summary);
-CREATE TABLE app2.cm_target_comparator_outcome(LIKE app.cm_target_comparator_outcome);
-CREATE TABLE app2.cm_result                   (LIKE app.cm_result);
 CREATE TABLE app2.sccs_exposures_outcome_set  (LIKE app.sccs_exposures_outcome_set);
 CREATE TABLE app2.sccs_covariate              (LIKE app.sccs_covariate);
 CREATE TABLE app2.sccs_exposure               (LIKE app.sccs_exposure);
@@ -968,6 +972,226 @@ CREATE TABLE app2.sccs_result                 (LIKE app.sccs_result);
 CREATE TABLE app2.plp_cohorts                 (LIKE app.plp_cohorts);
 CREATE TABLE app2.plp_model_designs           (LIKE app.plp_model_designs);
 
+-- New characterization settings tables
+CREATE TABLE app2.c_execution_settings (
+    setting_id                VARCHAR(50)  NOT NULL,
+    database_id               VARCHAR(100) NOT NULL,
+    database_hash             VARCHAR(50),
+    mode                      VARCHAR(25),
+    min_characterization_mean FLOAT,
+    min_covariate_count       INT,
+    min_smd                   FLOAT,
+    PRIMARY KEY (setting_id, database_id)
+);
+
+CREATE TABLE app2.c_target_settings (
+    setting_id                 VARCHAR(50)  NOT NULL,
+    database_id                VARCHAR(100) NOT NULL,
+    characterization_target_id BIGINT       NOT NULL,
+    target_id                  BIGINT,
+    limit_to_first_in_n_days   INT,
+    min_prior_observation      INT,
+    PRIMARY KEY (setting_id, database_id, characterization_target_id)
+);
+
+CREATE TABLE app2.c_case_settings (
+    setting_id                 VARCHAR(50)  NOT NULL,
+    database_id                VARCHAR(100) NOT NULL,
+    characterization_case_id   BIGINT       NOT NULL,
+    characterization_target_id BIGINT,
+    outcome_id                 BIGINT,
+    outcome_washout_days       INT,
+    start_anchor               VARCHAR(15),
+    end_anchor                 VARCHAR(15),
+    risk_window_start          INT,
+    risk_window_end            INT,
+    runtype                    VARCHAR(50),
+    PRIMARY KEY (setting_id, database_id, characterization_case_id)
+);
+
+CREATE TABLE app2.c_case_series_settings (
+    setting_id                 VARCHAR(50) NOT NULL,
+    case_pre_target_duration   INT,
+    case_post_outcome_duration INT,
+    PRIMARY KEY (setting_id)
+);
+
+CREATE TABLE app2.c_analysis_ref (
+    database_id        VARCHAR(100) NOT NULL,
+    setting_id         VARCHAR(50)  NOT NULL,
+    analysis_id        INT          NOT NULL,
+    analysis_name      VARCHAR,
+    domain_id          VARCHAR,
+    start_day          INT,
+    end_day            INT,
+    is_binary          VARCHAR(1),
+    missing_means_zero VARCHAR(1),
+    PRIMARY KEY (database_id, setting_id, analysis_id)
+);
+
+CREATE TABLE app2.c_attrition (
+    cohort_definition_id BIGINT       NOT NULL,
+    attr_reason          VARCHAR(100) NOT NULL,
+    n                    BIGINT,
+    database_id          VARCHAR(100) NOT NULL,
+    setting_id           VARCHAR(50)  NOT NULL,
+    PRIMARY KEY (cohort_definition_id, attr_reason, database_id, setting_id)
+);
+
+-- New characterization covariate tables
+CREATE TABLE app2.c_target_covariates (
+    database_id                VARCHAR(100) NOT NULL,
+    setting_id                 VARCHAR(50)  NOT NULL,
+    characterization_target_id INT          NOT NULL,
+    covariate_id               BIGINT       NOT NULL,
+    sum_value                  INT,
+    average_value              FLOAT,
+    PRIMARY KEY (database_id, setting_id, characterization_target_id, covariate_id)
+);
+
+CREATE TABLE app2.c_target_covariates_continuous (
+    database_id                VARCHAR(100) NOT NULL,
+    setting_id                 VARCHAR(50)  NOT NULL,
+    characterization_target_id INT          NOT NULL,
+    covariate_id               BIGINT       NOT NULL,
+    count_value                INT,
+    min_value                  FLOAT,
+    max_value                  FLOAT,
+    average_value              FLOAT,
+    standard_deviation         FLOAT,
+    median_value               FLOAT,
+    p_10_value                 FLOAT,
+    p_25_value                 FLOAT,
+    p_75_value                 FLOAT,
+    p_90_value                 FLOAT,
+    PRIMARY KEY (database_id, setting_id, characterization_target_id, covariate_id)
+);
+
+CREATE TABLE app2.c_risk_factor_covariates (
+    database_id                  VARCHAR(100) NOT NULL,
+    setting_id                   VARCHAR(50)  NOT NULL,
+    characterization_case_id     BIGINT       NOT NULL,
+    covariate_id                 BIGINT       NOT NULL,
+    non_case_sum_value           INT,
+    non_case_average_value       FLOAT,
+    case_sum_value               INT,
+    case_average_value           FLOAT,
+    standardized_mean_difference FLOAT,
+    PRIMARY KEY (database_id, setting_id, characterization_case_id, covariate_id)
+);
+
+CREATE TABLE app2.c_risk_factor_covariates_continuous (
+    database_id                 VARCHAR(100) NOT NULL,
+    setting_id                  VARCHAR(50)  NOT NULL,
+    characterization_case_id    BIGINT       NOT NULL,
+    covariate_id                BIGINT       NOT NULL,
+    case_count_value            INT,
+    case_min_value              FLOAT,
+    case_max_value              FLOAT,
+    case_average_value          FLOAT,
+    case_standard_deviation     FLOAT,
+    case_median_value           FLOAT,
+    case_p_10_value             FLOAT,
+    case_p_25_value             FLOAT,
+    case_p_75_value             FLOAT,
+    case_p_90_value             FLOAT,
+    non_case_count_value        INT,
+    non_case_min_value          FLOAT,
+    non_case_max_value          FLOAT,
+    non_case_average_value      FLOAT,
+    non_case_standard_deviation FLOAT,
+    non_case_median_value       FLOAT,
+    non_case_p_10_value         FLOAT,
+    non_case_p_25_value         FLOAT,
+    non_case_p_75_value         FLOAT,
+    non_case_p_90_value         FLOAT,
+    standardized_mean_difference FLOAT,
+    PRIMARY KEY (database_id, setting_id, characterization_case_id, covariate_id)
+);
+
+CREATE TABLE app2.c_case_series_covariates (
+    database_id              VARCHAR(100) NOT NULL,
+    setting_id               VARCHAR(50)  NOT NULL,
+    characterization_case_id BIGINT       NOT NULL,
+    covariate_id             BIGINT       NOT NULL,
+    before_sum_value         INT,
+    before_average_value     FLOAT,
+    during_sum_value         INT,
+    during_average_value     FLOAT,
+    after_sum_value          INT,
+    after_average_value      FLOAT,
+    PRIMARY KEY (database_id, setting_id, characterization_case_id, covariate_id)
+);
+
+CREATE TABLE app2.c_case_series_covariates_continuous (
+    database_id               VARCHAR(100) NOT NULL,
+    setting_id                VARCHAR(50)  NOT NULL,
+    characterization_case_id  BIGINT       NOT NULL,
+    covariate_id              BIGINT       NOT NULL,
+    before_count_value        INT,
+    before_min_value          FLOAT,
+    before_max_value          FLOAT,
+    before_average_value      FLOAT,
+    before_standard_deviation FLOAT,
+    before_median_value       FLOAT,
+    before_p_10_value         FLOAT,
+    before_p_25_value         FLOAT,
+    before_p_75_value         FLOAT,
+    before_p_90_value         FLOAT,
+    during_min_value          FLOAT,
+    during_max_value          FLOAT,
+    during_average_value      FLOAT,
+    during_standard_deviation FLOAT,
+    during_median_value       FLOAT,
+    during_p_10_value         FLOAT,
+    during_p_25_value         FLOAT,
+    during_p_75_value         FLOAT,
+    during_p_90_value         FLOAT,
+    after_count_value         INT,
+    after_min_value           FLOAT,
+    after_max_value           FLOAT,
+    after_average_value       FLOAT,
+    after_standard_deviation  FLOAT,
+    after_median_value        FLOAT,
+    after_p_10_value          FLOAT,
+    after_p_25_value          FLOAT,
+    after_p_75_value          FLOAT,
+    after_p_90_value          FLOAT,
+    PRIMARY KEY (database_id, setting_id, characterization_case_id, covariate_id)
+);
+
+-- New CohortMethod tables (target_id/comparator_id moved to cm_target_comparator)
+CREATE TABLE app2.cm_target_comparator (
+    target_comparator_id BIGINT NOT NULL,
+    target_id            BIGINT,
+    comparator_id        BIGINT,
+    nesting_cohort_id    BIGINT,
+    PRIMARY KEY (target_comparator_id)
+);
+
+CREATE TABLE app2.cm_target_comparator_outcome (
+    outcome_id           BIGINT NOT NULL,
+    outcome_of_interest  INT,
+    true_effect_size     FLOAT,
+    target_comparator_id BIGINT NOT NULL,
+    PRIMARY KEY (outcome_id, target_comparator_id)
+);
+
+CREATE TABLE app2.cm_result (
+    analysis_id          INT         NOT NULL,
+    target_comparator_id BIGINT      NOT NULL,
+    outcome_id           BIGINT      NOT NULL,
+    rr                   NUMERIC,
+    ci_95_lb             NUMERIC,
+    ci_95_ub             NUMERIC,
+    p                    NUMERIC,
+    log_rr               NUMERIC,
+    se_log_rr            NUMERIC,
+    database_id          VARCHAR(64) NOT NULL,
+    PRIMARY KEY (analysis_id, target_comparator_id, outcome_id, database_id)
+);
+
+-- Populate unchanged tables
 INSERT INTO app2.database_meta_data           SELECT * FROM app.database_meta_data;
 INSERT INTO app2.cg_cohort_definition         SELECT * FROM app.cg_cohort_definition;
 INSERT INTO app2.cg_cohort_subset_definition  SELECT * FROM app.cg_cohort_subset_definition;
@@ -975,12 +1199,9 @@ INSERT INTO app2.cg_cohort_count              SELECT * FROM app.cg_cohort_count;
 INSERT INTO app2.cg_cohort_generation         SELECT * FROM app.cg_cohort_generation;
 INSERT INTO app2.cg_cohort_inclusion          SELECT * FROM app.cg_cohort_inclusion;
 INSERT INTO app2.cg_cohort_inc_result         SELECT * FROM app.cg_cohort_inc_result;
-INSERT INTO app2.c_settings                   SELECT * FROM app.c_settings;
-INSERT INTO app2.c_cohort_details             SELECT * FROM app.c_cohort_details;
-INSERT INTO app2.c_covariate_ref              SELECT * FROM app.c_covariate_ref;
-INSERT INTO app2.c_covariates                 SELECT * FROM app.c_covariates;
-INSERT INTO app2.c_covariates_continuous      SELECT * FROM app.c_covariates_continuous;
-INSERT INTO app2.c_cohort_counts              SELECT * FROM app.c_cohort_counts;
+INSERT INTO app2.c_covariate_ref (database_id, setting_id, covariate_id, covariate_name, analysis_id, concept_id)
+SELECT database_id, setting_id::varchar(50), covariate_id, covariate_name, analysis_id, concept_id
+FROM app.c_covariate_ref;
 INSERT INTO app2.c_dechallenge_rechallenge    SELECT * FROM app.c_dechallenge_rechallenge;
 INSERT INTO app2.c_rechallenge_fail_case_series SELECT * FROM app.c_rechallenge_fail_case_series;
 INSERT INTO app2.c_time_to_event              SELECT * FROM app.c_time_to_event;
@@ -991,8 +1212,6 @@ INSERT INTO app2.ci_tar_def                   SELECT * FROM app.ci_tar_def;
 INSERT INTO app2.ci_subgroup_def              SELECT * FROM app.ci_subgroup_def;
 INSERT INTO app2.ci_age_group_def             SELECT * FROM app.ci_age_group_def;
 INSERT INTO app2.ci_incidence_summary         SELECT * FROM app.ci_incidence_summary;
-INSERT INTO app2.cm_target_comparator_outcome SELECT * FROM app.cm_target_comparator_outcome;
-INSERT INTO app2.cm_result                    SELECT * FROM app.cm_result;
 INSERT INTO app2.sccs_exposures_outcome_set   SELECT * FROM app.sccs_exposures_outcome_set;
 INSERT INTO app2.sccs_covariate               SELECT * FROM app.sccs_covariate;
 INSERT INTO app2.sccs_exposure                SELECT * FROM app.sccs_exposure;
@@ -1001,6 +1220,286 @@ INSERT INTO app2.plp_cohorts                  SELECT * FROM app.plp_cohorts;
 INSERT INTO app2.plp_model_designs            SELECT * FROM app.plp_model_designs;
 
 UPDATE app2.database_meta_data SET cdm_source_name = cdm_source_name || ' [v2]';
+
+-- c_execution_settings
+INSERT INTO app2.c_execution_settings
+SELECT s.sid, d.database_id, md5(d.database_id || s.sid), s.mode, s.min_cm, s.min_cc, s.min_smd
+FROM (VALUES
+  ('1', 'binary', 0.01,  5, 0.1),
+  ('2', 'both',   0.01,  5, 0.1),
+  ('3', 'binary', 0.01,  5, 0.1),
+  ('4', 'both',   0.005, 3, 0.1),
+  ('5', 'binary', 0.01,  5, 0.1),
+  ('6', 'both',   0.01,  5, 0.1)
+) AS s(sid, mode, min_cm, min_cc, min_smd)
+CROSS JOIN app2.database_meta_data d
+WHERE (s.sid = '1' AND d.database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta'))
+   OR (s.sid = '2' AND d.database_id IN ('db_alpha','db_beta','db_gamma','db_delta'))
+   OR (s.sid = '3' AND d.database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon'))
+   OR (s.sid = '4' AND d.database_id IN ('db_alpha','db_beta','db_gamma'))
+   OR (s.sid = '5' AND d.database_id IN ('db_alpha','db_beta','db_delta','db_epsilon'))
+   OR (s.sid = '6' AND d.database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta','db_eta','db_theta'));
+
+-- c_target_settings: one row per setting × database × target cohort
+INSERT INTO app2.c_target_settings
+SELECT '1', d.database_id, t.ct_id, t.target_id, NULL, 365
+FROM (VALUES
+  (1::bigint, 100::bigint),(2,200),(3,300),(4,500),(5,600),(6,900),(7,1000),
+  (8,1200),(9,1400),(10,1600),(11,1700),(12,1800),(13,1900),(14,2000),
+  (15,2600),(16,2700),(17,2900)
+) AS t(ct_id, target_id)
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d;
+
+-- c_case_settings: one row per setting × database × (target, outcome) pair
+-- characterization_target_id matches c_target_settings.characterization_target_id
+INSERT INTO app2.c_case_settings
+SELECT '1', d.database_id, p.cc_id, p.ct_id, p.outcome_id, 30, 'cohort start', 'cohort start', 1, 365, 'Cases'
+FROM (VALUES
+  (1::bigint,  1::bigint, 300::bigint),(2,  1, 400),(3,  1, 700),(4,  1,  800),
+  (5,          2,         300),        (6,  2, 400),(7,  2, 700),(8,  2, 2400),
+  (9,          3,         700),        (10, 3, 800),(11, 4, 700),(12, 5,  700),
+  (13,         6,         300),        (14, 6, 400),(15, 7, 300),(16, 7, 2100),
+  (17,         8,         700),        (18, 9,2200),(19,10, 800),(20,11,  800),
+  (21,        12,         700),        (22,13, 300),(23,14, 400),(24,14,  700),
+  (25,        15,         700),        (26,15, 800),(27,16,2800),(28,17, 2500)
+) AS p(cc_id, ct_id, outcome_id)
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d;
+
+-- c_case_series_settings
+INSERT INTO app2.c_case_series_settings VALUES ('1', 365, 30);
+
+-- c_analysis_ref
+INSERT INTO app2.c_analysis_ref
+SELECT d.database_id, '1', a.analysis_id, a.analysis_name, a.domain_id, a.start_day, a.end_day, a.is_binary, a.missing_means_zero
+FROM (VALUES
+  (3,   'Demographics',             'Demographics', NULL, NULL, 'Y', 'Y'),
+  (4,   'Race',                     'Demographics', NULL, NULL, 'Y', 'Y'),
+  (109, 'Condition occurrence',     'Condition',    -365,   -1, 'Y', 'N'),
+  (217, 'Drug exposure',            'Drug',         -365,   -1, 'Y', 'N'),
+  (926, 'Measurement value',        'Measurement',  -365,   -1, 'N', 'N'),
+  (927, 'Distinct condition count', 'Observation',  -365,   -1, 'N', 'Y')
+) AS a(analysis_id, analysis_name, domain_id, start_day, end_day, is_binary, missing_means_zero)
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d;
+
+-- c_attrition
+INSERT INTO app2.c_attrition
+SELECT t.target_id, r.attr_reason,
+       GREATEST(0, r.base - (r.step_num * 47 + ascii(left(d.database_id, 1)) % 23))::bigint,
+       d.database_id, '1'
+FROM (VALUES
+  (100::bigint),(200),(300),(500),(600),(900),(1000),(1200),(1400),
+  (1600),(1700),(1800),(1900),(2000),(2600),(2700),(2900)
+) AS t(target_id)
+CROSS JOIN (VALUES
+  (1, 'Initial qualifying events',   1800),
+  (2, 'Aged 18 or older',            1750),
+  (3, '365+ days prior observation', 1600),
+  (4, 'No prior outcome in washout', 1500)
+) AS r(step_num, attr_reason, base)
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d;
+
+-- c_target_covariates (binary, replaces c_covariates WHERE cohort_type='Target')
+INSERT INTO app2.c_target_covariates
+SELECT d.database_id, '1', t.ct_id, r.covariate_id,
+       (floor(random() * 300 + 1))::int,
+       round(random()::numeric, 2)::float
+FROM (SELECT DISTINCT covariate_id FROM app2.c_covariate_ref
+      WHERE setting_id = '1' AND analysis_id NOT IN (926, 927)) r
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d
+CROSS JOIN (VALUES
+  (1,100),(2,200),(3,300),(4,500),(5,600),(6,900),(7,1000),
+  (8,1200),(9,1400),(10,1600),(11,1700),(12,1800),(13,1900),(14,2000),
+  (15,2600),(16,2700),(17,2900)
+) AS t(ct_id, target_id);
+
+-- c_target_covariates_continuous (replaces c_covariates_continuous WHERE cohort_type='Target')
+INSERT INTO app2.c_target_covariates_continuous
+SELECT d.database_id, '1', t.ct_id, c.covariate_id,
+  (c.avg_v * (4 + random() * 2))::int,
+  c.min_v, c.max_v,
+  round((c.avg_v + (random() - 0.5) * c.sd_v)::numeric, 1)::float,
+  round((c.sd_v  * (0.8 + random() * 0.4))::numeric, 1)::float,
+  round((c.avg_v + (random() - 0.5) * c.sd_v * 0.7)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.25)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.55)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.35)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.65)::numeric, 1)::float
+FROM (VALUES
+  (1300::bigint,  0.0,  15.0,   3.0,  1.2),
+  (1301::bigint,  0.0,  30.0,   5.0,  3.0),
+  (1302::bigint, 15.0,  60.0,  28.0,  6.0),
+  (1303::bigint, 80.0, 220.0, 130.0, 20.0),
+  (1304::bigint, 50.0, 130.0,  79.0, 12.0),
+  (1305::bigint,  4.0,  14.0,   7.5,  2.0),
+  (1306::bigint,  5.0, 150.0,  72.0, 25.0),
+  (1307::bigint, 20.0, 300.0, 110.0, 38.0)
+) AS c(covariate_id, min_v, max_v, avg_v, sd_v)
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d
+CROSS JOIN (VALUES
+  (1,100),(2,200),(3,300),(4,500),(5,600),(6,900),(7,1000),
+  (8,1200),(9,1400),(10,1600),(11,1700),(12,1800),(13,1900),(14,2000),
+  (15,2600),(16,2700),(17,2900)
+) AS t(ct_id, target_id);
+
+-- c_risk_factor_covariates (binary, pre-computed case vs non-case with SMD)
+INSERT INTO app2.c_risk_factor_covariates
+SELECT d.database_id, '1', p.cc_id, r.covariate_id,
+       (floor(random() * 300 + 50))::int,
+       round(random()::numeric, 2)::float,
+       (floor(random() * 200 + 30))::int,
+       round(random()::numeric, 2)::float,
+       round(((random() * 0.8) - 0.2)::numeric, 3)::float
+FROM (SELECT DISTINCT covariate_id FROM app2.c_covariate_ref
+      WHERE setting_id = '1' AND analysis_id NOT IN (926, 927)) r
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d
+CROSS JOIN (VALUES
+  (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),
+  (15),(16),(17),(18),(19),(20),(21),(22),(23),(24),(25),(26),(27),(28)
+) AS p(cc_id);
+
+-- c_risk_factor_covariates_continuous
+INSERT INTO app2.c_risk_factor_covariates_continuous
+SELECT d.database_id, '1', p.cc_id, c.covariate_id,
+  -- case
+  (c.avg_v * (3 + random() * 2))::int,
+  c.min_v, c.max_v,
+  round((c.avg_v + (random() - 0.5) * c.sd_v)::numeric, 1)::float,
+  round((c.sd_v  * (0.8 + random() * 0.4))::numeric, 1)::float,
+  round((c.avg_v + (random() - 0.5) * c.sd_v * 0.7)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.25)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.55)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.35)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.65)::numeric, 1)::float,
+  -- non-case
+  (c.avg_v * (4 + random() * 2))::int,
+  c.min_v, c.max_v,
+  round((c.avg_v + (random() - 0.5) * c.sd_v)::numeric, 1)::float,
+  round((c.sd_v  * (0.8 + random() * 0.4))::numeric, 1)::float,
+  round((c.avg_v + (random() - 0.5) * c.sd_v * 0.7)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.25)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.55)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.35)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.65)::numeric, 1)::float,
+  round(((random() * 0.8) - 0.2)::numeric, 3)::float
+FROM (VALUES
+  (1300::bigint,  0.0,  15.0,   3.0,  1.2),
+  (1301::bigint,  0.0,  30.0,   5.0,  3.0),
+  (1302::bigint, 15.0,  60.0,  28.0,  6.0),
+  (1303::bigint, 80.0, 220.0, 130.0, 20.0),
+  (1304::bigint, 50.0, 130.0,  79.0, 12.0),
+  (1305::bigint,  4.0,  14.0,   7.5,  2.0),
+  (1306::bigint,  5.0, 150.0,  72.0, 25.0),
+  (1307::bigint, 20.0, 300.0, 110.0, 38.0)
+) AS c(covariate_id, min_v, max_v, avg_v, sd_v)
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d
+CROSS JOIN (VALUES
+  (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),
+  (15),(16),(17),(18),(19),(20),(21),(22),(23),(24),(25),(26),(27),(28)
+) AS p(cc_id);
+
+-- c_case_series_covariates (binary, pre-computed before/during/after in one row)
+INSERT INTO app2.c_case_series_covariates
+SELECT d.database_id, '1', p.cc_id, r.covariate_id,
+       (floor(random() * 300 + 1))::int, round(random()::numeric, 2)::float,
+       (floor(random() * 250 + 1))::int, round(random()::numeric, 2)::float,
+       (floor(random() * 200 + 1))::int, round(random()::numeric, 2)::float
+FROM (SELECT DISTINCT covariate_id FROM app2.c_covariate_ref
+      WHERE setting_id = '1' AND analysis_id NOT IN (926, 927)) r
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d
+CROSS JOIN (VALUES
+  (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),
+  (15),(16),(17),(18),(19),(20),(21),(22),(23),(24),(25),(26),(27),(28)
+) AS p(cc_id);
+
+-- c_case_series_covariates_continuous (during has no count_value)
+INSERT INTO app2.c_case_series_covariates_continuous
+SELECT d.database_id, '1', p.cc_id, c.covariate_id,
+  -- before (10 cols: count + min/max/avg/sd/median/p10/p25/p75/p90)
+  (c.avg_v * (4 + random() * 2))::int,
+  c.min_v, c.max_v,
+  round((c.avg_v + (random() - 0.5) * c.sd_v)::numeric, 1)::float,
+  round((c.sd_v  * (0.8 + random() * 0.4))::numeric, 1)::float,
+  round((c.avg_v + (random() - 0.5) * c.sd_v * 0.7)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.25)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.55)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.35)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.65)::numeric, 1)::float,
+  -- during (9 cols: no count_value)
+  c.min_v, c.max_v,
+  round((c.avg_v + (random() - 0.5) * c.sd_v)::numeric, 1)::float,
+  round((c.sd_v  * (0.8 + random() * 0.4))::numeric, 1)::float,
+  round((c.avg_v + (random() - 0.5) * c.sd_v * 0.7)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.25)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.55)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.35)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.65)::numeric, 1)::float,
+  -- after (10 cols: count + min/max/avg/sd/median/p10/p25/p75/p90)
+  (c.avg_v * (3 + random() * 2))::int,
+  c.min_v, c.max_v,
+  round((c.avg_v + (random() - 0.5) * c.sd_v)::numeric, 1)::float,
+  round((c.sd_v  * (0.8 + random() * 0.4))::numeric, 1)::float,
+  round((c.avg_v + (random() - 0.5) * c.sd_v * 0.7)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.25)::numeric, 1)::float,
+  round((c.min_v + (c.avg_v - c.min_v) * 0.55)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.35)::numeric, 1)::float,
+  round((c.avg_v + (c.max_v - c.avg_v) * 0.65)::numeric, 1)::float
+FROM (VALUES
+  (1300::bigint,  0.0,  15.0,   3.0,  1.2),
+  (1301::bigint,  0.0,  30.0,   5.0,  3.0),
+  (1302::bigint, 15.0,  60.0,  28.0,  6.0),
+  (1303::bigint, 80.0, 220.0, 130.0, 20.0),
+  (1304::bigint, 50.0, 130.0,  79.0, 12.0),
+  (1305::bigint,  4.0,  14.0,   7.5,  2.0),
+  (1306::bigint,  5.0, 150.0,  72.0, 25.0),
+  (1307::bigint, 20.0, 300.0, 110.0, 38.0)
+) AS c(covariate_id, min_v, max_v, avg_v, sd_v)
+CROSS JOIN (SELECT database_id FROM app2.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d
+CROSS JOIN (VALUES
+  (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),
+  (15),(16),(17),(18),(19),(20),(21),(22),(23),(24),(25),(26),(27),(28)
+) AS p(cc_id);
+
+-- cm_target_comparator (new lookup table — target_id/comparator_id moved here)
+INSERT INTO app2.cm_target_comparator VALUES
+  (1,  500, 600,  NULL),
+  (2, 1600, 1200, NULL),
+  (3, 1700, 1800, NULL),
+  (4, 1900, 500,  NULL),
+  (5, 2000, 1900, NULL),
+  (6, 2600, 2700, NULL);
+
+-- cm_target_comparator_outcome (uses target_comparator_id FK)
+INSERT INTO app2.cm_target_comparator_outcome VALUES
+  (700,  1, NULL, 1),(800,  1, NULL, 1),(300,  0, 1.0, 1),(2400, 1, NULL, 1),
+  (2400, 1, NULL, 2),(300,  1, NULL, 2),(800,  0, 1.0, 2),
+  (700,  1, NULL, 3),(800,  1, NULL, 3),(300,  0, 1.0, 3),
+  (300,  1, NULL, 4),(400,  1, NULL, 4),(800,  0, 1.0, 4),
+  (700,  1, NULL, 5),(400,  1, NULL, 5),(2400, 1, NULL, 5),
+  (800,  1, NULL, 6),(2800, 1, NULL, 6),(700,  0, 1.0, 6);
+
+-- cm_result (uses target_comparator_id instead of target_id + comparator_id)
+INSERT INTO app2.cm_result
+SELECT a.analysis_id, tco.target_comparator_id, tco.outcome_id,
+  round((0.5 + random() * 2.0)::numeric, 2),
+  round((0.3 + random() * 1.2)::numeric, 2),
+  round((1.2 + random() * 2.5)::numeric, 2),
+  round(random()::numeric, 2),
+  round((ln(0.5 + random() * 2.0))::numeric, 3),
+  round((0.08 + random() * 0.22)::numeric, 2),
+  d.database_id
+FROM app2.cm_target_comparator_outcome tco
+CROSS JOIN (VALUES ('db_alpha'),('db_beta'),('db_gamma'),('db_delta'),('db_epsilon')) AS d(database_id)
+CROSS JOIN (VALUES (1),(2),(3)) AS a(analysis_id);
 
 --
 -- SCHEMA: db_catalog

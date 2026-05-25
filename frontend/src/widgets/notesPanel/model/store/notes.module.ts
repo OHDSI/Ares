@@ -86,7 +86,7 @@ const actions = {
     const data = await AnnotationsService.fetchAll.get(
       payload.first,
       payload.step,
-      payload.filter
+      payload.filter,
     );
     // const sources = [...rootGetters.getSources, { cdm_source_key: undefined }];
     // await Promise.allSettled(
@@ -112,7 +112,7 @@ const actions = {
     //     ? mergeAndCompareByDate(localStorageService.get("notes"), loadedData)
     //     : loadedData;
     //
-    commit(SET_NOTES, { data: data.data });
+    commit(SET_NOTES, { data: { annotations: data.data, ...data.meta } });
     //   // localStorageService.set("notes", notes);
     // });
   },
@@ -127,9 +127,9 @@ const actions = {
             })[NOTES],
             method: "get",
           },
-          { source }
-        )
-      )
+          { source },
+        ),
+      ),
     ).then((responses) => {
       const loadedData = responses.reduce((object, response) => {
         if (response.status === "fulfilled") {
@@ -198,7 +198,7 @@ const actions = {
 
   async [CREATE_SELECTION](
     { commit, getters, rootState, rootGetters },
-    params
+    params,
   ) {
     const chartId = params.chartId;
     const chartName = chartNameIDMap[chartId];
@@ -227,9 +227,9 @@ const actions = {
         conceptId,
         params.selection.coordinates,
         params.selection.metadata,
-        params.selection.body
+        params.selection.body,
       );
-      _.get(data, path.join(".")).push(annotation.data.annotation);
+      _.get(data, path.join(".")).push(annotation.data);
     } else {
       _.get(data, path.join(".")).push(params.selection);
     }
@@ -242,7 +242,7 @@ const actions = {
 
   async [EDIT_SELECTION](
     { commit, state, getters, rootState, rootGetters },
-    params
+    params,
   ) {
     const webApiEnabled = environment.WEB_API_ENABLED;
     const loggedIn = rootGetters.getSettings.user;
@@ -263,7 +263,7 @@ const actions = {
         selectionId,
         coordinates,
         metadata,
-        body
+        body,
       );
     }
 
@@ -272,7 +272,7 @@ const actions = {
     const selections = [..._.get(data, path.join("."))];
     let newSelections = [];
     const selectionIndex = selections.findIndex(
-      (selection) => selection.id === selectionId
+      (selection) => selection.id === selectionId,
     );
     if (selectionIndex !== -1) {
       newSelections = selections.map((selection, index) => {
@@ -309,7 +309,7 @@ const actions = {
     const data = { ...getters.getNotes };
     const path = [chartName].filter(Boolean);
     const selections = _.get(data, path.join(".")).filter(
-      (selection) => selection.id !== selectionId
+      (selection) => selection.id !== selectionId,
     );
 
     _.set(data, path.join("."), selections);

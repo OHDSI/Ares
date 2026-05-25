@@ -9,11 +9,14 @@ const loadFile = (config: AxiosRequestConfig, payload: object) => {
     },
     function (error: AxiosError) {
       return Promise.reject({ ...error, payload });
-    }
+    },
   );
 
   return instance.request(config).then((response) => {
-    return { data: response.data, headers: response.headers, payload };
+    const body = response.data as { data?: unknown; meta?: unknown } | null;
+    const data = body?.data !== undefined ? body.data : response.data;
+    const meta = body?.meta;
+    return { data, meta, headers: response.headers, payload };
   });
 };
 

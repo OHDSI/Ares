@@ -103,12 +103,12 @@ export function useSqlTool(intervalSec: Ref<number>) {
     historyError.value = null;
     try {
       const res = await StrategusService.debug.getQueryHistory(
-        historyCursor.value
+        historyCursor.value,
       );
-      const { entries = [], cursor } = res.data as {
-        entries: QueryHistoryEntry[];
-        cursor: number;
-      };
+      const entries = (res.data ?? []) as QueryHistoryEntry[];
+      const cursor =
+        (res.meta as { cursor?: number } | undefined)?.cursor ??
+        historyCursor.value;
       if (entries.length) {
         const freshKeys: string[] = [];
         for (const entry of entries) {

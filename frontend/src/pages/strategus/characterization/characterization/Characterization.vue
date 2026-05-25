@@ -322,7 +322,7 @@ const availableAnalyses = computed(() => {
 });
 
 const currentAnalysis = computed(
-  () => availableAnalyses.value[activeTab.value] ?? availableAnalyses.value[0]
+  () => availableAnalyses.value[activeTab.value] ?? availableAnalyses.value[0],
 );
 
 const unavailableAnalyses = computed(() => {
@@ -394,9 +394,8 @@ async function fetchOutcomeTable(targetId) {
   outcomeLoaderState.value = "loading";
   const loadStart = Date.now();
   try {
-    const res = await StrategusService.characterization.getOutcomeTable(
-      targetId
-    );
+    const res =
+      await StrategusService.characterization.getOutcomeTable(targetId);
     const outcomes = res.data ?? [];
     if (outcomes.length) {
       try {
@@ -404,10 +403,10 @@ async function fetchOutcomeTable(targetId) {
         const availRes =
           await StrategusService.characterization.getOutcomeDataAvailability(
             targetId,
-            outcomeIds
+            outcomeIds,
           );
         const availMap = new Map(
-          (availRes.data ?? []).map((r) => [r.outcomeId, r])
+          (availRes.data ?? []).map((r) => [r.outcomeId, r]),
         );
         for (const o of outcomes) {
           const avail = availMap.get(o.cohortId);
@@ -445,7 +444,7 @@ function setupObserver() {
     ([entry]) => {
       pillNavVisible.value = entry.isIntersecting;
     },
-    { threshold: 0 }
+    { threshold: 0 },
   );
   observer.observe(pillNavAnchor.value);
 }
@@ -461,7 +460,7 @@ function setupCtxObserver() {
     ([entry]) => {
       ctxBarVisible.value = entry.isIntersecting;
     },
-    { threshold: 0 }
+    { threshold: 0 },
   );
   ctxObserver.observe(el);
 }
@@ -586,7 +585,7 @@ onMounted(async () => {
   await fetchTargetTable();
   if (urlState.targetId) {
     const match = targetTable.value.find(
-      (t) => t.cohortId === urlState.targetId
+      (t) => t.cohortId === urlState.targetId,
     );
     if (match) {
       initialUrlState.value = urlState;
@@ -601,7 +600,7 @@ onMounted(async () => {
               resolve();
             }
           },
-          { immediate: true }
+          { immediate: true },
         );
       });
       await nextTick();
@@ -631,7 +630,9 @@ onBeforeUnmount(() => {
   transition: opacity 0.1s ease;
 }
 .state-fade-enter-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 .state-fade-enter-from,
 .state-fade-leave-to {
@@ -781,7 +782,9 @@ onBeforeUnmount(() => {
 
 .ctx-appear-enter-active,
 .ctx-appear-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .ctx-appear-enter-from,
@@ -807,7 +810,9 @@ onBeforeUnmount(() => {
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.12s ease, background 0.12s ease;
+  transition:
+    color 0.12s ease,
+    background 0.12s ease;
   white-space: nowrap;
 }
 
@@ -825,7 +830,9 @@ onBeforeUnmount(() => {
 
 .sticky-fade-enter-active,
 .sticky-fade-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .sticky-fade-enter-from,
@@ -843,7 +850,9 @@ onBeforeUnmount(() => {
 }
 
 .tab-fade-enter-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
 }
 
 .tab-fade-enter-from,

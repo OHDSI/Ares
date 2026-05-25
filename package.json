@@ -15,7 +15,6 @@
     "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
-    "@cyclonedx/cyclonedx-npm": "4.2.1",
     "concurrently": "^9.2.1"
   }
 }

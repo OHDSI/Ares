@@ -7,24 +7,45 @@
     "pnpm": ">=11"
   },
   "scripts": {
-    "start": "node ./main.js",
-    "lint": "eslint src main.js",
-    "lint:fix": "eslint src main.js --fix"
+    "start": "tsx ./main.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start:prod": "node ./dist/main.js",
+    "lint": "eslint src main.ts",
+    "lint:fix": "eslint src main.ts --fix"
   },
   "type": "module",
+  "imports": {
+    "#shared/*": "./dist/src/shared/*",
+    "#config/*": "./dist/src/config/*",
+    "#utils/*": "./dist/src/utils/*",
+    "#types/*": "./dist/src/types/*",
+    "#routes/*": "./dist/src/routes/*",
+    "#middleware/*": "./dist/src/middleware/*"
+  },
   "lint-staged": {
-    "*.js": "prettier --write"
+    "*.{js,ts}": "prettier --write"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/debug": "^4.1.13",
+    "@types/express": "^5.0.6",
+    "@types/http-errors": "^2.0.5",
+    "@types/node": "^25.9.1",
+    "@types/pg": "^8.20.0",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.6.0",
     "lint-staged": "^16.0.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.0",
+    "typescript-eslint": "^8.59.3"
   },
   "dependencies": {
+    "@databricks/sql": "^1.14.0",
     "@duckdb/node-api": "^1.5.2-r.1",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
@@ -33,6 +54,7 @@
     "express": "^5.0.0",
     "http-errors": "^2.0.0",
     "pg": "^8.18.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "winston-transport": "^4.9.0"
   }
 }
