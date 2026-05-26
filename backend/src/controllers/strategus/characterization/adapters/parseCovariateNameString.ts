@@ -1,11 +1,5 @@
-export interface ParsedCovariateName {
-  domain: string | null;
-  concept: string | null;
-  timeWindow: "temporal" | "any_time_prior" | "window";
-  windowDays: string | null;
-  subType: string | null;
-  detail: string | null;
-}
+import type { ParsedCovariateName } from "#types/index.js";
+export type { ParsedCovariateName };
 
 export function parseCovariateNameString(
   name: string | null | undefined,

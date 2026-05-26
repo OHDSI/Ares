@@ -1,239 +1,32 @@
 // Port of circe-be FreeMarker templates (cohortExpression.ftl + criteriaTypes.ftl + inputTypes.ftl + utils.ftl)
 // Renders a CIRCE cohort expression JSON to markdown.
 
-// Local domain types
-
-interface Option {
-  id: string | number;
-  name: string;
-}
-
-interface ConceptItem {
-  CONCEPT_NAME?: string;
-  conceptName?: string;
-}
-
-interface ConceptSetRef {
-  IsExcluded?: boolean;
-  isExcluded?: boolean;
-  CodesetId?: string | number | null;
-  codesetId?: string | number | null;
-}
-
-interface WindowBound {
-  Days?: number | null;
-  days?: number | null;
-  Coeff?: number;
-  coeff?: number;
-}
-
-interface CohortWindow {
-  Start?: WindowBound;
-  start?: WindowBound;
-  End?: WindowBound;
-  end?: WindowBound;
-  UseEventEnd?: boolean;
-  useEventEnd?: boolean;
-  UseIndexEnd?: boolean;
-  useIndexEnd?: boolean;
-}
-
-interface DateRange {
-  Op?: string;
-  op?: string;
-  Value?: string | number;
-  value?: string | number;
-  Extent?: string | number;
-  extent?: string | number;
-}
-
-interface NumericRange {
-  Op?: string;
-  op?: string;
-  Value?: string | number;
-  value?: string | number;
-  Extent?: string | number;
-  extent?: string | number;
-}
-
-interface TextFilter {
-  Op?: string;
-  op?: string;
-  Text?: string;
-  text?: string;
-}
-
-interface DateAdjustment {
-  StartWith?: string;
-  startWith?: string;
-  EndWith?: string;
-  endWith?: string;
-  StartOffset?: number;
-  startOffset?: number;
-  EndOffset?: number;
-  endOffset?: number;
-}
-
-interface UserDefinedPeriod {
-  StartDate?: string;
-  startDate?: string;
-  EndDate?: string;
-  endDate?: string;
-}
-
-interface Occurrence {
-  Type?: number;
-  type?: number;
-  Count?: number;
-  count?: number;
-  IsDistinct?: boolean;
-  isDistinct?: boolean;
-  CountColumn?: string;
-  countColumn?: string;
-}
-
-interface CountCriteria {
-  Occurrence?: Occurrence;
-  occurrence?: Occurrence;
-  Criteria?: Record<string, unknown>;
-  criteria?: Record<string, unknown>;
-  StartWindow?: CohortWindow;
-  startWindow?: CohortWindow;
-  EndWindow?: CohortWindow;
-  endWindow?: CohortWindow;
-  RestrictVisit?: boolean;
-  restrictVisit?: boolean;
-  IgnoreObservationPeriod?: boolean;
-  ignoreObservationPeriod?: boolean;
-}
-
-interface CriteriaGroup {
-  CriteriaList?: CountCriteria[];
-  criteriaList?: CountCriteria[];
-  DemographicCriteriaList?: Record<string, unknown>[];
-  demographicCriteriaList?: Record<string, unknown>[];
-  Groups?: CriteriaGroup[];
-  groups?: CriteriaGroup[];
-  Type?: string;
-  type?: string;
-  Count?: number;
-  count?: number;
-}
-
-interface Limit {
-  Type?: string;
-  type?: string;
-}
-
-interface ObservationWindow {
-  PriorDays?: number;
-  priorDays?: number;
-  PostDays?: number;
-  postDays?: number;
-}
-
-interface PrimaryCriteria {
-  CriteriaList?: Record<string, unknown>[];
-  criteriaList?: Record<string, unknown>[];
-  ObservationWindow?: ObservationWindow;
-  observationWindow?: ObservationWindow;
-  PrimaryCriteriaLimit?: Limit;
-  primaryLimit?: Limit;
-}
-
-interface ConceptSetItem {
-  concept?: {
-    CONCEPT_ID?: number;
-    conceptId?: number;
-    CONCEPT_NAME?: string;
-    conceptName?: string;
-    CONCEPT_CODE?: string;
-    conceptCode?: string;
-    VOCABULARY_ID?: string;
-    vocabularyId?: string;
-  };
-  isExcluded?: boolean;
-  includeDescendants?: boolean;
-  includeMapped?: boolean;
-}
-
-interface ConceptSet {
-  id: string | number;
-  name: string;
-  expression?: { items?: ConceptSetItem[] };
-}
-
-interface CollapseSettings {
-  EraPad?: number;
-  eraPad?: number;
-}
-
-interface CensorWindow {
-  StartDate?: string;
-  startDate?: string;
-  EndDate?: string;
-  endDate?: string;
-}
-
-interface InclusionRule {
-  name?: string;
-  Name?: string;
-  description?: string;
-  Description?: string;
-  expression?: CriteriaGroup;
-  Expression?: CriteriaGroup;
-}
-
-interface DateOffset {
-  DateField?: string;
-  dateField?: string;
-  Offset?: number;
-  offset?: number;
-}
-
-interface CustomEra {
-  DrugCodesetId?: string | number;
-  drugCodesetId?: string | number;
-  GapDays?: number;
-  gapDays?: number;
-  Offset?: number;
-  offset?: number;
-  DaysSupplyOverride?: number;
-  daysSupplyOverride?: number;
-}
-
-interface EndStrategy {
-  DateOffset?: DateOffset;
-  dateOffset?: DateOffset;
-  CustomEra?: CustomEra;
-  customEra?: CustomEra;
-}
-
-interface CohortExpression {
-  ConceptSets?: ConceptSet[];
-  conceptSets?: ConceptSet[];
-  PrimaryCriteria?: PrimaryCriteria;
-  primaryCriteria?: PrimaryCriteria;
-  AdditionalCriteria?: CriteriaGroup;
-  additionalCriteria?: CriteriaGroup;
-  QualifiedLimit?: Limit;
-  qualifiedLimit?: Limit;
-  ExpressionLimit?: Limit;
-  expressionLimit?: Limit;
-  InclusionRules?: InclusionRule[];
-  inclusionRules?: InclusionRule[];
-  EndStrategy?: EndStrategy;
-  endStrategy?: EndStrategy;
-  CensoringCriteria?: Record<string, unknown>[];
-  censoringCriteria?: Record<string, unknown>[];
-  CollapseSettings?: CollapseSettings;
-  collapseSettings?: CollapseSettings;
-  CensorWindow?: CensorWindow;
-  censorWindow?: CensorWindow;
-}
-
-type KnownType = (typeof KNOWN_TYPES)[number];
-type CriteriaWrapper = Partial<Record<KnownType, Record<string, unknown>>>;
+import type {
+  CensorWindow,
+  CohortExpression,
+  CohortWindow,
+  CollapseSettings,
+  ConceptItem,
+  ConceptSet,
+  ConceptSetRef,
+  CountCriteria,
+  CriteriaGroup,
+  CriteriaWrapper,
+  CustomEra,
+  DateAdjustment,
+  DateOffset,
+  DateRange,
+  EndStrategy,
+  KnownType,
+  Limit,
+  NumericRange,
+  Occurrence,
+  Option,
+  TextFilter,
+  TypeMeta,
+  UserDefinedPeriod,
+} from "../types/circeRendererTypes.js";
+import { KNOWN_TYPES } from "../types/circeRendererTypes.js";
 
 // Utils
 
@@ -558,33 +351,9 @@ function renderWindowCriteria(
   );
 }
 
-const KNOWN_TYPES = [
-  "ConditionEra",
-  "ConditionOccurrence",
-  "Death",
-  "DeviceExposure",
-  "DoseEra",
-  "DrugEra",
-  "DrugExposure",
-  "LocationRegion",
-  "Measurement",
-  "Observation",
-  "ObservationPeriod",
-  "ProcedureOccurrence",
-  "Specimen",
-  "VisitOccurrence",
-  "VisitDetail",
-] as const;
-
 function criteriaTypeName(wrapper: CriteriaWrapper): KnownType | null {
   for (const t of KNOWN_TYPES) if (wrapper[t]) return t;
   return null;
-}
-
-interface TypeMeta {
-  label: string;
-  default: string;
-  source: string | null;
 }
 
 const TYPE_META: Record<KnownType, TypeMeta> = {
