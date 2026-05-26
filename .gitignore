@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 /dist
+backend/dist/
 frontend/public/data/
 
 # local env files
@@ -33,5 +34,6 @@ logs/
 *.sw?
 
 # VitePress build artifacts
-docs/docs/.vitepress/cache/
-docs/docs/.vitepress/dist/
+documentation/docs/.vitepress/cache/
+documentation/docs/.vitepress/dist/
+
