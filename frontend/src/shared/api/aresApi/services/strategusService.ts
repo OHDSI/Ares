@@ -20,7 +20,7 @@ export const StrategusService = {
           },
           params: { schema: _currentSchema },
         },
-        {}
+        {},
       );
     },
     getOutcomeTable(targetId: number) {
@@ -37,13 +37,13 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getCohortBinary(
       targetIds: number[],
       databaseIds?: string[],
-      minThreshold = 0
+      minThreshold = 0,
     ) {
       return apiService(
         {
@@ -60,13 +60,13 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getCohortContinuous(
       targetIds: number[],
       databaseIds?: string[],
-      minThreshold = 0
+      minThreshold = 0,
     ) {
       return apiService(
         {
@@ -83,7 +83,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getDechallengeRechallenge(targetIds?: number[], outcomeIds?: number[]) {
@@ -101,7 +101,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getDechallengeRechallengeFails(
@@ -109,7 +109,7 @@ export const StrategusService = {
       outcomeId: number,
       databaseId: string,
       dechallengeStopInterval?: number,
-      dechallengeEvaluationWindow?: number
+      dechallengeEvaluationWindow?: number,
     ) {
       return apiService(
         {
@@ -128,7 +128,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getCohortUniquePeople(cohortId: number) {
@@ -145,7 +145,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getCaseCounts(params: {
@@ -174,7 +174,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getCaseTargetCounts(params: {
@@ -195,7 +195,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getBinaryRiskFactors(params: {
@@ -224,7 +224,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getContinuousRiskFactors(params: {
@@ -253,7 +253,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getTimeToEvent(targetIds?: number[], outcomeIds?: number[]) {
@@ -269,7 +269,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getBinaryCaseSeries(params: {
@@ -289,7 +289,7 @@ export const StrategusService = {
           headers: { "Content-Type": "application/json" },
           params: { ...params, schema: _currentSchema },
         },
-        {}
+        {},
       );
     },
     getContinuousCaseSeries(params: {
@@ -309,7 +309,7 @@ export const StrategusService = {
           headers: { "Content-Type": "application/json" },
           params: { ...params, schema: _currentSchema },
         },
-        {}
+        {},
       );
     },
     getIncidenceRates(targetIds?: number[], outcomeIds?: number[]) {
@@ -325,7 +325,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getOutcomeDataAvailability(targetId: number, outcomeIds: number[]) {
@@ -341,7 +341,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
   },
@@ -359,7 +359,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getGeneration(cohortIds?: number[]) {
@@ -374,7 +374,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
     getDefinitions() {
@@ -384,11 +384,24 @@ export const StrategusService = {
           baseURL: "./",
           method: "get",
           headers: { "Content-Type": "application/json" },
-          params: { schema: _currentSchema },
+          params: { schema: _currentSchema, slim: "true" },
         },
-        {}
+        {},
       );
     },
+    getDefinition(cohortId: number) {
+      return apiService(
+        {
+          url: `${environment.ARES_API_URL}/api/cohorts/definitions`,
+          baseURL: "./",
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+          params: { schema: _currentSchema, cohortIds: String(cohortId) },
+        },
+        {},
+      );
+    },
+
     getDefinitionMarkdown(cohortId: number) {
       return apiService(
         {
@@ -398,7 +411,7 @@ export const StrategusService = {
           headers: { "Content-Type": "application/json" },
           params: { cohortId, schema: _currentSchema },
         },
-        {}
+        {},
       );
     },
     getInclusionRules(cohortId: number) {
@@ -410,7 +423,7 @@ export const StrategusService = {
           headers: { "Content-Type": "application/json" },
           params: { cohortId, schema: _currentSchema },
         },
-        {}
+        {},
       );
     },
     getInclusionStats(cohortId: number, databaseIds?: string[]) {
@@ -426,7 +439,7 @@ export const StrategusService = {
             schema: _currentSchema,
           },
         },
-        {}
+        {},
       );
     },
   },
@@ -439,7 +452,7 @@ export const StrategusService = {
           method: "get",
           headers: { "Content-Type": "application/json" },
         },
-        {}
+        {},
       );
     },
     triggerSlowQuery(secs = 30) {
@@ -451,7 +464,7 @@ export const StrategusService = {
           headers: { "Content-Type": "application/json" },
           params: { secs },
         },
-        {}
+        {},
       );
     },
     getQueryHistory(cursor = 0) {
@@ -463,7 +476,7 @@ export const StrategusService = {
           headers: { "Content-Type": "application/json" },
           params: { cursor },
         },
-        {}
+        {},
       );
     },
     clearQueryHistory() {
@@ -474,7 +487,7 @@ export const StrategusService = {
           method: "delete",
           headers: { "Content-Type": "application/json" },
         },
-        {}
+        {},
       );
     },
     getLogs(cursor?: number) {
@@ -486,7 +499,7 @@ export const StrategusService = {
           headers: { "Content-Type": "application/json" },
           params: cursor != null ? { cursor } : {},
         },
-        {}
+        {},
       );
     },
     clearLogs() {
@@ -497,7 +510,7 @@ export const StrategusService = {
           method: "delete",
           headers: { "Content-Type": "application/json" },
         },
-        {}
+        {},
       );
     },
   },
@@ -511,7 +524,7 @@ export const StrategusService = {
           headers: { "Content-Type": "application/json" },
           params: { schema: _currentSchema },
         },
-        {}
+        {},
       );
     },
   },
@@ -524,7 +537,7 @@ export const StrategusService = {
           method: "get",
           headers: { "Content-Type": "application/json" },
         },
-        {}
+        {},
       );
     },
   },

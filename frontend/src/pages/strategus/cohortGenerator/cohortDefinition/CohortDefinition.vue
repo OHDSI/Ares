@@ -10,6 +10,10 @@
             optionLabel="label"
             optionValue="value"
             placeholder="Select a cohort…"
+            :loading="props.cohortsLoading"
+            :emptyMessage="
+              props.cohortsLoading ? 'Loading cohorts…' : 'No cohorts found'
+            "
             filter
             :virtualScrollerOptions="{ itemSize: 28 }"
             class="cohort-dropdown"
@@ -190,7 +194,7 @@ marked.use({ async: false });
 const sqlExtensions = [sql()];
 const jsonExtensions = [json()];
 
-const props = defineProps<{ cohortList: any[] }>();
+const props = defineProps<{ cohortList: any[]; cohortsLoading?: boolean }>();
 
 const { readUrl, updateUrl } = useCohortUrl();
 
@@ -310,15 +314,14 @@ async function generate(isRestoring = false) {
   const loadStart = Date.now();
   try {
     const [defRes, markdownRes, rulesRes, statsRes] = await Promise.all([
-      StrategusService.cohorts.getDefinitions(),
+      StrategusService.cohorts.getDefinition(selectedCohortId.value),
       StrategusService.cohorts.getDefinitionMarkdown(selectedCohortId.value),
       StrategusService.cohorts.getInclusionRules(selectedCohortId.value),
       StrategusService.cohorts.getInclusionStats(selectedCohortId.value),
     ]);
 
     const defs: any[] = defRes.data ?? [];
-    selectedDef.value =
-      defs.find((d) => d.cohortDefinitionId === selectedCohortId.value) ?? null;
+    selectedDef.value = defs[0] ?? null;
 
     definitionMarkdown.value =
       (markdownRes.data as { markdown: string })?.markdown ?? "";
