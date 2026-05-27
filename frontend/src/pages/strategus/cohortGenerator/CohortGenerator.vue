@@ -14,11 +14,10 @@
 
     <Transition v-else name="tab-fade" mode="out-in">
       <div :key="activeTab">
-        <CohortCounts
-          v-if="activeTab === 0"
-          :rows="countRows"
-          :loading="countsLoading"
-        />
+        <div v-if="activeTab === 0">
+          <CohortCounts v-if="showCounts" :rows="countRows" />
+          <ResultsLoader :loader-state="countsLoaderState" />
+        </div>
         <CohortGeneration v-else-if="activeTab === 1" />
         <CohortDefinition
           v-else-if="activeTab === 2"
@@ -36,6 +35,7 @@ import PillNav from "@/shared/ui/pillNav";
 import CohortCounts from "./cohortCounts";
 import CohortGeneration from "./cohortGeneration";
 import CohortDefinition from "./cohortDefinition";
+import ResultsLoader from "@/pages/strategus/characterization/shared/resultsLoader";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { useCohortUrl } from "@/shared/lib/composables/useCohortUrl";
 
@@ -55,11 +55,13 @@ const tabs = [
 
 const cohortList = ref<any[]>([]);
 const countRows = ref<any[]>([]);
-const countsLoading = ref(false);
+const countsLoaderState = ref("idle");
+const showCounts = ref(false);
 const error = ref(false);
 
 onMounted(async () => {
-  countsLoading.value = true;
+  countsLoaderState.value = "loading";
+  const loadStart = Date.now();
   try {
     const [defsRes, countsRes] = await Promise.all([
       StrategusService.cohorts.getDefinitions(),
@@ -67,11 +69,17 @@ onMounted(async () => {
     ]);
     cohortList.value = defsRes.data ?? [];
     countRows.value = countsRes.data ?? [];
+    if (Date.now() - loadStart >= 600) {
+      countsLoaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    countsLoaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
+    showCounts.value = true;
   } catch (e) {
     console.error("Failed to load cohort data:", e);
     error.value = true;
-  } finally {
-    countsLoading.value = false;
+    countsLoaderState.value = "error";
   }
 });
 </script>

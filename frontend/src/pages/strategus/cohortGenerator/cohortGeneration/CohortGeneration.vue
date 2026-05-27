@@ -1,9 +1,8 @@
 <template>
   <div class="cohort-generation">
-    <div class="section results-body">
+    <div v-if="showTable" class="section results-body">
       <DataTable
         :value="rows"
-        :loading="loading"
         :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
@@ -88,6 +87,7 @@
         </Column>
       </DataTable>
     </div>
+    <ResultsLoader :loader-state="loaderState" />
   </div>
 </template>
 
@@ -101,9 +101,11 @@ import { useStore } from "vuex";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { formatDateTime, formatDurationSec } from "@/shared/lib/formatters";
 import { useCohortUrl } from "@/shared/lib/composables/useCohortUrl";
+import ResultsLoader from "@/pages/strategus/characterization/shared/resultsLoader";
 
 const store = useStore();
-const loading = ref(false);
+const loaderState = ref("idle");
+const showTable = ref(false);
 const rows = ref<any[]>([]);
 
 const filters = ref({
@@ -129,14 +131,15 @@ watch(
       genDb: val.databaseName.value || undefined,
     });
   },
-  { deep: true }
+  { deep: true },
 );
 
 onMounted(async () => {
   const url = readUrl();
   if (url.genCohort) filters.value.cohortName.value = url.genCohort;
   if (url.genDb) filters.value.databaseName.value = url.genDb;
-  loading.value = true;
+  loaderState.value = "loading";
+  const loadStart = Date.now();
   try {
     const res = await StrategusService.cohorts.getGeneration();
     rows.value = (res.data ?? []).map((r: any) => ({
@@ -146,14 +149,20 @@ onMounted(async () => {
           ? Math.round(
               (new Date(r.endTime).getTime() -
                 new Date(r.startTime).getTime()) /
-                1000
+                1000,
             )
           : null,
     }));
+    if (Date.now() - loadStart >= 600) {
+      loaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    loaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
+    showTable.value = true;
   } catch (e) {
     console.error("Failed to load cohort generation:", e);
-  } finally {
-    loading.value = false;
+    loaderState.value = "error";
   }
   _ready = true;
 });

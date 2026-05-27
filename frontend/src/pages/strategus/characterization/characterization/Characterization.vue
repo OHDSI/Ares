@@ -8,18 +8,23 @@
             >Choose a target to explore characterization results</span
           >
         </div>
-        <div class="section">
-          <Message v-if="targetTableError" severity="error" :closable="false">
-            Unable to reach the backend. Check that the server is running.
-          </Message>
-          <TargetTable
-            v-else
-            :value="targetTable"
-            :loading="loadingTargets"
-            :selection="selectedTarget"
-            @update:selection="selectedTarget = $event"
-          />
-        </div>
+        <Transition name="tab-fade">
+          <div v-if="showTargetTable || targetTableError" class="section">
+            <Message v-if="targetTableError" severity="error" :closable="false">
+              Unable to reach the backend. Check that the server is running.
+            </Message>
+            <TargetTable
+              v-else
+              :value="targetTable"
+              :selection="selectedTarget"
+              @update:selection="selectedTarget = $event"
+            />
+          </div>
+        </Transition>
+        <ResultsLoader
+          :loader-state="targetLoaderState"
+          :text="'Loading targets'"
+        />
       </div>
 
       <div v-else class="selected-state">
@@ -286,7 +291,8 @@ const ANALYSIS_AVAIL_KEY = {
   cohortIncidence: "hasIncidenceData",
 };
 
-const loadingTargets = ref(false);
+const targetLoaderState = ref("idle");
+const showTargetTable = ref(false);
 const targetTableError = ref(false);
 const loadingOutcomes = ref(false);
 const outcomeLoaderState = ref("idle");
@@ -384,15 +390,22 @@ function onChildStateChange(childState) {
 }
 
 async function fetchTargetTable() {
-  loadingTargets.value = true;
+  targetLoaderState.value = "loading";
   targetTableError.value = false;
+  const loadStart = Date.now();
   try {
     const res = await StrategusService.characterization.getTargetTable();
     targetTable.value = res.data;
+    if (Date.now() - loadStart >= 600) {
+      targetLoaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    targetLoaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
+    showTargetTable.value = true;
   } catch {
     targetTableError.value = true;
-  } finally {
-    loadingTargets.value = false;
+    targetLoaderState.value = "error";
   }
 }
 

@@ -3,143 +3,148 @@
     <div class="section-header">
       <h3>Data Sources</h3>
     </div>
-    <div class="section">
-      <Message v-if="error" severity="error" :closable="false">
+
+    <div v-if="error" class="table-section error-section">
+      <Message severity="error" :closable="false">
         Unable to reach the backend. Check that the server is running.
       </Message>
-
-      <DataTable
-        v-else
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="10"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-        :loading="loading"
-        filterDisplay="row"
-        v-model:filters="filters"
-        scrollable
-        scrollHeight="flex"
-      >
-        <Column
-          sortable
-          header="Full DB Name"
-          field="cdmSourceName"
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-          <template #body="{ data }">
-            <div style="display: flex; align-items: center">
-              <span>{{ data.cdmSourceName }}</span>
-              <Tooltip
-                v-if="data.sourceDescription"
-                :text="data.sourceDescription"
-              >
-                <i
-                  class="pi pi-info-circle"
-                  style="
-                    margin-left: 0.5rem;
-                    color: var(--color-text-subtle);
-                    cursor: help;
-                    flex-shrink: 0;
-                  "
-                />
-              </Tooltip>
-            </div>
-          </template>
-        </Column>
-        <Column
-          sortable
-          header="DB Name"
-          field="cdmSourceAbbreviation"
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column
-          sortable
-          header="DB Holder"
-          field="cdmHolder"
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
-          </template>
-        </Column>
-        <Column header="Docs" field="sourceDocumentationReference">
-          <template #body="{ data }">
-            <a
-              v-if="
-                data.sourceDocumentationReference &&
-                data.sourceDocumentationReference !== 'None'
-              "
-              :href="data.sourceDocumentationReference"
-              target="_blank"
-              rel="noopener"
-              class="table-link"
-            >
-              <i class="pi pi-external-link" />
-            </a>
-            <span v-else class="no-link">—</span>
-          </template>
-        </Column>
-        <Column header="ETL" field="cdmEtlReference">
-          <template #body="{ data }">
-            <a
-              v-if="data.cdmEtlReference && data.cdmEtlReference !== 'None'"
-              :href="data.cdmEtlReference"
-              target="_blank"
-              rel="noopener"
-              class="table-link"
-            >
-              <i class="pi pi-external-link" />
-            </a>
-            <span v-else class="no-link">—</span>
-          </template>
-        </Column>
-        <Column sortable header="Source Release" field="sourceReleaseDate">
-          <template #body="{ data }">{{
-            formatDate(data.sourceReleaseDate)
-          }}</template>
-        </Column>
-        <Column sortable header="CDM Release" field="cdmReleaseDate">
-          <template #body="{ data }">{{
-            formatDate(data.cdmReleaseDate)
-          }}</template>
-        </Column>
-        <Column sortable header="CDM Ver." field="cdmVersion" />
-        <Column sortable header="Vocab Ver." field="vocabularyVersion" />
-        <Column sortable header="DB ID" field="databaseId" />
-        <Column sortable header="Max Obs. End" field="maxObsPeriodEndDate">
-          <template #body="{ data }">{{
-            formatDate(data.maxObsPeriodEndDate)
-          }}</template>
-        </Column>
-      </DataTable>
     </div>
+
+    <Transition name="tab-fade">
+      <div v-if="showTable" class="table-section">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="10"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
+          filterDisplay="row"
+          v-model:filters="filters"
+          scrollable
+          scrollHeight="flex"
+        >
+          <Column
+            sortable
+            header="Full DB Name"
+            field="cdmSourceName"
+            :showFilterMenu="false"
+          >
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                v-model="filterModel.value"
+                @input="filterCallback()"
+                placeholder="Search..."
+                size="small"
+              />
+            </template>
+            <template #body="{ data }">
+              <div style="display: flex; align-items: center">
+                <span>{{ data.cdmSourceName }}</span>
+                <Tooltip
+                  v-if="data.sourceDescription"
+                  :text="data.sourceDescription"
+                >
+                  <i
+                    class="pi pi-info-circle"
+                    style="
+                      margin-left: 0.5rem;
+                      color: var(--color-text-subtle);
+                      cursor: help;
+                      flex-shrink: 0;
+                    "
+                  />
+                </Tooltip>
+              </div>
+            </template>
+          </Column>
+          <Column
+            sortable
+            header="DB Name"
+            field="cdmSourceAbbreviation"
+            :showFilterMenu="false"
+          >
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                v-model="filterModel.value"
+                @input="filterCallback()"
+                placeholder="Search..."
+                size="small"
+              />
+            </template>
+          </Column>
+          <Column
+            sortable
+            header="DB Holder"
+            field="cdmHolder"
+            :showFilterMenu="false"
+          >
+            <template #filter="{ filterModel, filterCallback }">
+              <InputText
+                v-model="filterModel.value"
+                @input="filterCallback()"
+                placeholder="Search..."
+                size="small"
+              />
+            </template>
+          </Column>
+          <Column header="Docs" field="sourceDocumentationReference">
+            <template #body="{ data }">
+              <a
+                v-if="
+                  data.sourceDocumentationReference &&
+                  data.sourceDocumentationReference !== 'None'
+                "
+                :href="data.sourceDocumentationReference"
+                target="_blank"
+                rel="noopener"
+                class="table-link"
+              >
+                <i class="pi pi-external-link" />
+              </a>
+              <span v-else class="no-link">—</span>
+            </template>
+          </Column>
+          <Column header="ETL" field="cdmEtlReference">
+            <template #body="{ data }">
+              <a
+                v-if="data.cdmEtlReference && data.cdmEtlReference !== 'None'"
+                :href="data.cdmEtlReference"
+                target="_blank"
+                rel="noopener"
+                class="table-link"
+              >
+                <i class="pi pi-external-link" />
+              </a>
+              <span v-else class="no-link">—</span>
+            </template>
+          </Column>
+          <Column sortable header="Source Release" field="sourceReleaseDate">
+            <template #body="{ data }">{{
+              formatDate(data.sourceReleaseDate)
+            }}</template>
+          </Column>
+          <Column sortable header="CDM Release" field="cdmReleaseDate">
+            <template #body="{ data }">{{
+              formatDate(data.cdmReleaseDate)
+            }}</template>
+          </Column>
+          <Column sortable header="CDM Ver." field="cdmVersion" />
+          <Column sortable header="Vocab Ver." field="vocabularyVersion" />
+          <Column sortable header="DB ID" field="databaseId" />
+          <Column sortable header="Max Obs. End" field="maxObsPeriodEndDate">
+            <template #body="{ data }">{{
+              formatDate(data.maxObsPeriodEndDate)
+            }}</template>
+          </Column>
+        </DataTable>
+      </div>
+    </Transition>
+
+    <ResultsLoader :loader-state="loaderState" :text="'Loading data sources'" />
   </div>
 </template>
 
@@ -154,10 +159,12 @@ import { useStore } from "vuex";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { formatDate } from "@/shared/lib/formatters";
 import Tooltip from "@/shared/ui/tooltip";
+import ResultsLoader from "@/pages/strategus/characterization/shared/resultsLoader";
 
 const store = useStore();
 const data = ref([]);
-const loading = ref(false);
+const loaderState = ref("idle");
+const showTable = ref(false);
 const error = ref(false);
 
 const filters = ref({
@@ -167,15 +174,22 @@ const filters = ref({
 });
 
 onMounted(async () => {
-  loading.value = true;
+  loaderState.value = "loading";
+  const loadStart = Date.now();
   try {
     const res = await StrategusService.dataSources.getDataSources();
     data.value = res.data ?? [];
+    if (Date.now() - loadStart >= 600) {
+      loaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    loaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
+    showTable.value = true;
   } catch (e) {
     console.error("Failed to load datasources:", e);
     error.value = true;
-  } finally {
-    loading.value = false;
+    loaderState.value = "error";
   }
 });
 </script>
@@ -195,7 +209,7 @@ onMounted(async () => {
   color: var(--color-text);
 }
 
-.section {
+.table-section {
   background: var(--color-bg-surface);
   border: 1.5px solid var(--color-border);
   border-radius: 8px;
@@ -205,6 +219,10 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.error-section {
+  height: auto;
 }
 
 .table-link {
@@ -218,5 +236,16 @@ onMounted(async () => {
 
 .no-link {
   color: var(--text-color-secondary, #cbd5e1);
+}
+
+.tab-fade-enter-active {
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.tab-fade-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
 }
 </style>

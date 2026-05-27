@@ -15,12 +15,12 @@
           />
         </div>
         <div class="control-action">
-          <GenerateButton :disabled="!selectedCohortId" @click="generate" />
+          <GenerateButton :disabled="generateDisabled" @click="generate" />
         </div>
       </div>
     </div>
 
-    <div v-if="generated" class="section results-body">
+    <div v-if="showResults" class="section results-body">
       <ViewToggle v-model="activeTab" :tabs="tabs" />
 
       <Transition name="tab-fade" mode="out-in">
@@ -123,6 +123,8 @@
     <div v-else-if="!loading" class="section empty-state">
       Select a cohort, then click Generate.
     </div>
+
+    <ResultsLoader :loader-state="loaderState" />
   </div>
 </template>
 
@@ -139,6 +141,7 @@ import { json } from "@codemirror/lang-json";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 import { formatComma } from "@/shared/lib/formatters";
 import GenerateButton from "@/pages/strategus/characterization/shared/generateButton";
+import ResultsLoader from "@/pages/strategus/characterization/shared/resultsLoader";
 import ViewToggle from "@/pages/strategus/characterization/shared/viewToggle";
 import CopyButton from "@/shared/lib/copyButton";
 import AttritionChart from "@/pages/strategus/cohortGenerator/attritionChart";
@@ -165,7 +168,9 @@ const _url = readUrl();
 const selectedCohortId = ref<number | null>(_url.cohortId ?? null);
 const selectedDef = ref<any>(null);
 const loading = ref(false);
-const generated = ref(false);
+const showResults = ref(false);
+const loaderState = ref<"idle" | "loading" | "success" | "error">("idle");
+const lastGeneratedConfig = ref<{ cohortId: number } | null>(null);
 const activeTab = ref(_url.defTab ?? 0);
 
 const tabs = [
@@ -228,7 +233,8 @@ watch(selectedDatabase, (val) => updateUrl({ database: val ?? undefined }));
 async function generate(isRestoring = false) {
   if (!selectedCohortId.value) return;
   loading.value = true;
-  generated.value = false;
+  showResults.value = false;
+  loaderState.value = "loading";
   definitionMarkdown.value = "";
   inclusionRules.value = [];
   inclusionStats.value = [];
@@ -239,6 +245,7 @@ async function generate(isRestoring = false) {
     updateUrl({ cohortId: selectedCohortId.value, defTab: 0 });
   }
 
+  const loadStart = Date.now();
   try {
     const [defRes, markdownRes, rulesRes, statsRes] = await Promise.all([
       StrategusService.cohorts.getDefinitions(),
@@ -256,20 +263,36 @@ async function generate(isRestoring = false) {
 
     inclusionRules.value = rulesRes.data ?? [];
     inclusionStats.value = statsRes.data ?? [];
-    generated.value = true;
+
+    if (Date.now() - loadStart >= 600) {
+      loaderState.value = "success";
+      await new Promise((r) => setTimeout(r, 1100));
+    }
+    loaderState.value = "idle";
+    await new Promise((r) => setTimeout(r, 220));
+
+    lastGeneratedConfig.value = { cohortId: selectedCohortId.value };
+    showResults.value = true;
   } catch (e) {
     console.error("Failed to generate cohort definition:", e);
+    loaderState.value = "error";
   } finally {
     loading.value = false;
   }
 }
+
+const generateDisabled = computed(() => {
+  if (!selectedCohortId.value) return true;
+  if (!lastGeneratedConfig.value) return false;
+  return selectedCohortId.value === lastGeneratedConfig.value.cohortId;
+});
 
 if (selectedCohortId.value) {
   generate(true);
 }
 
 watch(selectedCohortId, () => {
-  generated.value = false;
+  showResults.value = false;
   selectedDef.value = null;
   definitionMarkdown.value = "";
   inclusionRules.value = [];

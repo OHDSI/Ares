@@ -12,7 +12,6 @@
     v-model:filters="targetFilters"
     :striped-rows="store.getters.getSettings.strippedRows"
     class="target-table"
-    :loading="props.loading"
     removableSort
   >
     <Column
@@ -273,7 +272,6 @@ import { FilterMatchMode } from "primevue/api";
 
 const props = defineProps<{
   value: any[];
-  loading: boolean;
   selection: any;
 }>();
 

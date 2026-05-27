@@ -3,7 +3,6 @@
     <div class="section results-body">
       <DataTable
         :value="displayRows"
-        :loading="loading"
         :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
@@ -80,7 +79,6 @@ import { formatComma } from "@/shared/lib/formatters";
 
 const props = defineProps<{
   rows: any[];
-  loading: boolean;
 }>();
 
 const store = useStore();
@@ -94,7 +92,7 @@ const displayRows = computed(() =>
   props.rows.map((r, i) => ({
     ...r,
     rowKey: `${r.cohortId}-${r.databaseId}-${i}`,
-  }))
+  })),
 );
 </script>
 
