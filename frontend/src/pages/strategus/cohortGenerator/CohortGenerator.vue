@@ -22,6 +22,7 @@
         <CohortDefinition
           v-else-if="activeTab === 2"
           :cohortList="cohortList"
+          :cohortsLoading="countsLoaderState === 'loading'"
         />
       </div>
     </Transition>

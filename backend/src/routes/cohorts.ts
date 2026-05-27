@@ -70,8 +70,13 @@ router.get("/api/cohorts/generation", async (req: Request, res: Response) => {
 });
 
 router.get("/api/cohorts/definitions", async (req: Request, res: Response) => {
+  const { cohortIds, slim } = req.query as Record<string, string | undefined>;
   try {
-    const rows = await getCohortDefinitions({ schema: req.resolvedSchema });
+    const rows = await getCohortDefinitions({
+      schema: req.resolvedSchema,
+      targetIds: cohortIds ? parseIntList(cohortIds) : null,
+      slim: slim === "true",
+    });
     res.json(ok(rows));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

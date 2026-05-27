@@ -168,10 +168,12 @@ export async function getCohortDefinitions({
   schema,
   cgTablePrefix = "cg_",
   targetIds = null,
+  slim = false,
 }: {
   schema: string;
   cgTablePrefix?: string;
   targetIds?: number[] | null;
+  slim?: boolean;
 }): Promise<Row[]> {
   let subsetTableExists = true;
   try {
@@ -191,6 +193,25 @@ export async function getCohortDefinitions({
     targetIds !== null && targetIds !== undefined,
     `WHERE cohort_definition_id IN (${(targetIds ?? []).map((_, i) => `@targetId${i}`).join(",")})`,
   );
+
+  if (slim) {
+    const sql = subsetTableExists
+      ? `
+        SELECT cd.cohort_definition_id, cd.cohort_name, cd.subset_definition_id, cd.subset_parent,
+               csd.json AS subset_definition_json
+        FROM ${schema}.${cgTablePrefix}cohort_definition cd
+        LEFT JOIN ${schema}.${cgTablePrefix}cohort_subset_definition csd
+          ON cd.subset_definition_id = csd.subset_definition_id
+        ${targetClause}
+      `
+      : `
+        SELECT cohort_definition_id, cohort_name, subset_definition_id, subset_parent,
+               NULL AS subset_definition_json
+        FROM ${schema}.${cgTablePrefix}cohort_definition
+        ${targetClauseNoAlias}
+      `;
+    return queryDb(sql, params);
+  }
 
   const sql = subsetTableExists
     ? `
