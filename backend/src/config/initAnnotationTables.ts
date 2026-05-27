@@ -1,4 +1,4 @@
-import logger from "../utils/logger.js";
+import logger from "#utils/logger.js";
 import type { DuckDBInstance } from "@duckdb/node-api";
 
 const initAnnotationTables = async (

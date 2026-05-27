@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { getValidSchemaNames } from "../controllers/strategus/dbList.js";
-import logger from "../utils/logger.js";
+import { getValidSchemaNames } from "#controllers/strategus/dbList.js";
+import logger from "#utils/logger.js";
 
 const DB_LIST_SCHEMA = process.env["DB_LIST_SCHEMA"] ?? null;
 const DEFAULT_SCHEMA = process.env["STRATEGUS_SCHEMA"] ?? "app";

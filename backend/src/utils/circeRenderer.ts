@@ -25,8 +25,8 @@ import type {
   TextFilter,
   TypeMeta,
   UserDefinedPeriod,
-} from "../types/circeRendererTypes.js";
-import { KNOWN_TYPES } from "../types/circeRendererTypes.js";
+} from "#types/circeRendererTypes.js";
+import { KNOWN_TYPES } from "#types/circeRendererTypes.js";
 
 // Utils
 

@@ -1,4 +1,4 @@
-import { queryDb } from "../config/db.js";
+import { queryDb } from "#config/db.js";
 
 // Add new versions here (newest first). The fallback is always "v1".
 const VERSION_CHECKS = [

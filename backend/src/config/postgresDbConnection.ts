@@ -1,6 +1,6 @@
 import pg from "pg";
 import { AsyncLocalStorage } from "async_hooks";
-import logger from "../utils/logger.js";
+import logger from "#utils/logger.js";
 import type {
   DbPoolConfig,
   NamedParams,

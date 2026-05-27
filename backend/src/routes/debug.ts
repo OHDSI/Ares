@@ -1,18 +1,18 @@
 import express, { Request, Response } from "express";
-import { parseIntParam } from "../shared/queryHelpers.js";
+import { parseIntParam } from "#shared/queryHelpers.js";
 import {
   queryDb,
   getQueryHistory,
   getHistoryOffset,
   clearQueryHistory,
-} from "../config/db.js";
+} from "#config/db.js";
 import logger, {
   getLogBuffer,
   getBufferOffset,
   clearLogBuffer,
-} from "../utils/logger.js";
-import { getRunningQueries } from "../controllers/debug.js";
-import { ok, err } from "../shared/response.js";
+} from "#utils/logger.js";
+import { getRunningQueries } from "#controllers/debug.js";
+import { ok, err } from "#shared/response.js";
 
 const router = express.Router();
 

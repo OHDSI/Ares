@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
-import { runWithQueryContext } from "../config/db.js";
-import logger from "../utils/logger.js";
+import { runWithQueryContext } from "#config/db.js";
+import logger from "#utils/logger.js";
 import schemaResolver from "#middleware/schemaResolver.js";
 import { ok, err } from "#shared/response.js";
-import { getDatasources } from "../controllers/strategus/dataSources.js";
-import { getDbList } from "../controllers/strategus/dbList.js";
+import { getDatasources } from "#controllers/strategus/dataSources.js";
+import { getDbList } from "#controllers/strategus/dbList.js";
 
 const DB_LIST_SCHEMA = process.env["DB_LIST_SCHEMA"] ?? null;
 

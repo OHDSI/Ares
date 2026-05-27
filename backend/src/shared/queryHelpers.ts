@@ -1,5 +1,5 @@
-import { queryDb } from "../config/db.js";
-import logger from "../utils/logger.js";
+import { queryDb } from "#config/db.js";
+import logger from "#utils/logger.js";
 import type { NamedParams } from "#types/index.js";
 
 export function addOptionalClause(condition: boolean, clause: string): string {

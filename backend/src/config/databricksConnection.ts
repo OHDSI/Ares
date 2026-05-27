@@ -1,6 +1,6 @@
 import { DBSQLClient } from "@databricks/sql";
 import { AsyncLocalStorage } from "async_hooks";
-import logger from "../utils/logger.js";
+import logger from "#utils/logger.js";
 import type {
   DatabricksConfig,
   NamedParams,

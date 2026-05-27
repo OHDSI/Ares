@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import { runWithQueryContext } from "../config/db.js";
-import logger from "../utils/logger.js";
+import { runWithQueryContext } from "#config/db.js";
+import logger from "#utils/logger.js";
 import { parseIntParam, parseIntList } from "#shared/queryHelpers.js";
 import schemaResolver from "#middleware/schemaResolver.js";
 import { ok, err } from "#shared/response.js";
@@ -10,7 +10,7 @@ import {
   getCohortInclusionRules,
   getCohortInclusionStats,
   getCohortDefinitions,
-} from "../controllers/strategus/cohorts.js";
+} from "#controllers/strategus/cohorts.js";
 import { renderCohortMarkdown } from "#utils/circeRenderer.js";
 
 const router = express.Router();

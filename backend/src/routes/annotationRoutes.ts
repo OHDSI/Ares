@@ -1,13 +1,13 @@
 import express, { Request, Response } from "express";
-import dbInstance from "../config/duckdbConnection.js";
-import { ok, err } from "../shared/response.js";
+import dbInstance from "#config/duckdbConnection.js";
+import { ok, err } from "#shared/response.js";
 import {
   createAnnotation,
   deleteAnnotation,
   getAnnotationsByVizName,
   getPaginatedAnnotations,
   updateAnnotation,
-} from "../controllers/annotations.js";
+} from "#controllers/annotations.js";
 
 const router = express.Router();
 

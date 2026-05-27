@@ -20,7 +20,8 @@
     "#utils/*": "./dist/src/utils/*",
     "#types/*": "./dist/src/types/*",
     "#routes/*": "./dist/src/routes/*",
-    "#middleware/*": "./dist/src/middleware/*"
+    "#middleware/*": "./dist/src/middleware/*",
+    "#controllers/*": "./dist/src/controllers/*"
   },
   "lint-staged": {
     "*.{js,ts}": "prettier --write"

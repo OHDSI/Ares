@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import { runWithQueryContext } from "../config/db.js";
-import logger from "../utils/logger.js";
+import { runWithQueryContext } from "#config/db.js";
+import logger from "#utils/logger.js";
 import {
   parseIntParam,
   parseFloatParam,
@@ -11,29 +11,29 @@ import { ok, err } from "#shared/response.js";
 import {
   getTargetTable,
   getOutcomeTable,
-} from "../controllers/strategus/characterization/summaries.js";
+} from "#controllers/strategus/characterization/summaries.js";
 import {
   getCharacterizationCohortBinary,
   getCharacterizationCohortContinuous,
-} from "../controllers/strategus/characterization/cohortComparison.js";
+} from "#controllers/strategus/characterization/cohortComparison.js";
 import {
   getDechallengeRechallenge,
   getDechallengeRechallengeFails,
-} from "../controllers/strategus/characterization/dechallengeRechallenge.js";
+} from "#controllers/strategus/characterization/dechallengeRechallenge.js";
 import {
   getCaseCounts,
   getCaseTargetCounts,
   getBinaryRiskFactors,
   getContinuousRiskFactors,
-} from "../controllers/strategus/characterization/riskFactors.js";
-import { getTimeToEvent } from "../controllers/strategus/characterization/timeToEvent.js";
+} from "#controllers/strategus/characterization/riskFactors.js";
+import { getTimeToEvent } from "#controllers/strategus/characterization/timeToEvent.js";
 import {
   getBinaryCaseSeries,
   getContinuousCaseSeries,
-} from "../controllers/strategus/characterization/caseSeries.js";
-import { getIncidenceRates } from "../controllers/strategus/characterization/incidence.js";
-import { getOutcomeDataAvailability } from "../controllers/strategus/characterization/outcomeAvailable.js";
-import { getCohortUniquePeople } from "../controllers/strategus/cohorts.js";
+} from "#controllers/strategus/characterization/caseSeries.js";
+import { getIncidenceRates } from "#controllers/strategus/characterization/incidence.js";
+import { getOutcomeDataAvailability } from "#controllers/strategus/characterization/outcomeAvailable.js";
+import { getCohortUniquePeople } from "#controllers/strategus/cohorts.js";
 
 const router = express.Router();
 

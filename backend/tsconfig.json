@@ -27,6 +27,9 @@
       ],
       "#middleware/*": [
         "./src/middleware/*"
+      ],
+      "#controllers/*": [
+        "./src/controllers/*"
       ]
     },
     "noUncheckedIndexedAccess": true,
