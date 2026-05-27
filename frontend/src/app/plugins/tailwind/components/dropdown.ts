@@ -139,7 +139,8 @@ export default {
       "max-h-[200px]",
 
       // Misc
-      "overflow-auto",
+      "overflow-y-auto",
+      "overflow-x-hidden",
     ],
   },
   list: {
@@ -150,6 +151,10 @@ export default {
       // Font
       "font-normal",
       "leading-none",
+
+      // Display
+      "flex",
+      "items-center",
 
       // Position
       "relative",

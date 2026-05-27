@@ -11,8 +11,21 @@
             optionValue="value"
             placeholder="Select a cohort…"
             filter
+            :virtualScrollerOptions="{ itemSize: 28 }"
             class="cohort-dropdown"
-          />
+          >
+            <template #option="{ option }">
+              <div
+                :class="[
+                  'cohort-opt',
+                  { 'cohort-opt--subset': option.isSubset },
+                ]"
+              >
+                <span v-if="option.isSubset" class="subset-arrow">↳</span>
+                <span>{{ option.label }}</span>
+              </div>
+            </template>
+          </Dropdown>
         </div>
         <div class="control-action">
           <GenerateButton :disabled="generateDisabled" @click="generate" />
@@ -21,18 +34,42 @@
     </div>
 
     <div v-if="showResults" class="section results-body">
-      <ViewToggle v-model="activeTab" :tabs="tabs" />
+      <ViewToggle
+        v-model="activeTab"
+        :tabs="tabs"
+        :disabled-tabs="disabledResultTabs"
+      />
 
       <Transition name="tab-fade" mode="out-in">
         <div :key="activeTab">
           <div v-if="activeTab === 0" class="definition-body">
-            <div v-if="definitionLoading" class="loading-msg">Loading…</div>
-            <div
-              v-else-if="definitionMarkdown"
-              class="definition-md"
-              v-html="definitionHtml"
-            />
-            <div v-else class="loading-msg">No definition available.</div>
+            <template v-if="selectedIsSubset">
+              <div class="subset-notice">
+                <p class="subset-notice__text">
+                  This is a subset cohort - defined by applying additional
+                  filters to a parent cohort rather than by its own entry
+                  criteria. Switch to the parent to view its definition.
+                </p>
+                <button
+                  v-if="parentCohort"
+                  class="parent-link"
+                  @click="loadParent"
+                >
+                  <i class="pi pi-arrow-right" />
+                  View definition for
+                  <strong>{{ parentCohort.cohortName }}</strong>
+                </button>
+              </div>
+            </template>
+            <template v-else>
+              <div v-if="definitionLoading" class="loading-msg">Loading…</div>
+              <div
+                v-else-if="definitionMarkdown"
+                class="definition-md"
+                v-html="definitionHtml"
+              />
+              <div v-else class="loading-msg">No definition available.</div>
+            </template>
           </div>
 
           <div v-else-if="activeTab === 1" class="code-block-wrap">
@@ -157,12 +194,37 @@ const props = defineProps<{ cohortList: any[] }>();
 
 const { readUrl, updateUrl } = useCohortUrl();
 
-const cohortOptions = computed(() =>
-  props.cohortList.map((c) => ({
-    label: c.cohortName,
-    value: c.cohortDefinitionId,
-  })),
-);
+const cohortOptions = computed(() => {
+  const main = props.cohortList.filter((c) => !c.subsetDefinitionId);
+  const subsets = props.cohortList.filter((c) => c.subsetDefinitionId);
+  const parentIds = new Set(main.map((c) => c.cohortDefinitionId));
+
+  const items: { label: string; value: number; isSubset: boolean }[] = [];
+  for (const parent of main) {
+    items.push({
+      label: parent.cohortName,
+      value: parent.cohortDefinitionId,
+      isSubset: false,
+    });
+    for (const s of subsets.filter(
+      (s) => s.subsetParent === parent.cohortDefinitionId,
+    )) {
+      items.push({
+        label: s.cohortName,
+        value: s.cohortDefinitionId,
+        isSubset: true,
+      });
+    }
+  }
+  for (const orphan of subsets.filter((s) => !parentIds.has(s.subsetParent))) {
+    items.push({
+      label: orphan.cohortName,
+      value: orphan.cohortDefinitionId,
+      isSubset: true,
+    });
+  }
+  return items;
+});
 
 const _url = readUrl();
 const selectedCohortId = ref<number | null>(_url.cohortId ?? null);
@@ -281,6 +343,35 @@ async function generate(isRestoring = false) {
   }
 }
 
+const selectedIsSubset = computed(
+  () =>
+    cohortOptions.value.find((o) => o.value === selectedCohortId.value)
+      ?.isSubset ?? false,
+);
+
+const disabledResultTabs = computed(() => (selectedIsSubset.value ? [3] : []));
+
+watch(selectedIsSubset, (isSubset) => {
+  if (isSubset && activeTab.value === 3) activeTab.value = 0;
+});
+
+const parentCohort = computed(() => {
+  const raw = props.cohortList.find(
+    (c) => c.cohortDefinitionId === selectedCohortId.value,
+  );
+  if (!raw?.subsetParent) return null;
+  return (
+    props.cohortList.find((c) => c.cohortDefinitionId === raw.subsetParent) ??
+    null
+  );
+});
+
+function loadParent() {
+  if (!parentCohort.value) return;
+  selectedCohortId.value = parentCohort.value.cohortDefinitionId;
+  generate();
+}
+
 const generateDisabled = computed(() => {
   if (!selectedCohortId.value) return true;
   if (!lastGeneratedConfig.value) return false;
@@ -325,6 +416,23 @@ watch(selectedCohortId, () => {
 
 .cohort-dropdown {
   width: 360px;
+}
+
+.cohort-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.cohort-opt--subset {
+  padding-left: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.subset-arrow {
+  color: var(--color-text-subtle);
+  font-size: 0.75rem;
+  flex-shrink: 0;
 }
 
 .loading-msg {
@@ -458,5 +566,44 @@ watch(selectedCohortId, () => {
   color: var(--color-text-subtle);
   font-size: 0.8125rem;
   margin-left: 0.25rem;
+}
+
+.subset-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 540px;
+  padding: 0.875rem 1rem;
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.subset-notice__text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.parent-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+  color: var(--color-interactive-hover);
+  cursor: pointer;
+  text-align: left;
+}
+
+.parent-link:hover {
+  text-decoration: underline;
+}
+
+.parent-link .pi {
+  font-size: 0.75rem;
 }
 </style>

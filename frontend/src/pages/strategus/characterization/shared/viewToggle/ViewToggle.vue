@@ -3,8 +3,12 @@
     <button
       v-for="(tab, i) in tabs"
       :key="tab.key"
-      :class="['toggle-btn', { active: modelValue === i }]"
-      @click="$emit('update:modelValue', i)"
+      :class="[
+        'toggle-btn',
+        { active: modelValue === i, disabled: disabledTabs.includes(i) },
+      ]"
+      :disabled="disabledTabs.includes(i)"
+      @click="!disabledTabs.includes(i) && $emit('update:modelValue', i)"
     >
       {{ tab.label }}
     </button>
@@ -15,6 +19,7 @@
 defineProps({
   tabs: { type: Array, required: true },
   modelValue: { type: Number, default: 0 },
+  disabledTabs: { type: Array, default: () => [] },
 });
 defineEmits(["update:modelValue"]);
 </script>
@@ -49,5 +54,11 @@ defineEmits(["update:modelValue"]);
   font-weight: 600;
   background: var(--color-active-bg);
   box-shadow: var(--shadow-active-sm);
+}
+
+.toggle-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
