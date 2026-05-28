@@ -2,7 +2,11 @@
   <router-view name="reportsView" v-slot="{ Component }">
     <Transition name="page-fade">
       <div
-        v-if="!store.getters.getErrors && loaderState === 'idle'"
+        v-if="
+          !store.getters.getErrors &&
+          loaderState === 'idle' &&
+          store.getters.dataInStore
+        "
         class="mt-10 mb-16"
       >
         <component :is="Component" />
@@ -48,6 +52,7 @@ import { useStore } from "vuex";
 
 import { watch, computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { isNavigating } from "@/app/providers/router/navigationState";
 import {
   LOAD_API_NOTES,
   LOAD_NOTES,
@@ -75,6 +80,10 @@ watch(
       }
       loaderState.value = "idle";
     } else {
+      // When route name changes, :key="route.name" remounts this component and the
+      // new instance initialises its own loader state. Skip here to avoid a brief
+      // flash in the outgoing instance during its leave transition.
+      if (isNavigating.value) return;
       loadStart = Date.now();
       loaderState.value = "loading";
     }
