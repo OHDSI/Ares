@@ -197,12 +197,16 @@ export async function getCohortDefinitions({
   if (slim) {
     const sql = subsetTableExists
       ? `
-        SELECT cd.cohort_definition_id, cd.cohort_name, cd.subset_definition_id, cd.subset_parent
+        SELECT cd.cohort_definition_id, cd.cohort_name, cd.subset_definition_id, cd.subset_parent,
+               csd.json AS subset_definition_json
         FROM ${schema}.${cgTablePrefix}cohort_definition cd
+        LEFT JOIN ${schema}.${cgTablePrefix}cohort_subset_definition csd
+          ON cd.subset_definition_id = csd.subset_definition_id
         ${targetClause}
       `
       : `
-        SELECT cohort_definition_id, cohort_name, subset_definition_id, subset_parent
+        SELECT cohort_definition_id, cohort_name, subset_definition_id, subset_parent,
+               NULL AS subset_definition_json
         FROM ${schema}.${cgTablePrefix}cohort_definition
         ${targetClauseNoAlias}
       `;

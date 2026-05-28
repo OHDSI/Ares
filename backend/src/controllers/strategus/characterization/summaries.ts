@@ -138,13 +138,15 @@ export async function getTargetTable({
   getCohortMethodInclusion = true,
   getSccsInclusion = true,
 }: TargetTableOptions): Promise<Row[]> {
-  const cohorts = (await getCohortDefinitions({ schema })).map((r) => ({
-    cohortId: r["cohortDefinitionId"],
-    cohortName: r["cohortName"],
-    subsetParent: r["subsetParent"],
-    subsetDefinitionId: r["subsetDefinitionId"],
-    subsetDefinitionJson: r["subsetDefinitionJson"],
-  })) as Row[];
+  const cohorts = (await getCohortDefinitions({ schema, slim: true })).map(
+    (r) => ({
+      cohortId: r["cohortDefinitionId"],
+      cohortName: r["cohortName"],
+      subsetParent: r["subsetParent"],
+      subsetDefinitionId: r["subsetDefinitionId"],
+      subsetDefinitionJson: r["subsetDefinitionJson"],
+    }),
+  ) as Row[];
 
   for (const c of cohorts) {
     c["subsetCohortId"] = extractSubsetCohorts(
@@ -282,7 +284,7 @@ export async function getOutcomeTable({
   const adapter = await getAdapter(schema);
 
   const [rawCohorts, rawCounts, inc, char, pred, cm, sccs] = await Promise.all([
-    getCohortDefinitions({ schema }),
+    getCohortDefinitions({ schema, slim: true }),
     fetchCohortCountsRaw(schema, cgTablePrefix, databaseTable),
     getIncidenceInclusion
       ? safeCall(() =>
