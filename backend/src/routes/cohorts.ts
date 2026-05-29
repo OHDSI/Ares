@@ -10,8 +10,13 @@ import {
   getCohortInclusionRules,
   getCohortInclusionStats,
   getCohortDefinitions,
+  getSubsetOperators,
 } from "#controllers/strategus/cohorts.js";
 import { renderCohortMarkdown } from "#utils/circeRenderer.js";
+import {
+  renderSubsetMarkdown,
+  extractSubsetCohortIds,
+} from "#utils/subsetRenderer.js";
 
 const router = express.Router();
 
@@ -97,12 +102,89 @@ router.get(
       });
       const row = rows[0];
       if (!row) return res.status(404).json(err("Cohort not found"));
-      const markdown = renderCohortMarkdown(
-        (row["json"] as string | null) ??
-          (row["cohortJson"] as string | null) ??
-          "{}",
-      );
-      res.json(ok({ markdown }));
+
+      const subsetParent = row["subsetParent"] as number | null | undefined;
+      const subsetDefinitionJson = row["subsetDefinitionJson"] as
+        | string
+        | null
+        | undefined;
+
+      if (subsetParent != null) {
+        let resolvedSubsetJson = subsetDefinitionJson;
+
+        if (!resolvedSubsetJson) {
+          const subsetDefinitionId = row["subsetDefinitionId"] as
+            | number
+            | null
+            | undefined;
+          if (subsetDefinitionId != null) {
+            try {
+              const opRows = await getSubsetOperators({
+                schema: req.resolvedSchema,
+                subsetDefinitionId,
+              });
+              if (opRows.length > 0) {
+                const operators = opRows.map((r) => ({
+                  subsetType: r["operatorType"],
+                  name: r["operatorName"],
+                  ...JSON.parse((r["definitionJson"] as string | null) ?? "{}"),
+                }));
+                resolvedSubsetJson = JSON.stringify({
+                  subsetOperators: operators,
+                });
+              }
+            } catch {
+              // cg_cohort_subset_operator table doesn't exist on this schema version
+            }
+          }
+        }
+
+        const [parentRows, referencedCohortIds] = await Promise.all([
+          getCohortDefinitions({
+            schema: req.resolvedSchema,
+            targetIds: [subsetParent],
+          }),
+          Promise.resolve(extractSubsetCohortIds(resolvedSubsetJson)),
+        ]);
+
+        const parentRow = parentRows[0];
+        const markdown = parentRow
+          ? renderCohortMarkdown(
+              (parentRow["json"] as string | null) ??
+                (parentRow["cohortJson"] as string | null) ??
+                "{}",
+            )
+          : null;
+
+        const cohortNames = new Map<number, string>();
+        if (referencedCohortIds.length > 0) {
+          const refRows = await getCohortDefinitions({
+            schema: req.resolvedSchema,
+            targetIds: referencedCohortIds,
+            slim: true,
+          });
+          for (const r of refRows) {
+            cohortNames.set(
+              r["cohortDefinitionId"] as number,
+              r["cohortName"] as string,
+            );
+          }
+        }
+
+        const subsetMarkdown = renderSubsetMarkdown(
+          resolvedSubsetJson,
+          cohortNames,
+        );
+
+        res.json(ok({ markdown, subsetMarkdown: subsetMarkdown || null }));
+      } else {
+        const markdown = renderCohortMarkdown(
+          (row["json"] as string | null) ??
+            (row["cohortJson"] as string | null) ??
+            "{}",
+        );
+        res.json(ok({ markdown, subsetMarkdown: null }));
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`cohorts/definition-markdown: ${message}`);

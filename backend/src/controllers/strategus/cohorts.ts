@@ -245,6 +245,24 @@ export async function getCohortUniquePeople({
   return queryDb(sql, { cohortId });
 }
 
+export async function getSubsetOperators({
+  schema,
+  cgTablePrefix = "cg_",
+  subsetDefinitionId,
+}: {
+  schema: string;
+  cgTablePrefix?: string;
+  subsetDefinitionId: number;
+}): Promise<Row[]> {
+  const sql = `
+    SELECT operator_name, operator_sequence, operator_type, definition_json
+    FROM ${schema}.${cgTablePrefix}cohort_subset_operator
+    WHERE subset_definition_id = @subsetDefinitionId
+    ORDER BY operator_sequence
+  `;
+  return queryDb(sql, { subsetDefinitionId });
+}
+
 export function extractSubsetCohorts(json: string | null | undefined): string {
   if (json === null || json === undefined || json === "") return "";
 

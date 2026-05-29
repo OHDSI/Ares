@@ -47,28 +47,49 @@
       <Transition name="tab-fade" mode="out-in">
         <div :key="activeTab">
           <div v-if="activeTab === 0" class="definition-body">
-            <template v-if="selectedIsSubset">
-              <div class="subset-notice">
-                <p class="subset-notice__text">
-                  This is a subset cohort - defined by applying additional
-                  filters to a parent cohort rather than by its own entry
-                  criteria. Switch to the parent to view its definition.
-                </p>
-                <button
-                  v-if="parentCohort"
-                  class="parent-link"
-                  @click="loadParent"
-                >
-                  <i class="pi pi-arrow-right" />
-                  View definition for
-                  <strong>{{ parentCohort.cohortName }}</strong>
-                </button>
+            <div v-if="definitionLoading" class="loading-msg">Loading…</div>
+            <template v-else-if="selectedIsSubset">
+              <div class="subset-block">
+                <div class="subset-notice">
+                  <p class="subset-notice__text">
+                    This is a subset cohort - defined by applying additional
+                    filters to a parent cohort rather than by its own entry
+                    criteria. The parent cohort definition is shown below.
+                  </p>
+                  <button
+                    v-if="parentCohort"
+                    class="parent-link"
+                    @click="loadParent"
+                  >
+                    <i class="pi pi-arrow-right" />
+                    Switch to
+                    <strong>{{ parentCohort.cohortName }}</strong>
+                  </button>
+                </div>
+
+                <div
+                  v-if="definitionMarkdown"
+                  class="definition-md"
+                  v-html="definitionHtml"
+                />
+                <div v-else class="loading-msg">
+                  No parent definition available.
+                </div>
+
+                <template v-if="subsetDefinitionHtml">
+                  <div class="subset-filters-header">
+                    <span class="subset-def-label">Subset filters</span>
+                  </div>
+                  <div
+                    class="definition-md subset-filters-md"
+                    v-html="subsetDefinitionHtml"
+                  />
+                </template>
               </div>
             </template>
             <template v-else>
-              <div v-if="definitionLoading" class="loading-msg">Loading…</div>
               <div
-                v-else-if="definitionMarkdown"
+                v-if="definitionMarkdown"
                 class="definition-md"
                 v-html="definitionHtml"
               />
@@ -257,10 +278,14 @@ const prettyJson = computed(() => {
 
 const definitionLoading = ref(false);
 const definitionMarkdown = ref<string>("");
+const subsetMarkdown = ref<string | null>(null);
 const definitionHtml = computed(() =>
   definitionMarkdown.value
     ? (marked.parse(definitionMarkdown.value) as string)
     : "",
+);
+const subsetDefinitionHtml = computed(() =>
+  subsetMarkdown.value ? (marked.parse(subsetMarkdown.value) as string) : "",
 );
 
 const inclusionRules = ref<any[]>([]);
@@ -302,6 +327,7 @@ async function generate(isRestoring = false) {
   showResults.value = false;
   loaderState.value = "loading";
   definitionMarkdown.value = "";
+  subsetMarkdown.value = null;
   inclusionRules.value = [];
   inclusionStats.value = [];
 
@@ -323,8 +349,12 @@ async function generate(isRestoring = false) {
     const defs: any[] = defRes.data ?? [];
     selectedDef.value = defs[0] ?? null;
 
-    definitionMarkdown.value =
-      (markdownRes.data as { markdown: string })?.markdown ?? "";
+    const mdData = markdownRes.data as {
+      markdown: string | null;
+      subsetMarkdown: string | null;
+    };
+    definitionMarkdown.value = mdData?.markdown ?? "";
+    subsetMarkdown.value = mdData?.subsetMarkdown ?? null;
 
     inclusionRules.value = rulesRes.data ?? [];
     inclusionStats.value = statsRes.data ?? [];
@@ -389,6 +419,7 @@ watch(selectedCohortId, () => {
   showResults.value = false;
   selectedDef.value = null;
   definitionMarkdown.value = "";
+  subsetMarkdown.value = null;
   inclusionRules.value = [];
   inclusionStats.value = [];
   selectedDatabase.value = null;
@@ -571,12 +602,19 @@ watch(selectedCohortId, () => {
   margin-left: 0.25rem;
 }
 
+.subset-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 .subset-notice {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   max-width: 540px;
   padding: 0.875rem 1rem;
+  margin-bottom: 1.25rem;
   background: var(--color-bg-surface);
   border: 1.5px solid var(--color-border);
   border-radius: 8px;
@@ -587,6 +625,34 @@ watch(selectedCohortId, () => {
   font-size: 0.875rem;
   color: var(--color-text-muted);
   line-height: 1.6;
+}
+
+.subset-filters-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.625rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px solid var(--color-border);
+}
+
+.subset-def-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.subset-filters-md :deep(ul) {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin: 0.25rem 0;
+}
+
+.subset-filters-md :deep(li) {
+  margin: 0.2rem 0;
 }
 
 .parent-link {
