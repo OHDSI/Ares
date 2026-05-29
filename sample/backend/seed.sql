@@ -1196,6 +1196,14 @@ INSERT INTO app2.database_meta_data           SELECT * FROM app.database_meta_da
 INSERT INTO app2.cg_cohort_definition         SELECT * FROM app.cg_cohort_definition;
 INSERT INTO app2.cg_cohort_subset_definition  SELECT * FROM app.cg_cohort_subset_definition;
 INSERT INTO app2.cg_cohort_count              SELECT * FROM app.cg_cohort_count;
+INSERT INTO app2.cg_cohort_count (cohort_id, database_id, cohort_subjects, cohort_entries)
+SELECT p.cc_id, d.database_id,
+       (15 + (p.cc_id * 11 + ascii(left(d.database_id, 1))) % 70)::int,
+       (15 + (p.cc_id * 11 + ascii(left(d.database_id, 1))) % 70)::int
+FROM (VALUES (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),
+             (15),(16),(17),(18),(19),(20),(21),(22),(23),(24),(25),(26),(27),(28)) AS p(cc_id)
+CROSS JOIN (SELECT database_id FROM app.database_meta_data
+            WHERE database_id IN ('db_alpha','db_beta','db_gamma','db_delta','db_epsilon','db_zeta')) d;
 INSERT INTO app2.cg_cohort_generation         SELECT * FROM app.cg_cohort_generation;
 INSERT INTO app2.cg_cohort_inclusion          SELECT * FROM app.cg_cohort_inclusion;
 INSERT INTO app2.cg_cohort_inc_result         SELECT * FROM app.cg_cohort_inc_result;
