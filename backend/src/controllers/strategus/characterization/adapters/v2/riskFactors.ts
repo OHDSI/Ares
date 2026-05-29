@@ -83,8 +83,10 @@ export async function getCaseCounts({
       ts.target_id AS target_id,
       outcome.cohort_name AS outcome_name,
       cs.outcome_id AS outcome_id,
-      MAX(cc.cohort_entries) AS row_count,
-      MAX(cc.cohort_subjects) AS person_count,
+      MAX(CASE WHEN rfc.case_average_value > 0 AND rfc.case_sum_value > 0
+        THEN ROUND(rfc.case_sum_value::float / rfc.case_average_value) END) AS person_count,
+      MAX(CASE WHEN rfc.case_average_value > 0 AND rfc.case_sum_value > 0
+        THEN ROUND(rfc.case_sum_value::float / rfc.case_average_value) END) AS row_count,
       ts.min_prior_observation,
       cs.outcome_washout_days,
       cs.risk_window_start,
@@ -96,9 +98,10 @@ export async function getCaseCounts({
       ON cs.characterization_target_id = ts.characterization_target_id
       AND cs.database_id = ts.database_id
       AND cs.setting_id = ts.setting_id
-    INNER JOIN ${schema}.${cgTablePrefix}cohort_count cc
-      ON cc.cohort_id = cs.characterization_case_id
-      AND cc.database_id = cs.database_id
+    LEFT JOIN ${schema}.${cTablePrefix}risk_factor_covariates rfc
+      ON rfc.characterization_case_id = cs.characterization_case_id
+      AND rfc.database_id = cs.database_id
+      AND rfc.setting_id = cs.setting_id
     INNER JOIN ${schema}.${databaseTable} d
       ON cs.database_id = d.database_id
     INNER JOIN ${schema}.${cgTablePrefix}cohort_definition target
@@ -297,8 +300,12 @@ export async function getBinaryRiskFactors({
       rfc.non_case_sum_value,
       rfc.non_case_average_value,
       rfc.standardized_mean_difference,
-      case_cc.cohort_subjects AS case_person_count,
-      target_cc.cohort_subjects AS target_person_count
+      MAX(CASE WHEN rfc.case_average_value > 0 AND rfc.case_sum_value > 0
+        THEN ROUND(rfc.case_sum_value::float / rfc.case_average_value) END)
+        OVER (PARTITION BY rfc.characterization_case_id, rfc.database_id) AS case_person_count,
+      MAX(CASE WHEN rfc.non_case_average_value > 0 AND rfc.non_case_sum_value > 0
+        THEN ROUND(rfc.non_case_sum_value::float / rfc.non_case_average_value) END)
+        OVER (PARTITION BY rfc.characterization_case_id, rfc.database_id) AS non_case_person_count
     FROM ${schema}.${cTablePrefix}risk_factor_covariates rfc
     INNER JOIN ${schema}.${cTablePrefix}case_settings cs
       ON rfc.characterization_case_id = cs.characterization_case_id
@@ -318,12 +325,6 @@ export async function getBinaryRiskFactors({
       ON ts.target_id = target.cohort_definition_id
     INNER JOIN ${schema}.${cgTablePrefix}cohort_definition outcome
       ON cs.outcome_id = outcome.cohort_definition_id
-    LEFT JOIN ${schema}.${cgTablePrefix}cohort_count case_cc
-      ON case_cc.cohort_id = cs.characterization_case_id
-      AND case_cc.database_id = cs.database_id
-    LEFT JOIN ${schema}.${cgTablePrefix}cohort_count target_cc
-      ON target_cc.cohort_id = ts.target_id
-      AND target_cc.database_id = ts.database_id
     WHERE ts.target_id = @targetId
       AND cs.outcome_id = @outcomeId
       ${dbClause}
@@ -352,10 +353,7 @@ export async function getBinaryRiskFactors({
     covariateNameParsed: parseCovariateNameString(r["covariateName"] as string),
     covariateId: r["covariateId"] as number,
     casePersonCount: r["casePersonCount"] as number,
-    nonCasePersonCount:
-      r["targetPersonCount"] != null && r["casePersonCount"] != null
-        ? (r["targetPersonCount"] as number) - (r["casePersonCount"] as number)
-        : (null as unknown as number),
+    nonCasePersonCount: r["nonCasePersonCount"] as number,
     caseCount: r["caseSumValue"] as number,
     caseAverage: r["caseAverageValue"] as number,
     nonCaseCount: r["nonCaseSumValue"] as number,
