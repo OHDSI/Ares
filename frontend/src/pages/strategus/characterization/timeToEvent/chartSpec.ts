@@ -25,6 +25,10 @@ export function tteChartSpec({ data = [] }: { data: any[] }) {
   const cellW = 100 / cols;
   const cellH = 100 / rowCount;
 
+  const ROW_H = 300;
+  const TITLE_H = 30;
+  const AXIS_BOTTOM = 55;
+
   const grids = [],
     xAxes = [],
     yAxes = [],
@@ -38,9 +42,9 @@ export function tteChartSpec({ data = [] }: { data: any[] }) {
 
     grids.push({
       left: `${col * cellW + 6}%`,
-      top: `${row * cellH + 8}%`,
+      top: row * ROW_H + TITLE_H + 10,
       width: `${cellW - 10}%`,
-      height: `${cellH - 16}%`,
+      height: ROW_H - TITLE_H - AXIS_BOTTOM,
     });
     xAxes.push({
       gridIndex: fi,
@@ -59,13 +63,13 @@ export function tteChartSpec({ data = [] }: { data: any[] }) {
     titles.push({
       text: `${dbName} - ${ts}`,
       left: `${col * cellW + cellW / 2 + 1}%`,
-      top: `${row * cellH + 1}%`,
+      top: row * ROW_H + 8,
       textAlign: "center",
       textStyle: { fontSize: 13, fontWeight: "normal" },
     });
 
     const facetData = data.filter(
-      (r) => r.timeScale === ts && r.databaseName === dbName
+      (r) => r.timeScale === ts && r.databaseName === dbName,
     );
     for (let gi = 0; gi < fillGroups.length; gi++) {
       const fg = fillGroups[gi];
