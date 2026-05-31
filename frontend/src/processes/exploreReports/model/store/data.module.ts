@@ -16,7 +16,10 @@ import { errorActions } from "@/widgets/error";
 import db from "@/shared/api/duckdb/instance";
 import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import environment from "@/shared/api/environment";
-import getFilesByView from "@/processes/exploreReports/config/dataLoadConfig";
+import {
+  getFilesByView,
+  getViewErrorMessage,
+} from "@/processes/exploreReports/config/viewRegistry";
 import errorMessages from "@/widgets/error/model/config/errorMessages";
 import { COHORT_INDEX } from "@/shared/config/files";
 
@@ -51,13 +54,13 @@ async function fetchAxiosData(file, path) {
               release: path.release,
               domain: path.domain,
               concept: path.concept,
-            }
+            },
       )[file.name],
       method: "get",
     },
     {
       required: file.required,
-    }
+    },
   ).then((response) => ({
     data: response.data,
     payload: path,
@@ -70,7 +73,7 @@ function compareDefaultAvailableSources(availableSources, defaultSources) {
       const sourceKey = source.cdm_source_key;
       if (defaultSources[sourceKey]) {
         const filteredReleases = source.releases.filter((release) =>
-          defaultSources[sourceKey].includes(release.release_id)
+          defaultSources[sourceKey].includes(release.release_id),
         );
         if (filteredReleases.length > 0) {
           return {
@@ -93,7 +96,7 @@ async function fetchDuckDBData(file, payload, path, filter) {
           cdm: path.cdm.cdm_source_key,
           release: path.release,
         })[file.name]
-      }') ${filter};`
+      }') ${filter};`,
     )
     .then((data) => ({
       data: data,
@@ -149,7 +152,7 @@ function handleNetworkError(responses, { dispatch }, reportName, isDuckDb) {
       "The file is unavailable or the server isn't responding. Please check your internet connection and your data folder then try again";
   }
   if (errorCode === 404 && !isDuckDb) {
-    errorMessage = errorMessages.reportsMissingFiles[reportName];
+    errorMessage = getViewErrorMessage(reportName);
   }
   if (
     ((errorCode && errorCode >= 500) || typeof errorCode !== "number") &&
@@ -235,7 +238,7 @@ const actions = {
           file,
           payload,
           path,
-          path.concept ? filterConcept : path.cohortId ? filterCohort : ""
+          path.concept ? filterConcept : path.cohortId ? filterCohort : "",
         );
       } else {
         return fetchAxiosData(file, path);
@@ -256,7 +259,7 @@ const actions = {
           data[fileName] = processData(
             fileData,
             isDuckDb && payload.files[index].source !== "axios",
-            fileName
+            fileName,
           );
         } else {
           if (isRequired) {
@@ -264,7 +267,7 @@ const actions = {
               [response],
               { dispatch },
               reportName,
-              isDuckDb && payload.files[index].source !== "axios"
+              isDuckDb && payload.files[index].source !== "axios",
             );
             data = null;
             return;
@@ -281,7 +284,7 @@ const actions = {
 
   async [FETCH_MULTIPLE_FILES_BY_SOURCE](
     { commit, dispatch, rootState, rootGetters },
-    payload
+    payload,
   ) {
     if (!payload.files) {
       commit(SET_DATA, { data: {} });
@@ -295,7 +298,7 @@ const actions = {
         payload.defaultSources || rootGetters.getSettings.defaultSources;
       const defaultSourcesToLoad = compareDefaultAvailableSources(
         availableSources,
-        defaultSources
+        defaultSources,
       );
       const toLoad = defaultSourcesToLoad.length
         ? defaultSourcesToLoad
@@ -319,7 +322,7 @@ const actions = {
                   : fetchAxiosData(file, path);
               return [...array, fetchData];
             },
-            []
+            [],
           );
 
           return [...filesArray, ...loadedFiles];
@@ -337,8 +340,8 @@ const actions = {
             data: isDuckDb
               ? convertTableToArray(filtered.value.data)
               : preprocessing[file]
-              ? preprocessing[file](filtered.value.data)
-              : filtered.value?.data,
+                ? preprocessing[file](filtered.value.data)
+                : filtered.value?.data,
             source: filtered.value?.payload.cdm,
           }));
 
@@ -355,7 +358,7 @@ const actions = {
 
   async [FETCH_MULTIPLE_FILES_BY_RELEASE](
     { commit, dispatch, rootState, rootGetters },
-    payload
+    payload,
   ) {
     if (!payload.files) {
       commit(SET_DATA, { data: {} });
@@ -382,7 +385,7 @@ const actions = {
               ...params,
               release: release.release_id,
             },
-            filter
+            filter,
           );
         } else {
           const url = getFilePath({
@@ -395,7 +398,7 @@ const actions = {
               url,
               method: "get",
             },
-            release.release_name
+            release.release_name,
           );
         }
       });
