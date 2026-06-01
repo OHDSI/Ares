@@ -8,38 +8,40 @@
       :data="data"
       :chart-spec="getEChartsNetworkCumulative"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        :value="data"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column field="DATA_SOURCE_KEY" header="Source"> </Column>
-
-        <Column field="YEARS" header="Years of Observation"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="% of Population"
-          field="PERCENT_PEOPLE"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          size="small"
+          :value="data"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.PERCENT_PEOPLE
-                  ? formatPercent(slotProps.data.PERCENT_PEOPLE)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column field="DATA_SOURCE_KEY" header="Source"> </Column>
+
+          <Column field="YEARS" header="Years of Observation"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="% of Population"
+            field="PERCENT_PEOPLE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.PERCENT_PEOPLE
+                    ? formatPercent(slotProps.data.PERCENT_PEOPLE)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
 
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -51,8 +53,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
-                  .CUMULATIVE_DURATION[0]
-              )
+                  .CUMULATIVE_DURATION[0],
+              ),
             )
           "
         />

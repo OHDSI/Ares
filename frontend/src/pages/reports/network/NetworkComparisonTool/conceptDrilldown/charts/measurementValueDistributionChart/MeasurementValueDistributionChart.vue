@@ -24,160 +24,162 @@
       :chart-spec="getEChartsOptionMeasurementDistributionFaceted"
       :height="totalHeight"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="
-          getSelectedMeasurementUnitsTable
-            ? getSelectedMeasurementUnitsTable
-            : []
-        "
-        :rows="10"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Source" field="SOURCE"></Column>
-        <Column sortable header="Unit" field="CATEGORY"></Column>
-        <Column
-          sortable
-          header="Unit Concept ID"
-          field="UNIT_CONCEPT_ID"
-        ></Column>
-        <Column sortable header="Release" field="RELEASE"></Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="Count Value"
-          field="UNIT_COUNT"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="
+            getSelectedMeasurementUnitsTable
+              ? getSelectedMeasurementUnitsTable
+              : []
+          "
+          :rows="10"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.UNIT_COUNT
-                  ? formatComma(slotProps.data.UNIT_COUNT)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="MIN_VALUE"
-          field="MIN_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.MIN_VALUE
-                  ? formatComma(slotProps.data.MIN_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="P10_VALUE"
-          field="P10_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.P10_VALUE
-                  ? formatComma(slotProps.data.P10_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="P25_VALUE"
-          field="P25_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.P25_VALUE
-                  ? formatComma(slotProps.data.P25_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="MEDIAN_VALUE"
-          field="MEDIAN_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.MEDIAN_VALUE
-                  ? formatComma(slotProps.data.MEDIAN_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="P75_VALUE"
-          field="P75_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.P75_VALUE
-                  ? formatComma(slotProps.data.P75_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="P90_VALUE"
-          field="P90_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.P90_VALUE
-                  ? formatComma(slotProps.data.P90_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="MAX_VALUE"
-          field="MAX_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.MAX_VALUE
-                  ? formatComma(slotProps.data.MAX_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Source" field="SOURCE"></Column>
+          <Column sortable header="Unit" field="CATEGORY"></Column>
+          <Column
+            sortable
+            header="Unit Concept ID"
+            field="UNIT_CONCEPT_ID"
+          ></Column>
+          <Column sortable header="Release" field="RELEASE"></Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="Count Value"
+            field="UNIT_COUNT"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.UNIT_COUNT
+                    ? formatComma(slotProps.data.UNIT_COUNT)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="MIN_VALUE"
+            field="MIN_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.MIN_VALUE
+                    ? formatComma(slotProps.data.MIN_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="P10_VALUE"
+            field="P10_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.P10_VALUE
+                    ? formatComma(slotProps.data.P10_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="P25_VALUE"
+            field="P25_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.P25_VALUE
+                    ? formatComma(slotProps.data.P25_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="MEDIAN_VALUE"
+            field="MEDIAN_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.MEDIAN_VALUE
+                    ? formatComma(slotProps.data.MEDIAN_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="P75_VALUE"
+            field="P75_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.P75_VALUE
+                    ? formatComma(slotProps.data.P75_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="P90_VALUE"
+            field="P90_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.P90_VALUE
+                    ? formatComma(slotProps.data.P90_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="MAX_VALUE"
+            field="MAX_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.MAX_VALUE
+                    ? formatComma(slotProps.data.MAX_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -194,8 +196,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.MEASUREMENT
-                  .MEASUREMENT_VALUE_DISTRIBUTION[0]
-              )
+                  .MEASUREMENT_VALUE_DISTRIBUTION[0],
+              ),
             )
           "
         />
@@ -238,7 +240,7 @@ const selectedMeasurementUnits: Ref<string[]> = ref([]);
 const getSelectedMeasurementUnitsChart = computed(function () {
   return selectedMeasurementUnits.value.length
     ? props.data.chart.filter((value) =>
-        selectedMeasurementUnits.value.includes(value.CATEGORY)
+        selectedMeasurementUnits.value.includes(value.CATEGORY),
       )
     : props.data.chart;
 });
@@ -246,7 +248,7 @@ const getSelectedMeasurementUnitsChart = computed(function () {
 const getSelectedMeasurementUnitsTable = computed(function () {
   return selectedMeasurementUnits.value.length
     ? props.data.table.filter((value) =>
-        selectedMeasurementUnits.value.includes(value.CATEGORY)
+        selectedMeasurementUnits.value.includes(value.CATEGORY),
       )
     : props.data.table;
 });

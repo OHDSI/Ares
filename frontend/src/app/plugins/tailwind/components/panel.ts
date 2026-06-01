@@ -1,8 +1,6 @@
 export default {
   root: {
     class: [
-      //positioning
-
       "flex",
       "flex-col",
       "justify-between",

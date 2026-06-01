@@ -18,53 +18,55 @@
       :annotation-mode="annotationsMode"
       :chart-spec="getEChartsOptionAgeAtFirstObservation"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        removable-sort
-        size="small"
-        paginator
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Age" field="INTERVAL_INDEX"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="# Persons"
-          field="COUNT_VALUE"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          removable-sort
+          size="small"
+          paginator
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.COUNT_VALUE
-                  ? formatComma(slotProps.data.COUNT_VALUE)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="% of Population"
-          field="PERCENT_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.PERCENT_VALUE
-                  ? formatPercent(slotProps.data.PERCENT_VALUE)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Age" field="INTERVAL_INDEX"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="# Persons"
+            field="COUNT_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.COUNT_VALUE
+                    ? formatComma(slotProps.data.COUNT_VALUE)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="% of Population"
+            field="PERCENT_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.PERCENT_VALUE
+                    ? formatPercent(slotProps.data.PERCENT_VALUE)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -76,8 +78,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
-                  .AGE_AT_FIRST_OBSERVATION[0]
-              )
+                  .AGE_AT_FIRST_OBSERVATION[0],
+              ),
             )
           "
         />

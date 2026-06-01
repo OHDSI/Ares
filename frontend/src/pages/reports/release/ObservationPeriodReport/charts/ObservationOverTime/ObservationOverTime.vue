@@ -18,64 +18,66 @@
       :annotation-mode="annotationsMode"
       :chart-spec="getEChartsOptionObservationByMonth"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="DATE" field="DATE">
-          <template #body="slotProps">
-            <div>
-              {{
-                slotProps.data.DATE
-                  ? slotProps.data.DATE.toLocaleDateString()
-                  : "no data"
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="# of People"
-          field="COUNT_VALUE"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.COUNT_VALUE
-                  ? formatComma(slotProps.data.COUNT_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
+          <Column sortable header="DATE" field="DATE">
+            <template #body="slotProps">
+              <div>
+                {{
+                  slotProps.data.DATE
+                    ? slotProps.data.DATE.toLocaleDateString()
+                    : "no data"
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="# of People"
+            field="COUNT_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.COUNT_VALUE
+                    ? formatComma(slotProps.data.COUNT_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
 
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="% of Population"
-          field="PERCENT_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.PERCENT_VALUE
-                  ? formatPercent(slotProps.data.PERCENT_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="% of Population"
+            field="PERCENT_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.PERCENT_VALUE
+                    ? formatPercent(slotProps.data.PERCENT_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
 
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
@@ -88,8 +90,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.OBSERVATION_PERIOD
-                  .OBSERVED_BY_MONTH[0]
-              )
+                  .OBSERVED_BY_MONTH[0],
+              ),
             )
           "
         />

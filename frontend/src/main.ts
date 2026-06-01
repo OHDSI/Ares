@@ -1,4 +1,5 @@
 import App from "./app/App.vue";
+import CollapseTransition from "@/shared/ui/collapseTransition/CollapseTransition.vue";
 import { createApp } from "vue";
 import "@/style.css";
 
@@ -44,6 +45,7 @@ environment.load().then(() => {
       });
     };
     app
+      .component("CollapseTransition", CollapseTransition)
       .directive("click-outside", clickOutside)
       .directive("resize", resize)
       .directive("tooltip", Tooltip)

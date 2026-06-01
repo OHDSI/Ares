@@ -27,38 +27,40 @@
       :annotation-mode="annotationsMode"
       :annotations="annotations"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Date" field="MONTH_YEAR"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="# of People"
-          field="TOTAL_COST"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              $
-              {{
-                slotProps.data.TOTAL_COST
-                  ? formatComma(slotProps.data.TOTAL_COST)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Date" field="MONTH_YEAR"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="# of People"
+            field="TOTAL_COST"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                $
+                {{
+                  slotProps.data.TOTAL_COST
+                    ? formatComma(slotProps.data.TOTAL_COST)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -69,8 +71,8 @@
           @iconClicked="
             openNewTab(
               links.getSqlQueryLink(
-                store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
-              )
+                store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA,
+              ),
             )
           "
         />
@@ -145,7 +147,7 @@ onMounted(() => {
       acc.TOTAL_CHARGE += Number(curr.TOTAL_CHARGE) || 0;
       return acc;
     },
-    { TOTAL_COST: 0, TOTAL_PAID: 0, TOTAL_CHARGE: 0 }
+    { TOTAL_COST: 0, TOTAL_PAID: 0, TOTAL_CHARGE: 0 },
   );
 
   const hasCostData = Object.entries(totals)

@@ -9,135 +9,137 @@
       :chart-spec="getEChartsOptionAgeAtFirstOccurrenceFaceted"
       :height="totalHeight"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Source" field="SOURCE"> </Column>
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
+        >
+          <Column sortable header="Source" field="SOURCE"> </Column>
 
-        <Column sortable header="Sex" field="CATEGORY"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="MIN_VALUE"
-          field="MIN_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.MIN_VALUE
-                  ? formatComma(slotProps.data.MIN_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="P10_VALUE"
-          field="P10_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.P10_VALUE
-                  ? formatComma(slotProps.data.P10_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="P25_VALUE"
-          field="P25_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.P25_VALUE
-                  ? formatComma(slotProps.data.P25_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="MEDIAN_VALUE"
-          field="MEDIAN_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.MEDIAN_VALUE
-                  ? formatComma(slotProps.data.MEDIAN_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="P75_VALUE"
-          field="P75_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.P75_VALUE
-                  ? formatComma(slotProps.data.P75_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="P90_VALUE"
-          field="P90_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.P90_VALUE
-                  ? formatComma(slotProps.data.P90_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="MAX_VALUE"
-          field="MAX_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.MAX_VALUE
-                  ? formatComma(slotProps.data.MAX_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Sex" field="CATEGORY"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="MIN_VALUE"
+            field="MIN_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.MIN_VALUE
+                    ? formatComma(slotProps.data.MIN_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="P10_VALUE"
+            field="P10_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.P10_VALUE
+                    ? formatComma(slotProps.data.P10_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="P25_VALUE"
+            field="P25_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.P25_VALUE
+                    ? formatComma(slotProps.data.P25_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="MEDIAN_VALUE"
+            field="MEDIAN_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.MEDIAN_VALUE
+                    ? formatComma(slotProps.data.MEDIAN_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="P75_VALUE"
+            field="P75_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.P75_VALUE
+                    ? formatComma(slotProps.data.P75_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="P90_VALUE"
+            field="P90_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.P90_VALUE
+                    ? formatComma(slotProps.data.P90_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="MAX_VALUE"
+            field="MAX_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.MAX_VALUE
+                    ? formatComma(slotProps.data.MAX_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
 
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -154,8 +156,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .AGE_AT_FIRST_EXPOSURE[0]
-              )
+                  .AGE_AT_FIRST_EXPOSURE[0],
+              ),
             )
           "
         />
