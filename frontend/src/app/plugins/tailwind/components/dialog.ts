@@ -2,17 +2,19 @@ export default {
   root: ({ state }) => ({
     class: [
       // Shape
-      "rounded-md",
-      "shadow-lg",
-      "border-0",
+      "rounded-lg",
+      "shadow-xl",
+      "border",
+      "border-surface-200",
+      "dark:border-surface-700",
 
       // Size
       "max-h-[90vh]",
       "m-0",
 
-      // Color
-      "dark:border",
-      "dark:border-surface-700",
+      // Colors
+      "bg-surface-0",
+      "dark:bg-surface-800",
 
       // Transitions
       "transform",
@@ -32,62 +34,41 @@ export default {
   }),
   header: {
     class: [
-      // Flexbox and Alignment
+      "flex items-center justify-between",
       "shrink-0",
-      "text-center",
-
-      // Spacing
-      "p-3",
-
-      // Shape
-      "border-t-0",
-      "rounded-tl-md",
-      "rounded-tr-md",
-
-      // Colors
-      "bg-primary-500 dark:bg-primary-400",
-      "text-white dark:text-surface-0/80",
+      "px-5",
+      "py-4",
+      "border-b",
+      "border-surface-200",
+      "dark:border-surface-700",
+      "rounded-tl-lg",
+      "rounded-tr-lg",
+      "bg-surface-0",
+      "dark:bg-surface-800",
     ],
   },
   title: {
-    class: ["font-bold text-lg text-center uppercase"],
+    class: ["font-semibold text-sm tracking-wide"],
   },
   icons: {
     class: ["flex items-center"],
   },
   closeButton: {
-    class: ["hidden"],
-    // class: [
-    //   "relative",
-    //
-    //   // Flexbox and Alignment
-    //   "flex items-center justify-center",
-    //
-    //   // Size and Spacing
-    //   "mr-2",
-    //   "last:mr-0",
-    //   "w-8 h-8",
-    //
-    //   // Shape
-    //   "border-0",
-    //   "rounded-full",
-    //
-    //   // Colors
-    //   "text-surface-500",
-    //   "bg-transparent",
-    //
-    //   // Transitions
-    //   "transition duration-200 ease-in-out",
-    //
-    //   // States
-    //   "hover:text-surface-700 dark:hover:text-white/80",
-    //   "hover:bg-surface-100 dark:hover:bg-surface-800/80",
-    //   "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-inset",
-    //   "focus:ring-primary-400/50 dark:focus:ring-primary-300/50",
-    //
-    //   // Misc
-    //   "overflow-hidden",
-    // ],
+    class: [
+      "relative",
+      "flex items-center justify-center",
+      "w-7 h-7",
+      "border-0",
+      "rounded-md",
+      "bg-transparent",
+      "text-surface-400 dark:text-surface-400",
+      "hover:text-surface-600 dark:hover:text-surface-200",
+      "hover:bg-surface-100 dark:hover:bg-surface-700",
+      "transition duration-150 ease-in-out",
+      "cursor-pointer",
+      "overflow-hidden",
+      "focus:outline-none",
+    ],
   },
   maximizablebutton: {
     class: [
@@ -144,42 +125,29 @@ export default {
   },
   content: ({ state, instance }) => ({
     class: [
-      // Spacing
       "h-full",
-      "p-1",
-
-      // Shape
+      "overflow-y-auto",
       {
         grow: state.maximized,
-        "rounded-bl-md": !instance.$slots.footer,
-        "rounded-br-md": !instance.$slots.footer,
+        "rounded-bl-lg": !instance.$slots.footer,
+        "rounded-br-lg": !instance.$slots.footer,
       },
-
-      // Colors
       "bg-surface-0 dark:bg-surface-800",
       "text-surface-700 dark:text-surface-0/80",
-
-      // Misc
-      "overflow-y-auto",
     ],
   }),
   footer: {
     class: [
-      // Flexbox and Alignment
-      "flex items-center justify-end",
+      "flex items-center justify-between",
       "shrink-0",
-      "text-right",
       "gap-2",
-
-      // Spacing
-      "px-6",
-      "pb-6",
-
-      // Shape
-      "border-t-0",
-      "rounded-b-md",
-
-      // Colors
+      "px-5",
+      "py-3",
+      "border-t",
+      "border-surface-200",
+      "dark:border-surface-700",
+      "rounded-bl-lg",
+      "rounded-br-lg",
       "bg-surface-0 dark:bg-surface-800",
       "text-surface-700 dark:text-surface-0/80",
     ],
@@ -206,40 +174,40 @@ export default {
             "opacity-0 scale-75 translate-x-0 -translate-y-full translate-z-0",
         }
       : props.position === "bottom"
-      ? {
-          enterFromClass: "opacity-0 scale-75 translate-y-full",
-          enterActiveClass: "transition-all duration-200 ease-out",
-          leaveActiveClass: "transition-all duration-200 ease-out",
-          leaveToClass:
-            "opacity-0 scale-75 translate-x-0 translate-y-full translate-z-0",
-        }
-      : props.position === "left" ||
-        props.position === "topleft" ||
-        props.position === "bottomleft"
-      ? {
-          enterFromClass:
-            "opacity-0 scale-75 -translate-x-full translate-y-0 translate-z-0",
-          enterActiveClass: "transition-all duration-200 ease-out",
-          leaveActiveClass: "transition-all duration-200 ease-out",
-          leaveToClass:
-            "opacity-0 scale-75  -translate-x-full translate-y-0 translate-z-0",
-        }
-      : props.position === "right" ||
-        props.position === "topright" ||
-        props.position === "bottomright"
-      ? {
-          enterFromClass:
-            "opacity-0 scale-75 translate-x-full translate-y-0 translate-z-0",
-          enterActiveClass: "transition-all duration-200 ease-out",
-          leaveActiveClass: "transition-all duration-200 ease-out",
-          leaveToClass:
-            "opacity-0 scale-75 opacity-0 scale-75 translate-x-full translate-y-0 translate-z-0",
-        }
-      : {
-          enterFromClass: "opacity-0 scale-75",
-          enterActiveClass: "transition-all duration-200 ease-out",
-          leaveActiveClass: "transition-all duration-200 ease-out",
-          leaveToClass: "opacity-0 scale-75",
-        };
+        ? {
+            enterFromClass: "opacity-0 scale-75 translate-y-full",
+            enterActiveClass: "transition-all duration-200 ease-out",
+            leaveActiveClass: "transition-all duration-200 ease-out",
+            leaveToClass:
+              "opacity-0 scale-75 translate-x-0 translate-y-full translate-z-0",
+          }
+        : props.position === "left" ||
+            props.position === "topleft" ||
+            props.position === "bottomleft"
+          ? {
+              enterFromClass:
+                "opacity-0 scale-75 -translate-x-full translate-y-0 translate-z-0",
+              enterActiveClass: "transition-all duration-200 ease-out",
+              leaveActiveClass: "transition-all duration-200 ease-out",
+              leaveToClass:
+                "opacity-0 scale-75  -translate-x-full translate-y-0 translate-z-0",
+            }
+          : props.position === "right" ||
+              props.position === "topright" ||
+              props.position === "bottomright"
+            ? {
+                enterFromClass:
+                  "opacity-0 scale-75 translate-x-full translate-y-0 translate-z-0",
+                enterActiveClass: "transition-all duration-200 ease-out",
+                leaveActiveClass: "transition-all duration-200 ease-out",
+                leaveToClass:
+                  "opacity-0 scale-75 opacity-0 scale-75 translate-x-full translate-y-0 translate-z-0",
+              }
+            : {
+                enterFromClass: "opacity-0 scale-75",
+                enterActiveClass: "transition-all duration-200 ease-out",
+                leaveActiveClass: "transition-all duration-200 ease-out",
+                leaveToClass: "opacity-0 scale-75",
+              };
   },
 };

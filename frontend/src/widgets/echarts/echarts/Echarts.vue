@@ -186,7 +186,7 @@ const updateChart = () => {
     ]);
     const bottomRight = myChart.convertToPixel(
       { xAxisIndex: 0, yAxisIndex: 0 },
-      [xMax, yMin]
+      [xMax, yMin],
     );
     const rectWidth = bottomRight[0] - topLeft[0];
     const rectHeight = bottomRight[1] - topLeft[1];
@@ -413,11 +413,21 @@ const handleMouseDown = (event) => {
   });
 
   for (const annotation of props.annotations) {
-    const { mode } = hitTestAnnotation(annotation, mouseX, mouseY);
+    const { mode, inside } = hitTestAnnotation(annotation, mouseX, mouseY);
     if (mode) {
       activeAnnotationKey = annotation.id;
       activeAnnotationMode = mode;
       dragStart = { x: mouseX, y: mouseY };
+      return;
+    }
+    if (inside) {
+      const currentId = store.getters.getSelectedRectangle?.item?.id;
+      store.commit(
+        SET_SELECTED_RECTANGLE,
+        currentId === annotation.id
+          ? null
+          : { item: annotation, report: props.id },
+      );
       return;
     }
   }
@@ -446,16 +456,16 @@ const handleMouseMove = (event) => {
 
   if (activeAnnotationKey && activeAnnotationMode) {
     const ann = props.annotations.find(
-      (annotation) => annotation.id === activeAnnotationKey
+      (annotation) => annotation.id === activeAnnotationKey,
     );
 
     const prevData = myChart.convertFromPixel(
       { xAxisIndex: 0, yAxisIndex: 0 },
-      [dragStart.x, dragStart.y]
+      [dragStart.x, dragStart.y],
     );
     const currData = myChart.convertFromPixel(
       { xAxisIndex: 0, yAxisIndex: 0 },
-      [mouseX, mouseY]
+      [mouseX, mouseY],
     );
     const dx = currData[0] - prevData[0];
     const dy = currData[1] - prevData[1];
@@ -505,7 +515,7 @@ const handleMouseUp = () => {
     isSelecting = false;
     const startData = myChart.convertFromPixel(
       { xAxisIndex: 0, yAxisIndex: 0 },
-      [selectionStart.x, selectionStart.y]
+      [selectionStart.x, selectionStart.y],
     );
     const endData = myChart.convertFromPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [
       selectionEnd.x,
@@ -530,7 +540,7 @@ const handleMouseUp = () => {
           backgroundColor: "rgba(255,99,132,0.25)",
           borderColor: "rgba(255,99,132,1)",
           borderWidth: 1,
-        }
+        },
       );
     }
     updateChart();
@@ -654,7 +664,7 @@ watch(
       zeroBaseline: zeroBaseline.value,
     });
     myChart.setOption(option, { notMerge: true });
-  }
+  },
 );
 
 onMounted(() => {

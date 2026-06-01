@@ -61,7 +61,7 @@
         </Column>
       </DataTable>
     </div>
-    <NotesPanel v-if="notesMode" :notes="allNotes" />
+    <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -71,8 +71,8 @@
           @iconClicked="
             openNewTab(
               links.getSqlQueryLink(
-                store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA
-              )
+                store.getters.getQueryIndex.PERSON.AGE_GENDER_DATA,
+              ),
             )
           "
         />
