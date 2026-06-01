@@ -9,37 +9,39 @@
       :chart-spec="getEChartsOverview"
       :height="totalHeight"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        :value="data"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column field="release_date" header="Date"> </Column>
-        <Column field="domain" header="Domain"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="Records"
-          field="count_records"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          size="small"
+          :value="data"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.count_records
-                  ? formatComma(slotProps.data.count_records)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column field="release_date" header="Date"> </Column>
+          <Column field="domain" header="Domain"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="Records"
+            field="count_records"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.count_records
+                    ? formatComma(slotProps.data.count_records)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
 
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -54,8 +56,8 @@
           @iconClicked="
             openNewTab(
               links.getSqlQueryLink(
-                store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0]
-              )
+                store.getters.getQueryIndex.DOMAIN_SUMMARY.RECORDS_BY_DOMAIN[0],
+              ),
             )
           "
         />

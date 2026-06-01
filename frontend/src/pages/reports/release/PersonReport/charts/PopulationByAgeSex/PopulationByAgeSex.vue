@@ -21,46 +21,48 @@
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="store.getters.getData.personData.AGE_GENDER_DATA"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
-        <Column sortable header="Sex" field="CONCEPT_NAME"> </Column>
-        <Column
-          style="text-align: end"
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="AGE"
-          field="AGE"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="store.getters.getData.personData.AGE_GENDER_DATA"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="# of People"
-          field="COUNT_VALUE"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.COUNT_VALUE
-                  ? formatComma(slotProps.data.COUNT_VALUE)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
+          <Column sortable header="Sex" field="CONCEPT_NAME"> </Column>
+          <Column
+            style="text-align: end"
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="AGE"
+            field="AGE"
+          >
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="# of People"
+            field="COUNT_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.COUNT_VALUE
+                    ? formatComma(slotProps.data.COUNT_VALUE)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">

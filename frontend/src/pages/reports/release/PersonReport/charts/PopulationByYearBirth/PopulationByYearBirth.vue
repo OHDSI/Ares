@@ -18,37 +18,39 @@
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Year of Birth" field="YEAR"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="# of People"
-          field="COUNT_PERSON"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.COUNT_PERSON
-                  ? formatComma(slotProps.data.COUNT_PERSON)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Year of Birth" field="YEAR"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="# of People"
+            field="COUNT_PERSON"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.COUNT_PERSON
+                    ? formatComma(slotProps.data.COUNT_PERSON)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -59,8 +61,8 @@
           @iconClicked="
             openNewTab(
               links.getSqlQueryLink(
-                store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA
-              )
+                store.getters.getQueryIndex.PERSON.BIRTH_YEAR_DATA,
+              ),
             )
           "
         />

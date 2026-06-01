@@ -22,83 +22,91 @@
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        :value="data"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column field="cdm_release_date" header="Release Date">
-          <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="{
-                name: 'dataQuality',
-                query: { tab: 'overview' },
-                params: {
-                  cdm: route.params.cdm,
-                  release: slotProps.data.cdm_release_date.replaceAll('-', ''),
-                },
-              }"
-              :title="slotProps.data.cdm_release_date"
-              >{{ slotProps.data.cdm_release_date }}
-            </router-link>
-          </template>
-        </Column>
-        <Column field="vocabulary_version" header="Vocabulary"> </Column>
-        <Column field="end_timestamp" header="DQ Execution Date"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          field="count_passed"
-          header="# Passed"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          size="small"
+          :value="data"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              <span> {{ slotProps.data.count_passed }}</span>
-            </div>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          field="count_failed"
-          header="# Failed"
-        >
-          <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="{
-                name: 'dataQuality',
-                query: { tab: 'results', FAILED: 'FAIL' },
-                params: {
-                  cdm: route.params.cdm,
-                  release: slotProps.data.cdm_release_date.replaceAll('-', ''),
-                },
-              }"
-              :title="slotProps.data.count_failed"
-              ><span class="flex justify-end">{{
-                slotProps.data.count_failed
-              }}</span>
-            </router-link>
-          </template>
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          field="count_total"
-          header="# Total"
-        >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              <span> {{ slotProps.data.count_total }}</span>
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column field="cdm_release_date" header="Release Date">
+            <template #body="slotProps">
+              <router-link
+                class="text-blue-400 hover:underline"
+                :to="{
+                  name: 'dataQuality',
+                  query: { tab: 'overview' },
+                  params: {
+                    cdm: route.params.cdm,
+                    release: slotProps.data.cdm_release_date.replaceAll(
+                      '-',
+                      '',
+                    ),
+                  },
+                }"
+                :title="slotProps.data.cdm_release_date"
+                >{{ slotProps.data.cdm_release_date }}
+              </router-link>
+            </template>
+          </Column>
+          <Column field="vocabulary_version" header="Vocabulary"> </Column>
+          <Column field="end_timestamp" header="DQ Execution Date"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            field="count_passed"
+            header="# Passed"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                <span> {{ slotProps.data.count_passed }}</span>
+              </div>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            field="count_failed"
+            header="# Failed"
+          >
+            <template #body="slotProps">
+              <router-link
+                class="text-blue-400 hover:underline"
+                :to="{
+                  name: 'dataQuality',
+                  query: { tab: 'results', FAILED: 'FAIL' },
+                  params: {
+                    cdm: route.params.cdm,
+                    release: slotProps.data.cdm_release_date.replaceAll(
+                      '-',
+                      '',
+                    ),
+                  },
+                }"
+                :title="slotProps.data.count_failed"
+                ><span class="flex justify-end">{{
+                  slotProps.data.count_failed
+                }}</span>
+              </router-link>
+            </template>
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            field="count_total"
+            header="# Total"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                <span> {{ slotProps.data.count_total }}</span>
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
 
     <NotesPanel v-if="notesMode" :notes="notes" />
   </Panel>

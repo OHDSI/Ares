@@ -8,30 +8,32 @@
       :data="data"
       :chart-spec="getEChartsOptionSpecDrugTypeStratification"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
-        <Column sortable header="CONCEPT_NAME" field="CONCEPT_NAME"> </Column>
-        <Column
-          style="text-align: end"
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="# Records"
-          field="RECORD_COUNT"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
+          <Column sortable header="CONCEPT_NAME" field="CONCEPT_NAME"> </Column>
+          <Column
+            style="text-align: end"
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="# Records"
+            field="RECORD_COUNT"
+          >
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -42,8 +44,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex.DOMAIN_SUMMARY
-                  .DOMAIN_DRUG_STRATIFICATION
-              )
+                  .DOMAIN_DRUG_STRATIFICATION,
+              ),
             )
           "
         />
@@ -78,7 +80,7 @@ onMounted(() => {
 
 const showTable = ref(false);
 const showChart = computed(
-  () => route.params.domain === "drug_exposure" && data.value
+  () => route.params.domain === "drug_exposure" && data.value,
 );
 
 function toggleTable(mode) {

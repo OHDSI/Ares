@@ -9,31 +9,33 @@
       :height="totalHeight"
       :chart-spec="getEChartsOptionRecordProportionByAgeSexYear"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Sex" field="SERIES_NAME"> </Column>
-        <Column sortable header="Age Decile" field="TRELLIS_NAME"> </Column>
-        <Column sortable header="Year" field="X_CALENDAR_YEAR"> </Column>
-        <Column
-          style="text-align: end"
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="Record Proportion Per 1000"
-          field="Y_PREVALENCE_1000PP"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Sex" field="SERIES_NAME"> </Column>
+          <Column sortable header="Age Decile" field="TRELLIS_NAME"> </Column>
+          <Column sortable header="Year" field="X_CALENDAR_YEAR"> </Column>
+          <Column
+            style="text-align: end"
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="Record Proportion Per 1000"
+            field="Y_PREVALENCE_1000PP"
+          >
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -44,8 +46,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.name.toUpperCase()]
-                  .PREVALENCE_BY_GENDER_AGE_YEAR[0]
-              )
+                  .PREVALENCE_BY_GENDER_AGE_YEAR[0],
+              ),
             )
           "
         />

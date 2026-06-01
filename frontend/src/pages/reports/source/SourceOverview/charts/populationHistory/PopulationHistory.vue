@@ -18,36 +18,38 @@
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        :value="releases"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column field="dqd_execution_date" header="Date"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="Population"
-          field="count_person"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          size="small"
+          :value="releases"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.count_person
-                  ? formatComma(slotProps.data.count_person)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column field="dqd_execution_date" header="Date"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="Population"
+            field="count_person"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.count_person
+                    ? formatComma(slotProps.data.count_person)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
 
     <NotesPanel v-if="notesMode" :notes="notes" />
     <template #footer>
@@ -58,7 +60,7 @@
           tooltip="View Export Query"
           @iconClicked="
             openNewTab(
-              links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0])
+              links.getSqlQueryLink(store.getters.getQueryIndex.CDM_SOURCE[0]),
             )
           "
         />

@@ -8,50 +8,52 @@
       :data="data"
       :chart-spec="getEChartsOptionRecordProportionByMonthNetwork"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Source" field="SOURCE"> </Column>
-
-        <Column sortable header="Date" field="date">
-          <template #body="slotProps">
-            <div>
-              {{
-                slotProps.data.X_CALENDAR_MONTH
-                  ? slotProps.data.X_CALENDAR_MONTH
-                  : "no data"
-              }}
-            </div>
-          </template>
-        </Column>
-
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="RPP1000"
-          field="Y_PREVALENCE_1000PP"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.Y_PREVALENCE_1000PP
-                  ? formatComma(slotProps.data.Y_PREVALENCE_1000PP)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Source" field="SOURCE"> </Column>
+
+          <Column sortable header="Date" field="date">
+            <template #body="slotProps">
+              <div>
+                {{
+                  slotProps.data.X_CALENDAR_MONTH
+                    ? slotProps.data.X_CALENDAR_MONTH
+                    : "no data"
+                }}
+              </div>
+            </template>
+          </Column>
+
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="RPP1000"
+            field="Y_PREVALENCE_1000PP"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.Y_PREVALENCE_1000PP
+                    ? formatComma(slotProps.data.Y_PREVALENCE_1000PP)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
 
     <template #footer>
       <div class="flex flex-row gap-2">
@@ -67,8 +69,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.params.domain.toUpperCase()]
-                  .PREVALENCE_BY_MONTH[0]
-              )
+                  .PREVALENCE_BY_MONTH[0],
+              ),
             )
           "
         />

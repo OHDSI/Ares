@@ -22,55 +22,60 @@
       :annotations="annotations"
       :annotation-mode="annotationsMode"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        :value="data"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column field="cdm_release_date" header="Release Date">
-          <template #body="slotProps">
-            <router-link
-              class="text-blue-400 hover:underline"
-              :to="{
-                name: 'dataQuality',
-                query: { tab: 'overview' },
-                params: {
-                  cdm: route.params.cdm,
-                  release: slotProps.data.cdm_release_date.replaceAll('-', ''),
-                },
-              }"
-              :title="slotProps.data.cdm_release_date"
-              >{{ slotProps.data.cdm_release_date }}
-            </router-link>
-          </template>
-        </Column>
-        <Column field="category" header="Check Category"> </Column>
-        <Column field="dqd_execution_date" header="DQD execution date">
-        </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="Checks Failed"
-          field="count_value"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          size="small"
+          :value="data"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.count_value
-                  ? formatComma(slotProps.data.count_value)
-                  : "No data"
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column field="cdm_release_date" header="Release Date">
+            <template #body="slotProps">
+              <router-link
+                class="text-blue-400 hover:underline"
+                :to="{
+                  name: 'dataQuality',
+                  query: { tab: 'overview' },
+                  params: {
+                    cdm: route.params.cdm,
+                    release: slotProps.data.cdm_release_date.replaceAll(
+                      '-',
+                      '',
+                    ),
+                  },
+                }"
+                :title="slotProps.data.cdm_release_date"
+                >{{ slotProps.data.cdm_release_date }}
+              </router-link>
+            </template>
+          </Column>
+          <Column field="category" header="Check Category"> </Column>
+          <Column field="dqd_execution_date" header="DQD execution date">
+          </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="Checks Failed"
+            field="count_value"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.count_value
+                    ? formatComma(slotProps.data.count_value)
+                    : "No data"
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <NotesPanel v-if="notesMode" :notes="notes" />
   </Panel>
 </template>

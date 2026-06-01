@@ -8,38 +8,41 @@
       :data="data"
       :chart-spec="getEChartsDeathByType"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        removable-sort
-        size="small"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :value="data"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column sortable header="Condition Type" field="CONCEPT_NAME"> </Column>
-        <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
-        <Column
-          :pt="{ headerContent: 'justify-end' }"
-          sortable
-          header="Number of Records"
-          field="COUNT_VALUE"
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          removable-sort
+          size="small"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :value="data"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
         >
-          <template #body="slotProps">
-            <div class="flex justify-end">
-              {{
-                slotProps.data.COUNT_VALUE
-                  ? formatComma(slotProps.data.COUNT_VALUE)
-                  : 0
-              }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+          <Column sortable header="Condition Type" field="CONCEPT_NAME">
+          </Column>
+          <Column sortable header="Concept ID" field="CONCEPT_ID"> </Column>
+          <Column
+            :pt="{ headerContent: 'justify-end' }"
+            sortable
+            header="Number of Records"
+            field="COUNT_VALUE"
+          >
+            <template #body="slotProps">
+              <div class="flex justify-end">
+                {{
+                  slotProps.data.COUNT_VALUE
+                    ? formatComma(slotProps.data.COUNT_VALUE)
+                    : 0
+                }}
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <template #footer>
       <div class="flex flex-row gap-2">
         <ChartActionIcon
@@ -50,8 +53,8 @@
             openNewTab(
               links.getSqlQueryLink(
                 store.getters.getQueryIndex[route.name.toUpperCase()]
-                  .DEATH_BY_TYPE[0]
-              )
+                  .DEATH_BY_TYPE[0],
+              ),
             )
           "
         />

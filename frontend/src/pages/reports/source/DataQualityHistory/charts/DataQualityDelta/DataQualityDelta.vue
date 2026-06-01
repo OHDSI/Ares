@@ -12,24 +12,26 @@
       :data="data"
       :chart-spec="getEChartsDataQualityDelta"
     />
-    <div v-if="showTable" class="p-4">
-      <DataTable
-        :striped-rows="store.getters.getSettings.strippedRows"
-        size="small"
-        :value="data"
-        paginator
-        currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-        :rows="5"
-        :rowsPerPageOptions="[5, 10, 20, 50]"
-      >
-        <Column field="release" header="Release"> </Column>
-        <Column field="NEW" header="New"> </Column>
-        <Column field="EXISTING" header="Existing"> </Column>
-        <Column field="RESOLVED" header="Resolved"> </Column>
-        <Column field="STABLE" header="Stable"> </Column>
-      </DataTable>
-    </div>
+    <CollapseTransition>
+      <div v-if="showTable" class="p-4">
+        <DataTable
+          :striped-rows="store.getters.getSettings.strippedRows"
+          size="small"
+          :value="data"
+          paginator
+          currentPageReportTemplate="{first} to {last} of {totalRecords}"
+          paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+          :rows="5"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
+        >
+          <Column field="release" header="Release"> </Column>
+          <Column field="NEW" header="New"> </Column>
+          <Column field="EXISTING" header="Existing"> </Column>
+          <Column field="RESOLVED" header="Resolved"> </Column>
+          <Column field="STABLE" header="Stable"> </Column>
+        </DataTable>
+      </div>
+    </CollapseTransition>
     <NotesPanel v-if="notesMode" :notes="notes" />
   </Panel>
 </template>
