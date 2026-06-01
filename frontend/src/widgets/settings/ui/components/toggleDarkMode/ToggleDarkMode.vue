@@ -1,8 +1,10 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-base font-medium leading-none">{{ darkMode ? "Dark mode" : "Light mode" }}</p>
-      <p class="text-sm opacity-60 mt-1">Select the color mode</p>
+      <p class="text-base font-medium leading-none">
+        {{ darkMode ? "Dark mode" : "Light mode" }}
+      </p>
+      <p class="setting-desc">Select the color mode</p>
     </div>
     <InputSwitch v-model="darkMode" />
   </div>
@@ -32,4 +34,10 @@ const darkMode = computed({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.setting-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+</style>

@@ -2,7 +2,7 @@
   <div class="flex flex-row items-center justify-between">
     <div>
       <p class="text-base font-medium leading-none">Default notes mode</p>
-      <p class="text-sm opacity-60 mt-1">Open notes panel by default</p>
+      <p class="setting-desc">Open notes panel by default</p>
     </div>
     <InputSwitch v-model="notesMode" />
   </div>
@@ -26,4 +26,10 @@ const notesMode = computed({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.setting-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+</style>

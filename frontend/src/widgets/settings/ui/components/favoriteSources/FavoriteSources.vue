@@ -1,17 +1,21 @@
 <template>
-  <TreeSelect
-    unstyled
-    style="width: 100%"
-    v-model="selectedDefaultSources"
-    :options="getSourceOptions"
-    :meta-key-selection="false"
-    selectionMode="checkbox"
-    @node-select="onNodeSelect"
-    placeholder="Default sources"
-  />
-  <p :class="countLeafSelections === 20 ? 'text-red-600' : ''">
-    Selected sources: {{ countLeafSelections }}/20
-  </p>
+  <div class="fav-wrap">
+    <span class="field-label">Default data sources</span>
+    <p class="field-desc">Pin up to 20 sources that load by default.</p>
+    <TreeSelect
+      unstyled
+      style="width: 100%"
+      v-model="selectedDefaultSources"
+      :options="getSourceOptions"
+      :meta-key-selection="false"
+      selectionMode="checkbox"
+      @node-select="onNodeSelect"
+      placeholder="Select sources…"
+    />
+    <p :class="['count-label', { 'over-limit': countLeafSelections === 20 }]">
+      Selected: {{ countLeafSelections }}/20
+    </p>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -25,7 +29,7 @@ const store = useStore();
 
 const countLeafSelections = computed(() => {
   return Object.keys(selectedDefaultSources.value).filter(
-    (key) => key.split("-")[1]
+    (key) => key.split("-")[1],
   ).length;
 });
 
@@ -84,7 +88,7 @@ const getParsedSelectedSources = computed(() => {
 
 onBeforeMount(() => {
   selectedDefaultSources.value = parseSourceToSelectedAttributes(
-    store.getters.getSettings.defaultSources || {}
+    store.getters.getSettings.defaultSources || {},
   );
 });
 
@@ -93,7 +97,7 @@ function parseSourceToSelectedAttributes(parsedData) {
 
   Object.keys(parsedData).forEach((sourceName) => {
     const sourceIndex = availableSources.value.findIndex(
-      (source) => source.cdm_source_key === sourceName
+      (source) => source.cdm_source_key === sourceName,
     );
 
     // check if exists in available sources
@@ -103,7 +107,7 @@ function parseSourceToSelectedAttributes(parsedData) {
 
       parsedReleases.forEach((releaseName) => {
         const releaseIndex = availableReleases.findIndex(
-          (release) => release.release_id === releaseName
+          (release) => release.release_id === releaseName,
         );
         if (releaseIndex !== -1) {
           const key = `${sourceIndex}-${releaseIndex}`;
@@ -112,7 +116,7 @@ function parseSourceToSelectedAttributes(parsedData) {
       });
 
       const allReleasesChecked = availableReleases.every((release) =>
-        parsedReleases.includes(release.release_id)
+        parsedReleases.includes(release.release_id),
       );
 
       attributes[sourceIndex] = {
@@ -154,4 +158,32 @@ const getSourceOptions = computed(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.fav-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-label {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-text-label);
+}
+
+.field-desc {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.count-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.over-limit {
+  color: #dc2626;
+}
+</style>

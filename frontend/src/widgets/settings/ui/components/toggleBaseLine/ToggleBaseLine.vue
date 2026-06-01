@@ -1,8 +1,12 @@
 <template>
   <div class="flex flex-row items-center justify-between">
     <div>
-      <p class="text-base font-medium leading-none">{{ zeroBaseLine ? "Zero baseline" : "Non-zero baseline" }}</p>
-      <p class="text-sm opacity-60 mt-1">Whether the axis starts from 0 or the lowest value</p>
+      <p class="text-base font-medium leading-none">
+        {{ zeroBaseLine ? "Zero baseline" : "Non-zero baseline" }}
+      </p>
+      <p class="setting-desc">
+        Whether the axis starts from 0 or the lowest value
+      </p>
     </div>
     <InputSwitch v-model="zeroBaseLine" />
   </div>
@@ -32,4 +36,10 @@ const zeroBaseLine = computed({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.setting-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+</style>
