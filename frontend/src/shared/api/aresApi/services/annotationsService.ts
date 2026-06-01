@@ -17,7 +17,7 @@ export const AnnotationsService = {
             chart_ids,
           },
         },
-        {}
+        {},
       );
     },
   },
@@ -38,13 +38,12 @@ export const AnnotationsService = {
             filter,
           },
         },
-        {}
+        {},
       );
     },
   },
   create: {
     post(
-      id: string,
       chartId: string,
       chartName: string,
       reportName: string,
@@ -52,7 +51,7 @@ export const AnnotationsService = {
       conceptId: string,
       coordinates: any,
       metadata: any,
-      body: any
+      body: any,
     ) {
       return apiService(
         {
@@ -64,7 +63,6 @@ export const AnnotationsService = {
             // Authorization: token ? `Bearer ${token}` : null,
           },
           data: {
-            id,
             chartId,
             chartName,
             reportName,
@@ -75,7 +73,7 @@ export const AnnotationsService = {
             body,
           },
         },
-        {}
+        {},
       );
     },
   },
@@ -94,7 +92,7 @@ export const AnnotationsService = {
           //   id,
           // },
         },
-        {}
+        {},
       );
     },
   },
@@ -115,7 +113,7 @@ export const AnnotationsService = {
             body,
           },
         },
-        {}
+        {},
       );
     },
   },

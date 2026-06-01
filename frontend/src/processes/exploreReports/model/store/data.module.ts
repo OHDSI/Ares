@@ -169,10 +169,10 @@ function handleNetworkError(responses, { dispatch }, reportName, isDuckDb) {
 function convertTableToArray(table) {
   const dataTable = [];
   for (const row of table) {
-    let rowData = {};
+    const rowData = {};
     for (const colName in row) {
-      if (row.hasOwnProperty(colName)) {
-        rowData = { ...rowData, [colName]: row[colName] };
+      if (Object.prototype.hasOwnProperty.call(row, colName)) {
+        rowData[colName] = row[colName];
       }
     }
     dataTable.push(rowData);
@@ -182,11 +182,7 @@ function convertTableToArray(table) {
 
 const actions = {
   [RESET_DATA_STORAGE]({ commit }, payload) {
-    if (payload?.skipLoading) {
-      commit(CLEAR_DATA, payload?.skipLoading);
-    } else {
-      commit(CLEAR_DATA);
-    }
+    commit(CLEAR_DATA, payload?.skipLoading);
   },
 
   async [FETCH_FILES]({ commit, dispatch, rootState }, payload) {
@@ -194,22 +190,12 @@ const actions = {
     const reportName = rootState.route.name;
     const path = {
       cdm: {
-        cdm_source_key: payload.params?.cdm
-          ? payload.params?.cdm
-          : rootState.route.params.cdm,
+        cdm_source_key: payload.params?.cdm ?? rootState.route.params.cdm,
       },
-      release: payload.params?.release
-        ? payload.params?.release
-        : rootState.route.params.release,
-      domain: payload.params?.domain
-        ? payload.params?.domain
-        : rootState.route.params.domain,
-      concept: payload.params?.concept
-        ? payload.params?.concept
-        : rootState.route.params.concept,
-      cohortId: payload.params?.cohort_id
-        ? payload.params?.cohort_id
-        : rootState.route.params.cohort_id,
+      release: payload.params?.release ?? rootState.route.params.release,
+      domain: payload.params?.domain ?? rootState.route.params.domain,
+      concept: payload.params?.concept ?? rootState.route.params.concept,
+      cohortId: payload.params?.cohort_id ?? rootState.route.params.cohort_id,
     };
     if (!payload.files) {
       commit(SET_DATA, { data: {} });
@@ -283,66 +269,65 @@ const actions = {
     if (!payload.files) {
       commit(SET_DATA, { data: {} });
       return;
-    } else {
-      const isDuckDb = environment.DUCKDB_ENABLED && payload.duckdb_supported;
+    }
 
-      const reportName = rootState.route.name;
-      const availableSources = rootGetters.getSources;
-      const defaultSources =
-        payload.defaultSources || rootGetters.getSettings.defaultSources;
-      const defaultSourcesToLoad = compareDefaultAvailableSources(
-        availableSources,
-        defaultSources,
-      );
-      const toLoad = defaultSourcesToLoad.length
-        ? defaultSourcesToLoad
-        : availableSources;
-      const promises = payload.files.reduce((obj, file) => {
-        obj[file.name] = toLoad.reduce((filesArray, currentSource) => {
-          const loadedFiles = file.instanceParams.reduce(
-            (array, currentInstance) => {
-              const path = {
-                cdm: currentSource,
-                release: currentSource.releases[0].release_id,
-                domain: currentInstance.domain || rootState.route.params.domain,
-                concept:
-                  currentInstance.concept || rootState.route.params.concept,
-              };
-              const filter = `WHERE DOMAIN == '${path.domain}' AND CONCEPT_ID == ${path.concept}`;
+    const isDuckDb = environment.DUCKDB_ENABLED && payload.duckdb_supported;
 
-              const fetchData =
-                isDuckDb && file.source !== "axios"
-                  ? fetchDuckDBData(file, payload, path, filter)
-                  : fetchAxiosData(file, path);
-              return [...array, fetchData];
-            },
-            [],
-          );
+    const reportName = rootState.route.name;
+    const availableSources = rootGetters.getSources;
+    const defaultSources =
+      payload.defaultSources || rootGetters.getSettings.defaultSources;
+    const defaultSourcesToLoad = compareDefaultAvailableSources(
+      availableSources,
+      defaultSources,
+    );
+    const toLoad = defaultSourcesToLoad.length
+      ? defaultSourcesToLoad
+      : availableSources;
+    const promises = payload.files.reduce((obj, file) => {
+      obj[file.name] = toLoad.reduce((filesArray, currentSource) => {
+        const loadedFiles = file.instanceParams.reduce(
+          (array, currentInstance) => {
+            const path = {
+              cdm: currentSource,
+              release: currentSource.releases[0].release_id,
+              domain: currentInstance.domain || rootState.route.params.domain,
+              concept:
+                currentInstance.concept || rootState.route.params.concept,
+            };
+            const filter = `WHERE DOMAIN == '${path.domain}' AND CONCEPT_ID == ${path.concept}`;
 
-          return [...filesArray, ...loadedFiles];
-        }, []);
+            const fetchData =
+              isDuckDb && file.source !== "axios"
+                ? fetchDuckDBData(file, payload, path, filter)
+                : fetchAxiosData(file, path);
+            return [...array, fetchData];
+          },
+          [],
+        );
 
-        return obj;
-      }, {});
+        return [...filesArray, ...loadedFiles];
+      }, []);
 
-      const data = {};
-      for (const file in promises) {
-        const responses = await Promise.allSettled(promises[file]);
-        data[file] = responses
-          .filter((response) => response.status === "fulfilled")
-          .map((filtered) => ({
-            data: processData(filtered.value?.data, isDuckDb),
-            source: filtered.value?.payload.cdm,
-          }));
+      return obj;
+    }, {});
 
-        //handle network error
-        if (data[file].length === 0 && payload.criticalError) {
-          handleNetworkError(responses, { dispatch }, reportName, isDuckDb);
-        }
+    const data = {};
+    for (const file in promises) {
+      const responses = await Promise.allSettled(promises[file]);
+      data[file] = responses
+        .filter((response) => response.status === "fulfilled")
+        .map((filtered) => ({
+          data: processData(filtered.value?.data, isDuckDb),
+          source: filtered.value?.payload.cdm,
+        }));
+
+      if (data[file].length === 0 && payload.criticalError) {
+        handleNetworkError(responses, { dispatch }, reportName, isDuckDb);
       }
-      if (data) {
-        commitData(data, { dispatch, commit }, reportName);
-      }
+    }
+    if (data) {
+      commitData(data, { dispatch, commit }, reportName);
     }
   },
 
@@ -398,6 +383,7 @@ const actions = {
 
     let data = {};
     for (const file in promises) {
+      if (!data) return;
       const responses = await Promise.allSettled(promises[file]);
       data[file] = responses
         .filter((response) => response.status === "fulfilled")
