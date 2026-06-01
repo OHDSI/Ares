@@ -1,7 +1,7 @@
 import getFilePath from "@/shared/api/axios/files";
 import apiService from "@/shared/api/axios/apiService";
 
-import preprocessing from "./preprocessing";
+import { csvParse } from "@/shared/lib/utils";
 import postprocessing from "./postprocessing";
 
 import { CLEAR_DATA, SET_DATA } from "./mutations.type";
@@ -129,15 +129,10 @@ function commitData(data, { dispatch, commit }, reportName) {
   }
 }
 
-function processData(data, isDuckDb, fileName) {
-  if (isDuckDb) {
-    return convertTableToArray(data);
-  }
-  if (!isDuckDb && preprocessing[fileName]) {
-    return preprocessing[fileName](data);
-  } else {
-    return data;
-  }
+function processData(data, isDuckDb) {
+  if (isDuckDb) return convertTableToArray(data);
+  if (typeof data === "string") return csvParse(data);
+  return data;
 }
 
 function handleNetworkError(responses, { dispatch }, reportName, isDuckDb) {
@@ -259,7 +254,6 @@ const actions = {
           data[fileName] = processData(
             fileData,
             isDuckDb && payload.files[index].source !== "axios",
-            fileName,
           );
         } else {
           if (isRequired) {
@@ -337,11 +331,7 @@ const actions = {
         data[file] = responses
           .filter((response) => response.status === "fulfilled")
           .map((filtered) => ({
-            data: isDuckDb
-              ? convertTableToArray(filtered.value.data)
-              : preprocessing[file]
-                ? preprocessing[file](filtered.value.data)
-                : filtered.value?.data,
+            data: processData(filtered.value?.data, isDuckDb),
             source: filtered.value?.payload.cdm,
           }));
 
@@ -414,7 +404,7 @@ const actions = {
         .map((filtered) => {
           const { data, payload } = filtered.value;
           return {
-            data: processData(data, isDuckDb, file),
+            data: processData(data, isDuckDb),
             release: payload,
           };
         });
