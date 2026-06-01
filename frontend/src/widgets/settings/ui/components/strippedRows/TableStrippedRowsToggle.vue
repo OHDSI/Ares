@@ -2,7 +2,9 @@
   <div class="flex flex-row items-center justify-between">
     <div>
       <p class="text-base font-medium leading-none">Striped rows</p>
-      <p class="text-sm opacity-60 mt-1">Render alternating table rows in different color</p>
+      <p class="setting-desc">
+        Render alternating table rows in different color
+      </p>
     </div>
     <InputSwitch v-model="strippedRows" />
   </div>
@@ -32,4 +34,10 @@ const strippedRows = computed({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.setting-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+</style>

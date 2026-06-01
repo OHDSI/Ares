@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-2">
-    <p class="text-base font-medium">Drilldown view size</p>
+    <span class="field-label">Drilldown view size</span>
     <Dropdown
       v-model="selectedOption"
       :options="options"
@@ -38,4 +38,10 @@ const selectedOption = computed({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.field-label {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--color-text-label);
+}
+</style>

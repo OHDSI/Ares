@@ -2,7 +2,7 @@
   <div class="flex flex-row items-center justify-between">
     <div>
       <p class="text-base font-medium leading-none">Dev tools</p>
-      <p class="text-sm opacity-60 mt-1">Show the developer tools widget</p>
+      <p class="setting-desc">Show the developer tools widget</p>
     </div>
     <InputSwitch v-model="devWidget" />
   </div>
@@ -21,3 +21,11 @@ const devWidget = computed({
   set: (value: boolean) => store.dispatch(TOGGLE_DEV_WIDGET, value),
 });
 </script>
+
+<style scoped>
+.setting-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+</style>
