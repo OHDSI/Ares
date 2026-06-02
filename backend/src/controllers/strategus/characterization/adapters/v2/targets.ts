@@ -377,8 +377,8 @@ export async function getOutcomeDataAvailability({
   });
 
   const sql = `
-    WITH outcomes AS (
-      SELECT unnest(ARRAY[${oidPlaceholders.join(",")}]::int[]) AS outcome_id
+    WITH outcomes(outcome_id) AS (
+      VALUES ${oidPlaceholders.map((p) => `(CAST(${p} AS INT))`).join(",")}
     )
     SELECT
       o.outcome_id,
