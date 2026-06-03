@@ -2,7 +2,8 @@
   <div class="cohort-counts">
     <div class="section results-body">
       <DataTable
-        :value="displayRows"
+        ref="tableRef"
+        :value="filteredRows"
         :striped-rows="store.getters.getSettings.strippedRows"
         removable-sort
         size="small"
@@ -11,54 +12,72 @@
         :rowsPerPageOptions="[10, 20, 50]"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        filterDisplay="row"
-        v-model:filters="filters"
         scrollable
         scrollHeight="flex"
         dataKey="rowKey"
       >
         <Column
           sortable
-          header="Cohort ID"
           field="cohortId"
           style="width: 7rem"
-        />
-        <Column
-          sortable
-          header="Cohort"
-          field="cohortName"
           :showFilterMenu="false"
         >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
+          <template #header>
+            <div class="col-header-with-filter">
+              <span>Cohort ID</span>
+              <FilterInput
+                :filterObj="tableFilters.cohortId"
+                placeholder="Search..."
+              />
+            </div>
           </template>
         </Column>
-        <Column
-          sortable
-          header="Database"
-          field="databaseName"
-          :showFilterMenu="false"
-        >
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText
-              v-model="filterModel.value"
-              @input="filterCallback()"
-              placeholder="Search..."
-              size="small"
-            />
+        <Column sortable field="cohortName" :showFilterMenu="false">
+          <template #header>
+            <div class="col-header-with-filter">
+              <span>Cohort</span>
+              <FilterInput
+                :filterObj="tableFilters.cohortName"
+                placeholder="Search..."
+              />
+            </div>
           </template>
         </Column>
-        <Column sortable header="Subjects" field="cohortSubjects">
+        <Column sortable field="databaseName" :showFilterMenu="false">
+          <template #header>
+            <div class="col-header-with-filter">
+              <span>Database</span>
+              <FilterInput
+                :filterObj="tableFilters.databaseName"
+                placeholder="Search..."
+              />
+            </div>
+          </template>
+        </Column>
+        <Column sortable field="cohortSubjects" :showFilterMenu="false">
+          <template #header>
+            <div class="col-header-with-filter">
+              <span>Subjects</span>
+              <FilterInput
+                :filterObj="tableFilters.cohortSubjects"
+                type="numeric"
+              />
+            </div>
+          </template>
           <template #body="{ data }">{{
             formatComma(data.cohortSubjects)
           }}</template>
         </Column>
-        <Column sortable header="Records" field="cohortEntries">
+        <Column sortable field="cohortEntries" :showFilterMenu="false">
+          <template #header>
+            <div class="col-header-with-filter">
+              <span>Records</span>
+              <FilterInput
+                :filterObj="tableFilters.cohortEntries"
+                type="numeric"
+              />
+            </div>
+          </template>
           <template #body="{ data }">{{
             formatComma(data.cohortEntries)
           }}</template>
@@ -69,11 +88,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import InputText from "primevue/inputtext";
-import { FilterMatchMode } from "primevue/api";
+import FilterInput from "@/pages/strategus/characterization/shared/filterInput";
+import { useTableFilter } from "@/pages/strategus/characterization/shared/useTableFilter";
 import { useStore } from "vuex";
 import { formatComma } from "@/shared/lib/formatters";
 
@@ -82,11 +101,17 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
+const tableRef = ref(null);
 
-const filters = ref({
-  cohortName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  databaseName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+const tableFilters = ref({
+  cohortId: { value: null as string | null, matchMode: "contains" },
+  cohortName: { value: null as string | null, matchMode: "contains" },
+  databaseName: { value: null as string | null, matchMode: "contains" },
+  cohortSubjects: { value: null as string | null, matchMode: "equals" },
+  cohortEntries: { value: null as string | null, matchMode: "equals" },
 });
+
+const noDropdownFilters = ref<Record<string, any>>({});
 
 const displayRows = computed(() =>
   props.rows.map((r, i) => ({
@@ -94,6 +119,17 @@ const displayRows = computed(() =>
     rowKey: `${r.cohortId}-${r.databaseId}-${i}`,
   })),
 );
+
+const { filteredRows, applyNow } = useTableFilter(
+  () => displayRows.value,
+  noDropdownFilters,
+  tableFilters,
+  ref(""),
+  ref({} as Record<string, string>),
+  tableRef,
+);
+
+watch(displayRows, () => applyNow(), { immediate: true });
 </script>
 
 <style scoped>

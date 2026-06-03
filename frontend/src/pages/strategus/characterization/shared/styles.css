@@ -91,7 +91,9 @@
   color: var(--color-text-subtle);
   padding: 4px;
   border-radius: 4px;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .fullscreen-btn:hover {
@@ -108,7 +110,9 @@
 }
 
 .tab-fade-enter-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
 }
 
 .tab-fade-enter-from,
@@ -118,4 +122,26 @@
 
 .tab-fade-enter-from {
   transform: translateY(4px);
+}
+
+.col-header-with-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 12rem;
+}
+
+.col-header-with-filter > span {
+  white-space: nowrap;
+}
+
+.filter-dropdown {
+  width: 100%;
+  font-size: 0.75rem;
+}
+
+.filter-dropdown .p-dropdown-label {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
 }
