@@ -1,84 +1,86 @@
 <template>
   <DataTable
-    :value="props.value"
+    ref="tableRef"
+    :value="filteredRows"
     v-model:selection="localSelection"
     selectionMode="single"
     dataKey="cohortId"
     :paginator="props.value.length > 15"
     :rows="10"
     :rowsPerPageOptions="[10, 15, 25, 50]"
-    filterDisplay="row"
     size="small"
-    v-model:filters="targetFilters"
     :striped-rows="store.getters.getSettings.strippedRows"
     class="target-table"
     removableSort
   >
     <Column
       field="parentName"
-      header="Target"
       sortable
       :showFilterMenu="false"
       style="min-width: 150px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Target</span>
+          <FilterInput
+            :filterObj="tableFilters.parentName"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
       field="cohortName"
-      header="Subset"
       sortable
       :showFilterMenu="false"
       style="min-width: 250px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Subset</span>
+          <FilterInput
+            :filterObj="tableFilters.cohortName"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
       field="cohortId"
-      header="ID"
       sortable
       :showFilterMenu="false"
       style="width: 80px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <InputText
-          v-model="filterModel.value"
-          @input="filterCallback()"
-          placeholder="Search..."
-          size="small"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>ID</span>
+          <FilterInput
+            :filterObj="tableFilters.cohortId"
+            placeholder="Search..."
+          />
+        </div>
       </template>
     </Column>
     <Column
       field="databaseComparator"
-      header="DB Comp"
       sortable
       :showFilterMenu="false"
       style="width: 80px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <MultiSelect
-          v-model="filterModel.value"
-          :options="boolOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Any"
-          size="small"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>DB Comp</span>
+          <Dropdown
+            v-model="dropdownFilters.databaseComparator"
+            :options="boolOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All"
+            showClear
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
       <template #body="{ data }">
         <i
@@ -92,21 +94,24 @@
     </Column>
     <Column
       field="cohortComparator"
-      header="Cohort Comp"
       sortable
       :showFilterMenu="false"
       style="width: 80px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <MultiSelect
-          v-model="filterModel.value"
-          :options="boolOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Any"
-          size="small"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Cohort Comp</span>
+          <Dropdown
+            v-model="dropdownFilters.cohortComparator"
+            :options="boolOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All"
+            showClear
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
       <template #body="{ data }">
         <i
@@ -120,21 +125,24 @@
     </Column>
     <Column
       field="dechalRechal"
-      header="Dechal"
       sortable
       :showFilterMenu="false"
       style="width: 80px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <MultiSelect
-          v-model="filterModel.value"
-          :options="boolOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Any"
-          size="small"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Dechal</span>
+          <Dropdown
+            v-model="dropdownFilters.dechalRechal"
+            :options="boolOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All"
+            showClear
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
       <template #body="{ data }">
         <i
@@ -148,21 +156,24 @@
     </Column>
     <Column
       field="riskFactors"
-      header="Risk Factors"
       sortable
       :showFilterMenu="false"
       style="width: 80px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <MultiSelect
-          v-model="filterModel.value"
-          :options="boolOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Any"
-          size="small"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Risk Factors</span>
+          <Dropdown
+            v-model="dropdownFilters.riskFactors"
+            :options="boolOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All"
+            showClear
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
       <template #body="{ data }">
         <i
@@ -176,21 +187,24 @@
     </Column>
     <Column
       field="timeToEvent"
-      header="TTE"
       sortable
       :showFilterMenu="false"
       style="width: 80px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <MultiSelect
-          v-model="filterModel.value"
-          :options="boolOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Any"
-          size="small"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>TTE</span>
+          <Dropdown
+            v-model="dropdownFilters.timeToEvent"
+            :options="boolOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All"
+            showClear
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
       <template #body="{ data }">
         <i
@@ -204,21 +218,24 @@
     </Column>
     <Column
       field="caseSeries"
-      header="Case Series"
       sortable
       :showFilterMenu="false"
       style="width: 80px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <MultiSelect
-          v-model="filterModel.value"
-          :options="boolOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Any"
-          size="small"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Case Series</span>
+          <Dropdown
+            v-model="dropdownFilters.caseSeries"
+            :options="boolOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All"
+            showClear
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
       <template #body="{ data }">
         <i
@@ -232,21 +249,24 @@
     </Column>
     <Column
       field="cohortIncidence"
-      header="Incidence"
       sortable
       :showFilterMenu="false"
       style="width: 80px"
     >
-      <template #filter="{ filterModel, filterCallback }">
-        <MultiSelect
-          v-model="filterModel.value"
-          :options="boolOptions"
-          optionLabel="label"
-          optionValue="value"
-          placeholder="Any"
-          size="small"
-          @change="filterCallback()"
-        />
+      <template #header>
+        <div class="col-header-with-filter">
+          <span>Incidence</span>
+          <Dropdown
+            v-model="dropdownFilters.cohortIncidence"
+            :options="boolOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All"
+            showClear
+            class="filter-dropdown"
+            @click.stop
+          />
+        </div>
       </template>
       <template #body="{ data }">
         <i
@@ -262,13 +282,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import InputText from "primevue/inputtext";
-import MultiSelect from "primevue/multiselect";
-import { FilterMatchMode } from "primevue/api";
+import Dropdown from "primevue/dropdown";
+import FilterInput from "../../shared/filterInput";
+import { useTableFilter } from "../../shared/useTableFilter";
 
 const props = defineProps<{
   value: any[];
@@ -286,21 +306,59 @@ const localSelection = computed({
   set: (val) => emit("update:selection", val),
 });
 
+const tableRef = ref(null);
+
 const boolOptions = [
   { label: "Yes", value: 1 },
   { label: "No", value: 0 },
 ];
 
-const targetFilters = ref({
-  parentName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  cohortName: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  cohortId: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  databaseComparator: { value: null, matchMode: FilterMatchMode.IN },
-  cohortComparator: { value: null, matchMode: FilterMatchMode.IN },
-  dechalRechal: { value: null, matchMode: FilterMatchMode.IN },
-  riskFactors: { value: null, matchMode: FilterMatchMode.IN },
-  timeToEvent: { value: null, matchMode: FilterMatchMode.IN },
-  caseSeries: { value: null, matchMode: FilterMatchMode.IN },
-  cohortIncidence: { value: null, matchMode: FilterMatchMode.IN },
+const tableFilters = ref({
+  parentName: { value: null as string | null, matchMode: "contains" },
+  cohortName: { value: null as string | null, matchMode: "contains" },
+  cohortId: { value: null as string | null, matchMode: "contains" },
 });
+
+const dropdownFilters = ref<Record<string, any>>({
+  databaseComparator: null,
+  cohortComparator: null,
+  dechalRechal: null,
+  riskFactors: null,
+  timeToEvent: null,
+  caseSeries: null,
+  cohortIncidence: null,
+});
+
+const { filteredRows, applyNow } = useTableFilter(
+  () => props.value,
+  dropdownFilters,
+  tableFilters,
+  ref(""),
+  ref({} as Record<string, string>),
+  tableRef,
+);
+
+watch(
+  () => props.value,
+  () => applyNow(),
+  { immediate: true },
+);
 </script>
+
+<style scoped>
+@import "../../shared/styles.css";
+
+:deep(.filter-dropdown) {
+  height: 1.5rem;
+}
+:deep(.filter-dropdown .p-dropdown-label) {
+  padding: 0.2rem 1.25rem 0.2rem 0.4rem;
+  font-size: 0.72rem;
+}
+:deep(.filter-dropdown .p-dropdown-trigger) {
+  width: 1.5rem;
+}
+:deep(.filter-dropdown .p-dropdown-clear-icon) {
+  right: 1.75rem;
+}
+</style>
