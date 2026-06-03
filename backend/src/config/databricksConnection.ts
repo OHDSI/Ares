@@ -119,44 +119,90 @@ export async function getRunningQueries(): Promise<RunningQuery[]> {
   }));
 }
 
+function isSessionError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  const name = err.constructor.name;
+  // Non-200 HTTP from Databricks (e.g. 400 for expired session). ThriftHttpConnection
+  // throws THTTPException for any non-200; BaseCommand only converts RetryError ->
+  // HiveDriverError, so THTTPException reaches us directly on non-retryable methods.
+  if (name === "THTTPException") return true;
+  // Retry-exhaustion on whitelisted retryable methods (GetOperationStatus etc.) after
+  // 5xx/429. BaseCommand converts RetryError -> HiveDriverError before we see it.
+  // Narrow by message to avoid matching the "operation does not exist" config error.
+  if (name === "HiveDriverError") {
+    return err.message.includes("when connecting to resource");
+  }
+  // Token expiry
+  if (name === "AuthenticationError") return true;
+  return false;
+}
+
 export async function queryDb(
   sql: string,
   params: NamedParams = {},
 ): Promise<Record<string, unknown>[]> {
-  const session = await getSession();
   const { text, values } = toPositional(sql, params);
   const context = queryContext.getStore() ?? null;
   const annotatedSql = context ? `/* ${context} */\n${text}` : text;
-  const startedAt = new Date();
-  const id = ++_queryCounter;
 
-  _runningQueries.set(id, { startedAt, sql: text, context });
+  let usedSession: Promise<DBSQLSession> | null = null;
 
-  let error: string | null = null;
-  try {
-    const operation = await session.executeStatement(annotatedSql, {
-      ordinalParameters: values,
-    });
-    const rows = (await operation.fetchAll()) as Record<string, unknown>[];
-    await operation.close();
-    return rows.map(camelCaseRow);
-  } catch (err) {
-    error = err instanceof Error ? err.message : String(err);
-    throw err;
-  } finally {
-    _runningQueries.delete(id);
-    const durationMs = Date.now() - startedAt.getTime();
-    queryHistory.push({
-      sql: text,
-      startedAt: startedAt.toISOString(),
-      durationMs,
-      error,
-      context,
-    });
-    if (queryHistory.length > HISTORY_MAX) {
-      queryHistory.shift();
-      historyOffset++;
+  async function attempt(): Promise<Record<string, unknown>[]> {
+    usedSession = getSession();
+    const session = await usedSession;
+    const startedAt = new Date();
+    const id = ++_queryCounter;
+    _runningQueries.set(id, { startedAt, sql: text, context });
+    let error: string | null = null;
+    let operation;
+    try {
+      operation = await session.executeStatement(annotatedSql, {
+        ordinalParameters: values,
+      });
+      const rows = (await operation.fetchAll()) as Record<string, unknown>[];
+      return rows.map(camelCaseRow);
+    } catch (err) {
+      error = err instanceof Error ? err.message : String(err);
+      logger.debug("Databricks query error", {
+        errorType: err instanceof Error ? err.constructor.name : typeof err,
+        error,
+      });
+      throw err;
+    } finally {
+      if (operation) await operation.close().catch(() => {});
+      _runningQueries.delete(id);
+      const durationMs = Date.now() - startedAt.getTime();
+      queryHistory.push({
+        sql: text,
+        startedAt: startedAt.toISOString(),
+        durationMs,
+        error,
+        context,
+      });
+      if (queryHistory.length > HISTORY_MAX) {
+        queryHistory.shift();
+        historyOffset++;
+      }
     }
+  }
+
+  try {
+    return await attempt();
+  } catch (err) {
+    if (!isSessionError(err)) throw err;
+    logger.warn("Databricks session error - refreshing and retrying", {
+      errorType: err instanceof Error ? err.constructor.name : typeof err,
+      error: err instanceof Error ? err.message : String(err),
+      context,
+      sql: text,
+    });
+    if (_sessionPromise === usedSession) {
+      const old = _client;
+      _sessionPromise = null;
+      _client = null;
+      if (old) void old.close().catch(() => {});
+    }
+    return attempt();
   }
 }
 
