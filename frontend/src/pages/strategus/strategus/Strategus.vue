@@ -71,6 +71,9 @@
           />
         </Transition>
       </template>
+      <div v-else class="schema-loading">
+        <BlackHoleLoader state="loading" text="Connecting..." size="md" />
+      </div>
     </main>
   </div>
 </template>
@@ -97,6 +100,7 @@ import {
   StrategusService,
   setStrategusSchema,
 } from "@/shared/api/aresApi/services/strategusService";
+import BlackHoleLoader from "@/shared/ui/blackHoleLoader";
 
 const router = useRouter();
 const route = useRoute();
@@ -136,7 +140,7 @@ function onDocMouseMove(e: MouseEvent) {
   }
 }
 const sidebarExpanded = computed(
-  () => sidebarOpen.value || schemaDropdownOpen.value
+  () => sidebarOpen.value || schemaDropdownOpen.value,
 );
 
 function onSchemaHide() {
@@ -284,7 +288,8 @@ watch(currentSection, updateIndicator);
   left: 0;
   width: 3px;
   background: var(--color-text);
-  transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+  transition:
+    top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
@@ -302,7 +307,9 @@ watch(currentSection, updateIndicator);
   font-weight: 500;
   cursor: pointer;
   user-select: none;
-  transition: color 0.15s ease, background-color 0.15s ease,
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
     border-left-color 0.15s ease;
   text-align: left;
   width: 100%;
@@ -348,12 +355,21 @@ watch(currentSection, updateIndicator);
   overflow-x: auto;
 }
 
+.schema-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+}
+
 .section-fade-leave-active {
   transition: opacity 0.1s ease;
 }
 
 .section-fade-enter-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .section-fade-enter-from,
@@ -382,7 +398,8 @@ html:is(.dark, :not(.dark))
   .strategus-content
   *::-webkit-scrollbar-thumb:vertical {
   border-radius: 0;
-  background: linear-gradient(
+  background:
+    linear-gradient(
         to bottom right,
         transparent 49%,
         var(--doc-scrollbar-color) 51%
@@ -401,7 +418,8 @@ html:is(.dark, :not(.dark))
 html:is(.dark, :not(.dark))
   .strategus-content
   *::-webkit-scrollbar-thumb:vertical:hover {
-  background: linear-gradient(
+  background:
+    linear-gradient(
         to bottom right,
         transparent 49%,
         var(--doc-scrollbar-hover) 51%
@@ -421,7 +439,8 @@ html:is(.dark, :not(.dark))
   .strategus-content
   *::-webkit-scrollbar-thumb:horizontal {
   border-radius: 0;
-  background: linear-gradient(
+  background:
+    linear-gradient(
         to bottom right,
         transparent 49%,
         var(--doc-scrollbar-color) 51%
@@ -440,7 +459,8 @@ html:is(.dark, :not(.dark))
 html:is(.dark, :not(.dark))
   .strategus-content
   *::-webkit-scrollbar-thumb:horizontal:hover {
-  background: linear-gradient(
+  background:
+    linear-gradient(
         to bottom right,
         transparent 49%,
         var(--doc-scrollbar-hover) 51%
