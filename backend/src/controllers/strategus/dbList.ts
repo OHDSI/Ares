@@ -6,8 +6,13 @@ export async function getDbList({
 }: {
   listSchema: string;
 }): Promise<DbListEntry[]> {
-  const sql = `SELECT db_name, schema_name, release_date FROM ${listSchema}.db_list ORDER BY release_date DESC`;
-  return queryDb(sql) as unknown as Promise<DbListEntry[]>;
+  try {
+    const sql = `SELECT db_name, schema_name, release_date, protocol_link FROM ${listSchema}.db_list ORDER BY release_date DESC`;
+    return (await queryDb(sql)) as unknown as DbListEntry[];
+  } catch {
+    const sql = `SELECT db_name, schema_name, release_date FROM ${listSchema}.db_list ORDER BY release_date DESC`;
+    return (await queryDb(sql)) as unknown as DbListEntry[];
+  }
 }
 
 export async function getValidSchemaNames({

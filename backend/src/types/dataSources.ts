@@ -18,4 +18,5 @@ export interface DbListEntry {
   dbName: string;
   schemaName: string;
   releaseDate: string;
+  protocolLink: string | null;
 }

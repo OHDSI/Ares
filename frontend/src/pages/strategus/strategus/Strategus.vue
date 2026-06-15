@@ -59,6 +59,25 @@
           <i :class="section.icon" />
           <span class="nav-label">{{ section.label }}</span>
         </button>
+        <a
+          v-if="protocolLink"
+          :href="protocolLink"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="nav-item"
+          v-tooltip.right="{
+            value: 'Study Protocol',
+            disabled: sidebarOpen,
+            pt: {
+              root: '',
+              arrow: { style: {} },
+              text: 'border rounded bg-surface-800 dark:bg-surface-50 text-white dark:text-black text-xs font-normal p-2',
+            },
+          }"
+        >
+          <i class="pi pi-file" />
+          <span class="nav-label">Study Protocol</span>
+        </a>
       </nav>
     </aside>
 
@@ -95,7 +114,6 @@ import Dropdown from "primevue/dropdown";
 import DataSources from "@/pages/strategus/dataSources";
 import Characterization from "@/pages/strategus/characterization/characterization";
 import CohortGenerator from "@/pages/strategus/cohortGenerator";
-import Protocol from "@/pages/strategus/protocol";
 import {
   StrategusService,
   setStrategusSchema,
@@ -150,10 +168,20 @@ function onSchemaHide() {
 }
 
 const dbList = ref<
-  { dbName: string; schemaName: string; releaseDate: string }[]
+  {
+    dbName: string;
+    schemaName: string;
+    releaseDate: string;
+    protocolLink: string | null;
+  }[]
 >([]);
 const selectedSchema = ref<string | undefined>(undefined);
 const schemaReady = ref(false);
+
+const protocolLink = computed(() => {
+  const entry = dbList.value.find((d) => d.schemaName === selectedSchema.value);
+  return entry?.protocolLink || null;
+});
 
 onMounted(() => {
   document.addEventListener("mousemove", onDocMouseMove);
@@ -207,12 +235,6 @@ const sections = [
     icon: "pi pi-users",
     component: markRaw(CohortGenerator),
   },
-  // {
-  //   key: "documents",
-  //   label: "Study Protocol",
-  //   icon: "pi pi-file",
-  //   component: markRaw(Protocol),
-  // },
 ];
 
 const currentSection = computed(() => {
