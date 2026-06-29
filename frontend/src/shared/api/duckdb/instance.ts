@@ -28,6 +28,19 @@ export interface DuckDBHistoryEntry {
   completedAt: Date;
   durationMs: number;
   error: string | null;
+  context: string | null;
+}
+
+function captureRouteLabel(): string | null {
+  try {
+    const hash = window.location.hash.slice(1);
+    const parts = hash.split("/").filter(Boolean);
+    if (!parts.length) return null;
+    const segment = parts[parts.length - 1];
+    return segment.replace(/-/g, " ");
+  } catch {
+    return null;
+  }
 }
 
 /** Currently in-flight queries */
@@ -53,6 +66,7 @@ const _origConnect = db.connect.bind(db);
   const conn = await _origConnect();
   const _origQuery = (conn.query as Function).bind(conn);
   (conn as any).query = async (text: string, ...rest: unknown[]) => {
+    const context = captureRouteLabel();
     const pending: DuckDBPendingQuery = { sql: text, startedAt: new Date() };
     duckdbPendingQueries.push(pending);
     let error: string | null = null;
@@ -71,6 +85,7 @@ const _origConnect = db.connect.bind(db);
         completedAt,
         durationMs: completedAt.getTime() - pending.startedAt.getTime(),
         error,
+        context,
       });
       if (duckdbHistory.length > MAX_HISTORY_ENTRIES) {
         duckdbHistory.splice(0, duckdbHistory.length - MAX_HISTORY_ENTRIES);

@@ -1,4 +1,4 @@
-import { ref, onUnmounted, type Ref } from "vue";
+import { ref, computed, onUnmounted, type Ref } from "vue";
 import {
   duckdbHistory,
   duckdbPendingQueries,
@@ -17,6 +17,10 @@ export function useDuckdbTool(intervalSec: Ref<number>) {
   const duckdbHistoryCursor = ref(0);
   const duckdbLastUpdated = ref("");
   let duckdbTimer: ReturnType<typeof setInterval> | null = null;
+
+  const sortedDuckdbHistory = computed<DuckDBHistoryEntry[]>(() =>
+    [...duckdbHistoryEntries.value].sort((a, b) => b.durationMs - a.durationMs),
+  );
 
   function fetchDuckdbLogs(): void {
     if (duckdbPaused.value) return;
@@ -55,6 +59,7 @@ export function useDuckdbTool(intervalSec: Ref<number>) {
   return {
     duckdbLiveQueries,
     duckdbHistoryEntries,
+    sortedDuckdbHistory,
     duckdbActiveTab,
     duckdbPaused,
     duckdbLastUpdated,

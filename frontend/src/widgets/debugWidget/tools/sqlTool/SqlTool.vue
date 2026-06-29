@@ -120,63 +120,26 @@
         <i class="pi pi-clock panel-empty-icon" />
         <span>No history yet</span>
       </div>
-      <div v-else class="history-groups">
+      <div v-else class="query-list">
         <div
-          v-for="group in groupedHistory"
-          :key="group.context"
-          class="history-group"
+          v-for="q in sortedHistory"
+          :key="entryKey(q)"
+          class="query-item"
+          :class="{
+            'query-item--error': q.error,
+            'query-item--new': newEntryKeys.has(entryKey(q)),
+          }"
         >
-          <button
-            class="group-header"
-            :class="{ 'group-header--unread': unreadGroups.has(group.context) }"
-            @click.stop="toggleGroup(group.context)"
-          >
-            <i
-              class="pi pi-chevron-down group-chevron"
-              :class="{
-                'group-chevron--open': !collapsedGroups.has(group.context),
-              }"
-            />
-            <span class="group-label">{{ group.context }}</span>
-            <span
-              class="tab-count"
-              :class="
-                unreadGroups.has(group.context)
-                  ? 'tab-count--unread'
-                  : 'tab-count--dim'
-              "
-            >
-              {{ group.entries.length }}
+          <div class="query-meta">
+            <span class="meta-time">{{ formatTime(q.startedAt) }}</span>
+            <span class="meta-duration" :class="durationClassMs(q.durationMs)">
+              {{ formatDurationMs(q.durationMs) }}
             </span>
-            <span
-              v-if="unreadGroups.has(group.context)"
-              class="group-unread-dot"
-            />
-          </button>
-          <div v-if="!collapsedGroups.has(group.context)" class="query-list">
-            <div
-              v-for="(q, i) in group.entries"
-              :key="i"
-              class="query-item"
-              :class="{
-                'query-item--error': q.error,
-                'query-item--new': newEntryKeys.has(entryKey(q)),
-              }"
-            >
-              <div class="query-meta">
-                <span class="meta-time">{{ formatTime(q.startedAt) }}</span>
-                <span
-                  class="meta-duration"
-                  :class="durationClassMs(q.durationMs)"
-                >
-                  {{ formatDurationMs(q.durationMs) }}
-                </span>
-                <span v-if="q.error" class="meta-error-badge">error</span>
-              </div>
-              <div v-if="q.error" class="query-error-msg">{{ q.error }}</div>
-              <pre class="query-sql query-sql--pre">{{ formatSql(q.sql) }}</pre>
-            </div>
+            <span v-if="q.context" class="meta-context">{{ q.context }}</span>
+            <span v-if="q.error" class="meta-error-badge">error</span>
           </div>
+          <div v-if="q.error" class="query-error-msg">{{ q.error }}</div>
+          <pre class="query-sql query-sql--pre">{{ formatSql(q.sql) }}</pre>
         </div>
       </div>
     </div>
@@ -219,7 +182,8 @@
 </template>
 
 <script setup lang="ts">
-import { inject, toRef, onMounted } from "vue";
+import { inject, toRef, onMounted, computed } from "vue";
+import { useStore } from "vuex";
 import { Codemirror } from "vue-codemirror";
 import { sql } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -241,8 +205,12 @@ const props = defineProps({
 
 defineEmits(["back", "close"]);
 
+const store = useStore();
 const startDrag = inject("startDrag");
-const sqlExtensions = [sql(), oneDark];
+const sqlExtensions = computed(() => {
+  const dark = store.getters.getSettings?.darkMode;
+  return dark ? [sql(), oneDark] : [sql()];
+});
 
 const {
   activeTab,
@@ -255,14 +223,11 @@ const {
   historyError,
   historyLoading,
   lastHistoryFetch,
-  collapsedGroups,
-  unreadGroups,
   newEntryKeys,
-  groupedHistory,
+  sortedHistory,
   slowSecs,
   slowRunning,
   entryKey,
-  toggleGroup,
   fetchHistory,
   clearHistory,
   triggerSlow,

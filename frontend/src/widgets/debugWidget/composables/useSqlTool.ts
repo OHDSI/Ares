@@ -1,4 +1,4 @@
-import { ref, computed, reactive, watch, onUnmounted, type Ref } from "vue";
+import { ref, computed, watch, onUnmounted, type Ref } from "vue";
 import { StrategusService } from "@/shared/api/aresApi/services/strategusService";
 
 export interface RunningQuery {
@@ -15,11 +15,6 @@ export interface QueryHistoryEntry {
   durationMs: number;
   error?: string | null;
   context?: string | null;
-}
-
-export interface HistoryGroup {
-  context: string;
-  entries: QueryHistoryEntry[];
 }
 
 export function useSqlTool(intervalSec: Ref<number>) {
@@ -64,39 +59,16 @@ export function useSqlTool(intervalSec: Ref<number>) {
   const historyLoading = ref(false);
   const lastHistoryFetch = ref("");
   const historyCursor = ref(0);
-  const collapsedGroups = reactive(new Set<string>());
-  const knownGroups = new Set<string>();
-  const unreadGroups = reactive(new Set<string>());
-  const newEntryKeys = reactive(new Set<string>());
+  const newEntryKeys = new Set<string>();
   let historyTimer: ReturnType<typeof setInterval> | null = null;
 
   function entryKey(entry: QueryHistoryEntry): string {
-    return `${entry.context ?? "Other"}|${entry.startedAt}|${(
-      entry.sql ?? ""
-    ).slice(0, 80)}`;
+    return `${entry.startedAt}|${(entry.sql ?? "").slice(0, 80)}`;
   }
 
-  function toggleGroup(ctx: string): void {
-    if (collapsedGroups.has(ctx)) {
-      collapsedGroups.delete(ctx);
-      unreadGroups.delete(ctx);
-    } else {
-      collapsedGroups.add(ctx);
-    }
-  }
-
-  const groupedHistory = computed<HistoryGroup[]>(() => {
-    const map = new Map<string, QueryHistoryEntry[]>();
-    for (const entry of history.value) {
-      const key = entry.context ?? "Other";
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(entry);
-    }
-    return [...map.entries()].map(([context, entries]) => ({
-      context,
-      entries,
-    }));
-  });
+  const sortedHistory = computed<QueryHistoryEntry[]>(() =>
+    [...history.value].sort((a, b) => b.durationMs - a.durationMs),
+  );
 
   async function fetchHistory(): Promise<void> {
     if (!history.value.length) historyLoading.value = true;
@@ -112,15 +84,9 @@ export function useSqlTool(intervalSec: Ref<number>) {
       if (entries.length) {
         const freshKeys: string[] = [];
         for (const entry of entries) {
-          const ctx = entry.context ?? "Other";
-          if (!knownGroups.has(ctx)) {
-            knownGroups.add(ctx);
-            collapsedGroups.add(ctx);
-          }
           const key = entryKey(entry);
           newEntryKeys.add(key);
           freshKeys.push(key);
-          if (collapsedGroups.has(ctx)) unreadGroups.add(ctx);
         }
         setTimeout(() => {
           for (const k of freshKeys) newEntryKeys.delete(k);
@@ -154,10 +120,7 @@ export function useSqlTool(intervalSec: Ref<number>) {
     history.value = [];
     historyCursor.value = 0;
     lastHistoryFetch.value = "";
-    collapsedGroups.clear();
-    knownGroups.clear();
     newEntryKeys.clear();
-    unreadGroups.clear();
   }
 
   const slowSecs = 30;
@@ -207,14 +170,11 @@ export function useSqlTool(intervalSec: Ref<number>) {
     historyError,
     historyLoading,
     lastHistoryFetch,
-    collapsedGroups,
-    unreadGroups,
     newEntryKeys,
-    groupedHistory,
+    sortedHistory,
     slowSecs,
     slowRunning,
     entryKey,
-    toggleGroup,
     fetchHistory,
     clearHistory,
     triggerSlow,

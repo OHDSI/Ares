@@ -88,7 +88,7 @@
       </div>
       <div v-else class="query-list">
         <div
-          v-for="(entry, i) in duckdbHistoryEntries"
+          v-for="(entry, i) in sortedDuckdbHistory"
           :key="i"
           class="query-item"
           :class="{ 'query-item--error': entry.error }"
@@ -101,6 +101,9 @@
             >
               {{ formatDurationMs(entry.durationMs) }}
             </span>
+            <span v-if="entry.context" class="meta-context">{{
+              entry.context
+            }}</span>
             <span v-if="entry.error" class="meta-error-badge">error</span>
           </div>
           <div v-if="entry.error" class="query-error-msg">
@@ -155,6 +158,7 @@ const startDrag = inject("startDrag");
 const {
   duckdbLiveQueries,
   duckdbHistoryEntries,
+  sortedDuckdbHistory,
   duckdbActiveTab,
   duckdbPaused,
   duckdbLastUpdated,
