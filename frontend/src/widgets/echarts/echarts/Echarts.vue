@@ -19,6 +19,7 @@ import { Annotation } from "@/shared/interfaces/Annotations";
 import * as transform from "echarts-simple-transform";
 import darkTheme from "../themes/dark-theme.json";
 import lightTheme from "../themes/light-theme.json";
+import { setColorScheme, PALETTE } from "@/shared/lib/chartColors";
 
 import {
   ref,
@@ -67,7 +68,33 @@ const darkMode = computed(() => store.getters.getSettings.darkMode);
 const zeroBaseline = computed(() => store.getters.getSettings.zeroBaseline);
 const minMax = computed(() => store.getters.getSettings.minMax);
 
-const colorMode = computed(() => (darkMode.value ? darkTheme : lightTheme));
+const colorScheme = computed(
+  () => store.getters.getSettings.colorScheme ?? "okabe-ito",
+);
+
+const getTheme = () => {
+  const base = darkMode.value ? darkTheme : lightTheme;
+  const palette = darkMode.value
+    ? PALETTE.map((c) => (c === "#000000" ? "#aaaaaa" : c))
+    : [...PALETTE];
+  return {
+    ...base,
+    color: palette,
+    graph: { ...base.graph, color: palette },
+    boxplot: {
+      ...base.boxplot,
+      itemStyle: {
+        ...(base.boxplot?.itemStyle ?? {}),
+        color: palette[0],
+        borderColor: darkMode.value
+          ? "rgba(255,255,255,0.75)"
+          : "rgba(0,0,0,0.65)",
+      },
+    },
+  };
+};
+
+const colorMode = computed(() => getTheme());
 
 const annotationsMode = computed(() => props.annotationMode);
 
@@ -561,6 +588,15 @@ watch(colorMode, () => {
   }
 });
 
+watch(colorScheme, (val) => {
+  setColorScheme(val);
+  disposeChart();
+  initChart();
+  if (annotationsMode.value) {
+    updateChart();
+  }
+});
+
 watch(minMax, () => {
   disposeChart();
   initChart();
@@ -595,7 +631,7 @@ const initChart = function () {
     minMax: minMax.value,
     zeroBaseline: zeroBaseline.value,
   });
-  myChart = echarts.init(chartContainer.value, colorMode.value);
+  myChart = echarts.init(chartContainer.value, getTheme());
   tooltipElement = document.createElement("div");
   tooltipElement.style.position = "absolute";
   tooltipElement.style.padding = "6px 8px";
@@ -671,6 +707,7 @@ onMounted(() => {
   echarts.registerTheme("dark", darkTheme);
   echarts.registerTheme("light", lightTheme);
 
+  setColorScheme(colorScheme.value);
   initChart();
   updateChart();
 });

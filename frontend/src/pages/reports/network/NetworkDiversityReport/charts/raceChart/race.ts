@@ -1,3 +1,5 @@
+import { getRaceConceptColor } from "@/shared/lib/chartColors";
+
 export default function getEChartsRace({ zeroBaseline = false, data = [] }) {
   const totals = {};
   data.forEach((d) => {
@@ -23,6 +25,7 @@ export default function getEChartsRace({ zeroBaseline = false, data = [] }) {
     type: "bar",
     stack: "total",
     label: { show: false },
+    itemStyle: { color: getRaceConceptColor(concept) },
     data: dataSources.map((source) => {
       const percent = groupMap[source][concept] || 0;
       return {
@@ -39,7 +42,7 @@ export default function getEChartsRace({ zeroBaseline = false, data = [] }) {
       trigger: "item",
       formatter: ({ seriesName, data }) =>
         `Ethnicity: ${seriesName}<br/>Percent: ${(data.value * 100).toFixed(
-          2
+          2,
         )}%<br/>Source: ${data.DATA_SOURCE_KEY}`,
     },
     legend: {

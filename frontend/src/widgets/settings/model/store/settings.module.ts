@@ -16,6 +16,7 @@ import {
   CHANGE_DRILLDOWN_VIEW_OPTIONS,
   TOGGLE_PERSIST_COLUMN_SELECTION,
   TOGGLE_DEV_WIDGET,
+  SET_COLOR_SCHEME,
 } from "@/widgets/settings/model/store/actions.type";
 import {
   SET_SETTINGS,
@@ -41,6 +42,7 @@ const state = {
       position: "bottom",
     },
     devWidget: false,
+    colorScheme: "okabe-ito",
   },
   visible: false,
 };
@@ -107,6 +109,9 @@ const actions = {
   },
   [TOGGLE_DEV_WIDGET]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "devWidget" });
+  },
+  [SET_COLOR_SCHEME]({ commit }, payload) {
+    commit(SET_SETTINGS, { data: payload, field: "colorScheme" });
   },
   [UPDATE_DEFAULT_SOURCES]({ commit }, payload) {
     commit(SET_SETTINGS, { data: payload, field: "defaultSources" });

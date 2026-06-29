@@ -1,3 +1,5 @@
+import { getRaceConceptColor } from "@/shared/lib/chartColors";
+
 export default function specRaceECharts({ data = [] }) {
   const total = data.reduce((sum, d) => sum + d.COUNT_VALUE, 0);
   const processed = data.map((d) => ({
@@ -9,12 +11,8 @@ export default function specRaceECharts({ data = [] }) {
     name: d.CONCEPT_NAME,
     type: "bar",
     stack: "total",
-    data: [
-      {
-        value: d.PERCENT,
-        COUNT_VALUE: d.COUNT_VALUE,
-      },
-    ],
+    itemStyle: { color: getRaceConceptColor(d.CONCEPT_NAME) },
+    data: [{ value: d.PERCENT, COUNT_VALUE: d.COUNT_VALUE }],
   }));
 
   return {

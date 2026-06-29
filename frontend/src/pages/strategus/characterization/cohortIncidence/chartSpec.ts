@@ -1,3 +1,5 @@
+import { PALETTE } from "@/shared/lib/chartColors";
+
 const COL_LABEL_H = 30;
 const ROW_LABEL_H = 22;
 const GRID_H = 175;
@@ -27,23 +29,16 @@ export function cohortIncidenceChartSpec({
   const xField = plotXAxis === "Age" ? "ageGroupName" : "startYear";
   const facetCol = [
     ...new Set(
-      data.map((r) => `${r.outcomeName} (clean win ${r.cleanWindow}): ${r.tar}`)
+      data.map(
+        (r) => `${r.outcomeName} (clean win ${r.cleanWindow}): ${r.tar}`,
+      ),
     ),
   ];
   const facetRow = [...new Set(data.map((r) => r.databaseName))];
   const xCategories = [...new Set(data.map((r) => r[xField]))];
   const colorField = plotSexStratify ? "genderName" : "databaseName";
   const colorValues = [...new Set(data.map((r) => r[colorField]))];
-  const colors = [
-    "#4e79a7",
-    "#f28e2b",
-    "#e15759",
-    "#76b7b2",
-    "#59a14f",
-    "#edc948",
-    "#b07aa1",
-    "#ff9da7",
-  ];
+  const colors = PALETTE;
 
   const cols = facetCol.length;
   const rows = facetRow.length;
@@ -105,13 +100,13 @@ export function cohortIncidenceChartSpec({
         (r) =>
           r.databaseName === dbName &&
           `${r.outcomeName} (clean win ${r.cleanWindow}): ${r.tar}` ===
-            facetLabel
+            facetLabel,
       );
       for (let vi = 0; vi < colorValues.length; vi++) {
         const cv = colorValues[vi];
         const points = xCategories.map((x) => {
           const row = facetData.find(
-            (r) => r[xField] === x && r[colorField] === cv
+            (r) => r[xField] === x && r[colorField] === cv,
           );
           return row?.incidenceRateP100py ?? null;
         });

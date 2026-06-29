@@ -1,3 +1,5 @@
+import { classifyDomain, domainColors } from "@/shared/lib/chartColors";
+
 export default function getEChartsDatastrand({ data = [] }) {
   const allowed = [
     "condition occurrence",
@@ -55,6 +57,7 @@ export default function getEChartsDatastrand({ data = [] }) {
       type: "bar",
       stack: "total",
       label: { show: false },
+      itemStyle: { color: domainColors[classifyDomain(dom)] },
       data: dataPoints,
     };
   });

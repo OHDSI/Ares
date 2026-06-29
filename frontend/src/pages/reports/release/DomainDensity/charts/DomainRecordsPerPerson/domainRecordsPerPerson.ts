@@ -1,4 +1,5 @@
 import { kmbFormatter } from "@/shared/lib/formatters";
+import { getCdmDomainColor } from "@/shared/lib/chartColors";
 
 export default function getEChartsOptionDomainRecordsPerPerson({
   zeroBaseline = false,
@@ -57,19 +58,17 @@ export default function getEChartsOptionDomainRecordsPerPerson({
         bottom: "10%",
       },
     ],
-    series: [
-      ...[...new Set(data.map((d) => d.domain))].flatMap((domain) => [
-        {
-          name: domain,
-          type: "line",
-          xAxisIndex: 0,
-          yAxisIndex: 0,
-          showSymbol: false,
-          data: data
-            .filter((d) => d.domain === domain)
-            .map((d) => [d.date, d.records]),
-        },
-      ]),
-    ],
+    series: [...new Set(data.map((d) => d.domain))].map((domain) => ({
+      name: domain,
+      type: "line",
+      xAxisIndex: 0,
+      yAxisIndex: 0,
+      showSymbol: false,
+      itemStyle: { color: getCdmDomainColor(domain) },
+      lineStyle: { color: getCdmDomainColor(domain) },
+      data: data
+        .filter((d) => d.domain === domain)
+        .map((d) => [d.date, d.records]),
+    })),
   };
 }

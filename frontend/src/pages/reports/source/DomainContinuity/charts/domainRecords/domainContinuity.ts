@@ -1,4 +1,5 @@
 import { kmbFormatter } from "@/shared/lib/formatters";
+import { getCdmDomainColor } from "@/shared/lib/chartColors";
 
 export function getEChartsOverview({ zeroBaseline = false, data = [] }) {
   const domains = [...new Set(data.map((d) => d.domain))];
@@ -73,7 +74,8 @@ export function getEChartsOverview({ zeroBaseline = false, data = [] }) {
       yAxisIndex: i,
       symbol: "circle",
       symbolSize: 6,
-      lineStyle: { width: 2 },
+      itemStyle: { color: getCdmDomainColor(domain) },
+      lineStyle: { width: 2, color: getCdmDomainColor(domain) },
       emphasis: {
         focus: "series",
       },

@@ -1,4 +1,5 @@
 import { kmbFormatter } from "@/shared/lib/formatters";
+import { getGenderColor } from "@/shared/lib/chartColors";
 
 export default function getEChartsOptionRecordProportionByAgeSexYear({
   zeroBaseline = false,
@@ -75,7 +76,8 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
         yAxisIndex: i,
         symbol: "circle",
         symbolSize: 5,
-        lineStyle: { width: 1.5 },
+        itemStyle: { color: getGenderColor(sex) },
+        lineStyle: { width: 1.5, color: getGenderColor(sex) },
         tooltip: {
           valueFormatter: (val) => val.toFixed(3),
         },
@@ -95,11 +97,11 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
         const lines = params
           .map(
             (p) =>
-              `${p.marker}${p.seriesName}: ${p.data[1].toFixed(3)} per 1000`
+              `${p.marker}${p.seriesName}: ${p.data[1].toFixed(3)} per 1000`,
           )
           .join("<br/>");
         const trellis = Object.keys(trellisToIndex).find(
-          (k) => trellisToIndex[k] === params[0].axisIndex
+          (k) => trellisToIndex[k] === params[0].axisIndex,
         );
         return `Year: ${year}<br/>${lines}<br/>Age Decile: ${trellis}`;
       },

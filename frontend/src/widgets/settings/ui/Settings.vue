@@ -22,6 +22,7 @@
         <span class="section-label">Charts</span>
         <ToggleBaseLine />
         <ToggleMinMax />
+        <ColorSchemeSelector />
       </div>
 
       <div class="section-card">
@@ -71,6 +72,7 @@ import Sidebar from "primevue/sidebar";
 import FavoriteSources from "@/widgets/settings/ui/components/favoriteSources";
 import DrillDownViewOptions from "@/widgets/settings/ui/components/DrillDownViewOptions";
 import ToggleDevWidget from "@/widgets/settings/ui/components/toggleDevWidget";
+import ColorSchemeSelector from "@/widgets/settings/ui/components/colorScheme";
 
 const store = useStore();
 

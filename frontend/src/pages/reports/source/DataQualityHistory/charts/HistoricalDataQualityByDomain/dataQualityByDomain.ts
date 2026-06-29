@@ -1,3 +1,5 @@
+import { classifyDomain, domainColors } from "@/shared/lib/chartColors";
+
 export default function getEChartsDataQualityResultsByDomain({
   zeroBaseline = false,
   data = [],
@@ -17,6 +19,7 @@ export default function getEChartsDataQualityResultsByDomain({
     const entries = Object.keys(dateMap)
       .map((dt) => [dt, dateMap[dt]])
       .sort((a, b) => new Date(a[0]) - new Date(b[0]));
+    const color = domainColors[classifyDomain(domain)];
     return {
       name: domain,
       type: "line",
@@ -24,6 +27,8 @@ export default function getEChartsDataQualityResultsByDomain({
       showSymbol: true,
       symbol: "circle",
       symbolSize: 4,
+      itemStyle: { color },
+      lineStyle: { color },
     };
   });
 

@@ -1,4 +1,5 @@
 import { kmbFormatter } from "@/shared/lib/formatters";
+import { genderColors } from "@/shared/lib/chartColors";
 
 export default function getEChartsOptionAgeSex({
   zeroBaseline = false,
@@ -98,19 +99,15 @@ export default function getEChartsOptionAgeSex({
         name: "Male",
         type: "bar",
         datasetId: "maleFiltered",
-        encode: {
-          x: "AGE",
-          y: "COUNT_VALUE",
-        },
+        encode: { x: "AGE", y: "COUNT_VALUE" },
+        itemStyle: { color: genderColors.Male },
       },
       {
         name: "Female",
         type: "bar",
         datasetId: "femaleFiltered",
-        encode: {
-          x: "AGE",
-          y: "COUNT_VALUE",
-        },
+        encode: { x: "AGE", y: "COUNT_VALUE" },
+        itemStyle: { color: genderColors.Female },
       },
     ],
   };

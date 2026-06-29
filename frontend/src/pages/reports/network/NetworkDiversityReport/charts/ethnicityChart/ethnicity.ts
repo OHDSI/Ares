@@ -1,3 +1,5 @@
+import { getEthnicityConceptColor } from "@/shared/lib/chartColors";
+
 export default function getEChartsEthnicity({
   zeroBaseline = false,
   data = [],
@@ -26,6 +28,7 @@ export default function getEChartsEthnicity({
     type: "bar",
     stack: "total",
     label: { show: false },
+    itemStyle: { color: getEthnicityConceptColor(concept) },
     data: dataSources.map((source) => {
       const percent = groupMap[source][concept] || 0;
       return {
@@ -42,7 +45,7 @@ export default function getEChartsEthnicity({
       trigger: "item",
       formatter: ({ seriesName, data }) =>
         `Ethnicity: ${seriesName}<br/>Percent: ${(data.value * 100).toFixed(
-          2
+          2,
         )}%<br/>Source: ${data.DATA_SOURCE_KEY}`,
     },
     legend: {

@@ -1,3 +1,5 @@
+import { dqCategoryColors } from "@/shared/lib/chartColors";
+
 export default function getEChartsDataQualityResultsByCategory({
   zeroBaseline = false,
   data = [],
@@ -24,6 +26,12 @@ export default function getEChartsDataQualityResultsByCategory({
       showSymbol: true,
       symbol: "circle",
       symbolSize: 4,
+      ...(dqCategoryColors[cat]
+        ? {
+            itemStyle: { color: dqCategoryColors[cat] },
+            lineStyle: { color: dqCategoryColors[cat] },
+          }
+        : {}),
     };
   });
 

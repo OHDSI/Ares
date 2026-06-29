@@ -9,10 +9,6 @@ export default function getEChartsOptionYearOfBirth({
       trigger: "axis",
       axisPointer: { type: "shadow" },
     },
-    legend: {
-      top: "top",
-      data: ["Male", "Female"],
-    },
     grid: {
       left: 50,
       right: 20,
