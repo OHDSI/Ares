@@ -644,7 +644,9 @@ const router = useRouter();
 
 const checks = ref(store.getters.getData.checkResults);
 
-const extensions = [sql(), oneDark];
+const extensions = computed(() =>
+  store.getters.getSettings?.darkMode ? [sql(), oneDark] : [sql()],
+);
 
 //filter field options
 const statusOptions = computed(() => {
@@ -890,8 +892,8 @@ const filterParams = computed(function () {
           ...acc,
           [key]: route.query[key],
         }),
-        {}
-      )
+        {},
+      ),
   );
 });
 
