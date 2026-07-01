@@ -46,16 +46,7 @@
         </Button>
       </Tooltip>
 
-      <Tooltip text="Network Overview">
-        <Button
-          severity="secondary"
-          text
-          :class="['nav-btn']"
-          @click="router.push('/network/overview')"
-        >
-          <svg-icon type="mdi" :path="mdiDatabase" />
-        </Button>
-      </Tooltip>
+      <div class="nav-divider" />
 
       <Tooltip text="Home">
         <Button
@@ -65,6 +56,17 @@
           @click="router.push('/')"
         >
           <img :class="iconClass" :src="logo" />
+        </Button>
+      </Tooltip>
+
+      <Tooltip text="Network Overview">
+        <Button
+          severity="secondary"
+          text
+          :class="['nav-btn']"
+          @click="router.push('/network/overview')"
+        >
+          <svg-icon type="mdi" :path="mdiDatabase" />
         </Button>
       </Tooltip>
 
@@ -122,7 +124,7 @@ const route = useRoute();
 const darkMode = computed(() => store.getters.getSettings.darkMode);
 
 const iconClass = computed((): string =>
-  darkMode.value ? "darkmode" : "lightmode"
+  darkMode.value ? "darkmode" : "lightmode",
 );
 const toggleSettings = function (): void {
   store.commit(SET_VISIBILITY, !store.getters.getVisibility);
@@ -204,6 +206,13 @@ const toggleSettings = function (): void {
 :deep(.nav-btn img) {
   width: 17px;
   height: 17px;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--color-border-subtle);
+  flex-shrink: 0;
 }
 
 .lightmode {
