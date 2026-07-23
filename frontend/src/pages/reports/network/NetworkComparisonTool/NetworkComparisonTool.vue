@@ -3,194 +3,157 @@
     <Panel header="Network Comparison Tool">
       <div class="flex flex-col gap-5 py-4 px-4 min-h-[630px]">
         <div class="flex flex-row gap-5">
-          <InputGroup class="flex-grow" unstyled>
-            <InputGroupAddon>
-              <i class="pi pi-search"></i>
-            </InputGroupAddon>
-            <InputText
-              class="rounded-r-lg"
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium">Sources</label>
+            <TreeSelect
               unstyled
-              v-model="search"
-              placeholder="Search in Table"
+              style="max-width: 200px"
+              v-model="selectedFilterAttributes"
+              :options="getSourceOptions"
+              :meta-key-selection="false"
+              selectionMode="checkbox"
+              placeholder="Select Sources"
             />
-          </InputGroup>
-          <TreeSelect
-            unstyled
-            style="max-width: 200px"
-            v-model="selectedFilterAttributes"
-            :options="getSourceOptions"
-            :meta-key-selection="false"
-            selectionMode="checkbox"
-            placeholder="Select Sources"
-          />
-          <Dropdown
-            option-label="name"
-            option-value="value"
-            @update:modelValue="changeSelectedReport"
-            :model-value="selectedReport"
-            :options="reports"
-            placeholder="Select report"
-          ></Dropdown>
-          <Dropdown
-            v-if="availableOptions"
-            placeholder="Select domain"
-            option-label="name"
-            option-value="value"
-            @update:modelValue="changeSelectedDomain"
-            :model-value="selectedDomain"
-            :options="availableOptions"
-          ></Dropdown>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium">Report</label>
+            <Dropdown
+              option-label="name"
+              option-value="value"
+              @update:modelValue="changeSelectedReport"
+              :model-value="selectedReport"
+              :options="reports"
+              placeholder="Select report"
+            ></Dropdown>
+          </div>
+          <div v-if="availableOptions" class="flex flex-col gap-1">
+            <label class="text-sm font-medium">Domain</label>
+            <Dropdown
+              placeholder="Select domain"
+              option-label="name"
+              option-value="value"
+              @update:modelValue="changeSelectedDomain"
+              :model-value="selectedDomain"
+              :options="availableOptions"
+            ></Dropdown>
+          </div>
+          <div v-if="sources.length" class="flex flex-col gap-1">
+            <label class="text-sm font-medium">Reference</label>
+            <Dropdown
+              v-model="referenceKey"
+              showClear
+              option-label="name"
+              option-value="value"
+              :options="referenceOptions"
+              placeholder="None"
+            ></Dropdown>
+          </div>
         </div>
-        <div class="flex flex-col gap-5" v-if="Object.keys(dataSources).length">
-          <div ref="tableContainer" class="overflow-x-scroll table-container">
+        <div
+          v-if="dataLoaderState !== 'idle'"
+          class="flex justify-center h-[500px] items-center"
+        >
+          <BlackHoleLoader
+            :escalate="true"
+            text="Loading comparison data..."
+            size="lg"
+            :state="dataLoaderState"
+          />
+        </div>
+        <div
+          v-else-if="Object.keys(dataSources).length"
+          class="flex flex-col gap-8"
+        >
+          <div v-if="activeDescriptor.kpis?.length" class="flex flex-col gap-2">
+            <h3 class="text-lg font-medium">Summary</h3>
             <table>
               <thead>
                 <tr>
+                  <th class="rowNameCol">Metric</th>
                   <th
-                    class="rowNameCol cursor-pointer"
-                    :class="{ scrolled: isScrolled }"
-                    rowspan="2"
-                    @click="handleSort('rowHeader')"
-                  >
-                    <div class="flex items-center gap-2">
-                      {{ selectedConfig.rowHeader.name }}
-                      <span
-                        v-if="sortConfig.field === 'rowHeader'"
-                        class="sort-indicator active"
-                      >
-                        {{ sortConfig.direction === "asc" ? "▲" : "▼" }}
-                      </span>
-                      <span v-else class="sort-indicator inactive">⇅</span>
-                    </div>
-                  </th>
-                  <th
-                    class="sourceGroup"
+                    class="text-right sourceGroup"
+                    :class="{
+                      'reference-border-x reference-header':
+                        source === referenceKey,
+                    }"
                     v-for="source in sources"
-                    :colspan="selectedConfig.group.children.length"
                     :key="source"
                   >
-                    <router-link
-                      class="text-blue-400 hover:underline"
-                      :to="getIndexTableRoute(source)"
-                      >{{ source }}
-                    </router-link>
-                  </th>
-                </tr>
-                <tr>
-                  <template v-for="source in sources" :key="source">
-                    <th
-                      class="text-right sourceGroup"
-                      :class="{ 'cursor-pointer': child.sortable }"
-                      v-for="child in selectedConfig.group.children"
-                      :key="child.name"
-                      @click="
-                        child.sortable ? handleSort(child.value, source) : null
-                      "
+                    {{ source }}
+                    <span
+                      v-if="source === referenceKey"
+                      class="ml-1 text-xs font-medium text-blue-500 dark:text-blue-400"
+                      >(reference)</span
                     >
-                      <div class="flex items-center justify-end gap-2">
-                        {{ child.name }}
-                        <span
-                          v-if="
-                            child.sortable &&
-                            sortConfig.field === child.value &&
-                            sortConfig.source === source
-                          "
-                          class="sort-indicator active"
-                        >
-                          {{ sortConfig.direction === "asc" ? "▲" : "▼" }}
-                        </span>
-                        <span
-                          v-else-if="child.sortable"
-                          class="sort-indicator inactive"
-                        >
-                          ⇅
-                        </span>
-                      </div>
-                    </th>
-                  </template>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="(rowName, index) in slicedArray"
-                  :key="rowName"
-                  :class="
-                    !(index % 2) && stripedRows
-                      ? 'dark:bg-surface-650 bg-surface-50'
-                      : ''
-                  "
-                >
-                  <td :class="{ scrolled: isScrolled }" class="rowNameCol">
-                    <a
-                      v-if="selectedConfig.showDrillDown"
-                      class="cursor-pointer"
-                      @click="loadDrilldown(rowName)"
-                    >
-                      {{ rowName[selectedConfig.rowHeader.value] }}
-                    </a>
-                    <span v-else>
-                      {{ rowName[selectedConfig.rowHeader.value] }}
-                    </span>
+                <tr v-for="kpi in activeDescriptor.kpis" :key="kpi.value">
+                  <td class="rowNameCol">{{ kpi.name }}</td>
+                  <td
+                    v-for="source in sources"
+                    :key="source"
+                    :class="`text-right ${formatKpiCell(source, kpi).className} ${
+                      source === referenceKey ? 'reference-border-x' : ''
+                    }`"
+                  >
+                    {{ formatKpiCell(source, kpi).display }}
                   </td>
-                  <template v-for="source in sources" :key="source">
-                    <td
-                      :class="`text-right ${
-                        index === 0
-                          ? 'border-l border-surface-100'
-                          : 'border-r border-surface-100'
-                      }`"
-                      v-for="(child, index) in selectedConfig.group.children"
-                      :key="child.value"
-                    >
-                      <router-link
-                        v-if="
-                          child.link &&
-                          getSourceData(source, rowName)[selectedConfig.rowId]
-                        "
-                        class="text-blue-400 hover:underline"
-                        :to="
-                          getDrilldownRoute(
-                            source,
-                            getSourceData(source, rowName)[selectedConfig.rowId]
-                          )
-                        "
-                        >{{
-                          getSourceData(source, rowName)[child.value]
-                            ? child.processingFunction
-                              ? child.processingFunction(
-                                  getSourceData(source, rowName)[child.value]
-                                )
-                              : getSourceData(source, rowName)[child.value]
-                            : "N/A"
-                        }}
-                      </router-link>
-                      <span v-else>
-                        {{
-                          getSourceData(source, rowName)[child.value]
-                            ? child.processingFunction
-                              ? child.processingFunction(
-                                  getSourceData(source, rowName)[child.value]
-                                )
-                              : getSourceData(source, rowName)[child.value]
-                            : "N/A"
-                        }}
-                      </span>
-                    </td>
-                  </template>
                 </tr>
               </tbody>
             </table>
           </div>
-          <Paginator
-            v-model:first="first"
-            :rows="step"
-            :totalRecords="sortedAndFilteredResults.length"
-            template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-          />
+          <div
+            v-for="panel in activeDescriptor.panels"
+            :key="`${selectedReport}-${selectedDomain}-${panel.name}`"
+            class="flex flex-col gap-2"
+          >
+            <h3
+              v-if="activeDescriptor.panels.length > 1"
+              class="text-lg font-medium"
+            >
+              {{ panel.name }}
+            </h3>
+            <ComparisonPanelTable
+              v-if="panel.kind === 'table'"
+              :panel="panel"
+              :data-sources="dataSources"
+              :sources="sources"
+              :reference-key="referenceKey"
+              :get-drilldown-route="getDrilldownRoute"
+              :get-index-table-route="getIndexTableRoute"
+              @drilldown="loadDrilldown"
+            />
+            <ComparisonOverlayChart
+              v-else-if="panel.kind === 'overlay-chart'"
+              :panel="panel"
+              :data-sources="dataSources"
+              :sources="sources"
+            />
+            <SmallMultiplesGrid
+              v-else-if="panel.kind === 'small-multiples'"
+              :panel="panel"
+              :data-sources="dataSources"
+              :sources="sources"
+              :reference-key="referenceKey"
+            />
+          </div>
         </div>
         <div v-else class="flex justify-center h-[500px] items-center text-2xl">
-          Add at least one data source to display the results
+          {{
+            hasSelectedSources && Object.keys(sourceErrors).length
+              ? "All selected sources failed to load for this report"
+              : "Add at least one data source to display the results"
+          }}
         </div>
+        <Message
+          v-if="Object.keys(sourceErrors).length"
+          severity="warn"
+          :closable="false"
+        >
+          {{ sourceErrorSummary }}
+        </Message>
       </div>
     </Panel>
 
@@ -231,9 +194,9 @@
 
 <script setup lang="ts">
 import Panel from "primevue/panel";
-import Paginator from "primevue/paginator";
 import Dropdown from "primevue/dropdown";
 import Sidebar from "primevue/sidebar";
+import Message from "primevue/message";
 
 import { useStore } from "vuex";
 import { FETCH_MULTIPLE_FILES_BY_SOURCE } from "@/processes/exploreReports/model/store/actions.type";
@@ -242,16 +205,13 @@ import getFilePath from "@/shared/api/axios/files";
 import getDuckDBFilePath from "@/shared/api/duckdb/files";
 import db from "@/shared/api/duckdb/instance";
 import { csvParse } from "@/shared/lib/utils";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import {
   COHORT_INDEX,
   CONCEPT,
   COST_DOMAIN_SUMMARY,
   DOMAIN_SUMMARY,
 } from "@/shared/config/files";
-import InputText from "primevue/inputtext";
-import InputGroup from "primevue/inputgroup";
-import InputGroupAddon from "primevue/inputgroupaddon";
 import { useRoute, useRouter } from "vue-router";
 import TreeSelect from "primevue/treeselect";
 import NetworkConceptReport from "./conceptDrilldown";
@@ -260,32 +220,35 @@ import getDuckDBTables from "@/shared/api/duckdb/conceptTables";
 import AnimatedLogo from "@/shared/assets/AnimatedLogo.vue";
 import concept from "@/processes/exploreReports/model/store/postprocessing/conceptReport";
 import BlackHoleLoader from "@/shared/ui/blackHoleLoader";
-import { formatComma, formatPercent } from "@/shared/lib/formatters";
+import ComparisonPanelTable from "./ComparisonPanelTable.vue";
+import ComparisonOverlayChart from "./ComparisonOverlayChart.vue";
+import SmallMultiplesGrid from "./charts/SmallMultiplesGrid.vue";
+import {
+  comparisonRegistry,
+  getComparableReports,
+  postprocessingRegistry,
+} from "@/processes/exploreReports/config/viewRegistry";
+import {
+  computeDelta,
+  deltaColor,
+  formatDeltaPercent,
+  formatDeltaPoints,
+} from "./lib/delta";
 const route = useRoute();
 const store = useStore();
 const router = useRouter();
 
-const first = ref(0);
-const search = ref(null);
-const step = ref(10);
-
 const conceptData = ref(null);
 const visible = ref(false);
 const drilldownLoaderState = ref("idle");
-
-const sortConfig = ref({
-  field: null,
-  direction: "asc",
-  source: null,
-});
+const dataLoaderState = ref("idle");
 
 const drillDownViewOption = computed(
-  () => store.getters.getSettings.drillDownViewOptions
+  () => store.getters.getSettings.drillDownViewOptions,
 );
 
 const changeSelectedReport = function (val) {
   router.replace({ name: route.name });
-  sortConfig.value = { field: null, direction: "asc", source: null };
   selectedReport.value = val;
 };
 
@@ -334,14 +297,19 @@ watch(getParsedSelectedSources, async () => {
   const currentSources = new Set(
     Object.keys(getParsedSelectedSources.value).flatMap((source) =>
       getParsedSelectedSources.value[source].map(
-        (release) => `${source}-${release}`
-      )
-    )
+        (release) => `${source}-${release}`,
+      ),
+    ),
   );
 
   Object.keys(dataSources.value).forEach((key) => {
     if (!currentSources.has(key)) {
       delete dataSources.value[key];
+    }
+  });
+  Object.keys(sourceErrors.value).forEach((key) => {
+    if (!currentSources.has(key)) {
+      delete sourceErrors.value[key];
     }
   });
 
@@ -354,152 +322,56 @@ watch(getParsedSelectedSources, async () => {
     });
   });
 
-  const results = await Promise.all(
-    toLoad.map(({ source, release }) =>
-      loadData(source, release, selectedDomain.value)
-    )
-  );
-
-  results.forEach(([key, data]) => {
-    dataSources.value[key] = data;
-  });
+  await loadSourcesSafely(toLoad);
 });
 
-const stripedRows = computed(() => {
-  return store.getters.getSettings.strippedRows;
-});
-
-const selectedConfig = computed(() => {
-  return reportColumnNames[selectedReport.value];
-});
+const activeDescriptor = computed(
+  () => comparisonRegistry[selectedReport.value],
+);
 
 const availableSources = store.getters.getSources;
 const dataSources = ref({});
-const getSourceData = (source, rowName) => {
-  return (
-    dataSources.value[source].find(
-      (item) =>
-        item[selectedConfig.value.rowHeader.value] ===
-        rowName[selectedConfig.value.rowHeader.value]
-    ) || {}
-  );
-};
-const sources = computed(() => Object.keys(dataSources.value));
+const sourceErrors = ref<Record<string, string>>({});
 
-const rowNames = computed(() => {
-  const uniqueMap = new Map();
-  Object.values(dataSources.value)
-    .flat()
-    .forEach((item) => {
-      const key = item[selectedConfig.value.rowHeader.value];
-      if (!uniqueMap.has(key)) {
-        uniqueMap.set(key, item);
-      }
-    });
-  return Array.from(uniqueMap.values());
+const sourceErrorSummary = computed(() => {
+  const byReason = new Map<string, string[]>();
+  Object.entries(sourceErrors.value).forEach(([key, message]) => {
+    if (!byReason.has(message)) byReason.set(message, []);
+    byReason.get(message)!.push(key);
+  });
+
+  return Array.from(byReason.entries())
+    .map(([message, keys]) => `${message}: ${keys.join(", ")}`)
+    .join("; ");
 });
 
-const filteredResults = computed(() => {
-  if (search.value && search.value.length) {
-    return rowNames.value.filter((val) =>
-      val[selectedConfig.value.rowHeader.value]
-        .toLowerCase()
-        .includes(search.value.toLowerCase())
-    );
-  } else {
-    return rowNames.value;
+const sources = computed(() => {
+  const keys = Object.keys(dataSources.value);
+  if (!referenceKey.value || !keys.includes(referenceKey.value)) {
+    return keys;
+  }
+  return [
+    referenceKey.value,
+    ...keys.filter((key) => key !== referenceKey.value),
+  ];
+});
+const hasSelectedSources = computed(() =>
+  Object.values(getParsedSelectedSources.value).some(
+    (releases: string[]) => releases.length,
+  ),
+);
+
+const referenceKey = ref(null);
+
+watch(sources, (newSources) => {
+  if (referenceKey.value && !newSources.includes(referenceKey.value)) {
+    referenceKey.value = null;
   }
 });
 
-const handleSort = (field: string, source: string | null = null) => {
-  first.value = 0;
-
-  if (field === "rowHeader") {
-    if (
-      sortConfig.value.field === "rowHeader" &&
-      sortConfig.value.source === null
-    ) {
-      if (sortConfig.value.direction === "asc") {
-        sortConfig.value.direction = "desc";
-      } else if (sortConfig.value.direction === "desc") {
-        sortConfig.value = { field: null, direction: "asc", source: null };
-      }
-    } else {
-      sortConfig.value = { field: "rowHeader", direction: "asc", source: null };
-    }
-  } else {
-    if (
-      sortConfig.value.field === field &&
-      sortConfig.value.source === source
-    ) {
-      if (sortConfig.value.direction === "asc") {
-        sortConfig.value.direction = "desc";
-      } else if (sortConfig.value.direction === "desc") {
-        sortConfig.value = { field: null, direction: "asc", source: null };
-      }
-    } else {
-      sortConfig.value = { field, direction: "asc", source };
-    }
-  }
-};
-
-const sortedAndFilteredResults = computed(() => {
-  const results = [...filteredResults.value];
-
-  if (sortConfig.value.field) {
-    results.sort((a, b) => {
-      let aValue, bValue;
-
-      if (sortConfig.value.field === "rowHeader") {
-        aValue = a[selectedConfig.value.rowHeader.value];
-        bValue = b[selectedConfig.value.rowHeader.value];
-      } else if (sortConfig.value.source) {
-        const aData = getSourceData(sortConfig.value.source, a);
-        const bData = getSourceData(sortConfig.value.source, b);
-        aValue = aData[sortConfig.value.field];
-        bValue = bData[sortConfig.value.field];
-      }
-
-      const aIsEmpty =
-        aValue === null ||
-        aValue === undefined ||
-        aValue === "N/A" ||
-        aValue === "";
-      const bIsEmpty =
-        bValue === null ||
-        bValue === undefined ||
-        bValue === "N/A" ||
-        bValue === "";
-
-      if (aIsEmpty && bIsEmpty) return 0;
-      if (aIsEmpty) return 1;
-      if (bIsEmpty) return -1;
-
-      const aNum = Number(aValue);
-      const bNum = Number(bValue);
-
-      let comparison = 0;
-
-      if (!isNaN(aNum) && !isNaN(bNum)) {
-        comparison = aNum - bNum;
-      } else if (typeof aValue === "string" && typeof bValue === "string") {
-        comparison = aValue.localeCompare(bValue);
-      } else {
-        comparison = String(aValue).localeCompare(String(bValue));
-      }
-
-      return sortConfig.value.direction === "asc" ? comparison : -comparison;
-    });
-  }
-
-  return results;
-});
-
-const slicedArray = computed(() => {
-  const start = first.value;
-  const end = start + step.value;
-  return sortedAndFilteredResults.value.slice(start, end);
-});
+const referenceOptions = computed(() =>
+  sources.value.map((source) => ({ name: source, value: source })),
+);
 
 function getDrilldownRoute(cdmRelease: string, rowId: string | number) {
   const [cdm, release] = cdmRelease.split("-");
@@ -515,7 +387,7 @@ function getDrilldownRoute(cdmRelease: string, rowId: string | number) {
     paramsObject = { cdm, release, cohort_id: rowId };
   }
   return {
-    name: selectedConfig.value.indexTableName,
+    name: activeDescriptor.value.indexTableName,
     params: paramsObject,
   };
 }
@@ -562,8 +434,37 @@ function getIndexTableRoute(cdmRelease: string) {
   const [cdm, release] = cdmRelease.split("-");
   const paramsObject = { cdm, release, domain };
   return {
-    name: selectedConfig.value.indexTableName,
+    name: activeDescriptor.value.indexTableName,
     params: paramsObject,
+  };
+}
+
+function formatKpiCell(source: string, kpi) {
+  const sourceShaped = dataSources.value[source];
+  const raw = sourceShaped?.[kpi.value];
+  const display =
+    raw !== undefined && raw !== null
+      ? kpi.processingFunction
+        ? kpi.processingFunction(raw)
+        : raw
+      : "N/A";
+
+  if (!referenceKey.value || source === referenceKey.value) {
+    return { display, className: "" };
+  }
+
+  const referenceShaped = dataSources.value[referenceKey.value];
+  const delta = computeDelta(referenceShaped, sourceShaped, kpi);
+  const deltaValue =
+    kpi.unit === "percent" ? delta.deltaPoints : delta.deltaPercent;
+  const deltaText =
+    kpi.unit === "percent"
+      ? formatDeltaPoints(delta.deltaPoints)
+      : formatDeltaPercent(delta.deltaPercent);
+
+  return {
+    display: deltaText === "N/A" ? display : `${display} (${deltaText})`,
+    className: deltaColor(deltaValue),
   };
 }
 
@@ -571,7 +472,6 @@ const selectedDomain = ref(null);
 
 const changeSelectedDomain = function (val) {
   router.replace({ name: route.name });
-  sortConfig.value = { field: null, direction: "asc", source: null };
   selectedDomain.value = val;
 };
 
@@ -579,135 +479,33 @@ const selectedReport = ref(null);
 
 const newSourceForm = ref(false);
 
-const reports = [
-  {
-    name: "Domain Table",
-    value: DOMAIN_SUMMARY,
-  },
-  {
-    name: "Cohort Table",
-    value: COHORT_INDEX,
-  },
-  {
-    name: "Cost Table",
-    value: COST_DOMAIN_SUMMARY,
-  },
-];
-
-const domainSummary = [
-  { name: "Condition Occurrence", value: "condition_occurrence" },
-  { name: "Condition Era", value: "condition_era" },
-  { name: "Drug Exposure", value: "drug_exposure" },
-  { name: "Drug Eras", value: "drug_era" },
-  { name: "Visit Occurrence", value: "visit_occurrence" },
-  { name: "Visit Detail", value: "visit_detail" },
-  { name: "Measurements", value: "measurement" },
-  { name: "Observations", value: "observation" },
-  { name: "Procedure Occurrence", value: "procedure_occurrence" },
-  { name: "Device Exposure", value: "device_exposure" },
-];
-
-const costDomainSummary = [
-  { name: "Drug", value: "drug" },
-  { name: "Visits", value: "visit" },
-  { name: "Procedures", value: "procedure" },
-];
+const reports = getComparableReports();
 
 const availableOptions = computed(() => {
-  const currentReport = selectedReport.value;
-  const reportDomainLists = {
-    [DOMAIN_SUMMARY]: domainSummary,
-    [COST_DOMAIN_SUMMARY]: costDomainSummary,
-  };
-  return reportDomainLists[currentReport];
+  return comparisonRegistry[selectedReport.value]?.domainOptions;
 });
 
-const reportColumnNames = {
-  [DOMAIN_SUMMARY]: {
-    rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
-    rowId: "CONCEPT_ID",
-    drillDownRouteName: "domainTable",
-    indexTableName: "domainTable",
-    showDrillDown: true,
-    group: {
-      name: "Source",
-      value: "source",
-      children: [
-        {
-          name: "# Persons",
-          value: "NUM_PERSONS",
-          link: true,
-          sortable: true,
-          processingFunction: formatComma,
-        },
-        {
-          name: "% Persons",
-          value: "PERCENT_PERSONS",
-          sortable: true,
-          processingFunction: formatPercent,
-        },
-      ],
-    },
-  },
-  [COHORT_INDEX]: {
-    rowHeader: { name: "Cohort Name", value: "cohort_name" },
-    rowId: "cohort_id",
-    showDrillDown: false,
-    indexTableName: "cohorts",
-    group: {
-      name: "Source",
-      value: "source",
-      type: "group",
-      children: [
-        {
-          name: "# Persons",
-          link: true,
-          value: "cohort_subjects",
-          sortable: true,
-          processingFunction: formatComma,
-        },
-      ],
-    },
-  },
-  [COST_DOMAIN_SUMMARY]: {
-    rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
-    rowId: "CONCEPT_ID",
-    showDrillDown: false,
-    indexTableName: "costTable",
-    group: {
-      name: "Source",
-      value: "source",
-      type: "group",
-      children: [
-        {
-          name: "Total Cost",
-          link: true,
-          value: "TOTAL_COST",
-          sortable: true,
-          processingFunction: formatComma,
-        },
-      ],
-    },
-  },
-};
-
-const loadData = async function (
-  cdm: string,
-  release: string,
-  domain: string
-): Promise<[string, unknown[]]> {
-  const isDuckDb =
-    environment.DUCKDB_ENABLED && selectedReport.value === COHORT_INDEX;
-  let data: unknown[];
+async function fetchOneFile({
+  cdm,
+  release,
+  domain,
+  file,
+  duckdbSupported,
+}: {
+  cdm: string;
+  release: string;
+  domain: string;
+  file: string;
+  duckdbSupported?: boolean;
+}): Promise<unknown> {
+  const isDuckDb = environment.DUCKDB_ENABLED && duckdbSupported;
 
   if (isDuckDb) {
     const c = await db.connect();
     const result = await c.query(
-      `SELECT * FROM read_parquet('${
-        getDuckDBFilePath({ cdm, release })[selectedReport.value]
-      }')`
+      `SELECT * FROM read_parquet('${getDuckDBFilePath({ cdm, release })[file]}')`,
     );
-    data = [];
+    const data: unknown[] = [];
     for (const row of result) {
       const rowData: Record<string, unknown> = {};
       for (const colName in row) {
@@ -717,38 +515,103 @@ const loadData = async function (
       }
       data.push(rowData);
     }
-  } else {
-    const response = await apiService(
-      {
-        url: getFilePath({ cdm, release, domain })[selectedReport.value],
-        method: "get",
-      },
-      {}
-    );
-    data = csvParse(response.data);
+    return data;
   }
 
-  return [`${cdm}-${release}`, data];
+  const response = await apiService(
+    {
+      url: getFilePath({ cdm, release, domain })[file],
+      method: "get",
+    },
+    {},
+  );
+  return typeof response.data === "string"
+    ? csvParse(response.data)
+    : response.data;
+}
+
+const loadData = async function (
+  cdm: string,
+  release: string,
+  domain: string,
+): Promise<[string, unknown]> {
+  const descriptor = comparisonRegistry[selectedReport.value];
+
+  const rawByFile: Record<string, unknown> = {};
+  await Promise.all(
+    descriptor.files.map(async (file) => {
+      rawByFile[file] = await fetchOneFile({
+        cdm,
+        release,
+        domain,
+        file,
+        duckdbSupported: descriptor.duckdbSupported,
+      });
+    }),
+  );
+
+  const postprocessor = postprocessingRegistry[descriptor.viewName];
+  const shaped = postprocessor ? postprocessor(rawByFile) : rawByFile;
+
+  return [`${cdm}-${release}`, shaped];
 };
+
+function describeLoadError(error: unknown): string {
+  const status = (error as any)?.response?.status;
+  if (status === 404) {
+    return "Not available for this report";
+  }
+  return (error as any)?.message || "Failed to load";
+}
+
+async function loadSourcesSafely(
+  toLoad: { source: string; release: string }[],
+) {
+  if (!toLoad.length) return;
+
+  const loadStart = Date.now();
+  dataLoaderState.value = "loading";
+
+  const settled = await Promise.allSettled(
+    toLoad.map(({ source, release }) =>
+      loadData(source, release, selectedDomain.value),
+    ),
+  );
+
+  settled.forEach((result, index) => {
+    const { source, release } = toLoad[index];
+    const key = `${source}-${release}`;
+    if (result.status === "fulfilled") {
+      dataSources.value[key] = result.value[1];
+      delete sourceErrors.value[key];
+    } else {
+      delete dataSources.value[key];
+      sourceErrors.value[key] = describeLoadError(result.reason);
+    }
+  });
+
+  if (Date.now() - loadStart >= 600) {
+    dataLoaderState.value = "success";
+    await new Promise((r) => setTimeout(r, 1100));
+  }
+  dataLoaderState.value = "idle";
+}
 
 const fetchMultiple = async function (sources) {
   newSourceForm.value = false;
-  const results = await Promise.all(
-    sources.map((source) =>
-      loadData(source.source, source.release, selectedDomain.value)
-    )
-  );
-  dataSources.value = Object.fromEntries(results);
+  await loadSourcesSafely(sources);
 };
 
 function reloadData() {
-  const loadedSources = Object.keys(dataSources.value)
-    .map((val) => {
-      return val.split("-");
-    })
-    .map((arr) => ({ source: arr[0], release: arr[1] }));
+  const toLoad: { source: string; release: string }[] = [];
+  Object.keys(getParsedSelectedSources.value).forEach((source) => {
+    getParsedSelectedSources.value[source].forEach((release) => {
+      toLoad.push({ source, release });
+    });
+  });
   dataSources.value = {};
-  fetchMultiple(loadedSources);
+  sourceErrors.value = {};
+  fetchMultiple(toLoad);
 }
 
 watch(selectedReport, () => {
@@ -757,10 +620,12 @@ watch(selectedReport, () => {
     return;
   } else {
     if (selectedReport.value === DOMAIN_SUMMARY) {
-      selectedDomain.value = domainSummary[0].value;
+      selectedDomain.value =
+        comparisonRegistry[DOMAIN_SUMMARY].domainOptions[0].value;
     }
     if (selectedReport.value === COST_DOMAIN_SUMMARY) {
-      selectedDomain.value = costDomainSummary[0].value;
+      selectedDomain.value =
+        comparisonRegistry[COST_DOMAIN_SUMMARY].domainOptions[0].value;
     }
     conceptData.value = null;
     reloadData();
@@ -799,7 +664,7 @@ function parseSourceToSelectedAttributes(parsedData) {
 
   Object.keys(parsedData).forEach((sourceName) => {
     const sourceIndex = availableSources.findIndex(
-      (source) => source.cdm_source_key === sourceName
+      (source) => source.cdm_source_key === sourceName,
     );
 
     // check if exists in available sources
@@ -809,7 +674,7 @@ function parseSourceToSelectedAttributes(parsedData) {
 
       parsedReleases.forEach((releaseName) => {
         const releaseIndex = availableReleases.findIndex(
-          (release) => release.release_id === releaseName
+          (release) => release.release_id === releaseName,
         );
         if (releaseIndex !== -1) {
           const key = `${sourceIndex}-${releaseIndex}`;
@@ -818,7 +683,7 @@ function parseSourceToSelectedAttributes(parsedData) {
       });
 
       const allReleasesChecked = availableReleases.every((release) =>
-        parsedReleases.includes(release.release_id)
+        parsedReleases.includes(release.release_id),
       );
 
       attributes[sourceIndex] = {
@@ -840,7 +705,8 @@ onMounted(() => {
   } else if (report === "cost") {
     selectedReport.value = COST_DOMAIN_SUMMARY;
   } else {
-    selectedDomain.value = domainSummary[0].value;
+    selectedDomain.value =
+      comparisonRegistry[DOMAIN_SUMMARY].domainOptions[0].value;
 
     selectedReport.value = reports[0].value;
   }
@@ -852,31 +718,11 @@ onMounted(() => {
   };
 });
 
-//handling horizontal scroll
-
-const tableContainer = ref(null);
-const isScrolled = ref(false);
-
-const handleScroll = () => {
-  if (tableContainer.value) {
-    isScrolled.value = tableContainer.value.scrollLeft > 0;
-  }
-};
-
 onMounted(() => {
   const { concept, domain } = route.query;
   if (concept && domain) {
     selectedDomain.value = domain;
     loadDrilldown({ CONCEPT_ID: concept });
-  }
-  if (tableContainer.value) {
-    tableContainer.value.addEventListener("scroll", handleScroll);
-  }
-});
-
-watch(tableContainer, () => {
-  if (tableContainer.value) {
-    tableContainer.value.addEventListener("scroll", handleScroll);
   }
 });
 
@@ -886,12 +732,6 @@ watch(visible, () => {
     if (domain || concept || report) {
       router.replace({ name: route.name });
     }
-});
-
-onBeforeUnmount(() => {
-  if (tableContainer.value) {
-    tableContainer.value.removeEventListener("scroll", handleScroll);
-  }
 });
 </script>
 
@@ -957,6 +797,20 @@ tr {
 }
 
 .rowNameCol.scrolled {
-  @apply dark:bg-surface-700 bg-surface-100;
+  background-color: var(--color-border-subtle);
+}
+
+.reference-border-x {
+  border-left: 3px solid #3b82f6 !important;
+  border-right: 3px solid #3b82f6 !important;
+}
+
+.dark .reference-border-x {
+  border-left-color: #60a5fa !important;
+  border-right-color: #60a5fa !important;
+}
+
+.reference-header {
+  font-weight: 600;
 }
 </style>

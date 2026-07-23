@@ -71,6 +71,7 @@ import {
   TEMPORAL_CHARACTERIZATION,
 } from "@/shared/config/files";
 import environment from "@/shared/api/environment";
+import { formatComma, formatPercent } from "@/shared/lib/formatters";
 
 import dataStrandReport from "../model/store/postprocessing/networkDataStrandReport";
 import population from "../model/store/postprocessing/networkPopulationReport";
@@ -95,6 +96,16 @@ import networkConceptDashboard from "../model/store/postprocessing/networkConcep
 import dataSourceOverview from "../model/store/postprocessing/dataSourceOverview";
 import costTable from "../model/store/postprocessing/costTable";
 import costDrilldown from "../model/store/postprocessing/costDrilldown";
+import getEChartsNetworkCumulative from "@/pages/reports/network/NetworkPopulationReport/charts/cumulativeObservation/networkCumulative";
+import getEChartsComparisonBirthYear from "@/pages/reports/network/NetworkComparisonTool/charts/birthYearOverlay";
+import getEChartsComparisonObservedByMonth from "@/pages/reports/network/NetworkComparisonTool/charts/observedByMonthOverlay";
+import getEChartsComparisonDeathRecordProportionByMonth from "@/pages/reports/network/NetworkComparisonTool/charts/deathRecordProportionByMonthOverlay";
+import getEChartsOptionAgeSex from "@/pages/reports/release/PersonReport/charts/PopulationByAgeSex/personAgeSex";
+import getEChartsOptionAgeAtDeath from "@/pages/reports/release/DeathReport/charts/AgeAtDeath/ageAtDeath";
+import getEChartsOptionRecordProportionByAgeSexYear from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByAgeSexYear/recordCountProportionByAgeSexYear";
+import getEChartsOptionObservationByAgeSex from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservationBySex/observationByAgeSex";
+import getEChartsOptionObservationByAge from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationByAge/observationByAge";
+import getEChartsOptionYearsObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationBySex/yearsObservationBySex";
 
 type LoadConfig = { loadMethod: string; payload: any };
 type ExplorerFolder = "Data Network" | "Data Source" | "Data Source Release";
@@ -108,6 +119,67 @@ interface ExplorerEntry {
   domainChildren?: Array<{ icon: string; label: string; domain: string }>;
 }
 
+export interface ComparisonMetric {
+  name: string;
+  value: string;
+  sortable?: boolean;
+  link?: boolean;
+  processingFunction?: (value: any) => string;
+  type: "numeric" | "categorical";
+  unit?: "count" | "percent";
+}
+
+export interface ComparisonTablePanel {
+  name: string;
+  kind: "table";
+  sourceField: string;
+  rowHeader: { name: string; value: string };
+  rowKey?: string;
+  rowId: string;
+  showDrillDown?: boolean;
+  metrics: ComparisonMetric[];
+}
+
+export interface ComparisonOverlayChartPanel {
+  name: string;
+  kind: "overlay-chart";
+  sourceField: string;
+  chartSpec: (params: {
+    data: any[];
+    minMax?: string;
+    zeroBaseline?: boolean;
+  }) => any;
+}
+
+export interface ComparisonSmallMultiplesPanel {
+  name: string;
+  kind: "small-multiples";
+  sourceField: string;
+  chartSpec: (params: {
+    data: any[];
+    minMax?: string;
+    zeroBaseline?: boolean;
+  }) => any;
+}
+
+export type ComparisonPanel =
+  | ComparisonTablePanel
+  | ComparisonOverlayChartPanel
+  | ComparisonSmallMultiplesPanel;
+
+export interface ComparisonDescriptor {
+  reportLabel: string;
+  reportValue: string;
+  queryReportKey?: string;
+  files: string[];
+  duckdbSupported?: boolean;
+  indexTableName: string;
+  drilldownKind?: "concept" | "cohort";
+  domainOptions?: { name: string; value: string }[];
+  kpis?: ComparisonMetric[];
+  panels: ComparisonPanel[];
+}
+
 export interface ViewDescriptor {
   name: string;
   loadConfig?: LoadConfig | ((params: { files?: any[] }) => LoadConfig);
@@ -115,6 +187,7 @@ export interface ViewDescriptor {
   charts?: string[];
   errorMessage?: string;
   explorer?: ExplorerEntry;
+  comparison?: ComparisonDescriptor;
 }
 
 export const viewRegistry: ViewDescriptor[] = [
@@ -146,6 +219,87 @@ export const viewRegistry: ViewDescriptor[] = [
       "viz-ethnicity",
     ],
     errorMessage: "Requested files not found",
+    comparison: {
+      reportLabel: "Person",
+      reportValue: PERSON,
+      files: [PERSON],
+      indexTableName: "person",
+      kpis: [
+        {
+          name: "# Persons",
+          value: "numPersons",
+          processingFunction: formatComma,
+          type: "numeric",
+          unit: "count",
+        },
+        {
+          name: "% Male",
+          value: "genderMalePct",
+          processingFunction: formatPercent,
+          type: "numeric",
+          unit: "percent",
+        },
+        {
+          name: "% Female",
+          value: "genderFemalePct",
+          processingFunction: formatPercent,
+          type: "numeric",
+          unit: "percent",
+        },
+      ],
+      panels: [
+        {
+          name: "Population by Race",
+          kind: "table",
+          sourceField: "personData.RACE_DATA",
+          rowHeader: { name: "Race", value: "CONCEPT_NAME" },
+          rowKey: "CONCEPT_ID",
+          rowId: "CONCEPT_ID",
+          showDrillDown: false,
+          metrics: [
+            {
+              name: "# Persons",
+              value: "COUNT_VALUE",
+              sortable: true,
+              processingFunction: formatComma,
+              type: "numeric",
+              unit: "count",
+            },
+          ],
+        },
+        {
+          name: "Population by Ethnicity",
+          kind: "table",
+          sourceField: "personData.ETHNICITY_DATA",
+          rowHeader: { name: "Ethnicity", value: "CONCEPT_NAME" },
+          rowKey: "CONCEPT_ID",
+          rowId: "CONCEPT_ID",
+          showDrillDown: false,
+          metrics: [
+            {
+              name: "# Persons",
+              value: "COUNT_VALUE",
+              sortable: true,
+              processingFunction: formatComma,
+              type: "numeric",
+              unit: "count",
+            },
+          ],
+        },
+        {
+          name: "Population by Year of Birth",
+          kind: "overlay-chart",
+          sourceField: "personData.BIRTH_YEAR_DATA",
+          chartSpec: getEChartsComparisonBirthYear,
+        },
+        {
+          name: "Population by Age & Sex",
+          kind: "small-multiples",
+          sourceField: "genSexData",
+          chartSpec: getEChartsOptionAgeSex,
+        },
+      ],
+    },
     explorer: {
       folder: "Data Source Release",
       icon: mdiAccountOutline,
@@ -169,6 +323,55 @@ export const viewRegistry: ViewDescriptor[] = [
     postprocessor: domainTable,
     charts: ["viz-recordproportionbymonth"],
     errorMessage: "Requested files not found",
+    comparison: {
+      reportLabel: "Domain Table",
+      reportValue: DOMAIN_SUMMARY,
+      queryReportKey: "domain",
+      files: [DOMAIN_SUMMARY],
+      indexTableName: "domainTable",
+      drilldownKind: "concept",
+      domainOptions: [
+        { name: "Condition Occurrence", value: "condition_occurrence" },
+        { name: "Condition Era", value: "condition_era" },
+        { name: "Drug Exposure", value: "drug_exposure" },
+        { name: "Drug Eras", value: "drug_era" },
+        { name: "Visit Occurrence", value: "visit_occurrence" },
+        { name: "Visit Detail", value: "visit_detail" },
+        { name: "Measurements", value: "measurement" },
+        { name: "Observations", value: "observation" },
+        { name: "Procedure Occurrence", value: "procedure_occurrence" },
+        { name: "Device Exposure", value: "device_exposure" },
+      ],
+      panels: [
+        {
+          name: "Domain Table",
+          kind: "table",
+          sourceField: "domainTable",
+          rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
+          rowId: "CONCEPT_ID",
+          showDrillDown: true,
+          metrics: [
+            {
+              name: "# Persons",
+              value: "NUM_PERSONS",
+              link: true,
+              sortable: true,
+              processingFunction: formatComma,
+              type: "numeric",
+              unit: "count",
+            },
+            {
+              name: "% Persons",
+              value: "PERCENT_PERSONS",
+              sortable: true,
+              processingFunction: formatPercent,
+              type: "numeric",
+              unit: "percent",
+            },
+          ],
+        },
+      ],
+    },
     explorer: {
       folder: "Data Source Release",
       icon: mdiTable,
@@ -227,6 +430,36 @@ export const viewRegistry: ViewDescriptor[] = [
     },
     postprocessor: cohorts,
     errorMessage: "Requested files not found",
+    comparison: {
+      reportLabel: "Cohort Table",
+      reportValue: COHORT_INDEX,
+      queryReportKey: "cohort",
+      files: [COHORT_INDEX],
+      duckdbSupported: true,
+      indexTableName: "cohorts",
+      drilldownKind: "cohort",
+      panels: [
+        {
+          name: "Cohort Table",
+          kind: "table",
+          sourceField: COHORT_INDEX,
+          rowHeader: { name: "Cohort Name", value: "cohort_name" },
+          rowId: "cohort_id",
+          showDrillDown: false,
+          metrics: [
+            {
+              name: "# Persons",
+              value: "cohort_subjects",
+              link: true,
+              sortable: true,
+              processingFunction: formatComma,
+              type: "numeric",
+              unit: "count",
+            },
+          ],
+        },
+      ],
+    },
     explorer: {
       folder: "Data Source Release",
       icon: mdiAccountGroupOutline,
@@ -269,6 +502,72 @@ export const viewRegistry: ViewDescriptor[] = [
       "viz-observationbysex",
     ],
     errorMessage: "Requested files not found",
+    comparison: {
+      reportLabel: "Observation Period",
+      reportValue: OBSERVATION_PERIOD,
+      files: [OBSERVATION_PERIOD],
+      indexTableName: "observationPeriod",
+      panels: [
+        {
+          name: "Observation Periods per Person",
+          kind: "table",
+          sourceField: "personPeriods",
+          rowHeader: { name: "# Observation Periods", value: "CONCEPT_NAME" },
+          rowKey: "CONCEPT_ID",
+          rowId: "CONCEPT_ID",
+          showDrillDown: false,
+          metrics: [
+            {
+              name: "# People",
+              value: "COUNT_VALUE",
+              sortable: true,
+              processingFunction: formatComma,
+              type: "numeric",
+              unit: "count",
+            },
+            {
+              name: "% of People",
+              value: "PERCENT_PEOPLE",
+              sortable: true,
+              processingFunction: (v) => `${v}%`,
+              type: "numeric",
+              unit: "count",
+            },
+          ],
+        },
+        {
+          name: "Cumulative Observation",
+          kind: "overlay-chart",
+          sourceField: "observationPeriodData.CUMULATIVE_DURATION",
+          chartSpec: getEChartsNetworkCumulative,
+        },
+        {
+          name: "Observed by Month",
+          kind: "overlay-chart",
+          sourceField: "observationPeriodData.OBSERVED_BY_MONTH",
+          chartSpec: getEChartsComparisonObservedByMonth,
+        },
+        {
+          name: "Age at First Observation by Sex",
+          kind: "small-multiples",
+          sourceField: "observationPeriodData.AGE_BY_GENDER",
+          chartSpec: getEChartsOptionObservationByAgeSex,
+        },
+        {
+          name: "Years of Observation by Age",
+          kind: "small-multiples",
+          sourceField: "observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_AGE",
+          chartSpec: getEChartsOptionObservationByAge,
+        },
+        {
+          name: "Years of Observation by Sex",
+          kind: "small-multiples",
+          sourceField:
+            "observationPeriodData.OBSERVATION_PERIOD_LENGTH_BY_GENDER",
+          chartSpec: getEChartsOptionYearsObservationBySex,
+        },
+      ],
+    },
     explorer: {
       folder: "Data Source Release",
       icon: mdiEyeCircleOutline,
@@ -289,6 +588,40 @@ export const viewRegistry: ViewDescriptor[] = [
     postprocessor: costTable,
     charts: ["viz-costtime"],
     errorMessage: "Cost information not available for this data source",
+    comparison: {
+      reportLabel: "Cost Table",
+      reportValue: COST_DOMAIN_SUMMARY,
+      queryReportKey: "cost",
+      files: [COST_DOMAIN_SUMMARY, COST_TIMESERIES],
+      indexTableName: "costTable",
+      drilldownKind: "concept",
+      domainOptions: [
+        { name: "Drug", value: "drug" },
+        { name: "Visits", value: "visit" },
+        { name: "Procedures", value: "procedure" },
+      ],
+      panels: [
+        {
+          name: "Cost Table",
+          kind: "table",
+          sourceField: "costTable",
+          rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
+          rowId: "CONCEPT_ID",
+          showDrillDown: false,
+          metrics: [
+            {
+              name: "Total Cost",
+              value: "TOTAL_COST",
+              link: true,
+              sortable: true,
+              processingFunction: formatComma,
+              type: "numeric",
+              unit: "count",
+            },
+          ],
+        },
+      ],
+    },
     explorer: {
       folder: "Data Source Release",
       icon: mdiCurrencyUsd,
@@ -493,6 +826,51 @@ export const viewRegistry: ViewDescriptor[] = [
       "viz-deathrecordproportionbymonth",
     ],
     errorMessage: "Requested files not found",
+    comparison: {
+      reportLabel: "Death",
+      reportValue: DEATH,
+      files: [DEATH],
+      indexTableName: "death",
+      panels: [
+        {
+          name: "Death by Type",
+          kind: "table",
+          sourceField: "DEATH_BY_TYPE",
+          rowHeader: { name: "Type", value: "CONCEPT_NAME" },
+          rowKey: "CONCEPT_ID",
+          rowId: "CONCEPT_ID",
+          showDrillDown: false,
+          metrics: [
+            {
+              name: "# Records",
+              value: "COUNT_VALUE",
+              sortable: true,
+              processingFunction: formatComma,
+              type: "numeric",
+              unit: "count",
+            },
+          ],
+        },
+        {
+          name: "Record Count Proportion by Month",
+          kind: "overlay-chart",
+          sourceField: "PREVALENCE_BY_MONTH",
+          chartSpec: getEChartsComparisonDeathRecordProportionByMonth,
+        },
+        {
+          name: "Age at Death",
+          kind: "small-multiples",
+          sourceField: "AGE_AT_DEATH",
+          chartSpec: getEChartsOptionAgeAtDeath,
+        },
+        {
+          name: "Record Count Proportion by Age, Sex & Year",
+          kind: "small-multiples",
+          sourceField: "PREVALENCE_BY_GENDER_AGE_YEAR",
+          chartSpec: getEChartsOptionRecordProportionByAgeSexYear,
+        },
+      ],
+    },
     explorer: {
       folder: "Data Source Release",
       icon: mdiHeartOffOutline,
@@ -540,6 +918,38 @@ export const viewRegistry: ViewDescriptor[] = [
     },
     errorMessage:
       "Temporal characterization file is not found. Please make sure it exists within the current release folder then try again",
+    comparison: {
+      reportLabel: "Temporal Characterization",
+      reportValue: TEMPORAL_CHARACTERIZATION,
+      files: [TEMPORAL_CHARACTERIZATION],
+      indexTableName: "temporalCharacterization",
+      panels: [
+        {
+          name: "Temporal Characterization",
+          kind: "table",
+          sourceField: TEMPORAL_CHARACTERIZATION,
+          rowHeader: { name: "Concept Name", value: "CONCEPT_NAME" },
+          rowKey: "CONCEPT_ID",
+          rowId: "CONCEPT_ID",
+          showDrillDown: false,
+          metrics: [
+            {
+              name: "Seasonality Score",
+              value: "SEASONALITY_SCORE",
+              sortable: true,
+              type: "numeric",
+              unit: "count",
+            },
+            {
+              name: "Is Stationary",
+              value: "IS_STATIONARY",
+              sortable: true,
+              type: "categorical",
+            },
+          ],
+        },
+      ],
+    },
     explorer: {
       folder: "Data Source Release",
       icon: mdiTextBoxMultipleOutline,
@@ -559,6 +969,32 @@ export const viewRegistry: ViewDescriptor[] = [
     },
     postprocessor: performance,
     errorMessage: "Requested files not found",
+    comparison: {
+      reportLabel: "Performance",
+      reportValue: ACHILLES_PERFORMANCE,
+      files: [ACHILLES_PERFORMANCE],
+      indexTableName: "performance",
+      panels: [
+        {
+          name: "Performance",
+          kind: "table",
+          sourceField: "achilles_performance",
+          rowHeader: { name: "Analysis Name", value: "analysis_name" },
+          rowKey: "analysis_id",
+          rowId: "analysis_id",
+          showDrillDown: false,
+          metrics: [
+            {
+              name: "Duration (seconds)",
+              value: "elapsed_seconds",
+              sortable: true,
+              type: "numeric",
+              unit: "count",
+            },
+          ],
+        },
+      ],
+    },
     explorer: {
       folder: "Data Source Release",
       icon: mdiSpeedometer,
@@ -753,6 +1189,27 @@ export const pageChartsRegistry: Record<string, string[]> = Object.fromEntries(
 export function getViewErrorMessage(routeName: string): string | undefined {
   return viewRegistry.find((v) => v.name === routeName)?.errorMessage;
 }
+
+export function getComparableReports() {
+  return viewRegistry
+    .filter((v) => v.comparison)
+    .map((v) => ({
+      name: v.comparison.reportLabel,
+      value: v.comparison.reportValue,
+    }));
+}
+
+export const comparisonRegistry: Record<
+  string,
+  ComparisonDescriptor & { viewName: string }
+> = Object.fromEntries(
+  viewRegistry
+    .filter((v) => v.comparison)
+    .map((v) => [
+      v.comparison.reportValue,
+      { ...v.comparison, viewName: v.name },
+    ]),
+);
 
 export function getExplorerReports() {
   const result: any[] = [];
