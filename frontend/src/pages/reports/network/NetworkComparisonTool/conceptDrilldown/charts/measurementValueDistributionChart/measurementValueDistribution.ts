@@ -30,7 +30,7 @@ export default function getEChartsOptionMeasurementDistributionFaceted({
   const sources = Object.keys(groups);
   for (const src of sources) {
     const groupData = groups[src].sort(
-      (a, b) => (a.categoryOrder ?? 0) - (b.categoryOrder ?? 0)
+      (a, b) => (a.categoryOrder ?? 0) - (b.categoryOrder ?? 0),
     );
 
     const categories = groupData.map((d) => d.CATEGORY);
@@ -56,10 +56,10 @@ export default function getEChartsOptionMeasurementDistributionFaceted({
       type: "value",
       min: zeroBaseline ? 0 : "dataMin",
       max: "dataMax",
-      interval: 2,
       gridIndex,
       axisLabel: {
         formatter: (v) => `${v.toFixed(0)}`,
+        hideOverlap: true,
       },
       splitLine: { show: true },
     });

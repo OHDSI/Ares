@@ -30,7 +30,7 @@ export default function getEChartsOptionAgeAtFirstDiagnosisFaceted({
   const sources = Object.keys(groups);
   for (const src of sources) {
     const groupData = groups[src].sort(
-      (a, b) => a.categoryOrder - b.categoryOrder
+      (a, b) => a.categoryOrder - b.categoryOrder,
     );
     const categories = groupData.map((d) => d.CATEGORY);
 
@@ -55,9 +55,8 @@ export default function getEChartsOptionAgeAtFirstDiagnosisFaceted({
       type: "value",
       min: zeroBaseline ? 0 : "dataMin",
       gridIndex,
-      interval: 2,
       max: "dataMax",
-      axisLabel: { formatter: (v) => `${v.toFixed(0)}` },
+      axisLabel: { formatter: (v) => `${v.toFixed(0)}`, hideOverlap: true },
       splitLine: { show: true },
     });
 
@@ -71,7 +70,7 @@ export default function getEChartsOptionAgeAtFirstDiagnosisFaceted({
     const boxData = groupData.map((d) =>
       minMax
         ? [d.MIN_VALUE, d.P25_VALUE, d.MEDIAN_VALUE, d.P75_VALUE, d.MAX_VALUE]
-        : [d.P10_VALUE, d.P25_VALUE, d.MEDIAN_VALUE, d.P75_VALUE, d.P90_VALUE]
+        : [d.P10_VALUE, d.P25_VALUE, d.MEDIAN_VALUE, d.P75_VALUE, d.P90_VALUE],
     );
 
     series.push({

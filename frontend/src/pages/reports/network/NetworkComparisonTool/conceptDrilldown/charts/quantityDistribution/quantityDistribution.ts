@@ -61,9 +61,9 @@ export default function getEChartsOptionQuantityDistributionFaceted({
       name: "Days Supply",
       nameLocation: "middle",
       nameGap: 30,
-      interval: 1,
       min: zeroBaseline ? 0 : "dataMin",
       splitLine: { show: true },
+      axisLabel: { hideOverlap: true },
     },
     yAxis: {
       type: "category",

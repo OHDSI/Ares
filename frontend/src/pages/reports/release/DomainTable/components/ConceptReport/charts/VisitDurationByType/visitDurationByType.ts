@@ -49,7 +49,7 @@ export default function getEChartsOptionVisitDurationByType({
       type: "value",
       min: zeroBaseline ? 0 : "dataMin",
       splitLine: { show: true },
-      interval: 2,
+      axisLabel: { hideOverlap: true },
     },
     yAxis: {
       type: "category",

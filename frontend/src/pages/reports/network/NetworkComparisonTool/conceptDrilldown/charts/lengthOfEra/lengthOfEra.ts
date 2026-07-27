@@ -61,9 +61,10 @@ export default function getEChartsOptionLengthOfEraFaceted({
       name: "Number of Days",
       nameLocation: "middle",
       nameGap: 30,
-      interval: 1,
+      minInterval: 1,
       min: zeroBaseline ? 0 : "dataMin",
       splitLine: { show: true },
+      axisLabel: { hideOverlap: true },
     },
     yAxis: {
       type: "category",

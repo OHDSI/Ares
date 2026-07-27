@@ -19,7 +19,7 @@ export default function getEChartsOptionAgeAtDeath({
   const boxData = sorted.map((d) =>
     minMax
       ? [d.MIN_VALUE, d.P25_VALUE, d.MEDIAN_VALUE, d.P75_VALUE, d.MAX_VALUE]
-      : [d.P10_VALUE, d.P25_VALUE, d.MEDIAN_VALUE, d.P75_VALUE, d.P90_VALUE]
+      : [d.P10_VALUE, d.P25_VALUE, d.MEDIAN_VALUE, d.P75_VALUE, d.P90_VALUE],
   );
 
   return {
@@ -53,9 +53,8 @@ export default function getEChartsOptionAgeAtDeath({
       nameGap: 30,
       nameTextStyle: { fontSize: 14 },
       min: zeroBaseline ? 0 : "dataMin",
-      interval: 2,
       minInterval: 1,
-      axisLabel: { formatter: (v) => `${v.toFixed(0)}` },
+      axisLabel: { formatter: (v) => `${v.toFixed(0)}`, hideOverlap: true },
       splitLine: { show: true },
     },
     yAxis: {

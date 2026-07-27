@@ -46,10 +46,10 @@ export default function getEChartsOptionDaysSupply({
       name: "Days Supply",
       nameLocation: "middle",
       nameGap: 30,
-      interval: 2,
       nameTextStyle: { fontSize: 14 },
       min: zeroBaseline ? 0 : "dataMin",
       splitLine: { show: true },
+      axisLabel: { hideOverlap: true },
     },
     yAxis: {
       type: "category",
