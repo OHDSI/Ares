@@ -102,7 +102,6 @@ import getEChartsComparisonObservedByMonth from "@/pages/reports/network/Network
 import getEChartsComparisonDeathRecordProportionByMonth from "@/pages/reports/network/NetworkComparisonTool/charts/deathRecordProportionByMonthOverlay";
 import getEChartsOptionAgeSex from "@/pages/reports/release/PersonReport/charts/PopulationByAgeSex/personAgeSex";
 import getEChartsOptionAgeAtDeath from "@/pages/reports/release/DeathReport/charts/AgeAtDeath/ageAtDeath";
-import getEChartsOptionRecordProportionByAgeSexYear from "@/pages/reports/release/DeathReport/charts/RecordCountProportionByAgeSexYear/recordCountProportionByAgeSexYear";
 import getEChartsOptionObservationByAgeSex from "@/pages/reports/release/ObservationPeriodReport/charts/AgeAtFirstObservationBySex/observationByAgeSex";
 import getEChartsOptionObservationByAge from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationByAge/observationByAge";
 import getEChartsOptionYearsObservationBySex from "@/pages/reports/release/ObservationPeriodReport/charts/YearsOfObservationBySex/yearsObservationBySex";
@@ -862,12 +861,6 @@ export const viewRegistry: ViewDescriptor[] = [
           kind: "small-multiples",
           sourceField: "AGE_AT_DEATH",
           chartSpec: getEChartsOptionAgeAtDeath,
-        },
-        {
-          name: "Record Count Proportion by Age, Sex & Year",
-          kind: "small-multiples",
-          sourceField: "PREVALENCE_BY_GENDER_AGE_YEAR",
-          chartSpec: getEChartsOptionRecordProportionByAgeSexYear,
         },
       ],
     },
