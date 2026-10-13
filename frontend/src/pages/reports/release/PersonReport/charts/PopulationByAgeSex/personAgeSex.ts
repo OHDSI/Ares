@@ -1,10 +1,43 @@
 import { kmbFormatter } from "@/shared/lib/formatters";
-import { genderColors } from "@/shared/lib/chartColors";
+import {
+  compareSex,
+  getGenderColor,
+  sexKey,
+  sexLabel,
+} from "@/shared/lib/chartColors";
 
 export default function getEChartsOptionAgeSex({
   zeroBaseline = false,
   data = [],
 }) {
+  const rows = data
+    .map((d) => ({
+      sex: sexKey(d.CONCEPT_NAME),
+      age: +d.AGE,
+      count: +d.COUNT_VALUE,
+    }))
+    .filter((d) => d.age >= 0 && d.age <= 100);
+
+  const ages = [...new Set(rows.map((d) => d.age))].sort((a, b) => a - b);
+
+  const groups = new Map<string, Map<number, number>>();
+  rows.forEach(({ sex, age, count }) => {
+    if (!groups.has(sex)) groups.set(sex, new Map());
+    const counts = groups.get(sex);
+    counts.set(age, (counts.get(age) ?? 0) + count);
+  });
+
+  const series = [...groups.keys()].sort(compareSex).map((key) => {
+    const counts = groups.get(key);
+    const label = sexLabel(key);
+    return {
+      name: label,
+      type: "bar",
+      data: ages.map((age) => counts.get(age) ?? null),
+      itemStyle: { color: getGenderColor(label) },
+    };
+  });
+
   return {
     tooltip: {
       trigger: "axis",
@@ -12,7 +45,7 @@ export default function getEChartsOptionAgeSex({
     },
     legend: {
       top: 0,
-      data: ["Male", "Female"],
+      data: series.map((s) => s.name),
     },
     grid: {
       left: 50,
@@ -21,58 +54,9 @@ export default function getEChartsOptionAgeSex({
       top: "10%",
       containLabel: true,
     },
-    dataset: [
-      {
-        id: "raw",
-        source: data.map((d) => ({
-          ...d,
-          AGE: +d.AGE,
-          COUNT_VALUE: +d.COUNT_VALUE,
-        })),
-      },
-      {
-        id: "filtered",
-        fromDatasetId: "raw",
-        transform: {
-          type: "filter",
-          config: {
-            and: [
-              { dimension: "AGE", gte: 0 },
-              { dimension: "AGE", lte: 100 },
-            ],
-          },
-        },
-      },
-      {
-        id: "sorted",
-        fromDatasetId: "filtered",
-        transform: {
-          type: "sort",
-          config: {
-            dimension: "AGE",
-            order: "asc",
-          },
-        },
-      },
-      {
-        id: "maleFiltered",
-        fromDatasetId: "sorted",
-        transform: {
-          type: "filter",
-          config: { dimension: "CONCEPT_NAME", eq: "MALE" },
-        },
-      },
-      {
-        id: "femaleFiltered",
-        fromDatasetId: "sorted",
-        transform: {
-          type: "filter",
-          config: { dimension: "CONCEPT_NAME", eq: "FEMALE" },
-        },
-      },
-    ],
     xAxis: {
       type: "category",
+      data: ages,
       name: "Age at First Observation",
       nameLocation: "middle",
       nameGap: 30,
@@ -94,21 +78,6 @@ export default function getEChartsOptionAgeSex({
         formatter: (v) => kmbFormatter(v),
       },
     },
-    series: [
-      {
-        name: "Male",
-        type: "bar",
-        datasetId: "maleFiltered",
-        encode: { x: "AGE", y: "COUNT_VALUE" },
-        itemStyle: { color: genderColors.Male },
-      },
-      {
-        name: "Female",
-        type: "bar",
-        datasetId: "femaleFiltered",
-        encode: { x: "AGE", y: "COUNT_VALUE" },
-        itemStyle: { color: genderColors.Female },
-      },
-    ],
+    series,
   };
 }

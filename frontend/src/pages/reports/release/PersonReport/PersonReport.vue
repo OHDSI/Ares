@@ -4,16 +4,7 @@
       <PageHeader title="Person Report" />
       <InfoPanel
         :population="store.getters.getData.numPersons"
-        :proportion-sex="{
-          male: {
-            count: store.getters.getData.genderMaleCount,
-            pct: store.getters.getData.genderMalePct,
-          },
-          female: {
-            count: store.getters.getData.genderFemaleCount,
-            pct: store.getters.getData.genderFemalePct,
-          },
-        }"
+        :proportion-sex="store.getters.getData.genderCounts"
       />
       <div class="flex flex-col gap-5">
         <PopulationByAgeSex />

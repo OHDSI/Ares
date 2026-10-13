@@ -192,6 +192,30 @@ export function getGenderColor(name: string, pool: string[] = PALETTE): string {
   return getConceptColor(name, pool);
 }
 
+const SEX_ORDER = ["male", "female"];
+
+export function sexKey(name: unknown): string {
+  return String(name ?? "unknown")
+    .trim()
+    .toLowerCase();
+}
+
+export function sexLabel(name: unknown): string {
+  const key = sexKey(name);
+  return key.charAt(0).toUpperCase() + key.slice(1);
+}
+
+export function compareSex(a: unknown, b: unknown): number {
+  const ka = sexKey(a);
+  const kb = sexKey(b);
+  const ia = SEX_ORDER.indexOf(ka);
+  const ib = SEX_ORDER.indexOf(kb);
+  if (ia !== -1 || ib !== -1) {
+    return (ia === -1 ? Infinity : ia) - (ib === -1 ? Infinity : ib);
+  }
+  return ka.localeCompare(kb);
+}
+
 export function classifyDomain(name: string | null | undefined): Domain {
   const lower = name?.toLowerCase() ?? "";
   const first = lower.split(/\s/)[0];

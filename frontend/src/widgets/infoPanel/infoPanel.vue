@@ -125,27 +125,23 @@
       </p>
     </div>
 
-    <div v-if="props.proportionSex" class="flex flex-col items-center">
+    <div v-if="props.proportionSex?.length" class="flex flex-col items-center">
       <div class="flex flex-col items-center gap-0.5">
         <svg-icon
           class="text-primary-500"
           type="mdi"
           :path="mdiHumanMaleFemale"
         />
-        <span class="text-lg font-semibold text-primary-500">
-          {{ formatComma(props.proportionSex.male.count) }} M
-          <span
-            class="text-sm font-normal"
-            style="color: var(--color-text-subtle)"
-            >{{ formatPercent(props.proportionSex.male.pct) }}</span
-          >
-          &nbsp;·&nbsp;
-          {{ formatComma(props.proportionSex.female.count) }} F
-          <span
-            class="text-sm font-normal"
-            style="color: var(--color-text-subtle)"
-            >{{ formatPercent(props.proportionSex.female.pct) }}</span
-          >
+        <span class="text-lg font-semibold text-primary-500 text-center">
+          <template v-for="(sex, i) in props.proportionSex" :key="sex.label">
+            <template v-if="i > 0">&nbsp;·&nbsp;</template>
+            {{ formatComma(sex.count) }} {{ sexAbbreviation(sex.label) }}
+            <span
+              class="text-sm font-normal"
+              style="color: var(--color-text-subtle)"
+              >{{ formatPercent(sex.pct) }}</span
+            >
+          </template>
         </span>
       </div>
       <p
@@ -194,10 +190,7 @@ interface Props {
   percentPeople?: number;
   recordsPerPerson?: string;
   percentValues?: string;
-  proportionSex?: {
-    male: { count: number; pct: number };
-    female: { count: number; pct: number };
-  };
+  proportionSex?: { label: string; count: number; pct: number }[];
   countFailed?: { value: string; action: () => void };
   notStationary?: boolean;
   networkPopulation?: number;
@@ -205,6 +198,13 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+function sexAbbreviation(label: string): string {
+  const lower = label.toLowerCase();
+  if (lower === "male") return "M";
+  if (lower === "female") return "F";
+  return label;
+}
 </script>
 
 <style scoped></style>

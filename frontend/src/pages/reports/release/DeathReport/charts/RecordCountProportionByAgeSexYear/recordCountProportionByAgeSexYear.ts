@@ -1,11 +1,19 @@
 import { kmbFormatter } from "@/shared/lib/formatters";
-import { getGenderColor } from "@/shared/lib/chartColors";
+import {
+  compareSex,
+  getGenderColor,
+  sexKey,
+  sexLabel,
+} from "@/shared/lib/chartColors";
 
 export default function getEChartsOptionRecordProportionByAgeSexYear({
   zeroBaseline = false,
   data = [],
 }) {
   const trellises = [...new Set(data.map((d) => d.TRELLIS_NAME))];
+  const sexGroups = [...new Set(data.map((d) => sexKey(d.SERIES_NAME)))].sort(
+    compareSex,
+  );
   const series = [];
   const grids = [];
   const xAxes = [];
@@ -14,7 +22,6 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
 
   trellises.forEach((trellis, i) => {
     const filtered = data.filter((d) => d.TRELLIS_NAME === trellis);
-    const sexGroups = [...new Set(filtered.map((d) => d.SERIES_NAME))];
     const gridTop = 20 + i * 100;
 
     trellisToIndex[trellis] = i;
@@ -64,20 +71,21 @@ export default function getEChartsOptionRecordProportionByAgeSexYear({
 
     sexGroups.forEach((sex) => {
       const lineData = filtered
-        .filter((d) => d.SERIES_NAME === sex)
+        .filter((d) => sexKey(d.SERIES_NAME) === sex)
         .sort((a, b) => a.X_CALENDAR_YEAR - b.X_CALENDAR_YEAR)
         .map((d) => [d.X_CALENDAR_YEAR.toString(), d.Y_PREVALENCE_1000PP]);
 
+      const label = sexLabel(sex);
       series.push({
-        name: sex,
+        name: label,
         type: "line",
         data: lineData,
         xAxisIndex: i,
         yAxisIndex: i,
         symbol: "circle",
         symbolSize: 5,
-        itemStyle: { color: getGenderColor(sex) },
-        lineStyle: { width: 1.5, color: getGenderColor(sex) },
+        itemStyle: { color: getGenderColor(label) },
+        lineStyle: { width: 1.5, color: getGenderColor(label) },
         tooltip: {
           valueFormatter: (val) => val.toFixed(3),
         },
