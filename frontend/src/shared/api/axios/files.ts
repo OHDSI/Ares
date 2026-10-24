@@ -49,6 +49,7 @@ export default function getFilePath(params: Params) {
     [files.COST_DRILLDOWN]: `data/${params.cdm}/${params.release}/cost-drilldown.csv`,
     [files.COST_DOMAIN_SUMMARY]: `data/${params.cdm}/${params.release}/cost-domain-summary.csv`,
     [files.COST_CONCEPT]: `data/${params.cdm}/${params.release}/concepts/cost/concept_${params.concept}.json`,
+    [files.GEO_MANIFEST]: `data/${params.cdm}/${params.release}/geo/geo_manifest.json`,
     [files.NETWORK_COST_INDEX]: `data/network-cost-index.csv`,
   };
 }

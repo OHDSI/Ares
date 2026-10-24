@@ -46,3 +46,5 @@ export const COHORT_TEMPORAL_COVARIATE_DISTRIBUTION =
 
 export const LOCATION = "location";
 export const NETWORK_COST_INDEX = "networkCostIndex";
+
+export const GEO_MANIFEST = "geoManifest";

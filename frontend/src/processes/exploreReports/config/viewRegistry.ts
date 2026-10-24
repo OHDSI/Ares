@@ -6,6 +6,7 @@ import {
   mdiCurrencyUsd,
   mdiDatabaseSearch,
   mdiDna,
+  mdiEarth,
   mdiEyeCircleOutline,
   mdiHeartFlash,
   mdiHeartOffOutline,
@@ -53,6 +54,7 @@ import {
   DOMAIN_ISSUES,
   DOMAIN_SUMMARY,
   DOMAIN_VISIT_STRATIFICATION,
+  GEO_MANIFEST,
   LOCATION,
   METADATA,
   NETWORK_COST_INDEX,
@@ -656,6 +658,21 @@ export const viewRegistry: ViewDescriptor[] = [
       folder: "Data Source Release",
       icon: mdiMapMarkerOutline,
       label: "Location",
+    },
+  },
+
+  {
+    name: "geographicExposures",
+    loadConfig: {
+      loadMethod: FETCH_FILES,
+      payload: { files: [{ name: GEO_MANIFEST, required: true }] },
+    },
+    errorMessage:
+      "Geographic exposure data is not available for this release. It is exported by Achilles exportGeoToAres() when the CDM contains external_exposure data.",
+    explorer: {
+      folder: "Data Source Release",
+      icon: mdiEarth,
+      label: "Geographic Exposures",
     },
   },
 

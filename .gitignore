@@ -37,3 +37,6 @@ logs/
 documentation/docs/.vitepress/cache/
 documentation/docs/.vitepress/dist/
 
+
+# geographic exposure sample scratch
+sample/geo/.cache/

@@ -24,6 +24,7 @@ import SourceConceptReport from "@/pages/reports/source/SourceConceptReport";
 import NetworkDiversityReport from "@/pages/reports/network/NetworkDiversityReport";
 import CohortsTable from "@/pages/reports/release/CohortsTable";
 import LocationReport from "@/pages/reports/release/Location";
+import GeographicExposures from "@/pages/reports/release/GeographicExposures";
 import NetworkAnnotationsReport from "@/pages/reports/network/networkAnnotationsReport";
 import CostTable from "@/pages/reports/release/CostTable";
 import WebApiInfo from "@/pages/info/webApiInfo";
@@ -171,6 +172,11 @@ export const routes: RouteRecordRaw[] = [
         path: "location",
         name: "location",
         components: { reportsView: LocationReport },
+      },
+      {
+        path: "geographic_exposures",
+        name: "geographicExposures",
+        components: { reportsView: GeographicExposures },
       },
       {
         path: "cost_table",
