@@ -37,11 +37,23 @@ export const PROCEDURES_BY_TYPE = "PROCEDURES_BY_TYPE";
 export const OBSERVATIONS_BY_TYPE = "OBSERVATIONS_BY_TYPE";
 export const COST_CONCEPT_METADATA = "COST_CONCEPT_METADATA";
 export const TOTAL_CONCEPT_COST_PER_COST_ID = "TOTAL_CONCEPT_COST_PER_COST_ID";
+export const GEO_REGION = "GEO_REGION";
+export const GEO_EXPOSURE_CONCEPT = "GEO_EXPOSURE_CONCEPT";
+export const GEO_EXPOSURE_SUMMARY = "GEO_EXPOSURE_SUMMARY";
+export const GEO_RESIDENCY = "GEO_RESIDENCY";
+
+/**
+ * Absolute URL of the folder the app is served from (no trailing slash), e.g. "/ares" or
+ * "/GIS/ares-demo". Taken from the full page path so the app also works when hosted below a
+ * nested prefix (such as a GitHub Pages project site).
+ */
+export function getBaseUrl() {
+  const { protocol, host, pathname } = window.location;
+  return protocol + "//" + host + pathname.replace(/\/[^/]*$/, "");
+}
 
 function getFilePath(params: { cdm: string; release: string }) {
-  const getUrl = window.location;
-  const baseUrl =
-    getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split("/")[1];
+  const baseUrl = getBaseUrl();
   return {
     [CONCEPT_METADATA]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/concept_metadata.parquet`,
     [DAYS_SUPPLY_DISTRIBUTION]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/days_supply_distribution.parquet`,
@@ -78,6 +90,10 @@ function getFilePath(params: { cdm: string; release: string }) {
     [COHORT_TEMPORAL_COVARIATE_DISTRIBUTION]: `${baseUrl}/data/${params.cdm}/${params.release}/cohort_temporal_covariate_distribution.parquet`,
     [COST_CONCEPT_METADATA]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/cost_concept_metadata.parquet`,
     [TOTAL_CONCEPT_COST_PER_COST_ID]: `${baseUrl}/data/${params.cdm}/${params.release}/concepts/total_concept_cost_per_cost_id.parquet`,
+    [GEO_REGION]: `${baseUrl}/data/${params.cdm}/${params.release}/geo/geo_region.parquet`,
+    [GEO_EXPOSURE_CONCEPT]: `${baseUrl}/data/${params.cdm}/${params.release}/geo/geo_exposure_concept.parquet`,
+    [GEO_EXPOSURE_SUMMARY]: `${baseUrl}/data/${params.cdm}/${params.release}/geo/geo_exposure_summary.parquet`,
+    [GEO_RESIDENCY]: `${baseUrl}/data/${params.cdm}/${params.release}/geo/geo_residency.parquet`,
   };
 }
 
