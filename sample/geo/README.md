@@ -12,6 +12,7 @@ GIS / SDOH vocabulary ids (see `generate_geo_sample.py`).
 | `build_world_boundaries.py` | Builds `frontend/public/geo/world_country.geojson` (Natural Earth 1:50m, ISO 3166-1 alpha-2 ids). |
 | `reference_geo_export.py` | Python reference of `exportGeoToAres()`; produces the `geo/` folder from the CSV extract. Needs `duckdb`. |
 | `data/geo/` | Committed output for the full sample: 30k persons, 2015-2023, six exposures. US Great Lakes states (county, state and country levels) plus ~55 other countries (country level only). |
+| `merge_ares_source.py` | Merges the sources of another ARES data folder (e.g. Achilles `exportToAres()` + AresIndexer output) into the data folder the frontend serves, including `index.json`. |
 | `install_sample.sh` | Copies `data/geo/` into `frontend/public/data/Synthea/20241021/geo` (unzipping `sample/frontend/data.zip` first if needed). |
 
 ## Quick start
@@ -67,3 +68,10 @@ countries are mixed (use ISO 3166-2, e.g. `CA-ON`).
 
 Not done yet: Achilles' `exportGeoToAres()` only has county and state levels; the Python
 reference already reads `location.country_source_value` for the country level.
+
+## Hosting as a static demo
+
+The app works from any URL prefix (data URLs are derived from the page path), so a build with
+`vite build --base=/<prefix>/` can be published on GitHub Pages. The OHDSI/GIS repository does this
+at `<site>/ares-demo/` from its `static.yml` workflow: it builds ARES, installs this sample as
+Synthea, and merges the GIS tutorial dataset (a full Achilles, DQD and `exportToAres()` run) with `merge_ares_source.py`.

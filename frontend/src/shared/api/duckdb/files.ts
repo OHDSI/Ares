@@ -42,11 +42,14 @@ export const GEO_EXPOSURE_CONCEPT = "GEO_EXPOSURE_CONCEPT";
 export const GEO_EXPOSURE_SUMMARY = "GEO_EXPOSURE_SUMMARY";
 export const GEO_RESIDENCY = "GEO_RESIDENCY";
 
+/**
+ * Absolute URL of the folder the app is served from (no trailing slash), e.g. "/ares" or
+ * "/GIS/ares-demo". Taken from the full page path so the app also works when hosted below a
+ * nested prefix (such as a GitHub Pages project site).
+ */
 export function getBaseUrl() {
-  const getUrl = window.location;
-  return (
-    getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split("/")[1]
-  );
+  const { protocol, host, pathname } = window.location;
+  return protocol + "//" + host + pathname.replace(/\/[^/]*$/, "");
 }
 
 function getFilePath(params: { cdm: string; release: string }) {

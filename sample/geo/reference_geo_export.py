@@ -20,7 +20,10 @@ def main():
 
     con = duckdb.connect()
     for t in ("location", "location_history", "external_exposure", "concept"):
-        con.execute(f"CREATE TABLE {t} AS SELECT * FROM read_csv_auto('{cdm / (t + '.csv')}', all_varchar=false)")
+        src = cdm / f"{t}.csv"
+        if not src.exists():
+            src = cdm / f"{t}.csv.gz"  # gzip is fine too
+        con.execute(f"CREATE TABLE {t} AS SELECT * FROM read_csv_auto('{src}', all_varchar=false)")
 
     # --- extraction (mirrors the sqlGeo*.sql files) ---
     con.execute("""CREATE TABLE person_year AS
