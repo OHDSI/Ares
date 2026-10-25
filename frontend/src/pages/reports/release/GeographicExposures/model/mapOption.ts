@@ -95,9 +95,12 @@ function tooltip(inputs: MapInputs) {
 
 function bubbleSize(layer: Layer, stat: GeoStat) {
   const [lo, hi] = extent(layer, stat);
+  // thousands of counties need small bubbles or they cover the map; a handful of states can be big
+  const max = Math.max(8, Math.min(30, 420 / Math.sqrt(layer.rows.size || 1)));
+  const min = max * 0.25;
   return (value: number) => {
     const t = Math.min(1, Math.max(0, (value - lo) / (hi - lo || 1)));
-    return 6 + Math.sqrt(t) * 22;
+    return min + Math.sqrt(t) * (max - min);
   };
 }
 
@@ -128,7 +131,7 @@ function overlaySeries(
     data,
     itemStyle: {
       color: layer.color,
-      opacity: 0.7,
+      opacity: layer.rows.size > 500 ? 0.55 : 0.7,
       borderColor: inputs.dark ? "#ffffff" : "#000000",
       borderWidth: 0.5,
     },

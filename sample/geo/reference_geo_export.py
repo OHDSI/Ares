@@ -26,14 +26,21 @@ def main():
         con.execute(f"CREATE TABLE {t} AS SELECT * FROM read_csv_auto('{src}', all_varchar=false)")
 
     # --- extraction (mirrors the sqlGeo*.sql files) ---
-    con.execute("""CREATE TABLE person_year AS
+    con.execute("""CREATE TABLE person_year_raw AS
         SELECT ee.exposure_concept_id, CAST(l.county_fips AS VARCHAR) AS county_id, l.state AS state_id,
                l.country_source_value AS country_id,
-               YEAR(ee.exposure_start_date) AS period, ee.person_id,
-               COUNT(*) AS n_records, AVG(ee.value_as_number) AS value_mean
+               YEAR(ee.exposure_start_date) AS period_start, YEAR(ee.exposure_end_date) AS period_end,
+               ee.person_id, COUNT(*) AS n_records, AVG(ee.value_as_number) AS value_mean
         FROM external_exposure ee JOIN location l ON l.location_id = ee.location_id
         WHERE ee.value_as_number IS NOT NULL
         GROUP BY ALL""")
+    # an exposure interval counts in every calendar year it touches
+    con.execute("""CREATE TABLE person_year AS
+        SELECT p.exposure_concept_id, p.county_id, p.state_id, p.country_id, t.period AS period, p.person_id,
+               p.n_records, p.value_mean
+        FROM person_year_raw p,
+             UNNEST(generate_series(CAST(p.period_start AS BIGINT),
+                                    GREATEST(CAST(p.period_end AS BIGINT), CAST(p.period_start AS BIGINT)))) AS t(period)""")
     con.execute("""CREATE TABLE units AS
         SELECT exposure_concept_id, CAST(unit_concept_id AS BIGINT) AS unit_concept_id, COUNT(*) AS n_records
         FROM external_exposure WHERE value_as_number IS NOT NULL GROUP BY ALL""")

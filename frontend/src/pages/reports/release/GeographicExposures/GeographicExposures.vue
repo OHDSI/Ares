@@ -91,8 +91,10 @@
         />
         <p class="text-sm mt-2 opacity-80">
           <template v-if="boundaries">
-            Grey areas have no data or fewer than
-            {{ manifest.minCellCount }} persons (suppressed).
+            Grey areas have no data<template v-if="manifest.minCellCount > 1">
+              or fewer than {{ manifest.minCellCount }} persons
+              (suppressed)</template
+            >.
           </template>
           <template v-else>
             No boundary file is available for this release, so regions are drawn
